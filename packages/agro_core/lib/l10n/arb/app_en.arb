@@ -1,0 +1,29 @@
+{
+  "@@locale": "en",
+
+  "appName": "PlanejaSafra",
+  "continueLabel": "CONTINUE",
+  "acceptAndContinueLabel": "ACCEPT AND CONTINUE",
+  "declineLabel": "DECLINE",
+  "declineAndExitLabel": "DECLINE (EXIT)",
+  "privacySettingsHint": "You can review the full documents in Settings → Privacy.",
+
+  "termsTitle": "Terms of Use and Privacy",
+  "termsBodyIntro": "By tapping \"Accept and Continue\", you agree to the Terms of Use and Privacy Policy of PlanejaSafra/PlanejaCampo apps.",
+  "termsSummaryTitle": "Summary of what happens:",
+  "termsSummaryItem1": "You record information such as rainfall, prices, weighings, notes, and entries.",
+  "termsSummaryItem2": "This data is stored on your device to make the app work.",
+  "termsSummaryItem3": "The app may display ads in the free version.",
+  "termsSummaryItem4": "We may collect minimal technical information (e.g., crashes and performance) to improve the app.",
+  "termsFooter": "You can review the full documents in Settings → Privacy.",
+
+  "consentTitle": "Features and Sharing (optional)",
+  "consentIntro": "You can use the app in private mode (offline), or enable extra features based on aggregated community data.\n\nSelect what you authorize:",
+  "consentOption1Title": "Aggregated data for regional metrics",
+  "consentOption1Desc": "Use your records in aggregated and statistical form to generate indicators such as rainfall by region, regional average prices, trends, and comparisons.",
+  "consentOption2Title": "Sharing with partners (aggregated)",
+  "consentOption2Desc": "Share only aggregated/statistical data with third parties for reports, regional intelligence, and improvements.",
+  "consentOption3Title": "More relevant ads and offers",
+  "consentOption3Desc": "Use usage data to improve ads, promotions, and suggestions (when available).",
+  "consentSmallNoteUnderDecline": "Without accepting, you can use the app normally in private mode (basic offline features)."
+}

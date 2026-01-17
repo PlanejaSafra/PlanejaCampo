@@ -1,0 +1,174 @@
+import 'package:flutter/material.dart';
+
+import '../l10n/generated/app_localizations.dart';
+import 'agro_privacy_store.dart';
+
+/// Screen 2: Optional consents.
+/// User can accept all, decline all, or skip - all options lead to the app.
+class ConsentScreen extends StatefulWidget {
+  /// Callback when onboarding is completed (accept or decline).
+  final VoidCallback? onCompleted;
+
+  const ConsentScreen({
+    super.key,
+    this.onCompleted,
+  });
+
+  @override
+  State<ConsentScreen> createState() => _ConsentScreenState();
+}
+
+class _ConsentScreenState extends State<ConsentScreen> {
+  bool _aggregateMetrics = false;
+  bool _sharePartners = false;
+  bool _adsPersonalization = false;
+
+  Future<void> _acceptAll() async {
+    await AgroPrivacyStore.acceptAllConsents();
+    await AgroPrivacyStore.setOnboardingCompleted(true);
+    widget.onCompleted?.call();
+  }
+
+  Future<void> _declineAll() async {
+    await AgroPrivacyStore.rejectAllConsents();
+    await AgroPrivacyStore.setOnboardingCompleted(true);
+    widget.onCompleted?.call();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AgroLocalizations.of(context)!;
+    final theme = Theme.of(context);
+
+    return Scaffold(
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const SizedBox(height: 16),
+              Icon(
+                Icons.tune,
+                size: 48,
+                color: theme.colorScheme.primary,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                l10n.consentTitle,
+                style: theme.textTheme.headlineMedium,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                l10n.consentIntro,
+                style: theme.textTheme.bodyMedium,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      _ConsentTile(
+                        title: l10n.consentOption1Title,
+                        subtitle: l10n.consentOption1Desc,
+                        value: _aggregateMetrics,
+                        onChanged: (v) =>
+                            setState(() => _aggregateMetrics = v ?? false),
+                      ),
+                      const SizedBox(height: 8),
+                      _ConsentTile(
+                        title: l10n.consentOption2Title,
+                        subtitle: l10n.consentOption2Desc,
+                        value: _sharePartners,
+                        onChanged: (v) =>
+                            setState(() => _sharePartners = v ?? false),
+                      ),
+                      const SizedBox(height: 8),
+                      _ConsentTile(
+                        title: l10n.consentOption3Title,
+                        subtitle: l10n.consentOption3Desc,
+                        value: _adsPersonalization,
+                        onChanged: (v) =>
+                            setState(() => _adsPersonalization = v ?? false),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: _acceptAll,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                ),
+                child: Text(l10n.acceptAndContinueLabel),
+              ),
+              const SizedBox(height: 12),
+              OutlinedButton(
+                onPressed: _declineAll,
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: Colors.grey[600],
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                ),
+                child: Text(l10n.declineLabel),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                l10n.consentSmallNoteUnderDecline,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: Colors.grey[600],
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ConsentTile extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final bool value;
+  final ValueChanged<bool?> onChanged;
+
+  const _ConsentTile({
+    required this.title,
+    required this.subtitle,
+    required this.value,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: CheckboxListTile(
+        title: Text(
+          title,
+          style: Theme.of(context).textTheme.titleSmall,
+        ),
+        subtitle: Padding(
+          padding: const EdgeInsets.only(top: 4.0),
+          child: Text(
+            subtitle,
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+        ),
+        value: value,
+        onChanged: onChanged,
+        controlAffinity: ListTileControlAffinity.leading,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 12,
+          vertical: 8,
+        ),
+      ),
+    );
+  }
+}

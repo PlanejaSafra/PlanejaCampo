@@ -1,0 +1,29 @@
+{
+  "@@locale": "pt",
+
+  "appName": "PlanejaSafra",
+  "continueLabel": "CONTINUAR",
+  "acceptAndContinueLabel": "ACEITAR E CONTINUAR",
+  "declineLabel": "NÃO ACEITAR",
+  "declineAndExitLabel": "NÃO ACEITAR (SAIR)",
+  "privacySettingsHint": "Você pode consultar os documentos completos em Configurações → Privacidade.",
+
+  "termsTitle": "Termos de Uso e Privacidade",
+  "termsBodyIntro": "Ao tocar em \"Aceitar e continuar\", você concorda com os Termos de Uso e com a Política de Privacidade dos apps PlanejaSafra/PlanejaCampo.",
+  "termsSummaryTitle": "Resumo do que acontece:",
+  "termsSummaryItem1": "Você registra informações como chuvas, preços, pesagens, anotações e lançamentos.",
+  "termsSummaryItem2": "Esses dados ficam armazenados no seu dispositivo para o app funcionar.",
+  "termsSummaryItem3": "O app pode exibir anúncios na versão gratuita.",
+  "termsSummaryItem4": "Podemos coletar informações técnicas mínimas (ex.: falhas e desempenho) para melhorar o app.",
+  "termsFooter": "Você pode consultar os documentos completos em Configurações → Privacidade.",
+
+  "consentTitle": "Recursos e compartilhamento (opcional)",
+  "consentIntro": "Você pode usar o app em modo privado (offline), ou ativar recursos extras baseados em dados agregados da comunidade.\n\nMarque o que você autoriza:",
+  "consentOption1Title": "Dados agregados para métricas regionais",
+  "consentOption1Desc": "Usar seus registros de forma agregada e estatística para gerar indicadores como chuva por região, preço médio regional, tendências e comparativos.",
+  "consentOption2Title": "Compartilhamento com parceiros (agregado)",
+  "consentOption2Desc": "Compartilhar somente dados agregados/estatísticos com terceiros para relatórios, inteligência regional e melhorias.",
+  "consentOption3Title": "Anúncios e ofertas mais relevantes",
+  "consentOption3Desc": "Usar dados de uso para melhorar anúncios, promoções e sugestões (quando houver).",
+  "consentSmallNoteUnderDecline": "Sem aceitar, você pode usar o app normalmente no modo privado (funções básicas offline)."
+}
