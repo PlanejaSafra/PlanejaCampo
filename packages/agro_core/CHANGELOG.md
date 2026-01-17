@@ -2,6 +2,57 @@
 
 ---
 
+## Phase 2.0: Standard Menu and Base Screens
+
+### Status: [DONE]
+**Date Completed**: 2026-01-17
+**Priority**: 🟡 ARCHITECTURAL
+**Objective**: Create reusable drawer menu (AgroDrawer) and base screens (Settings, About, Privacy) with l10n support.
+
+### Implementation Summary
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 2.0.1 | Update ARB files with new l10n keys | ✅ DONE |
+| 2.0.2 | Create AgroDrawer and AgroDrawerItem | ✅ DONE |
+| 2.0.3 | Create AgroSettingsScreen | ✅ DONE |
+| 2.0.4 | Create AgroAboutScreen | ✅ DONE |
+| 2.0.5 | Create AgroPrivacyScreen (with consents management) | ✅ DONE |
+| 2.0.6 | Update agro_core.dart exports | ✅ DONE |
+| 2.0.7 | Regenerate l10n | ✅ DONE |
+
+### Files Modified
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/l10n/arb/app_en.arb` | MODIFY | Added drawer, settings, about, privacy l10n keys |
+| `lib/l10n/arb/app_pt.arb` | MODIFY | Added drawer, settings, about, privacy l10n keys |
+| `lib/menu/agro_drawer.dart` | CREATE | Reusable drawer widget |
+| `lib/menu/agro_drawer_item.dart` | CREATE | Drawer item model and route keys |
+| `lib/screens/agro_settings_screen.dart` | CREATE | Settings screen |
+| `lib/screens/agro_about_screen.dart` | CREATE | About screen |
+| `lib/screens/agro_privacy_screen.dart` | CREATE | Privacy and consents management screen |
+| `lib/privacy/agro_privacy_store.dart` | MODIFY | Added getBox() and setConsent() methods |
+| `lib/agro_core.dart` | MODIFY | Export new menu and screens |
+
+### Components Overview
+
+**AgroDrawer**
+- Reusable drawer with header (app name, version)
+- Standard items: Home, Settings, Privacy, About
+- Supports extra app-specific items via `extraItems`
+- Navigation via `onNavigate(routeKey)` callback
+
+**AgroRouteKeys**
+- `home`, `settings`, `privacy`, `about`
+
+**Base Screens**
+- `AgroSettingsScreen`: Language placeholder, navigate to About
+- `AgroAboutScreen`: App info, version, offline-first badge
+- `AgroPrivacyScreen`: Terms summary, consent toggles (persisted in Hive)
+
+---
+
 ## Phase 1.0: Privacy Onboarding Flow
 
 ### Status: [DONE]

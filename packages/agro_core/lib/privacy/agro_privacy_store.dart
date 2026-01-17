@@ -101,4 +101,21 @@ class AgroPrivacyStore {
   static Future<void> resetAll() async {
     await _safeBox.clear();
   }
+
+  /// Get the Hive box for direct access (use sparingly).
+  static Future<Box> getBox() async {
+    if (_box == null || !_box!.isOpen) {
+      await init();
+    }
+    return _safeBox;
+  }
+
+  /// Set a specific consent value.
+  static Future<void> setConsent(String key, bool value) async {
+    await _safeBox.put(key, value);
+    await _safeBox.put(
+      AgroPrivacyKeys.consentTimestamp,
+      DateTime.now().toIso8601String(),
+    );
+  }
 }

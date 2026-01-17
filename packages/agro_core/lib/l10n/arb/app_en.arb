@@ -25,5 +25,34 @@
   "consentOption2Desc": "Share only aggregated/statistical data with third parties for reports, regional intelligence, and improvements.",
   "consentOption3Title": "More relevant ads and offers",
   "consentOption3Desc": "Use usage data to improve ads, promotions, and suggestions (when available).",
-  "consentSmallNoteUnderDecline": "Without accepting, you can use the app normally in private mode (basic offline features)."
+  "consentSmallNoteUnderDecline": "Without accepting, you can use the app normally in private mode (basic offline features).",
+
+  "drawerHome": "Home",
+  "drawerSettings": "Settings",
+  "drawerPrivacy": "Privacy and Consents",
+  "drawerAbout": "About",
+
+  "settingsTitle": "Settings",
+  "settingsLanguage": "Language",
+  "settingsLanguageAuto": "Automatic",
+  "settingsAboutApp": "About the App",
+
+  "aboutTitle": "About",
+  "aboutDescription": "This app is part of the PlanejaSafra Suite, designed to help rural producers manage their activities in the field.",
+  "aboutOfflineFirst": "100% Offline-First: all your data stays on your device.",
+  "aboutSuite": "PlanejaSafra Suite",
+  "aboutVersion": "Version",
+
+  "privacyTitle": "Privacy and Consents",
+  "privacyTermsSection": "Terms of Use and Privacy Policy",
+  "privacyTermsSummary": "By using this app, you agree to our Terms of Use and Privacy Policy. You can review the full documents at any time.",
+  "privacyConsentsSection": "Data Sharing Consents",
+  "privacyConsentsDescription": "Manage how your data can be used. All options are optional.",
+  "consentShareAggregated": "Share aggregated data",
+  "consentShareAggregatedDesc": "Allow your records to be used anonymously for regional statistics.",
+  "consentReceiveRegionalMetrics": "Receive regional metrics",
+  "consentReceiveRegionalMetricsDesc": "Get insights based on aggregated community data.",
+  "consentPersonalizedAds": "Personalized ads",
+  "consentPersonalizedAdsDesc": "See more relevant ads based on your usage.",
+  "privacySaved": "Preferences saved"
 }

@@ -74,4 +74,79 @@ class AgroLocalizationsEn extends AgroLocalizations {
 
   @override
   String get consentSmallNoteUnderDecline => 'Without accepting, you can use the app normally in private mode (basic offline features).';
+
+  @override
+  String get drawerHome => 'Home';
+
+  @override
+  String get drawerSettings => 'Settings';
+
+  @override
+  String get drawerPrivacy => 'Privacy and Consents';
+
+  @override
+  String get drawerAbout => 'About';
+
+  @override
+  String get settingsTitle => 'Settings';
+
+  @override
+  String get settingsLanguage => 'Language';
+
+  @override
+  String get settingsLanguageAuto => 'Automatic';
+
+  @override
+  String get settingsAboutApp => 'About the App';
+
+  @override
+  String get aboutTitle => 'About';
+
+  @override
+  String get aboutDescription => 'This app is part of the PlanejaSafra Suite, designed to help rural producers manage their activities in the field.';
+
+  @override
+  String get aboutOfflineFirst => '100% Offline-First: all your data stays on your device.';
+
+  @override
+  String get aboutSuite => 'PlanejaSafra Suite';
+
+  @override
+  String get aboutVersion => 'Version';
+
+  @override
+  String get privacyTitle => 'Privacy and Consents';
+
+  @override
+  String get privacyTermsSection => 'Terms of Use and Privacy Policy';
+
+  @override
+  String get privacyTermsSummary => 'By using this app, you agree to our Terms of Use and Privacy Policy. You can review the full documents at any time.';
+
+  @override
+  String get privacyConsentsSection => 'Data Sharing Consents';
+
+  @override
+  String get privacyConsentsDescription => 'Manage how your data can be used. All options are optional.';
+
+  @override
+  String get consentShareAggregated => 'Share aggregated data';
+
+  @override
+  String get consentShareAggregatedDesc => 'Allow your records to be used anonymously for regional statistics.';
+
+  @override
+  String get consentReceiveRegionalMetrics => 'Receive regional metrics';
+
+  @override
+  String get consentReceiveRegionalMetricsDesc => 'Get insights based on aggregated community data.';
+
+  @override
+  String get consentPersonalizedAds => 'Personalized ads';
+
+  @override
+  String get consentPersonalizedAdsDesc => 'See more relevant ads based on your usage.';
+
+  @override
+  String get privacySaved => 'Preferences saved';
 }

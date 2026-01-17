@@ -1,0 +1,29 @@
+import 'package:flutter/material.dart';
+
+/// Route keys for standard drawer navigation.
+class AgroRouteKeys {
+  AgroRouteKeys._();
+
+  static const String home = 'home';
+  static const String settings = 'settings';
+  static const String privacy = 'privacy';
+  static const String about = 'about';
+}
+
+/// Model for a drawer menu item.
+class AgroDrawerItem {
+  /// Unique key for navigation routing.
+  final String key;
+
+  /// Icon to display.
+  final IconData icon;
+
+  /// Title text (already localized).
+  final String title;
+
+  const AgroDrawerItem({
+    required this.key,
+    required this.icon,
+    required this.title,
+  });
+}

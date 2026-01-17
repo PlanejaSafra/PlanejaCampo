@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
+import 'screens/lista_chuvas_screen.dart';
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -36,28 +38,8 @@ class PlanejaChuvaApp extends StatelessWidget {
         Locale('pt', 'BR'),
         Locale('en'),
       ],
-      home: AgroOnboardingGate(
-        home: const HomeScreen(),
-      ),
-    );
-  }
-}
-
-/// Temporary home screen placeholder.
-/// Replace with ListaChuvasScreen when implemented.
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AgroLocalizations.of(context);
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n?.appName ?? 'Planeja Chuva'),
-      ),
-      body: const Center(
-        child: Text('Bem-vindo ao Planeja Chuva!'),
+      home: const AgroOnboardingGate(
+        home: ListaChuvasScreen(),
       ),
     );
   }

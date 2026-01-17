@@ -72,14 +72,59 @@ Cada app é um projeto Flutter completo e independente.
 * **Banco de Dados:** Hive (NoSQL local)
 * **Dependências:** apenas o necessário para aquela função específica
 
+---
+
 ### 2) Core (`/packages/agro_core`)
 
 É a biblioteca visual e utilitária compartilhada.
 O Core **não sabe** o que é chuva ou gado — ele só fornece as ferramentas para montar as telas.
 
-* **Theme:** identidade visual verde/agro
-* **Widgets:** `AgroCard`, `AgroButton`, `AgroInput`
-* **Utils:** formatadores de Data e Moeda
+* **Theme:** identidade visual verde/agro (AppTheme)
+* **Widgets:** `AgroCard`, `AgroButton`, `AgroInput`, `EmptyState`, etc
+* **Utils:** formatadores de Data/Moeda, helpers e validações
+* **Shell padrão:** `AgroScaffold` (AppBar + Drawer/Menu + Body + FAB opcional)
+* **Menu padrão:** Home, Configurações, Privacidade/Consentimentos, Sobre
+* **Privacidade:** fluxo obrigatório de 2 telas (Termos + Consentimentos)
+* **l10n (pt-BR/en):** strings padrão no core reutilizadas por todos os apps
+
+#### 🎨 Padrão Visual e Navegação (OBRIGATÓRIO)
+
+Todos os apps em `apps/*` **DEVEM seguir o padrão do core**.
+
+**Regra de ouro:**
+
+* O app **NÃO cria** tema, AppBar, Drawer/Menu, layout base ou navegação padrão.
+* O app **apenas implementa** telas do domínio (chuva, diesel, etc) e pluga no shell do core.
+
+**O app pode:**
+
+* criar telas específicas (`screens/`)
+* criar models específicos (`models/`)
+* adicionar itens extras no menu (**sem alterar o padrão base**)
+
+---
+
+### 📁 Estrutura mínima de cada app (`apps/*`)
+
+Cada app deve ter **somente o que é específico dele**:
+
+* `lib/main.dart`
+* `lib/screens/`
+* `lib/models/`
+* `lib/features/` (opcional)
+* `lib/routes.dart` (se precisar, apenas rotas do app)
+
+Tudo que é “padrão de produto” fica no **agro_core**:
+
+* tema
+* widgets base
+* navegação e menu padrão
+* onboarding/privacidade
+* telas padrão (configurações/sobre/consentimentos)
+* l10n comum
+
+---
+
 
 ### 3) Exemplos (`/examples`)
 

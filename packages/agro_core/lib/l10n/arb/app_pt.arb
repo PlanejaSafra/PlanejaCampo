@@ -25,5 +25,34 @@
   "consentOption2Desc": "Compartilhar somente dados agregados/estatísticos com terceiros para relatórios, inteligência regional e melhorias.",
   "consentOption3Title": "Anúncios e ofertas mais relevantes",
   "consentOption3Desc": "Usar dados de uso para melhorar anúncios, promoções e sugestões (quando houver).",
-  "consentSmallNoteUnderDecline": "Sem aceitar, você pode usar o app normalmente no modo privado (funções básicas offline)."
+  "consentSmallNoteUnderDecline": "Sem aceitar, você pode usar o app normalmente no modo privado (funções básicas offline).",
+
+  "drawerHome": "Início",
+  "drawerSettings": "Configurações",
+  "drawerPrivacy": "Privacidade e Consentimentos",
+  "drawerAbout": "Sobre",
+
+  "settingsTitle": "Configurações",
+  "settingsLanguage": "Idioma",
+  "settingsLanguageAuto": "Automático",
+  "settingsAboutApp": "Sobre o App",
+
+  "aboutTitle": "Sobre",
+  "aboutDescription": "Este app faz parte da suíte PlanejaSafra, projetada para ajudar produtores rurais a gerenciar suas atividades no campo.",
+  "aboutOfflineFirst": "100% Offline-First: todos os seus dados ficam no seu dispositivo.",
+  "aboutSuite": "Suíte PlanejaSafra",
+  "aboutVersion": "Versão",
+
+  "privacyTitle": "Privacidade e Consentimentos",
+  "privacyTermsSection": "Termos de Uso e Política de Privacidade",
+  "privacyTermsSummary": "Ao usar este app, você concorda com nossos Termos de Uso e Política de Privacidade. Você pode consultar os documentos completos a qualquer momento.",
+  "privacyConsentsSection": "Consentimentos de Compartilhamento",
+  "privacyConsentsDescription": "Gerencie como seus dados podem ser usados. Todas as opções são opcionais.",
+  "consentShareAggregated": "Compartilhar dados agregados",
+  "consentShareAggregatedDesc": "Permitir que seus registros sejam usados anonimamente para estatísticas regionais.",
+  "consentReceiveRegionalMetrics": "Receber métricas regionais",
+  "consentReceiveRegionalMetricsDesc": "Receber insights baseados em dados agregados da comunidade.",
+  "consentPersonalizedAds": "Anúncios personalizados",
+  "consentPersonalizedAdsDesc": "Ver anúncios mais relevantes com base no seu uso.",
+  "privacySaved": "Preferências salvas"
 }

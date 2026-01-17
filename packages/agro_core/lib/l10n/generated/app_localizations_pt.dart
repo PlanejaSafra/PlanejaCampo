@@ -74,4 +74,79 @@ class AgroLocalizationsPt extends AgroLocalizations {
 
   @override
   String get consentSmallNoteUnderDecline => 'Sem aceitar, você pode usar o app normalmente no modo privado (funções básicas offline).';
+
+  @override
+  String get drawerHome => 'Início';
+
+  @override
+  String get drawerSettings => 'Configurações';
+
+  @override
+  String get drawerPrivacy => 'Privacidade e Consentimentos';
+
+  @override
+  String get drawerAbout => 'Sobre';
+
+  @override
+  String get settingsTitle => 'Configurações';
+
+  @override
+  String get settingsLanguage => 'Idioma';
+
+  @override
+  String get settingsLanguageAuto => 'Automático';
+
+  @override
+  String get settingsAboutApp => 'Sobre o App';
+
+  @override
+  String get aboutTitle => 'Sobre';
+
+  @override
+  String get aboutDescription => 'Este app faz parte da suíte PlanejaSafra, projetada para ajudar produtores rurais a gerenciar suas atividades no campo.';
+
+  @override
+  String get aboutOfflineFirst => '100% Offline-First: todos os seus dados ficam no seu dispositivo.';
+
+  @override
+  String get aboutSuite => 'Suíte PlanejaSafra';
+
+  @override
+  String get aboutVersion => 'Versão';
+
+  @override
+  String get privacyTitle => 'Privacidade e Consentimentos';
+
+  @override
+  String get privacyTermsSection => 'Termos de Uso e Política de Privacidade';
+
+  @override
+  String get privacyTermsSummary => 'Ao usar este app, você concorda com nossos Termos de Uso e Política de Privacidade. Você pode consultar os documentos completos a qualquer momento.';
+
+  @override
+  String get privacyConsentsSection => 'Consentimentos de Compartilhamento';
+
+  @override
+  String get privacyConsentsDescription => 'Gerencie como seus dados podem ser usados. Todas as opções são opcionais.';
+
+  @override
+  String get consentShareAggregated => 'Compartilhar dados agregados';
+
+  @override
+  String get consentShareAggregatedDesc => 'Permitir que seus registros sejam usados anonimamente para estatísticas regionais.';
+
+  @override
+  String get consentReceiveRegionalMetrics => 'Receber métricas regionais';
+
+  @override
+  String get consentReceiveRegionalMetricsDesc => 'Receber insights baseados em dados agregados da comunidade.';
+
+  @override
+  String get consentPersonalizedAds => 'Anúncios personalizados';
+
+  @override
+  String get consentPersonalizedAdsDesc => 'Ver anúncios mais relevantes com base no seu uso.';
+
+  @override
+  String get privacySaved => 'Preferências salvas';
 }

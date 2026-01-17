@@ -232,6 +232,156 @@ abstract class AgroLocalizations {
   /// In en, this message translates to:
   /// **'Without accepting, you can use the app normally in private mode (basic offline features).'**
   String get consentSmallNoteUnderDecline;
+
+  /// No description provided for @drawerHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get drawerHome;
+
+  /// No description provided for @drawerSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get drawerSettings;
+
+  /// No description provided for @drawerPrivacy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy and Consents'**
+  String get drawerPrivacy;
+
+  /// No description provided for @drawerAbout.
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get drawerAbout;
+
+  /// No description provided for @settingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get settingsTitle;
+
+  /// No description provided for @settingsLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get settingsLanguage;
+
+  /// No description provided for @settingsLanguageAuto.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic'**
+  String get settingsLanguageAuto;
+
+  /// No description provided for @settingsAboutApp.
+  ///
+  /// In en, this message translates to:
+  /// **'About the App'**
+  String get settingsAboutApp;
+
+  /// No description provided for @aboutTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get aboutTitle;
+
+  /// No description provided for @aboutDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'This app is part of the PlanejaSafra Suite, designed to help rural producers manage their activities in the field.'**
+  String get aboutDescription;
+
+  /// No description provided for @aboutOfflineFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'100% Offline-First: all your data stays on your device.'**
+  String get aboutOfflineFirst;
+
+  /// No description provided for @aboutSuite.
+  ///
+  /// In en, this message translates to:
+  /// **'PlanejaSafra Suite'**
+  String get aboutSuite;
+
+  /// No description provided for @aboutVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Version'**
+  String get aboutVersion;
+
+  /// No description provided for @privacyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy and Consents'**
+  String get privacyTitle;
+
+  /// No description provided for @privacyTermsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms of Use and Privacy Policy'**
+  String get privacyTermsSection;
+
+  /// No description provided for @privacyTermsSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'By using this app, you agree to our Terms of Use and Privacy Policy. You can review the full documents at any time.'**
+  String get privacyTermsSummary;
+
+  /// No description provided for @privacyConsentsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Data Sharing Consents'**
+  String get privacyConsentsSection;
+
+  /// No description provided for @privacyConsentsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage how your data can be used. All options are optional.'**
+  String get privacyConsentsDescription;
+
+  /// No description provided for @consentShareAggregated.
+  ///
+  /// In en, this message translates to:
+  /// **'Share aggregated data'**
+  String get consentShareAggregated;
+
+  /// No description provided for @consentShareAggregatedDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow your records to be used anonymously for regional statistics.'**
+  String get consentShareAggregatedDesc;
+
+  /// No description provided for @consentReceiveRegionalMetrics.
+  ///
+  /// In en, this message translates to:
+  /// **'Receive regional metrics'**
+  String get consentReceiveRegionalMetrics;
+
+  /// No description provided for @consentReceiveRegionalMetricsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Get insights based on aggregated community data.'**
+  String get consentReceiveRegionalMetricsDesc;
+
+  /// No description provided for @consentPersonalizedAds.
+  ///
+  /// In en, this message translates to:
+  /// **'Personalized ads'**
+  String get consentPersonalizedAds;
+
+  /// No description provided for @consentPersonalizedAdsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'See more relevant ads based on your usage.'**
+  String get consentPersonalizedAdsDesc;
+
+  /// No description provided for @privacySaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Preferences saved'**
+  String get privacySaved;
 }
 
 class _AgroLocalizationsDelegate extends LocalizationsDelegate<AgroLocalizations> {
