@@ -37,6 +37,7 @@ export 'services/user_cloud_service.dart';
 
 // Services (Property Management)
 export 'services/property_service.dart';
+export 'services/property_helper.dart';
 
 // Menu
 export 'menu/agro_drawer.dart';
