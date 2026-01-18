@@ -5,6 +5,7 @@ class AgroRouteKeys {
   AgroRouteKeys._();
 
   static const String home = 'home';
+  static const String properties = 'properties';
   static const String settings = 'settings';
   static const String privacy = 'privacy';
   static const String about = 'about';

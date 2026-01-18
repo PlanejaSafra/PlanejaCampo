@@ -19,12 +19,18 @@ class RegistroChuva extends HiveObject {
   @HiveField(4)
   final DateTime criadoEm;
 
+  /// Property ID (foreign key to Property model in agro_core)
+  /// Links this rainfall record to a specific farm/property
+  @HiveField(5)
+  final String propertyId;
+
   RegistroChuva({
     required this.id,
     required this.data,
     required this.milimetros,
     this.observacao,
     required this.criadoEm,
+    required this.propertyId,
   });
 
   /// Factory for creating a new record with auto-generated ID
@@ -32,6 +38,7 @@ class RegistroChuva extends HiveObject {
     required DateTime data,
     required double milimetros,
     String? observacao,
+    required String propertyId,
   }) {
     final agora = DateTime.now();
     return RegistroChuva(
@@ -40,6 +47,7 @@ class RegistroChuva extends HiveObject {
       milimetros: milimetros,
       observacao: observacao,
       criadoEm: agora,
+      propertyId: propertyId,
     );
   }
 }

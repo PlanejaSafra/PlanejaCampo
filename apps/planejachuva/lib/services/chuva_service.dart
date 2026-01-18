@@ -19,8 +19,15 @@ class ChuvaService {
   }
 
   /// Returns all records sorted by date descending (most recent first).
-  List<RegistroChuva> listarTodos() {
-    final todos = _box.values.toList();
+  /// If propertyId is provided, filters records for that property only.
+  List<RegistroChuva> listarTodos({String? propertyId}) {
+    var todos = _box.values.toList();
+
+    // Filter by property if specified
+    if (propertyId != null && propertyId.isNotEmpty) {
+      todos = todos.where((r) => r.propertyId == propertyId).toList();
+    }
+
     todos.sort((a, b) => b.data.compareTo(a.data));
     return todos;
   }
@@ -41,11 +48,22 @@ class ChuvaService {
   }
 
   /// Calculates the total rainfall for a specific month.
-  double totalDoMes(DateTime dataReferencia) {
-    return _box.values
-        .where((r) =>
-            r.data.year == dataReferencia.year &&
-            r.data.month == dataReferencia.month)
-        .fold(0.0, (sum, r) => sum + r.milimetros);
+  /// If propertyId is provided, calculates only for that property.
+  double totalDoMes(DateTime dataReferencia, {String? propertyId}) {
+    var registros = _box.values.where((r) =>
+        r.data.year == dataReferencia.year &&
+        r.data.month == dataReferencia.month);
+
+    // Filter by property if specified
+    if (propertyId != null && propertyId.isNotEmpty) {
+      registros = registros.where((r) => r.propertyId == propertyId);
+    }
+
+    return registros.fold(0.0, (sum, r) => sum + r.milimetros);
+  }
+
+  /// Get count of records for a specific property
+  int getRecordCountForProperty(String propertyId) {
+    return _box.values.where((r) => r.propertyId == propertyId).length;
   }
 }

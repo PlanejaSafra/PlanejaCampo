@@ -130,6 +130,9 @@ class AgroLocalizationsPt extends AgroLocalizations {
   String get drawerHome => 'Início';
 
   @override
+  String get drawerProperties => 'Propriedades';
+
+  @override
   String get drawerSettings => 'Configurações';
 
   @override
@@ -200,6 +203,111 @@ class AgroLocalizationsPt extends AgroLocalizations {
 
   @override
   String get privacySaved => 'Preferências salvas';
+
+  @override
+  String get propertyDefaultName => 'Minha Propriedade';
+
+  @override
+  String get propertyTitle => 'Propriedades';
+
+  @override
+  String get propertyAdd => 'Adicionar Propriedade';
+
+  @override
+  String get propertyEdit => 'Editar Propriedade';
+
+  @override
+  String get propertyName => 'Nome';
+
+  @override
+  String get propertyNameHint => 'Ex: Fazenda Primavera';
+
+  @override
+  String get propertyTotalArea => 'Área Total (ha)';
+
+  @override
+  String get propertyTotalAreaHint => 'Ex: 150.5';
+
+  @override
+  String get propertyLocation => 'Localização';
+
+  @override
+  String get propertyLocationDesc => 'Usado para estatísticas regionais e previsão do tempo (opcional)';
+
+  @override
+  String get propertyUseCurrentLocation => 'Usar minha localização';
+
+  @override
+  String get propertySetAsDefault => 'Definir como padrão';
+
+  @override
+  String get propertyIsDefault => 'Propriedade padrão';
+
+  @override
+  String get propertyDefaultBadge => 'Padrão';
+
+  @override
+  String get propertyDelete => 'Excluir Propriedade';
+
+  @override
+  String get propertyDeleteConfirm => 'Tem certeza que deseja excluir esta propriedade?';
+
+  @override
+  String get propertyDeleteWithRecords => 'Esta propriedade possui registros vinculados. Ao excluir, todos os registros serão movidos para a propriedade padrão.';
+
+  @override
+  String get propertyDeleted => 'Propriedade excluída';
+
+  @override
+  String get propertyCannotDeleteDefault => 'Não é possível excluir a propriedade padrão. Defina outra propriedade como padrão primeiro.';
+
+  @override
+  String get propertyCannotDeleteLast => 'Não é possível excluir a única propriedade. Crie outra propriedade primeiro.';
+
+  @override
+  String get propertyNoProperties => 'Nenhuma propriedade cadastrada';
+
+  @override
+  String get propertyNoPropertiesDesc => 'Toque no + para adicionar sua primeira propriedade';
+
+  @override
+  String get propertyChangeProperty => 'Trocar';
+
+  @override
+  String get propertySelectProperty => 'Selecionar Propriedade';
+
+  @override
+  String get propertyAllProperties => 'Todas';
+
+  @override
+  String get propertyFilterBy => 'Filtrar por propriedade';
+
+  @override
+  String get propertyFirstTimeTip => '💡 Dica: Você pode gerenciar propriedades em Configurações';
+
+  @override
+  String get propertySaved => 'Propriedade salva!';
+
+  @override
+  String get propertyUpdated => 'Propriedade atualizada!';
+
+  @override
+  String get propertyNameRequired => 'Digite o nome da propriedade';
+
+  @override
+  String get propertyNameTooShort => 'Nome muito curto (mínimo 2 caracteres)';
+
+  @override
+  String get propertyNameExists => 'Já existe uma propriedade com este nome';
+
+  @override
+  String get propertyAreaInvalid => 'Área deve ser maior que zero';
+
+  @override
+  String get propertyLocationPermissionDenied => 'Permissão de localização negada';
+
+  @override
+  String get propertyLocationUnavailable => 'Não foi possível obter sua localização';
 
   @override
   String get chuvaAppTitle => 'Planeja Chuva';

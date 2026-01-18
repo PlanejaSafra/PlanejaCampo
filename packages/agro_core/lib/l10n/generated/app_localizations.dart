@@ -341,6 +341,12 @@ abstract class AgroLocalizations {
   /// **'Home'**
   String get drawerHome;
 
+  /// No description provided for @drawerProperties.
+  ///
+  /// In en, this message translates to:
+  /// **'Properties'**
+  String get drawerProperties;
+
   /// No description provided for @drawerSettings.
   ///
   /// In en, this message translates to:
@@ -484,6 +490,216 @@ abstract class AgroLocalizations {
   /// In en, this message translates to:
   /// **'Preferences saved'**
   String get privacySaved;
+
+  /// No description provided for @propertyDefaultName.
+  ///
+  /// In en, this message translates to:
+  /// **'My Property'**
+  String get propertyDefaultName;
+
+  /// No description provided for @propertyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Properties'**
+  String get propertyTitle;
+
+  /// No description provided for @propertyAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Property'**
+  String get propertyAdd;
+
+  /// No description provided for @propertyEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Property'**
+  String get propertyEdit;
+
+  /// No description provided for @propertyName.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get propertyName;
+
+  /// No description provided for @propertyNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'E.g.: Primavera Farm'**
+  String get propertyNameHint;
+
+  /// No description provided for @propertyTotalArea.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Area (ha)'**
+  String get propertyTotalArea;
+
+  /// No description provided for @propertyTotalAreaHint.
+  ///
+  /// In en, this message translates to:
+  /// **'E.g.: 150.5'**
+  String get propertyTotalAreaHint;
+
+  /// No description provided for @propertyLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get propertyLocation;
+
+  /// No description provided for @propertyLocationDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Used for regional statistics and weather forecast (optional)'**
+  String get propertyLocationDesc;
+
+  /// No description provided for @propertyUseCurrentLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Use my location'**
+  String get propertyUseCurrentLocation;
+
+  /// No description provided for @propertySetAsDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Set as default'**
+  String get propertySetAsDefault;
+
+  /// No description provided for @propertyIsDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Default property'**
+  String get propertyIsDefault;
+
+  /// No description provided for @propertyDefaultBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Default'**
+  String get propertyDefaultBadge;
+
+  /// No description provided for @propertyDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Property'**
+  String get propertyDelete;
+
+  /// No description provided for @propertyDeleteConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this property?'**
+  String get propertyDeleteConfirm;
+
+  /// No description provided for @propertyDeleteWithRecords.
+  ///
+  /// In en, this message translates to:
+  /// **'This property has linked records. When deleted, all records will be moved to the default property.'**
+  String get propertyDeleteWithRecords;
+
+  /// No description provided for @propertyDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Property deleted'**
+  String get propertyDeleted;
+
+  /// No description provided for @propertyCannotDeleteDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot delete the default property. Set another property as default first.'**
+  String get propertyCannotDeleteDefault;
+
+  /// No description provided for @propertyCannotDeleteLast.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot delete the only property. Create another property first.'**
+  String get propertyCannotDeleteLast;
+
+  /// No description provided for @propertyNoProperties.
+  ///
+  /// In en, this message translates to:
+  /// **'No properties registered'**
+  String get propertyNoProperties;
+
+  /// No description provided for @propertyNoPropertiesDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap + to add your first property'**
+  String get propertyNoPropertiesDesc;
+
+  /// No description provided for @propertyChangeProperty.
+  ///
+  /// In en, this message translates to:
+  /// **'Change'**
+  String get propertyChangeProperty;
+
+  /// No description provided for @propertySelectProperty.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Property'**
+  String get propertySelectProperty;
+
+  /// No description provided for @propertyAllProperties.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get propertyAllProperties;
+
+  /// No description provided for @propertyFilterBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter by property'**
+  String get propertyFilterBy;
+
+  /// No description provided for @propertyFirstTimeTip.
+  ///
+  /// In en, this message translates to:
+  /// **'💡 Tip: You can manage properties in Settings'**
+  String get propertyFirstTimeTip;
+
+  /// No description provided for @propertySaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Property saved!'**
+  String get propertySaved;
+
+  /// No description provided for @propertyUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Property updated!'**
+  String get propertyUpdated;
+
+  /// No description provided for @propertyNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter property name'**
+  String get propertyNameRequired;
+
+  /// No description provided for @propertyNameTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Name too short (minimum 2 characters)'**
+  String get propertyNameTooShort;
+
+  /// No description provided for @propertyNameExists.
+  ///
+  /// In en, this message translates to:
+  /// **'A property with this name already exists'**
+  String get propertyNameExists;
+
+  /// No description provided for @propertyAreaInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Area must be greater than zero'**
+  String get propertyAreaInvalid;
+
+  /// No description provided for @propertyLocationPermissionDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Location permission denied'**
+  String get propertyLocationPermissionDenied;
+
+  /// No description provided for @propertyLocationUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not get your location'**
+  String get propertyLocationUnavailable;
 
   /// No description provided for @chuvaAppTitle.
   ///

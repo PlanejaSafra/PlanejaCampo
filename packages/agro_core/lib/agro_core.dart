@@ -28,9 +28,15 @@ export 'models/consent_data.dart';
 export 'models/device_info.dart';
 export 'models/user_cloud_data.dart';
 
+// Models (Property Management)
+export 'models/property.dart';
+
 // Services (Auth & Cloud Sync)
 export 'services/auth_service.dart';
 export 'services/user_cloud_service.dart';
+
+// Services (Property Management)
+export 'services/property_service.dart';
 
 // Menu
 export 'menu/agro_drawer.dart';
@@ -40,3 +46,7 @@ export 'menu/agro_drawer_item.dart';
 export 'screens/agro_about_screen.dart';
 export 'screens/agro_privacy_screen.dart';
 export 'screens/agro_settings_screen.dart';
+
+// Screens (Property Management)
+export 'screens/property_list_screen.dart';
+export 'screens/property_form_screen.dart';

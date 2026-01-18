@@ -2,6 +2,68 @@
 
 ---
 
+## Phase 16.0: Property Management Foundation
+
+### Status: [DONE] (Phases 16.1-16.3) | [PENDING] (Phases 16.4-16.5)
+**Date Completed**: 2026-01-18
+**Priority**: 🟡 ARCHITECTURAL
+**Objective**: Implement multi-property support with cross-app sharing via userId.
+
+### Implementation Summary
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 16.1 | Core models and services (Property, PropertyService) | ✅ DONE |
+| 16.2 | Update RegistroChuva with propertyId | ✅ DONE |
+| 16.3 | Property management UI (list + form screens) | ✅ DONE |
+| 16.4 | Integrate property selectors in rainfall screens | ⏳ PENDING |
+| 16.5 | First-time UX (educational tips) | ⏳ PENDING |
+
+### Files Modified
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/models/property.dart` | CREATE | Property model (Hive typeId: 10) with userId for cross-app sharing |
+| `lib/models/property.g.dart` | GENERATE | Hive adapter for Property |
+| `lib/services/property_service.dart` | CREATE | Property CRUD service (201 lines) |
+| `lib/screens/property_list_screen.dart` | CREATE | Property list/management screen (304 lines) |
+| `lib/screens/property_form_screen.dart` | CREATE | Add/edit property form (238 lines) |
+| `lib/l10n/arb/app_pt.arb` | MODIFY | Added 35 property strings (PT-BR) |
+| `lib/l10n/arb/app_en.arb` | MODIFY | Added 35 property strings (EN) |
+| `lib/l10n/generated/*.dart` | GENERATE | Regenerated with new strings |
+| `lib/menu/agro_drawer.dart` | MODIFY | Added Properties menu item |
+| `lib/menu/agro_drawer_item.dart` | MODIFY | Added 'properties' route key |
+| `lib/agro_core.dart` | MODIFY | Added Property, PropertyService, and screen exports |
+
+### Key Features
+
+**Property Model**:
+- Unique ID (timestamp-based)
+- userId (Firebase Auth - enables cross-app sharing)
+- Name, total area, location (lat/lng)
+- isDefault flag (one per user)
+
+**Cross-App Sharing**:
+- Properties stored in agro_core (shared across PlanejaChuva, PlanejaBorracha, etc.)
+- Filtered by userId (Firebase Auth)
+- One property configuration, multiple app usage
+
+**Auto-Creation**:
+- Default property ("Minha Propriedade") created automatically
+- Zero friction onboarding (progressive disclosure)
+- User can manage properties later via Drawer → Propriedades
+
+**Migration Strategy**:
+- MigrationService links existing records to default property
+- One-time migration with cached flag
+- Non-destructive (preserves all existing data)
+
+### See Also
+- Detailed documentation: `CHANGELOG_PHASE_16.md`
+- Architecture design: `PROPERTY_MANAGEMENT_ARCHITECTURE.md`
+
+---
+
 ## Phase 15.7: Identity-First Onboarding (Porta de Entrada)
 
 ### Status: [DONE]

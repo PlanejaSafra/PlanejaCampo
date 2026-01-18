@@ -78,6 +78,15 @@ class AgroDrawer extends StatelessWidget {
               onNavigate(AgroRouteKeys.home);
             },
           ),
+          // Properties
+          _DrawerTile(
+            icon: Icons.agriculture,
+            title: l10n.drawerProperties,
+            onTap: () {
+              Navigator.pop(context);
+              onNavigate(AgroRouteKeys.properties);
+            },
+          ),
           // Settings
           _DrawerTile(
             icon: Icons.settings,

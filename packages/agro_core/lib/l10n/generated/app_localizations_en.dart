@@ -130,6 +130,9 @@ class AgroLocalizationsEn extends AgroLocalizations {
   String get drawerHome => 'Home';
 
   @override
+  String get drawerProperties => 'Properties';
+
+  @override
   String get drawerSettings => 'Settings';
 
   @override
@@ -200,6 +203,111 @@ class AgroLocalizationsEn extends AgroLocalizations {
 
   @override
   String get privacySaved => 'Preferences saved';
+
+  @override
+  String get propertyDefaultName => 'My Property';
+
+  @override
+  String get propertyTitle => 'Properties';
+
+  @override
+  String get propertyAdd => 'Add Property';
+
+  @override
+  String get propertyEdit => 'Edit Property';
+
+  @override
+  String get propertyName => 'Name';
+
+  @override
+  String get propertyNameHint => 'E.g.: Primavera Farm';
+
+  @override
+  String get propertyTotalArea => 'Total Area (ha)';
+
+  @override
+  String get propertyTotalAreaHint => 'E.g.: 150.5';
+
+  @override
+  String get propertyLocation => 'Location';
+
+  @override
+  String get propertyLocationDesc => 'Used for regional statistics and weather forecast (optional)';
+
+  @override
+  String get propertyUseCurrentLocation => 'Use my location';
+
+  @override
+  String get propertySetAsDefault => 'Set as default';
+
+  @override
+  String get propertyIsDefault => 'Default property';
+
+  @override
+  String get propertyDefaultBadge => 'Default';
+
+  @override
+  String get propertyDelete => 'Delete Property';
+
+  @override
+  String get propertyDeleteConfirm => 'Are you sure you want to delete this property?';
+
+  @override
+  String get propertyDeleteWithRecords => 'This property has linked records. When deleted, all records will be moved to the default property.';
+
+  @override
+  String get propertyDeleted => 'Property deleted';
+
+  @override
+  String get propertyCannotDeleteDefault => 'Cannot delete the default property. Set another property as default first.';
+
+  @override
+  String get propertyCannotDeleteLast => 'Cannot delete the only property. Create another property first.';
+
+  @override
+  String get propertyNoProperties => 'No properties registered';
+
+  @override
+  String get propertyNoPropertiesDesc => 'Tap + to add your first property';
+
+  @override
+  String get propertyChangeProperty => 'Change';
+
+  @override
+  String get propertySelectProperty => 'Select Property';
+
+  @override
+  String get propertyAllProperties => 'All';
+
+  @override
+  String get propertyFilterBy => 'Filter by property';
+
+  @override
+  String get propertyFirstTimeTip => '💡 Tip: You can manage properties in Settings';
+
+  @override
+  String get propertySaved => 'Property saved!';
+
+  @override
+  String get propertyUpdated => 'Property updated!';
+
+  @override
+  String get propertyNameRequired => 'Enter property name';
+
+  @override
+  String get propertyNameTooShort => 'Name too short (minimum 2 characters)';
+
+  @override
+  String get propertyNameExists => 'A property with this name already exists';
+
+  @override
+  String get propertyAreaInvalid => 'Area must be greater than zero';
+
+  @override
+  String get propertyLocationPermissionDenied => 'Location permission denied';
+
+  @override
+  String get propertyLocationUnavailable => 'Could not get your location';
 
   @override
   String get chuvaAppTitle => 'Planeja Chuva';

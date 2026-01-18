@@ -10,6 +10,7 @@ import 'firebase_options.dart';
 import 'models/user_preferences.dart';
 import 'screens/lista_chuvas_screen.dart';
 import 'services/chuva_service.dart';
+import 'services/migration_service.dart';
 import 'services/notification_service.dart';
 
 Future<void> main() async {
@@ -44,6 +45,9 @@ Future<void> main() async {
   // Initialize cloud service
   await UserCloudService.instance.init();
 
+  // Initialize property service (must be before chuva service for migration)
+  await PropertyService().init();
+
   // Initialize chuva service (registers adapter and opens box)
   await ChuvaService().init();
 
@@ -52,6 +56,9 @@ Future<void> main() async {
   if (auth.currentUser == null) {
     await auth.signInAnonymously();
   }
+
+  // Migrate existing data to property system (one-time migration)
+  await MigrationService.migrateToPropertySystem();
 
   // Initialize or restore cloud data
   final cloudService = UserCloudService.instance;

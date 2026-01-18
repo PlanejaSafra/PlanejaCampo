@@ -2,6 +2,92 @@
 
 ---
 
+## Phase 16.0: Property Management Integration
+
+### Status: [DONE] (Phase 16.2) | [PENDING] (Phase 16.4-16.5)
+**Date Completed**: 2026-01-18 (partial)
+**Priority**: 🟡 ARCHITECTURAL
+**Objective**: Integrate property management into rainfall recording.
+
+### Implementation Summary
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 16.2.1 | Add propertyId to RegistroChuva model | ✅ DONE |
+| 16.2.2 | Create MigrationService for existing data | ✅ DONE |
+| 16.2.3 | Update ChuvaService with property filters | ✅ DONE |
+| 16.2.4 | Initialize PropertyService in main.dart | ✅ DONE |
+| 16.2.5 | Run migration on app startup | ✅ DONE |
+| 16.2.6 | Regenerate Hive adapters | ✅ DONE |
+| 16.4.1 | Add property selector in AdicionarChuvaScreen | ⏳ PENDING |
+| 16.4.2 | Add property selector in EditarChuvaScreen | ⏳ PENDING |
+| 16.4.3 | Display property in RegistroChuva tile | ⏳ PENDING |
+| 16.4.4 | Add property filter in EstatisticasScreen | ⏳ PENDING |
+| 16.5.1 | Implement first-time educational tip | ⏳ PENDING |
+
+### Files Modified
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/models/registro_chuva.dart` | MODIFY | Added propertyId field (@HiveField(5)) |
+| `lib/models/registro_chuva.g.dart` | GENERATE | Regenerated Hive adapter with propertyId |
+| `lib/services/migration_service.dart` | CREATE | One-time migration to link records to default property |
+| `lib/services/chuva_service.dart` | MODIFY | Added property filtering to listarTodos() and totalDoMes() |
+| `lib/main.dart` | MODIFY | Initialize PropertyService, run MigrationService |
+
+### Migration Strategy
+
+**Problem**: Existing rainfall records don't have propertyId field.
+
+**Solution**:
+1. MigrationService runs on app startup (after Firebase Auth)
+2. Creates default property ("Minha Propriedade") if none exists
+3. Updates all records without propertyId to use default property
+4. Marks migration as complete (flag stored in Hive)
+5. Migration runs only once (cached flag prevents re-execution)
+
+**Safety**:
+- Non-destructive (adds field, preserves existing data)
+- Automatic (no user action required)
+- Idempotent (safe to run multiple times)
+
+### Breaking Changes
+
+⚠️ **RegistroChuva schema change**:
+- Added `propertyId` field (required)
+- Factory method `RegistroChuva.novo()` now requires propertyId parameter
+- Old records auto-migrated on first app start
+
+**Migration Impact**:
+- One-time performance cost: O(n) where n = number of existing records
+- Expected duration: <1 second for typical usage (100-500 records)
+- No data loss (all records preserved)
+
+### Next Steps (Phase 16.4-16.5)
+
+1. **Property Selector** (AdicionarChuvaScreen):
+   - Show default property with "Trocar" button
+   - Allow user to select property before saving
+   - Pass propertyId to RegistroChuva.novo()
+
+2. **Property Display** (RegistroChuva tile):
+   - Fetch property name by ID
+   - Display below date/mm with icon
+
+3. **Property Filter** (EstatisticasScreen):
+   - Add dropdown to filter by property
+   - Update statistics calculations
+
+4. **First-Time Tip**:
+   - Show snackbar on first rainfall registration
+   - "💡 Dica: Você pode gerenciar propriedades em Configurações"
+
+### See Also
+- Core implementation: `packages/agro_core/CHANGELOG.md` (Phase 16.0)
+- Architecture design: `PROPERTY_MANAGEMENT_ARCHITECTURE.md`
+
+---
+
 ## Análise Crítica da Proposta
 
 ### Pontos Fortes da Proposta Original
