@@ -476,6 +476,63 @@ Language choice is NOT persisted - app always starts in Auto mode (follows syste
 
 ---
 
+## Phase 7.1: Padronização de Labels Android (Monorepo-Wide)
+
+### Status: [DONE]
+**Date Completed**: 2026-01-18
+**Prioridade**: 🔵 FIX
+**Objetivo**: Eliminar hardcoded app labels nos AndroidManifest.xml de todos os apps do monorepo, garantindo l10n.
+
+### Context
+Durante revisão do código, foi identificado que enquanto **planejachuva** já usa `@string/app_name` (configurado em Phase 6.2), os outros três apps (**planejavavaca**, **planejaaborracha**, **planejadiesel**) ainda possuem labels hardcoded diretamente no `AndroidManifest.xml`:
+
+- `planejavavaca`: Hardcoded "Planeja Vaca"
+- `planejaaborracha`: Hardcoded "Planeja Borracha"
+- `planejadiesel`: Hardcoded "Planeja Diesel"
+
+Isso viola a regra de **l10n obrigatória** do projeto (ver `CLAUDE.md` item 6).
+
+### Solution
+Criar arquivos `strings.xml` para cada app em `android/app/src/main/res/values/` (EN) e `values-pt-rBR/` (PT-BR), seguindo o padrão já implementado em `planejachuva`.
+
+### Implementation Summary
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 7.1.1 | Create values/strings.xml for planejavavaca | ✅ DONE |
+| 7.1.2 | Create values-pt-rBR/strings.xml for planejavavaca | ✅ DONE |
+| 7.1.3 | Update AndroidManifest.xml for planejavavaca | ✅ DONE |
+| 7.1.4 | Create values/strings.xml for planejaaborracha | ✅ DONE |
+| 7.1.5 | Create values-pt-rBR/strings.xml for planejaaborracha | ✅ DONE |
+| 7.1.6 | Update AndroidManifest.xml for planejaaborracha | ✅ DONE |
+| 7.1.7 | Create values/strings.xml for planejadiesel | ✅ DONE |
+| 7.1.8 | Create values-pt-rBR/strings.xml for planejadiesel | ✅ DONE |
+| 7.1.9 | Update AndroidManifest.xml for planejadiesel | ✅ DONE |
+
+### Files to Create/Modify
+
+| File | Action | Description |
+|------|--------|-------------|
+| `apps/planejavavaca/android/app/src/main/res/values/strings.xml` | CREATE | English app name |
+| `apps/planejavavaca/android/app/src/main/res/values-pt-rBR/strings.xml` | CREATE | Portuguese app name |
+| `apps/planejavavaca/android/app/src/main/AndroidManifest.xml` | MODIFY | Use @string/app_name |
+| `apps/planejaaborracha/android/app/src/main/res/values/strings.xml` | CREATE | English app name |
+| `apps/planejaaborracha/android/app/src/main/res/values-pt-rBR/strings.xml` | CREATE | Portuguese app name |
+| `apps/planejaaborracha/android/app/src/main/AndroidManifest.xml` | MODIFY | Use @string/app_name |
+| `apps/planejadiesel/android/app/src/main/res/values/strings.xml` | CREATE | English app name |
+| `apps/planejadiesel/android/app/src/main/res/values-pt-rBR/strings.xml` | CREATE | Portuguese app name |
+| `apps/planejadiesel/android/app/src/main/AndroidManifest.xml` | MODIFY | Use @string/app_name |
+
+### App Names (Localized)
+
+| App | English (values/) | Português (values-pt-rBR/) |
+|-----|-------------------|---------------------------|
+| planejavavaca | Planeja Cattle | Planeja Vaca |
+| planejaaborracha | Planeja Rubber | Planeja Borracha |
+| planejadiesel | Planeja Diesel | Planeja Diesel |
+
+---
+
 ## Phase 6.2: Configuração de Ambientes (Flavors)
 
 ### Status: [DONE]
@@ -788,6 +845,7 @@ DONE ─────────────────────────
   [6.1] Configuração Google Services ✅
   [6.2] Configuração de Flavors (dev/prod) ✅
   [7.0] Seleção Manual de Idioma ✅
+  [7.1] Padronização de Labels Android (Monorepo) ✅
 
 CURTO PRAZO (100% Offline) ────────────────────────────────────────────────
   [8.0] Persistência de Preferências ⏳
