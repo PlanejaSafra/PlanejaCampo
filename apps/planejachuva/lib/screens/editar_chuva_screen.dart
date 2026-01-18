@@ -105,6 +105,9 @@ class _EditarChuvaScreenState extends State<EditarChuvaScreen> {
       await ChuvaService().atualizar(registroAtualizado);
 
       if (mounted) {
+        // Haptic feedback for tactile confirmation
+        HapticFeedback.mediumImpact();
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(l10n.chuvaAtualizada),
@@ -157,6 +160,9 @@ class _EditarChuvaScreenState extends State<EditarChuvaScreen> {
     if (confirmar == true && mounted) {
       await ChuvaService().excluir(widget.registro.id);
       if (mounted) {
+        // Heavy haptic feedback for deletion (stronger tactile warning)
+        HapticFeedback.heavyImpact();
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(l10n.chuvaExcluida),

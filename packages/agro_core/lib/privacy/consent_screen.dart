@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../l10n/generated/app_localizations.dart';
+import 'agro_privacy_keys.dart';
 import 'agro_privacy_store.dart';
 
 /// Screen 2: Optional consents.
@@ -23,10 +24,42 @@ class _ConsentScreenState extends State<ConsentScreen> {
   bool _sharePartners = false;
   bool _adsPersonalization = false;
 
-  Future<void> _acceptAll() async {
-    await AgroPrivacyStore.acceptAllConsents();
+  /// Tracks if user manually touched any checkbox (for smart button behavior)
+  bool _userTouchedAnyCheckbox = false;
+
+  /// Smart "Chameleon Button":
+  /// - If user didn't touch anything: "Accept ALL and Continue" (accepts everything)
+  /// - If user touched checkboxes: "Confirm My Selection" (respects user choices)
+  Future<void> _handlePrimaryButton() async {
+    if (!_userTouchedAnyCheckbox) {
+      // Scenario A: User clicked without touching checkboxes → Accept ALL
+      await AgroPrivacyStore.acceptAllConsents();
+    } else {
+      // Scenario B: User made manual selections → Respect them
+      await AgroPrivacyStore.setConsent(
+        AgroPrivacyKeys.consentAggregateMetrics,
+        _aggregateMetrics,
+      );
+      await AgroPrivacyStore.setConsent(
+        AgroPrivacyKeys.consentSharePartners,
+        _sharePartners,
+      );
+      await AgroPrivacyStore.setConsent(
+        AgroPrivacyKeys.consentAdsPersonalization,
+        _adsPersonalization,
+      );
+    }
     await AgroPrivacyStore.setOnboardingCompleted(true);
     widget.onCompleted?.call();
+  }
+
+  /// Returns dynamic button text based on user interaction
+  String _getPrimaryButtonText() {
+    if (!_userTouchedAnyCheckbox) {
+      return 'Aceitar TUDO e Continuar / Accept ALL and Continue';
+    } else {
+      return 'Confirmar Minha Seleção / Confirm My Selection';
+    }
   }
 
   Future<void> _declineAll() async {
@@ -74,24 +107,30 @@ class _ConsentScreenState extends State<ConsentScreen> {
                         title: l10n.consentOption1Title,
                         subtitle: l10n.consentOption1Desc,
                         value: _aggregateMetrics,
-                        onChanged: (v) =>
-                            setState(() => _aggregateMetrics = v ?? false),
+                        onChanged: (v) => setState(() {
+                          _aggregateMetrics = v ?? false;
+                          _userTouchedAnyCheckbox = true;
+                        }),
                       ),
                       const SizedBox(height: 8),
                       _ConsentTile(
                         title: l10n.consentOption2Title,
                         subtitle: l10n.consentOption2Desc,
                         value: _sharePartners,
-                        onChanged: (v) =>
-                            setState(() => _sharePartners = v ?? false),
+                        onChanged: (v) => setState(() {
+                          _sharePartners = v ?? false;
+                          _userTouchedAnyCheckbox = true;
+                        }),
                       ),
                       const SizedBox(height: 8),
                       _ConsentTile(
                         title: l10n.consentOption3Title,
                         subtitle: l10n.consentOption3Desc,
                         value: _adsPersonalization,
-                        onChanged: (v) =>
-                            setState(() => _adsPersonalization = v ?? false),
+                        onChanged: (v) => setState(() {
+                          _adsPersonalization = v ?? false;
+                          _userTouchedAnyCheckbox = true;
+                        }),
                       ),
                     ],
                   ),
@@ -99,13 +138,16 @@ class _ConsentScreenState extends State<ConsentScreen> {
               ),
               const SizedBox(height: 16),
               ElevatedButton(
-                onPressed: _acceptAll,
+                onPressed: _handlePrimaryButton,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
-                child: Text(l10n.acceptAndContinueLabel),
+                child: Text(
+                  _getPrimaryButtonText(),
+                  textAlign: TextAlign.center,
+                ),
               ),
               const SizedBox(height: 12),
               OutlinedButton(

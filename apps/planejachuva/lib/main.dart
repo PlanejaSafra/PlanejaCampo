@@ -1,29 +1,89 @@
 import 'package:agro_core/agro_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart' show kIsWeb, defaultTargetPlatform, TargetPlatform;
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
+import 'firebase_options.dart';
 import 'models/user_preferences.dart';
 import 'screens/lista_chuvas_screen.dart';
 import 'services/chuva_service.dart';
+import 'services/notification_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Initialize Firebase
+  if (kIsWeb ||
+      defaultTargetPlatform == TargetPlatform.windows ||
+      defaultTargetPlatform == TargetPlatform.linux ||
+      defaultTargetPlatform == TargetPlatform.macOS) {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  } else {
+    // Android and iOS rely on native configuration (google-services.json / GoogleService-Info.plist)
+    // which are swapped by Gradle flavors.
+    await Firebase.initializeApp();
+  }
+
   // Initialize Hive
   await Hive.initFlutter();
 
-  // Register UserPreferences adapter
+  // Register Hive adapters
   Hive.registerAdapter(UserPreferencesAdapter());
+  Hive.registerAdapter(DeviceInfoAdapter());
+  Hive.registerAdapter(ConsentDataAdapter());
+  Hive.registerAdapter(UserCloudDataAdapter());
 
   // Initialize privacy store
   await AgroPrivacyStore.init();
 
+  // Initialize cloud service
+  await UserCloudService.instance.init();
+
   // Initialize chuva service (registers adapter and opens box)
   await ChuvaService().init();
 
+  // Firebase Anonymous Auth: Sign in or use existing user
+  final auth = FirebaseAuth.instance;
+  if (auth.currentUser == null) {
+    await auth.signInAnonymously();
+  }
+
+  // Initialize or restore cloud data
+  final cloudService = UserCloudService.instance;
+  var userData = cloudService.getCurrentUserData();
+
+  if (userData == null && auth.currentUser != null) {
+    // First time: create initial cloud data
+    final consents = ConsentData(
+      termsAccepted: AgroPrivacyStore.hasAcceptedTerms(),
+      termsVersion: '1.0',
+      acceptedAt: DateTime.now(),
+      aggregateMetrics: AgroPrivacyStore.consentAggregateMetrics,
+      sharePartners: AgroPrivacyStore.consentSharePartners,
+      adsPersonalization: AgroPrivacyStore.consentAdsPersonalization,
+      consentVersion: '1.0',
+    );
+
+    await cloudService.createInitialUserData(
+      uid: auth.currentUser!.uid,
+      consents: consents,
+    );
+  }
+
+  // Update last active timestamp (fire-and-forget sync)
+  cloudService.updateLastActive();
+
   // Load user preferences
   final prefs = await UserPreferences.load();
+
+  // Initialize notification service
+  await NotificationService.init();
+  await NotificationService.updateFromPreferences(prefs);
 
   runApp(PlanejaChuvaApp(initialPreferences: prefs));
 }
@@ -133,6 +193,7 @@ class _PlanejaChuvaAppState extends State<PlanejaChuvaApp> {
           onChangeThemeMode: _changeThemeMode,
           currentLocale: _selectedLocale,
           currentThemeMode: _themeMode,
+          preferences: widget.initialPreferences,
         ),
       ),
     );

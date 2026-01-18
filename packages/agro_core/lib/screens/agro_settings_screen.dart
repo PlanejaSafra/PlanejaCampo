@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../l10n/generated/app_localizations.dart';
 
-/// Settings screen with language, theme, and about options.
+/// Settings screen with language, theme, privacy, and about options.
 class AgroSettingsScreen extends StatelessWidget {
   /// Callback to navigate to the About screen.
   final VoidCallback? onNavigateToAbout;
@@ -19,6 +19,21 @@ class AgroSettingsScreen extends StatelessWidget {
   /// Current theme mode.
   final ThemeMode currentThemeMode;
 
+  /// Callback to navigate to privacy/consent management screen.
+  final VoidCallback? onNavigateToPrivacy;
+
+  /// Callback to export user data (LGPD compliance).
+  final VoidCallback? onExportData;
+
+  /// Callback to delete cloud data.
+  final VoidCallback? onDeleteCloudData;
+
+  /// Callback to toggle cloud sync.
+  final void Function(bool)? onToggleCloudSync;
+
+  /// Whether cloud sync is currently enabled.
+  final bool cloudSyncEnabled;
+
   const AgroSettingsScreen({
     super.key,
     this.onNavigateToAbout,
@@ -26,6 +41,11 @@ class AgroSettingsScreen extends StatelessWidget {
     this.currentLocale,
     this.onChangeThemeMode,
     this.currentThemeMode = ThemeMode.system,
+    this.onNavigateToPrivacy,
+    this.onExportData,
+    this.onDeleteCloudData,
+    this.onToggleCloudSync,
+    this.cloudSyncEnabled = true,
   });
 
   String _getLanguageLabel(BuildContext context, Locale? locale) {
@@ -163,6 +183,51 @@ class AgroSettingsScreen extends StatelessWidget {
             subtitle: Text(_getThemeModeLabel(context, currentThemeMode)),
             trailing: const Icon(Icons.chevron_right),
             onTap: onChangeThemeMode != null ? () => _showThemeDialog(context) : null,
+          ),
+          const Divider(),
+          // Privacy & Data section header
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+            child: Text(
+              'Privacidade e Dados / Privacy & Data',
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+            ),
+          ),
+          // Manage consents
+          ListTile(
+            leading: const Icon(Icons.shield_outlined),
+            title: const Text('Gerenciar Consentimentos / Manage Consents'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: onNavigateToPrivacy,
+          ),
+          // Cloud sync toggle
+          SwitchListTile(
+            secondary: const Icon(Icons.cloud_sync),
+            title: const Text('Sincronizar com a Nuvem / Cloud Sync'),
+            subtitle: const Text(
+              'Backup automático de preferências / Auto backup preferences',
+            ),
+            value: cloudSyncEnabled,
+            onChanged: onToggleCloudSync,
+          ),
+          // Export data (LGPD)
+          ListTile(
+            leading: const Icon(Icons.download_outlined),
+            title: const Text('Exportar Meus Dados / Export My Data'),
+            subtitle: const Text('LGPD/GDPR - Portabilidade'),
+            onTap: onExportData,
+          ),
+          // Delete cloud data
+          ListTile(
+            leading: Icon(Icons.delete_outline, color: Colors.red[700]),
+            title: Text(
+              'Deletar Dados da Nuvem / Delete Cloud Data',
+              style: TextStyle(color: Colors.red[700]),
+            ),
+            subtitle: const Text('Mantém dados locais / Keeps local data'),
+            onTap: onDeleteCloudData,
           ),
           const Divider(),
           // About the app

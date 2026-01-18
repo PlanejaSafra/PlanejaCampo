@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 
 import '../models/registro_chuva.dart';
 import '../services/chuva_service.dart';
+import '../services/validation_service.dart';
 
 /// Screen for adding a new rainfall record.
 class AdicionarChuvaScreen extends StatefulWidget {
@@ -52,6 +53,35 @@ class _AdicionarChuvaScreenState extends State<AdicionarChuvaScreen> {
     }
   }
 
+  Future<bool?> _showConfirmationDialog(String message) async {
+    return showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('⚠️'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(
+              Localizations.localeOf(context).toString().startsWith('pt')
+                  ? 'Cancelar'
+                  : 'Cancel',
+            ),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(
+              Localizations.localeOf(context).toString().startsWith('pt')
+                  ? 'Confirmar'
+                  : 'Confirm',
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   String? _validarMilimetros(String? valor) {
     final l10n = AgroLocalizations.of(context)!;
     if (valor == null || valor.isEmpty) {
@@ -71,9 +101,37 @@ class _AdicionarChuvaScreenState extends State<AdicionarChuvaScreen> {
 
     try {
       final l10n = AgroLocalizations.of(context)!;
+      final locale = Localizations.localeOf(context).toString();
       final mm = double.parse(
         _milimetrosController.text.replaceAll(',', '.'),
       );
+
+      final validator = ValidationService();
+
+      // Check for extreme rainfall
+      if (validator.isExtremeRainfall(mm)) {
+        final confirmed = await _showConfirmationDialog(
+          validator.getExtremeRainfallMessage(mm, locale),
+        );
+        if (confirmed != true) {
+          setState(() => _salvando = false);
+          return;
+        }
+      }
+
+      // Check for duplicate date
+      if (validator.isDuplicateDate(_dataSelecionada)) {
+        final existing = validator.findRecordOnDate(_dataSelecionada);
+        if (existing != null) {
+          final confirmed = await _showConfirmationDialog(
+            validator.getDuplicateDateMessage(existing, locale),
+          );
+          if (confirmed != true) {
+            setState(() => _salvando = false);
+            return;
+          }
+        }
+      }
 
       final registro = RegistroChuva.novo(
         data: _dataSelecionada,
@@ -86,6 +144,9 @@ class _AdicionarChuvaScreenState extends State<AdicionarChuvaScreen> {
       await ChuvaService().adicionar(registro);
 
       if (mounted) {
+        // Haptic feedback for tactile confirmation
+        HapticFeedback.mediumImpact();
+
         final locale = Localizations.localeOf(context).toString();
         final mmFormatado = NumberFormat('#0.0', locale).format(mm);
         ScaffoldMessenger.of(context).showSnackBar(

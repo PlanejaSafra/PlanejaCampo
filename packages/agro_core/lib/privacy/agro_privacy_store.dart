@@ -1,5 +1,7 @@
 import 'package:hive/hive.dart';
 
+import '../models/consent_data.dart';
+import '../services/user_cloud_service.dart';
 import 'agro_privacy_keys.dart';
 
 /// Static store for privacy settings using Hive.
@@ -79,6 +81,9 @@ class AgroPrivacyStore {
       AgroPrivacyKeys.consentTimestamp,
       DateTime.now().toIso8601String(),
     );
+
+    // Sync to Firestore
+    await _syncConsentsToCloud();
   }
 
   /// Reject all consents and save timestamp.
@@ -90,6 +95,9 @@ class AgroPrivacyStore {
       AgroPrivacyKeys.consentTimestamp,
       DateTime.now().toIso8601String(),
     );
+
+    // Sync to Firestore
+    await _syncConsentsToCloud();
   }
 
   /// Get the timestamp when consent was last updated.
@@ -117,5 +125,33 @@ class AgroPrivacyStore {
       AgroPrivacyKeys.consentTimestamp,
       DateTime.now().toIso8601String(),
     );
+
+    // Sync to Firestore
+    await _syncConsentsToCloud();
+  }
+
+  /// Sync consents to Firestore (fire-and-forget)
+  static Future<void> _syncConsentsToCloud() async {
+    try {
+      final cloudService = UserCloudService.instance;
+      final userData = cloudService.getCurrentUserData();
+      if (userData == null) return; // Not initialized yet
+
+      final consents = ConsentData(
+        termsAccepted: hasAcceptedTerms(),
+        termsVersion: '1.0',
+        acceptedAt: consentTimestamp != null
+            ? DateTime.parse(consentTimestamp!)
+            : DateTime.now(),
+        aggregateMetrics: consentAggregateMetrics,
+        sharePartners: consentSharePartners,
+        adsPersonalization: consentAdsPersonalization,
+        consentVersion: '1.0',
+      );
+
+      await cloudService.updateConsents(consents);
+    } catch (e) {
+      // Silently fail - user is offline-first
+    }
   }
 }

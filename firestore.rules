@@ -1,0 +1,85 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // =========================================================================
+    // 1. COLEÇÕES COMUNITÁRIAS (Públicas para usuários logados)
+    // =========================================================================
+    // Nestas coleções, não exigimos 'userId' porque os dados são de todos.
+
+    // Estatísticas regionais (Médias de chuva por GeoHash) - Phase 15.0
+    match /rainfall_stats/{geoHash} {
+      allow read, write: if request.auth != null;
+    }
+
+    // Exemplos de tabelas auxiliares compartilhadas (comentadas - adicione conforme necessário)
+    // match /regions/{regionId} { allow read, write: if request.auth != null; }
+    // match /states/{stateId}   { allow read, write: if request.auth != null; }
+
+    // =========================================================================
+    // 2. COLEÇÕES ESPECIAIS (Com regras de negócio específicas)
+    // =========================================================================
+
+    // Usuários (Proteção de Timestamp e Auditoria LGPD) - Phase 15.5
+    match /users/{userId} {
+      // Regra básica: Só o dono lê
+      allow read: if request.auth != null && request.auth.uid == userId;
+
+      // Criação: Valida se o timestamp 'created_at' é recente (evita fraude de data)
+      allow create: if request.auth != null
+                    && request.auth.uid == userId
+                    && isRecentTimestamp(request.resource.data.created_at);
+
+      // Atualização:
+      // 1. Garante que 'created_at' não muda
+      // 2. Se mudar consentimentos, obriga 'accepted_at' a ser recente
+      allow update: if request.auth != null
+                    && request.auth.uid == userId
+                    && request.resource.data.created_at == resource.data.created_at
+                    && (!isChangingConsents() || isRecentTimestamp(request.resource.data.consents.accepted_at));
+    }
+
+    // =========================================================================
+    // 3. REGRA GERAL (FAIL-SAFE) - PARA TODO O RESTO
+    // =========================================================================
+    // Protege automaticamente qualquer coleção nova (ex: 'rainfall_data', 'cattle_data').
+    // Se o desenvolvedor esquecer de enviar o campo 'userId', o Firestore BLOQUEIA.
+
+    match /{collection}/{document=**} {
+
+      allow create: if request.auth != null
+                    && request.resource.data.keys().hasAny(['userId']) // OBRIGATÓRIO TER userId
+                    && request.resource.data.userId == request.auth.uid; // TEM QUE SER O SEU
+
+      allow read: if request.auth != null
+                  && resource.data.keys().hasAny(['userId'])
+                  && resource.data.userId == request.auth.uid;
+
+      allow update: if request.auth != null
+                    && resource.data.keys().hasAny(['userId'])
+                    && resource.data.userId == request.auth.uid
+                    && request.resource.data.userId == request.auth.uid; // NÃO PODE TROCAR DE DONO
+
+      allow delete: if request.auth != null
+                    && resource.data.keys().hasAny(['userId'])
+                    && resource.data.userId == request.auth.uid;
+    }
+
+    // =========================================================================
+    // 4. FUNÇÕES AUXILIARES
+    // =========================================================================
+
+    // Verifica se o timestamp é recente (+/- 5 minutos de agora)
+    // IMPORTANTE: Usamos 'ts' como parâmetro porque 'timestamp' é palavra reservada
+    function isRecentTimestamp(ts) {
+      return ts is timestamp
+             && ts >= request.time - duration.value(5, 'm')
+             && ts <= request.time + duration.value(5, 'm');
+    }
+
+    // Verifica se o usuário está tentando alterar os consentimentos
+    function isChangingConsents() {
+      return request.resource.data.diff(resource.data).affectedKeys().hasAny(['consents']);
+    }
+  }
+}

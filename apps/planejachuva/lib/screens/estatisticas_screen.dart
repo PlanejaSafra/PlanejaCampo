@@ -4,6 +4,8 @@ import 'package:intl/intl.dart';
 
 import '../models/registro_chuva.dart';
 import '../services/chuva_service.dart';
+import '../widgets/comparacao_anual_card.dart';
+import '../widgets/visualizacao_barras.dart';
 
 /// Screen displaying rainfall statistics.
 class EstatisticasScreen extends StatefulWidget {
@@ -13,7 +15,8 @@ class EstatisticasScreen extends StatefulWidget {
   State<EstatisticasScreen> createState() => _EstatisticasScreenState();
 }
 
-class _EstatisticasScreenState extends State<EstatisticasScreen> {
+class _EstatisticasScreenState extends State<EstatisticasScreen>
+    with SingleTickerProviderStateMixin {
   late List<RegistroChuva> _registros;
   late double _totalAno;
   late double _mediaRegistro;
@@ -21,11 +24,20 @@ class _EstatisticasScreenState extends State<EstatisticasScreen> {
   late int _totalRegistros;
   late double _totalMesAtual;
   late double _totalMesAnterior;
+  late Map<String, double> _monthlyData;
+  late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: 3, vsync: this);
     _calcularEstatisticas();
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 
   /// Returns a formatted number respecting locale (comma or dot).
@@ -57,6 +69,14 @@ class _EstatisticasScreenState extends State<EstatisticasScreen> {
         : _registros.map((r) => r.milimetros).reduce((a, b) => a > b ? a : b);
     _totalMesAtual = service.totalDoMes(mesAtual);
     _totalMesAnterior = service.totalDoMes(mesAnterior);
+
+    // Build monthly data for visualizations
+    _monthlyData = {};
+    for (final registro in _registros) {
+      final key =
+          '${registro.data.year}-${registro.data.month.toString().padLeft(2, '0')}';
+      _monthlyData[key] = (_monthlyData[key] ?? 0.0) + registro.milimetros;
+    }
   }
 
   Widget _buildStatCard({
@@ -132,123 +152,189 @@ class _EstatisticasScreenState extends State<EstatisticasScreen> {
   Widget build(BuildContext context) {
     final l10n = AgroLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final locale = Localizations.localeOf(context).toString();
 
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.chuvaEstatisticasTitle),
-      ),
-      body: RefreshIndicator(
-        onRefresh: () async {
-          setState(() => _calcularEstatisticas());
-        },
-        child: ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            // Current month summary
-            Card(
-              color: theme.colorScheme.primaryContainer,
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  children: [
-                    Text(
-                      l10n.chuvaTotalDoMes,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        color: theme.colorScheme.onPrimaryContainer,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text(
-                          _formatNumber(_totalMesAtual),
-                          style: theme.textTheme.displayMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: theme.colorScheme.onPrimaryContainer,
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 4, bottom: 8),
-                          child: Text(
-                            l10n.chuvaMm,
-                            style: theme.textTheme.titleLarge?.copyWith(
-                              color: theme.colorScheme.onPrimaryContainer
-                                  .withValues(alpha: 0.8),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    // Comparison with previous month
-                    if (_totalMesAnterior > 0 || _totalMesAtual > 0)
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          color: theme.colorScheme.surface.withValues(alpha: 0.3),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          _totalMesAtual >= _totalMesAnterior
-                              ? l10n.chuvaComparacaoMesAcima
-                              : l10n.chuvaComparacaoMesAbaixo,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onPrimaryContainer,
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-              ),
+        bottom: TabBar(
+          controller: _tabController,
+          tabs: [
+            Tab(
+              text: locale.startsWith('pt') ? 'Resumo' : 'Overview',
+              icon: const Icon(Icons.dashboard),
             ),
-            const SizedBox(height: 16),
-            // Year total
-            _buildStatCard(
-              title: l10n.chuvaTotalAno,
-              value: _formatNumber(_totalAno),
-              unit: l10n.chuvaMm,
-              icon: Icons.calendar_today,
+            Tab(
+              text: locale.startsWith('pt') ? 'Barras' : 'Bars',
+              icon: const Icon(Icons.bar_chart),
             ),
-            const SizedBox(height: 8),
-            // Previous month
-            _buildStatCard(
-              title: l10n.chuvaMesAnterior,
-              value: _formatNumber(_totalMesAnterior),
-              unit: l10n.chuvaMm,
-              icon: Icons.history,
-            ),
-            const SizedBox(height: 8),
-            // Average per rain
-            _buildStatCard(
-              title: l10n.chuvaMediaPorChuva,
-              value: _formatNumber(_mediaRegistro),
-              unit: l10n.chuvaMm,
-              icon: Icons.analytics,
-            ),
-            const SizedBox(height: 8),
-            // Highest record
-            _buildStatCard(
-              title: l10n.chuvaMaiorRegistro,
-              value: _formatNumber(_maiorRegistro),
-              unit: l10n.chuvaMm,
-              icon: Icons.arrow_upward,
-              valueColor: theme.colorScheme.error,
-            ),
-            const SizedBox(height: 8),
-            // Total records
-            _buildStatCard(
-              title: l10n.chuvaTotalRegistros,
-              value: _totalRegistros.toString(),
-              unit: '',
-              icon: Icons.list,
+            Tab(
+              text: locale.startsWith('pt') ? 'Comparar' : 'Compare',
+              icon: const Icon(Icons.compare),
             ),
           ],
         ),
+      ),
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          // Tab 1: Overview (existing statistics)
+          _buildOverviewTab(l10n, theme),
+          // Tab 2: Bar chart visualization
+          _buildBarsTab(locale),
+          // Tab 3: Year comparison
+          _buildComparisonTab(locale),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOverviewTab(AgroLocalizations l10n, ThemeData theme) {
+    return RefreshIndicator(
+      onRefresh: () async {
+        setState(() => _calcularEstatisticas());
+      },
+      child: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          // Current month summary
+          Card(
+            color: theme.colorScheme.primaryContainer,
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                children: [
+                  Text(
+                    l10n.chuvaTotalDoMes,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      color: theme.colorScheme.onPrimaryContainer,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        _formatNumber(_totalMesAtual),
+                        style: theme.textTheme.displayMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: theme.colorScheme.onPrimaryContainer,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 4, bottom: 8),
+                        child: Text(
+                          l10n.chuvaMm,
+                          style: theme.textTheme.titleLarge?.copyWith(
+                            color: theme.colorScheme.onPrimaryContainer
+                                .withValues(alpha: 0.8),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  // Comparison with previous month
+                  if (_totalMesAnterior > 0 || _totalMesAtual > 0)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.surface.withValues(alpha: 0.3),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        _totalMesAtual >= _totalMesAnterior
+                            ? l10n.chuvaComparacaoMesAcima
+                            : l10n.chuvaComparacaoMesAbaixo,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onPrimaryContainer,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          // Year total
+          _buildStatCard(
+            title: l10n.chuvaTotalAno,
+            value: _formatNumber(_totalAno),
+            unit: l10n.chuvaMm,
+            icon: Icons.calendar_today,
+          ),
+          const SizedBox(height: 8),
+          // Previous month
+          _buildStatCard(
+            title: l10n.chuvaMesAnterior,
+            value: _formatNumber(_totalMesAnterior),
+            unit: l10n.chuvaMm,
+            icon: Icons.history,
+          ),
+          const SizedBox(height: 8),
+          // Average per rain
+          _buildStatCard(
+            title: l10n.chuvaMediaPorChuva,
+            value: _formatNumber(_mediaRegistro),
+            unit: l10n.chuvaMm,
+            icon: Icons.analytics,
+          ),
+          const SizedBox(height: 8),
+          // Highest record
+          _buildStatCard(
+            title: l10n.chuvaMaiorRegistro,
+            value: _formatNumber(_maiorRegistro),
+            unit: l10n.chuvaMm,
+            icon: Icons.arrow_upward,
+            valueColor: theme.colorScheme.error,
+          ),
+          const SizedBox(height: 8),
+          // Total records
+          _buildStatCard(
+            title: l10n.chuvaTotalRegistros,
+            value: _totalRegistros.toString(),
+            unit: '',
+            icon: Icons.list,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBarsTab(String locale) {
+    return RefreshIndicator(
+      onRefresh: () async {
+        setState(() => _calcularEstatisticas());
+      },
+      child: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          VisualizacaoBarrasWidget(
+            monthlyData: _monthlyData,
+            locale: locale,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildComparisonTab(String locale) {
+    return RefreshIndicator(
+      onRefresh: () async {
+        setState(() => _calcularEstatisticas());
+      },
+      child: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          ComparacaoAnualCard(
+            monthlyData: _monthlyData,
+            locale: locale,
+          ),
+        ],
       ),
     );
   }

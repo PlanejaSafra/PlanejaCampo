@@ -4,11 +4,14 @@ import 'package:intl/intl.dart';
 
 import '../models/registro_chuva.dart';
 import '../services/chuva_service.dart';
+import '../services/validation_service.dart';
 import '../widgets/estado_vazio.dart';
 import '../widgets/registro_chuva_tile.dart';
 import '../widgets/resumo_mensal_card.dart';
+import '../models/user_preferences.dart';
 import 'adicionar_chuva_screen.dart';
 import 'backup_screen.dart';
+import 'configuracoes_screen.dart';
 import 'editar_chuva_screen.dart';
 import 'estatisticas_screen.dart';
 
@@ -29,6 +32,9 @@ class ListaChuvasScreen extends StatefulWidget {
   /// Current theme mode.
   final ThemeMode currentThemeMode;
 
+  /// User preferences for reminder settings.
+  final UserPreferences preferences;
+
   const ListaChuvasScreen({
     super.key,
     this.version = '1.0.0',
@@ -36,6 +42,7 @@ class ListaChuvasScreen extends StatefulWidget {
     this.currentLocale,
     this.onChangeThemeMode,
     this.currentThemeMode = ThemeMode.system,
+    required this.preferences,
   });
 
   @override
@@ -80,11 +87,12 @@ class _ListaChuvasScreenState extends State<ListaChuvasScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => AgroSettingsScreen(
+            builder: (_) => ConfiguracoesScreen(
               onChangeLocale: widget.onChangeLocale,
               currentLocale: widget.currentLocale,
               onChangeThemeMode: widget.onChangeThemeMode,
               currentThemeMode: widget.currentThemeMode,
+              preferences: widget.preferences,
               onNavigateToAbout: () {
                 Navigator.push(
                   context,
@@ -191,6 +199,49 @@ class _ListaChuvasScreenState extends State<ListaChuvasScreen> {
     return agrupados;
   }
 
+  /// Build drought warning banner if applicable.
+  List<Widget> _buildDroughtWarning() {
+    final validator = ValidationService();
+    final days = validator.daysSinceLastRain();
+
+    if (days == null || !validator.hasDroughtWarning()) {
+      return [];
+    }
+
+    final locale = Localizations.localeOf(context).toString();
+    final message = validator.getDroughtWarningMessage(days, locale);
+
+    return [
+      SliverToBoxAdapter(
+        child: Container(
+          margin: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.orange.shade100,
+            border: Border.all(color: Colors.orange.shade700, width: 2),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Row(
+            children: [
+              Icon(Icons.warning_amber, color: Colors.orange.shade900, size: 32),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  message,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.orange.shade900,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AgroLocalizations.of(context)!;
@@ -229,6 +280,8 @@ class _ListaChuvasScreenState extends State<ListaChuvasScreen> {
             ? const EstadoVazio()
             : CustomScrollView(
                 slivers: [
+                  // Drought warning (if applicable)
+                  ..._buildDroughtWarning(),
                   // Monthly summary card
                   SliverToBoxAdapter(
                     child: ResumoMensalCard(
@@ -248,8 +301,14 @@ class _ListaChuvasScreenState extends State<ListaChuvasScreen> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _adicionarChuva,
-        icon: const Icon(Icons.add),
-        label: Text(l10n.chuvaAdicionarTitle),
+        icon: const Icon(Icons.add, size: 28), // Larger icon for better visibility
+        label: Text(
+          l10n.chuvaAdicionarTitle,
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ),
     );
   }

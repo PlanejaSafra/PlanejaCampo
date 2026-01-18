@@ -8,11 +8,11 @@ import 'extensions/theme_extensions.dart';
 /// Fornece ThemeData para modo claro e escuro com paleta verde/agro.
 class AppTheme {
   // Cores da paleta
+  static const Color _lightPrimaryGreen = Color(0xFF2E7D32); // Dark green for high contrast
   static final Color _lightGreenItem = Colors.green[100]!;
-  static final Color _lightFloatingActionButtonColor =
-      Colors.black.withValues(alpha: 0.7);
+  static const Color _lightFloatingActionButtonColor = Colors.white; // Changed to white for contrast
   static const Color _darkFloatingActionButtonColor = Colors.white;
-  static final Color _lightDrawerHeaderColor = Colors.green[400]!;
+  static final Color _lightDrawerHeaderColor = const Color(0xFF2E7D32); // Dark green
   static final Color _darkDrawerHeaderColor = Colors.green[700]!;
   static const Color _darkBackgroundColor = Color(0xFF1e2a26);
   static const Color _darkCardColor = Color(0xFF2a3d33);
@@ -67,13 +67,13 @@ class AppTheme {
     brightness: Brightness.light,
     scaffoldBackgroundColor: _lightBackgroundColor,
     colorScheme: ColorScheme.fromSeed(
-      seedColor: Colors.green,
+      seedColor: _lightPrimaryGreen,
       brightness: Brightness.light,
       surface: _lightGreenItem,
     ),
-    appBarTheme: AppBarTheme(
-      backgroundColor: Colors.green,
-      foregroundColor: Colors.black.withValues(alpha: 0.7),
+    appBarTheme: const AppBarTheme(
+      backgroundColor: _lightPrimaryGreen,
+      foregroundColor: Colors.white, // White for high contrast
       elevation: 0,
     ),
     cardTheme: CardTheme(
@@ -85,18 +85,18 @@ class AppTheme {
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.green,
-        foregroundColor: Colors.black.withValues(alpha: 0.7),
-        minimumSize: const Size(double.infinity, 48),
+        backgroundColor: _lightPrimaryGreen,
+        foregroundColor: Colors.white, // White for high contrast
+        minimumSize: const Size(double.infinity, 56), // Increased to 56dp for larger touch target
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(14),
         ),
       ),
     ),
-    textTheme: _buildTextTheme(Colors.black.withValues(alpha: 0.7)),
+    textTheme: _buildTextTheme(Colors.black.withValues(alpha: 0.87)), // Increased contrast to 0.87
     iconTheme: IconThemeData(color: _lightEditIconColor),
-    floatingActionButtonTheme: FloatingActionButtonThemeData(
-      backgroundColor: Colors.green,
+    floatingActionButtonTheme: const FloatingActionButtonThemeData(
+      backgroundColor: _lightPrimaryGreen,
       foregroundColor: _lightFloatingActionButtonColor,
     ),
     drawerTheme: DrawerThemeData(
@@ -107,19 +107,19 @@ class AppTheme {
         borderSide: BorderSide(color: Colors.black.withValues(alpha: 0.6)),
       ),
       focusedBorder: const UnderlineInputBorder(
-        borderSide: BorderSide(color: Colors.green),
+        borderSide: BorderSide(color: _lightPrimaryGreen, width: 2),
       ),
       enabledBorder: UnderlineInputBorder(
         borderSide: BorderSide(color: Colors.black.withValues(alpha: 0.6)),
       ),
       labelStyle: TextStyle(
-          color: Colors.black.withValues(alpha: 0.7), fontWeight: FontWeight.bold),
-      hintStyle: TextStyle(color: Colors.black.withValues(alpha: 0.7)),
+          color: Colors.black.withValues(alpha: 0.87), fontWeight: FontWeight.bold),
+      hintStyle: TextStyle(color: Colors.black.withValues(alpha: 0.6)),
     ),
-    bottomNavigationBarTheme: BottomNavigationBarThemeData(
-      backgroundColor: Colors.green,
-      selectedItemColor: _lightBackgroundColor,
-      unselectedItemColor: Colors.green[900],
+    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+      backgroundColor: _lightPrimaryGreen,
+      selectedItemColor: Colors.white,
+      unselectedItemColor: Color(0xFFB9F6CA), // Light green for unselected
     ),
     extensions: <ThemeExtension<dynamic>>[
       ChartTheme(

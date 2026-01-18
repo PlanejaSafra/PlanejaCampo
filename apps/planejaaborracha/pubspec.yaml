@@ -36,6 +36,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   agro_core:
     path: ../../packages/agro_core
+  firebase_core: ^3.15.2
 
 dev_dependencies:
   flutter_test:

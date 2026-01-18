@@ -23,6 +23,14 @@ export 'privacy/consent_screen.dart';
 export 'privacy/onboarding_gate.dart';
 export 'privacy/terms_privacy_screen.dart';
 
+// Models (Cloud Sync & Identity)
+export 'models/consent_data.dart';
+export 'models/device_info.dart';
+export 'models/user_cloud_data.dart';
+
+// Services (Cloud Sync)
+export 'services/user_cloud_service.dart';
+
 // Menu
 export 'menu/agro_drawer.dart';
 export 'menu/agro_drawer_item.dart';

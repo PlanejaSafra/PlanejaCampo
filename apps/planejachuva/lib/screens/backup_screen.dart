@@ -7,6 +7,7 @@ import 'package:share_plus/share_plus.dart';
 
 import '../models/registro_chuva.dart';
 import '../services/backup_service.dart';
+import '../services/export_service.dart';
 
 /// Screen for backup and restore operations.
 class BackupScreen extends StatefulWidget {
@@ -19,13 +20,73 @@ class BackupScreen extends StatefulWidget {
 class _BackupScreenState extends State<BackupScreen> {
   bool _loading = false;
 
-  Future<void> _exportar() async {
+  Future<void> _exportarJson() async {
     final l10n = AgroLocalizations.of(context)!;
 
     setState(() => _loading = true);
 
     try {
       await BackupService.exportar();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l10n.chuvaExportarSucesso),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString().replaceAll('Exception: ', '')),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  Future<void> _exportarCsv() async {
+    final l10n = AgroLocalizations.of(context)!;
+    final locale = Localizations.localeOf(context).toString();
+
+    setState(() => _loading = true);
+
+    try {
+      await ExportService.exportar(format: ExportFormat.csv, locale: locale);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l10n.chuvaExportarSucesso),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString().replaceAll('Exception: ', '')),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  Future<void> _exportarPdf() async {
+    final l10n = AgroLocalizations.of(context)!;
+    final locale = Localizations.localeOf(context).toString();
+
+    setState(() => _loading = true);
+
+    try {
+      await ExportService.exportar(format: ExportFormat.pdf, locale: locale);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -223,12 +284,32 @@ class _BackupScreenState extends State<BackupScreen> {
                                 label: const Text('Texto'),
                               ),
                             ),
-                            const SizedBox(width: 12),
+                            const SizedBox(width: 8),
                             Expanded(
                               child: ElevatedButton.icon(
-                                onPressed: _exportar,
-                                icon: const Icon(Icons.file_download),
+                                onPressed: _exportarJson,
+                                icon: const Icon(Icons.code),
                                 label: const Text('JSON'),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: ElevatedButton.icon(
+                                onPressed: _exportarCsv,
+                                icon: const Icon(Icons.table_chart),
+                                label: const Text('CSV'),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: ElevatedButton.icon(
+                                onPressed: _exportarPdf,
+                                icon: const Icon(Icons.picture_as_pdf),
+                                label: const Text('PDF'),
                               ),
                             ),
                           ],
