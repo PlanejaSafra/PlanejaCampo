@@ -8,6 +8,7 @@ import '../services/validation_service.dart';
 import '../widgets/estado_vazio.dart';
 import '../widgets/registro_chuva_tile.dart';
 import '../widgets/resumo_mensal_card.dart';
+import '../widgets/weather_card.dart';
 import '../models/user_preferences.dart';
 import 'adicionar_chuva_screen.dart';
 import 'backup_screen.dart';
@@ -53,11 +54,20 @@ class _ListaChuvasScreenState extends State<ListaChuvasScreen> {
   List<RegistroChuva> _registros = [];
   double _totalMesAtual = 0;
   double _totalMesAnterior = 0;
+  Property? _defaultProperty;
 
   @override
   void initState() {
     super.initState();
     _carregarDados();
+    _carregarPropriedadePadrao();
+  }
+
+  void _carregarPropriedadePadrao() {
+    final propertyService = PropertyService();
+    setState(() {
+      _defaultProperty = propertyService.getDefaultProperty();
+    });
   }
 
   void _carregarDados() {
@@ -290,6 +300,15 @@ class _ListaChuvasScreenState extends State<ListaChuvasScreen> {
                 slivers: [
                   // Drought warning (if applicable)
                   ..._buildDroughtWarning(),
+                  // Weather forecast card
+                  if (_defaultProperty != null)
+                    SliverToBoxAdapter(
+                      child: WeatherCard(
+                        propertyId: _defaultProperty!.id,
+                        latitude: _defaultProperty!.latitude,
+                        longitude: _defaultProperty!.longitude,
+                      ),
+                    ),
                   // Monthly summary card
                   SliverToBoxAdapter(
                     child: ResumoMensalCard(

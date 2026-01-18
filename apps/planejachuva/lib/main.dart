@@ -8,10 +8,12 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 import 'firebase_options.dart';
 import 'models/user_preferences.dart';
+import 'models/weather_forecast.dart';
 import 'screens/lista_chuvas_screen.dart';
 import 'services/chuva_service.dart';
 import 'services/migration_service.dart';
 import 'services/notification_service.dart';
+import 'services/weather_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -38,6 +40,7 @@ Future<void> main() async {
   Hive.registerAdapter(DeviceInfoAdapter());
   Hive.registerAdapter(ConsentDataAdapter());
   Hive.registerAdapter(UserCloudDataAdapter());
+  Hive.registerAdapter(WeatherForecastAdapter());
 
   // Initialize privacy store
   await AgroPrivacyStore.init();
@@ -50,6 +53,9 @@ Future<void> main() async {
 
   // Initialize chuva service (registers adapter and opens box)
   await ChuvaService().init();
+
+  // Initialize weather service
+  await WeatherService().init();
 
   // Firebase Anonymous Auth: Sign in or use existing user
   final auth = FirebaseAuth.instance;
