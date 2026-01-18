@@ -15,6 +15,7 @@ import 'backup_screen.dart';
 import 'configuracoes_screen.dart';
 import 'editar_chuva_screen.dart';
 import 'estatisticas_screen.dart';
+import 'regional_stats_screen.dart';
 
 /// Main screen for Planeja Chuva - displays rainfall records.
 class ListaChuvasScreen extends StatefulWidget {
@@ -151,6 +152,26 @@ class _ListaChuvasScreenState extends State<ListaChuvasScreen> {
           MaterialPageRoute(builder: (_) => const EstatisticasScreen()),
         ).then((_) => _carregarDados());
         break;
+      case 'regional_stats':
+        if (_defaultProperty != null) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => RegionalStatsScreen(
+                propertyId: _defaultProperty!.id,
+                latitude: _defaultProperty!.latitude,
+                longitude: _defaultProperty!.longitude,
+              ),
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Configure uma propriedade com localização primeiro'),
+            ),
+          );
+        }
+        break;
       case 'backup':
         Navigator.push(
           context,
@@ -284,6 +305,11 @@ class _ListaChuvasScreenState extends State<ListaChuvasScreen> {
             key: 'estatisticas',
             icon: Icons.bar_chart,
             title: l10n.chuvaEstatisticas,
+          ),
+          AgroDrawerItem(
+            key: 'regional_stats',
+            icon: Icons.public,
+            title: 'Estatísticas Regionais',
           ),
           AgroDrawerItem(
             key: 'backup',

@@ -7,12 +7,14 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import 'firebase_options.dart';
+import 'models/sync_queue_item.dart';
 import 'models/user_preferences.dart';
 import 'models/weather_forecast.dart';
 import 'screens/lista_chuvas_screen.dart';
 import 'services/chuva_service.dart';
 import 'services/migration_service.dart';
 import 'services/notification_service.dart';
+import 'services/sync_service.dart';
 import 'services/weather_service.dart';
 
 Future<void> main() async {
@@ -41,6 +43,7 @@ Future<void> main() async {
   Hive.registerAdapter(ConsentDataAdapter());
   Hive.registerAdapter(UserCloudDataAdapter());
   Hive.registerAdapter(WeatherForecastAdapter());
+  Hive.registerAdapter(SyncQueueItemAdapter());
 
   // Initialize privacy store
   await AgroPrivacyStore.init();
@@ -56,6 +59,9 @@ Future<void> main() async {
 
   // Initialize weather service
   await WeatherService().init();
+
+  // Initialize sync service (for regional statistics)
+  await SyncService().init();
 
   // Firebase Anonymous Auth: Sign in or use existing user
   final auth = FirebaseAuth.instance;
