@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
+import 'models/user_preferences.dart';
 import 'screens/lista_chuvas_screen.dart';
 import 'services/chuva_service.dart';
 
@@ -12,29 +13,99 @@ Future<void> main() async {
   // Initialize Hive
   await Hive.initFlutter();
 
+  // Register UserPreferences adapter
+  Hive.registerAdapter(UserPreferencesAdapter());
+
   // Initialize privacy store
   await AgroPrivacyStore.init();
 
   // Initialize chuva service (registers adapter and opens box)
   await ChuvaService().init();
 
-  runApp(const PlanejaChuvaApp());
+  // Load user preferences
+  final prefs = await UserPreferences.load();
+
+  runApp(PlanejaChuvaApp(initialPreferences: prefs));
 }
 
 class PlanejaChuvaApp extends StatefulWidget {
-  const PlanejaChuvaApp({super.key});
+  final UserPreferences initialPreferences;
+
+  const PlanejaChuvaApp({super.key, required this.initialPreferences});
 
   @override
   State<PlanejaChuvaApp> createState() => _PlanejaChuvaAppState();
 }
 
 class _PlanejaChuvaAppState extends State<PlanejaChuvaApp> {
-  Locale? _selectedLocale; // null = auto (follow system)
+  late Locale? _selectedLocale;
+  late ThemeMode _themeMode;
 
-  void _changeLocale(Locale? newLocale) {
+  @override
+  void initState() {
+    super.initState();
+    // Load saved preferences
+    _selectedLocale = _localeFromString(widget.initialPreferences.locale);
+    _themeMode = _themeModeFromString(widget.initialPreferences.themeMode);
+  }
+
+  Locale? _localeFromString(String? localeString) {
+    if (localeString == null) return null;
+    if (localeString == 'pt_BR') return const Locale('pt', 'BR');
+    if (localeString == 'en') return const Locale('en');
+    return null;
+  }
+
+  ThemeMode _themeModeFromString(String themeModeString) {
+    switch (themeModeString) {
+      case 'light':
+        return ThemeMode.light;
+      case 'dark':
+        return ThemeMode.dark;
+      case 'auto':
+      default:
+        return ThemeMode.system;
+    }
+  }
+
+  void _changeLocale(Locale? newLocale) async {
+    // Save to Hive
+    widget.initialPreferences.locale = _localeToString(newLocale);
+    await widget.initialPreferences.saveToBox();
+
+    // Update UI
     setState(() {
       _selectedLocale = newLocale;
     });
+  }
+
+  void _changeThemeMode(ThemeMode newThemeMode) async {
+    // Save to Hive
+    widget.initialPreferences.themeMode = _themeModeToString(newThemeMode);
+    await widget.initialPreferences.saveToBox();
+
+    // Update UI
+    setState(() {
+      _themeMode = newThemeMode;
+    });
+  }
+
+  String? _localeToString(Locale? locale) {
+    if (locale == null) return null;
+    if (locale.languageCode == 'pt') return 'pt_BR';
+    if (locale.languageCode == 'en') return 'en';
+    return null;
+  }
+
+  String _themeModeToString(ThemeMode mode) {
+    switch (mode) {
+      case ThemeMode.light:
+        return 'light';
+      case ThemeMode.dark:
+        return 'dark';
+      case ThemeMode.system:
+        return 'auto';
+    }
   }
 
   @override
@@ -45,7 +116,7 @@ class _PlanejaChuvaAppState extends State<PlanejaChuvaApp> {
       locale: _selectedLocale, // null = auto, otherwise force locale
       theme: AppTheme.light(),
       darkTheme: AppTheme.dark(),
-      themeMode: ThemeMode.system,
+      themeMode: _themeMode, // Use saved theme mode
       localizationsDelegates: const [
         AgroLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
@@ -59,7 +130,9 @@ class _PlanejaChuvaAppState extends State<PlanejaChuvaApp> {
       home: AgroOnboardingGate(
         home: ListaChuvasScreen(
           onChangeLocale: _changeLocale,
+          onChangeThemeMode: _changeThemeMode,
           currentLocale: _selectedLocale,
+          currentThemeMode: _themeMode,
         ),
       ),
     );

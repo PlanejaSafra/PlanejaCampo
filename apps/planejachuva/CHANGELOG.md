@@ -42,6 +42,105 @@
 
 ---
 
+## ⚠️ RISCOS TÉCNICOS E CONSIDERAÇÕES
+
+### Phase 15.0 (Firestore) - Impacto no APK
+
+**Problema**: Adicionar `cloud_firestore` aumenta significativamente o tamanho do APK (+8-15MB) e tempo de build.
+
+**Mitigações**:
+- ✅ Usar ProGuard/R8 para minificar código no release
+- ✅ Lazy loading - só carregar Firestore se usuário ativar opt-in
+- ✅ Considerar alternativas mais leves (HTTP + backend simples)
+
+### Phase 15.0 (Cloud Functions) - Custos e Complexidade
+
+**Problema**: Cloud Functions exigem:
+- JavaScript/TypeScript (sair do ecossistema Dart)
+- Plano Blaze (Pay-as-you-go) do Firebase
+- Cartão de crédito cadastrado
+
+**Alternativas Consideradas**:
+1. **Agregação no Cliente** (menos seguro, mais simples)
+   - Cada dispositivo calcula estatística localmente
+   - Usa **Mediana** em vez de Média (ignora outliers)
+   - Implementação: 100% Dart/Flutter
+
+2. **Backend Simples REST** (sem Cloud Functions)
+   - Vercel/Netlify Functions (gratuito até 100k requests/mês)
+   - Simples POST/GET endpoints
+   - Sem necessidade de Firebase
+
+3. **Firestore com Atomic Increments** (híbrido)
+   - Use `FieldValue.increment()` para contadores
+   - Evita conflitos de escrita
+   - Limitação: só funciona para somas/contagens simples
+
+**Decisão**: ADIAR para Phase 15.0, avaliar número de usuários antes de investir em infraestrutura.
+
+### Background Sync - Realidade Mobile
+
+**Problema**: Android/iOS matam processos em background agressivamente para economizar bateria.
+
+**Expectativa vs Realidade**:
+- ❌ **Mito**: "Sync vai rodar a cada 12h automaticamente"
+- ✅ **Realidade**: SO pode cancelar/atrasar jobs de horas ou até dias
+- ✅ **Solução**: Usar `workmanager` + aceitar que sync é "best effort"
+
+**Abordagem Resiliente**:
+```dart
+// Sync ocorre quando:
+1. App abre (foreground) - GARANTIDO
+2. Wi-Fi conecta - PROVÁVEL (70% chance)
+3. WorkManager Schedule (12h) - INCERTO (30-50% chance)
+```
+
+### Phase 9.0 (Alto Contraste) - Simplificação
+
+**Revisão da Abordagem**:
+- ❌ **Não criar**: Tema totalmente novo (duplicação)
+- ✅ **Fazer**: Aumentar contraste no tema existente
+- ✅ **Testa**: Ao meio-dia sob sol forte (validação real)
+
+**Exemplo Prático**:
+```dart
+// Em vez de verde claro (#81C784)
+// Usar verde escuro (#2E7D32) com texto branco
+```
+
+### Phase 15.0 (GeoHash) - Precisão vs Privacidade
+
+**Implementação Recomendada**:
+- ✅ Usar biblioteca `dart_geohash` (nativa Flutter)
+- ✅ Precisão 5 caracteres = ~5km x 5km
+- ✅ Query de vizinhos: buscar prefixo comum
+
+**Exemplo**:
+```dart
+// Coordenada exata: -23.550520, -46.633308
+// GeoHash 5: "6gy" + "zg" -> vizinhos = "6gy*"
+// Retorna área de ~25km²
+```
+
+### Phase 10.0 (Validação) - Outliers e Mediana
+
+**Problema**: Usuário malicioso/erro de digitação registra 5000mm de chuva.
+
+**Solução Estatística**:
+- ❌ **Média Aritmética**: Sensível a outliers
+- ✅ **Mediana**: Ignora extremos automaticamente
+- ✅ **Filtro de Threshold**: > 500mm marca como "revisão manual"
+
+**Implementação**:
+```dart
+// Na agregação regional, usar mediana
+final values = [10, 15, 12, 5000, 8]; // outlier = 5000
+final median = calculateMedian(values); // = 12mm (correto)
+final mean = calculateMean(values); // = 1009mm (distorcido)
+```
+
+---
+
 ## 📊 ANÁLISE REVISADA DE PROPOSTAS FUTURAS
 
 ### Arquitetura Híbrida: Offline-First + Sync Opcional
@@ -407,7 +506,8 @@ Produtor pode digitar 100mm em vez de 10mm (erro de zero). App deve alertar quan
 
 ## Phase 8.0: Persistência de Preferências do Usuário
 
-### Status: [TODO]
+### Status: [DONE]
+**Date Completed**: 2026-01-18
 **Prioridade**: 🟡 IMPORTANTE
 **Objetivo**: Salvar escolhas do usuário (idioma, tema, nome da fazenda) entre sessões.
 
@@ -418,11 +518,11 @@ Atualmente, a escolha de idioma não persiste (Phase 7.0 foi implementada sem pe
 
 | Sub-Phase | Description | Status |
 |-----------|-------------|--------|
-| 8.0.1 | Create UserPreferences Hive model | ⏳ TODO |
-| 8.0.2 | Save locale choice in preferences | ⏳ TODO |
-| 8.0.3 | Save theme mode (light/dark/auto) | ⏳ TODO |
-| 8.0.4 | Add optional farm name field | ⏳ TODO |
-| 8.0.5 | Load preferences on app start | ⏳ TODO |
+| 8.0.1 | Create UserPreferences Hive model | ✅ DONE |
+| 8.0.2 | Save locale choice in preferences | ✅ DONE |
+| 8.0.3 | Save theme mode (light/dark/auto) | ✅ DONE |
+| 8.0.4 | Add optional farm name field | ✅ DONE |
+| 8.0.5 | Load preferences on app start | ✅ DONE |
 
 ### Files to Create/Modify
 
@@ -848,7 +948,7 @@ DONE ─────────────────────────
   [7.1] Padronização de Labels Android (Monorepo) ✅
 
 CURTO PRAZO (100% Offline) ────────────────────────────────────────────────
-  [8.0] Persistência de Preferências ⏳
+  [8.0] Persistência de Preferências ✅
   [9.0] Melhorias de UX/Acessibilidade ⏳
   [10.0] Validação Inteligente ⏳
 

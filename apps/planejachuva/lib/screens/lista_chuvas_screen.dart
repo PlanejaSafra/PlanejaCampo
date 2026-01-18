@@ -23,11 +23,19 @@ class ListaChuvasScreen extends StatefulWidget {
   /// Current selected locale (null = auto).
   final Locale? currentLocale;
 
+  /// Callback to change app theme mode.
+  final void Function(ThemeMode)? onChangeThemeMode;
+
+  /// Current theme mode.
+  final ThemeMode currentThemeMode;
+
   const ListaChuvasScreen({
     super.key,
     this.version = '1.0.0',
     this.onChangeLocale,
     this.currentLocale,
+    this.onChangeThemeMode,
+    this.currentThemeMode = ThemeMode.system,
   });
 
   @override
@@ -75,6 +83,8 @@ class _ListaChuvasScreenState extends State<ListaChuvasScreen> {
             builder: (_) => AgroSettingsScreen(
               onChangeLocale: widget.onChangeLocale,
               currentLocale: widget.currentLocale,
+              onChangeThemeMode: widget.onChangeThemeMode,
+              currentThemeMode: widget.currentThemeMode,
               onNavigateToAbout: () {
                 Navigator.push(
                   context,
