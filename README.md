@@ -83,8 +83,9 @@ O Core **não sabe** o que é chuva ou gado — ele só fornece as ferramentas p
 * **Widgets:** `AgroCard`, `AgroButton`, `AgroInput`, `EmptyState`, etc
 * **Utils:** formatadores de Data/Moeda, helpers e validações
 * **Shell padrão:** `AgroScaffold` (AppBar + Drawer/Menu + Body + FAB opcional)
-* **Menu padrão:** Home, Configurações, Privacidade/Consentimentos, Sobre
-* **Privacidade:** fluxo obrigatório de 2 telas (Termos + Consentimentos)
+* **Menu padrão:** Home, Configurações, Privacidade/Consentimentos, Sobre, Propriedades
+* **Privacidade:** fluxo obrigatório de 2 telas (Identidade + Consentimentos)
+* **Propriedades:** gerenciamento de fazendas/propriedades com compartilhamento entre apps
 * **l10n (pt-BR/en):** strings padrão no core reutilizadas por todos os apps
 
 #### 🎨 Padrão Visual e Navegação (OBRIGATÓRIO)
@@ -202,6 +203,61 @@ Esse fluxo possui **duas telas**:
    - “Não aceitar” entra do mesmo jeito (modo básico/offline)
 
 ✅ Isso é implementado **uma única vez no core**, e cada app apenas integra no `main.dart`.
+
+---
+
+## 🏞️ Gerenciamento de Propriedades (Multi-Propriedade)
+
+O `agro_core` fornece um sistema completo de gerenciamento de propriedades/fazendas que é **compartilhado entre todos os apps** da suíte PlanejaSafra.
+
+### Características:
+
+* **Property Model:** Modelo com nome, área total, localização GPS (opcional)
+* **PropertyService:** CRUD completo com filtro por userId (Firebase Auth)
+* **Cross-App Sharing:** Propriedades criadas em um app ficam disponíveis em todos os outros
+* **Auto-Creation:** Propriedade padrão ("Minha Propriedade") criada automaticamente
+* **PropertyHelper:** Singleton com cache para lookups otimizados de nomes
+* **UI Completa:** Telas de listagem e formulário já prontas no core
+
+### Como usar nos apps:
+
+1. **Initialize PropertyService** no `main.dart`:
+```dart
+await PropertyService().init();
+```
+
+2. **Link records to properties** - cada registro de negócio deve ter um `propertyId`:
+```dart
+final defaultProperty = await PropertyService().ensureDefaultProperty();
+final record = RegistroChuva.novo(
+  data: DateTime.now(),
+  milimetros: 10.5,
+  propertyId: defaultProperty.id, // Link para propriedade
+);
+```
+
+3. **Display property names** usando o PropertyHelper:
+```dart
+final propertyName = PropertyHelper().getPropertyName(record.propertyId);
+```
+
+4. **Navigation** - o menu Drawer já inclui "Propriedades", basta adicionar o case de navegação:
+```dart
+case AgroRouteKeys.properties:
+  Navigator.push(context, MaterialPageRoute(
+    builder: (_) => PropertyListScreen(),
+  ));
+```
+
+### Migração Automática
+
+Apps existentes com dados antigos (sem propertyId) devem usar o **MigrationService** na primeira execução:
+
+```dart
+await MigrationService.migrateToPropertySystem();
+```
+
+Isso vincula automaticamente todos os registros antigos à propriedade padrão, sem perda de dados.
 
 ---
 

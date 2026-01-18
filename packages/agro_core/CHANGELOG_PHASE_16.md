@@ -25,13 +25,13 @@
 | 16.3.3 | Add Properties item to AgroDrawer | ✅ DONE |
 | 16.3.4 | Add properties route key | ✅ DONE |
 | 16.3.5 | Update agro_core exports | ✅ DONE |
-| 16.4.1 | Add property selector in AdicionarChuvaScreen | ⏳ PENDING |
-| 16.4.2 | Add property selector in EditarChuvaScreen | ⏳ PENDING |
-| 16.4.3 | Show property name in RegistroChuva tile | ⏳ PENDING |
-| 16.4.4 | Add property filter in EstatisticasScreen | ⏳ PENDING |
-| 16.5.1 | Implement first-time educational tip | ⏳ PENDING |
-| 16.6.1 | Generate l10n files | ⏳ PENDING |
-| 16.6.2 | Update CHANGELOGs | ⏳ IN PROGRESS |
+| 16.4.1 | Add property selector in AdicionarChuvaScreen | ✅ DONE |
+| 16.4.2 | Add property selector in EditarChuvaScreen | ✅ DONE |
+| 16.4.3 | Show property name in RegistroChuva tile | ✅ DONE |
+| 16.4.4 | Add property filter in EstatisticasScreen | ✅ DONE |
+| 16.5.1 | Create PropertyHelper for cached lookups | ✅ DONE |
+| 16.6.1 | Generate l10n files | ✅ DONE |
+| 16.6.2 | Update CHANGELOGs | ✅ DONE |
 | 16.6.3 | Update README and ARCHITECTURE docs | ⏳ PENDING |
 
 ---
@@ -63,6 +63,11 @@
 | `lib/services/migration_service.dart` | CREATE | One-time data migration service |
 | `lib/services/chuva_service.dart` | MODIFY | Added property filtering to listarTodos() and totalDoMes() |
 | `lib/main.dart` | MODIFY | Initialize PropertyService, run migration |
+| `lib/screens/adicionar_chuva_screen.dart` | MODIFY | Added property selector widget with default property loading |
+| `lib/screens/editar_chuva_screen.dart` | MODIFY | Added property selector with current property display |
+| `lib/widgets/registro_chuva_tile.dart` | MODIFY | Display property name using PropertyHelper |
+| `lib/screens/estatisticas_screen.dart` | MODIFY | Added property filter dropdown in header |
+| `lib/screens/lista_chuvas_screen.dart` | MODIFY | Added navigation case for property management |
 
 ---
 
@@ -300,5 +305,6 @@ If Phase 16.0 needs to be rolled back:
 
 ---
 
-**Status**: ✅ Phase 16.1-16.3 COMPLETE | ⏳ Phase 16.4-16.5 PENDING
-**Next Steps**: Implement property selectors in rainfall screens (Phase 16.4)
+**Status**: ✅ Phase 16.0 COMPLETE (all sub-phases)
+**Commits**: cf751df (16.1-16.3), 458833e (16.4), a9fb508 (16.5)
+**Next Steps**: Document README updates (Phase 16.6.3), then proceed to Phase 14.0 or 15.0

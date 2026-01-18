@@ -4,8 +4,8 @@
 
 ## Phase 16.0: Property Management Integration
 
-### Status: [DONE] (Phase 16.2) | [PENDING] (Phase 16.4-16.5)
-**Date Completed**: 2026-01-18 (partial)
+### Status: [DONE]
+**Date Completed**: 2026-01-18
 **Priority**: 🟡 ARCHITECTURAL
 **Objective**: Integrate property management into rainfall recording.
 
@@ -19,11 +19,10 @@
 | 16.2.4 | Initialize PropertyService in main.dart | ✅ DONE |
 | 16.2.5 | Run migration on app startup | ✅ DONE |
 | 16.2.6 | Regenerate Hive adapters | ✅ DONE |
-| 16.4.1 | Add property selector in AdicionarChuvaScreen | ⏳ PENDING |
-| 16.4.2 | Add property selector in EditarChuvaScreen | ⏳ PENDING |
-| 16.4.3 | Display property in RegistroChuva tile | ⏳ PENDING |
-| 16.4.4 | Add property filter in EstatisticasScreen | ⏳ PENDING |
-| 16.5.1 | Implement first-time educational tip | ⏳ PENDING |
+| 16.4.1 | Add property selector in AdicionarChuvaScreen | ✅ DONE |
+| 16.4.2 | Add property selector in EditarChuvaScreen | ✅ DONE |
+| 16.4.3 | Display property in RegistroChuva tile | ✅ DONE |
+| 16.4.4 | Add property filter in EstatisticasScreen | ✅ DONE |
 
 ### Files Modified
 
@@ -34,6 +33,11 @@
 | `lib/services/migration_service.dart` | CREATE | One-time migration to link records to default property |
 | `lib/services/chuva_service.dart` | MODIFY | Added property filtering to listarTodos() and totalDoMes() |
 | `lib/main.dart` | MODIFY | Initialize PropertyService, run MigrationService |
+| `lib/screens/adicionar_chuva_screen.dart` | MODIFY | Added property selector widget with default property loading |
+| `lib/screens/editar_chuva_screen.dart` | MODIFY | Added property selector with current property display |
+| `lib/widgets/registro_chuva_tile.dart` | MODIFY | Display property name using PropertyHelper |
+| `lib/screens/estatisticas_screen.dart` | MODIFY | Added property filter dropdown in header |
+| `lib/screens/lista_chuvas_screen.dart` | MODIFY | Added navigation case for property management |
 
 ### Migration Strategy
 

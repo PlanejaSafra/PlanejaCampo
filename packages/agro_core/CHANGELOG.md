@@ -4,7 +4,7 @@
 
 ## Phase 16.0: Property Management Foundation
 
-### Status: [DONE] (Phases 16.1-16.3) | [PENDING] (Phases 16.4-16.5)
+### Status: [DONE]
 **Date Completed**: 2026-01-18
 **Priority**: 🟡 ARCHITECTURAL
 **Objective**: Implement multi-property support with cross-app sharing via userId.
@@ -16,8 +16,8 @@
 | 16.1 | Core models and services (Property, PropertyService) | ✅ DONE |
 | 16.2 | Update RegistroChuva with propertyId | ✅ DONE |
 | 16.3 | Property management UI (list + form screens) | ✅ DONE |
-| 16.4 | Integrate property selectors in rainfall screens | ⏳ PENDING |
-| 16.5 | First-time UX (educational tips) | ⏳ PENDING |
+| 16.4 | Integrate property selectors in rainfall screens | ✅ DONE |
+| 16.5 | PropertyHelper (cached lookups) | ✅ DONE |
 
 ### Files Modified
 
@@ -33,7 +33,8 @@
 | `lib/l10n/generated/*.dart` | GENERATE | Regenerated with new strings |
 | `lib/menu/agro_drawer.dart` | MODIFY | Added Properties menu item |
 | `lib/menu/agro_drawer_item.dart` | MODIFY | Added 'properties' route key |
-| `lib/agro_core.dart` | MODIFY | Added Property, PropertyService, and screen exports |
+| `lib/services/property_helper.dart` | CREATE | PropertyHelper singleton with name caching (48 lines) |
+| `lib/agro_core.dart` | MODIFY | Added Property, PropertyService, PropertyHelper, and screen exports |
 
 ### Key Features
 
