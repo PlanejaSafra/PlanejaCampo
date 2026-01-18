@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 
 import 'agro_privacy_store.dart';
 import 'consent_screen.dart';
-import 'terms_privacy_screen.dart';
+import 'identity_screen.dart';
 
 /// Gate widget that controls privacy onboarding flow.
 ///
 /// Shows:
-/// - TermsPrivacyScreen if user hasn't accepted terms
+/// - IdentityScreen if user hasn't accepted terms (choose Google or Anonymous)
 /// - ConsentScreen if terms accepted but onboarding not completed
 /// - [home] widget if onboarding is completed
 class AgroOnboardingGate extends StatefulWidget {
@@ -61,8 +61,8 @@ class _AgroOnboardingGateState extends State<AgroOnboardingGate> {
     }
 
     if (!_hasAcceptedTerms) {
-      return TermsPrivacyScreen(
-        onAccepted: () {
+      return IdentityScreen(
+        onCompleted: () {
           _onTermsAccepted();
         },
       );

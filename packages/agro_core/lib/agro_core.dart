@@ -20,15 +20,16 @@ export 'l10n/generated/app_localizations.dart';
 export 'privacy/agro_privacy_keys.dart';
 export 'privacy/agro_privacy_store.dart';
 export 'privacy/consent_screen.dart';
+export 'privacy/identity_screen.dart';
 export 'privacy/onboarding_gate.dart';
-export 'privacy/terms_privacy_screen.dart';
 
 // Models (Cloud Sync & Identity)
 export 'models/consent_data.dart';
 export 'models/device_info.dart';
 export 'models/user_cloud_data.dart';
 
-// Services (Cloud Sync)
+// Services (Auth & Cloud Sync)
+export 'services/auth_service.dart';
 export 'services/user_cloud_service.dart';
 
 // Menu

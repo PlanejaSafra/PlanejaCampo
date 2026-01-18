@@ -251,6 +251,90 @@ abstract class AgroLocalizations {
   /// **'Without accepting, you can use the app normally in private mode (basic offline features).'**
   String get consentSmallNoteUnderDecline;
 
+  /// No description provided for @identityTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to PlanejaCampo'**
+  String get identityTitle;
+
+  /// No description provided for @identitySlogan.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage your farm intelligently'**
+  String get identitySlogan;
+
+  /// No description provided for @identityGoogleButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in with Google'**
+  String get identityGoogleButton;
+
+  /// No description provided for @identityAnonymousButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue as Guest'**
+  String get identityAnonymousButton;
+
+  /// No description provided for @identityFooterLegal.
+  ///
+  /// In en, this message translates to:
+  /// **'By signing in, you agree to our Terms of Use and Privacy Policy.'**
+  String get identityFooterLegal;
+
+  /// No description provided for @identityTermsLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms of Use'**
+  String get identityTermsLink;
+
+  /// No description provided for @identityPrivacyLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get identityPrivacyLink;
+
+  /// No description provided for @identityNoInternetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No Internet'**
+  String get identityNoInternetTitle;
+
+  /// No description provided for @identityNoInternetMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'For the first access, we need internet to set up your secure account. Please connect and try again.'**
+  String get identityNoInternetMessage;
+
+  /// No description provided for @identityTryAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Try Again'**
+  String get identityTryAgain;
+
+  /// No description provided for @identityErrorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign In Error'**
+  String get identityErrorTitle;
+
+  /// No description provided for @identityErrorGoogleCanceled.
+  ///
+  /// In en, this message translates to:
+  /// **'You canceled Google sign in.'**
+  String get identityErrorGoogleCanceled;
+
+  /// No description provided for @identityErrorGoogleFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to sign in with Google. Try again or use Guest.'**
+  String get identityErrorGoogleFailed;
+
+  /// No description provided for @identityErrorAnonymousFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create guest account. Check your connection.'**
+  String get identityErrorAnonymousFailed;
+
   /// No description provided for @drawerHome.
   ///
   /// In en, this message translates to:

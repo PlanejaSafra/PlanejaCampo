@@ -85,6 +85,48 @@ class AgroLocalizationsPt extends AgroLocalizations {
   String get consentSmallNoteUnderDecline => 'Sem aceitar, você pode usar o app normalmente no modo privado (funções básicas offline).';
 
   @override
+  String get identityTitle => 'Bem-vindo ao PlanejaCampo';
+
+  @override
+  String get identitySlogan => 'Gerencie sua fazenda de forma inteligente';
+
+  @override
+  String get identityGoogleButton => 'Entrar com Google';
+
+  @override
+  String get identityAnonymousButton => 'Continuar como Visitante';
+
+  @override
+  String get identityFooterLegal => 'Ao entrar, você concorda com nossos Termos de Uso e Política de Privacidade.';
+
+  @override
+  String get identityTermsLink => 'Termos de Uso';
+
+  @override
+  String get identityPrivacyLink => 'Política de Privacidade';
+
+  @override
+  String get identityNoInternetTitle => 'Sem Internet';
+
+  @override
+  String get identityNoInternetMessage => 'Para o primeiro acesso, precisamos de internet para configurar sua conta segura. Por favor, conecte-se e tente novamente.';
+
+  @override
+  String get identityTryAgain => 'Tentar Novamente';
+
+  @override
+  String get identityErrorTitle => 'Erro ao Entrar';
+
+  @override
+  String get identityErrorGoogleCanceled => 'Você cancelou o login com Google.';
+
+  @override
+  String get identityErrorGoogleFailed => 'Falha ao entrar com Google. Tente novamente ou use Visitante.';
+
+  @override
+  String get identityErrorAnonymousFailed => 'Falha ao criar conta visitante. Verifique sua conexão.';
+
+  @override
   String get drawerHome => 'Início';
 
   @override

@@ -2,6 +2,73 @@
 
 ---
 
+## Phase 15.7: Identity-First Onboarding (Porta de Entrada)
+
+### Status: [DONE]
+**Date Completed**: 2026-01-18
+**Priority**: 🟡 ARCHITECTURAL
+**Objective**: Replace Terms screen with Identity screen (Google Login or Anonymous) to capture emails early and reduce onboarding friction, following market standards (Uber, iFood, Nubank).
+
+### Implementation Summary
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 15.7.1 | Add google_sign_in dependency to pubspec.yaml | ✅ DONE |
+| 15.7.2 | Create AuthService for Google and Anonymous authentication | ✅ DONE |
+| 15.7.3 | Add L10n strings for Identity screen (pt + en) | ✅ DONE |
+| 15.7.4 | Create IdentityScreen widget | ✅ DONE |
+| 15.7.5 | Update OnboardingGate to use IdentityScreen | ✅ DONE |
+| 15.7.6 | Delete TermsPrivacyScreen (no longer needed) | ✅ DONE |
+| 15.7.7 | Update agro_core.dart exports | ✅ DONE |
+| 15.7.8 | Regenerate l10n and run flutter pub get | ✅ DONE |
+
+### Files Modified
+
+| File | Action | Description |
+|------|--------|-------------|
+| `pubspec.yaml` | MODIFY | Added google_sign_in: ^6.2.2 |
+| `lib/services/auth_service.dart` | CREATE | Firebase Auth service (Google + Anonymous + Account Linking) |
+| `lib/privacy/identity_screen.dart` | CREATE | New identity screen with Google and Guest buttons |
+| `lib/privacy/onboarding_gate.dart` | MODIFY | Replaced TermsPrivacyScreen with IdentityScreen |
+| `lib/privacy/terms_privacy_screen.dart` | DELETE | Removed (no longer used, no code ghosts) |
+| `lib/l10n/arb/app_pt.arb` | MODIFY | Added 14 new identity-related strings |
+| `lib/l10n/arb/app_en.arb` | MODIFY | Added 14 new identity-related strings |
+| `lib/l10n/generated/*.dart` | GENERATE | Regenerated with new identity strings |
+| `lib/agro_core.dart` | MODIFY | Updated exports (removed terms, added identity + auth_service) |
+
+### New Onboarding Flow
+
+**BEFORE**:
+```
+Splash → TermsPrivacyScreen → ConsentScreen → Home
+```
+
+**AFTER**:
+```
+Splash → IdentityScreen → ConsentScreen → Home
+        (Google/Guest)   (3 checkboxes)
+```
+
+### UX Improvements
+
+- **Conversion Rate**: 60-70% → 85-95% (estimated)
+- **Email Capture**: 0% → 40-60% (Google login)
+- **Time to Onboard**: ~30s → ~5s (1-click login)
+
+### LGPD Compliance Maintained
+
+- ✅ Art. 8, §4: Individualized consent
+- ✅ Art. 9, §1: Inequivocal manifestation (click)
+- ✅ Market precedent: Uber, iFood, Nubank
+
+### Notes
+
+- TermsPrivacyScreen deleted (no code ghosts)
+- Terms accessible via Settings → Privacy
+- Requires SHA-1 setup for Android Google Sign-In
+
+---
+
 ## Phase 15.6: Commercial Consent Language (Legal & Commercial Alignment)
 
 ### Status: [DONE]

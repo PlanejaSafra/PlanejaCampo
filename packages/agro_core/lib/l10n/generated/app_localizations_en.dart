@@ -85,6 +85,48 @@ class AgroLocalizationsEn extends AgroLocalizations {
   String get consentSmallNoteUnderDecline => 'Without accepting, you can use the app normally in private mode (basic offline features).';
 
   @override
+  String get identityTitle => 'Welcome to PlanejaCampo';
+
+  @override
+  String get identitySlogan => 'Manage your farm intelligently';
+
+  @override
+  String get identityGoogleButton => 'Sign in with Google';
+
+  @override
+  String get identityAnonymousButton => 'Continue as Guest';
+
+  @override
+  String get identityFooterLegal => 'By signing in, you agree to our Terms of Use and Privacy Policy.';
+
+  @override
+  String get identityTermsLink => 'Terms of Use';
+
+  @override
+  String get identityPrivacyLink => 'Privacy Policy';
+
+  @override
+  String get identityNoInternetTitle => 'No Internet';
+
+  @override
+  String get identityNoInternetMessage => 'For the first access, we need internet to set up your secure account. Please connect and try again.';
+
+  @override
+  String get identityTryAgain => 'Try Again';
+
+  @override
+  String get identityErrorTitle => 'Sign In Error';
+
+  @override
+  String get identityErrorGoogleCanceled => 'You canceled Google sign in.';
+
+  @override
+  String get identityErrorGoogleFailed => 'Failed to sign in with Google. Try again or use Guest.';
+
+  @override
+  String get identityErrorAnonymousFailed => 'Failed to create guest account. Check your connection.';
+
+  @override
   String get drawerHome => 'Home';
 
   @override
