@@ -2,6 +2,81 @@
 
 ---
 
+## Phase 15.6: Commercial Consent Language (Legal & Commercial Alignment)
+
+### Status: [DONE]
+**Date Completed**: 2026-01-18
+**Priority**: 🟢 ENHANCEMENT
+**Objective**: Update consent language to support commercial use cases (data commercialization, partnerships, ad networks) while maintaining LGPD compliance.
+
+### Implementation Summary
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 15.6.1 | Analyze current consent limitations | ✅ DONE |
+| 15.6.2 | Create commercial alignment plan document | ✅ DONE |
+| 15.6.3 | Update PT-BR consent texts in app_pt.arb | ✅ DONE |
+| 15.6.4 | Update EN consent texts in app_en.arb | ✅ DONE |
+| 15.6.5 | Add detailed "Learn More" texts for each consent | ✅ DONE |
+| 15.6.6 | Update privacy keys documentation | ✅ DONE |
+| 15.6.7 | Regenerate l10n files | ✅ DONE |
+
+### Files Modified
+
+| File | Action | Description |
+|------|--------|-------------|
+| `CONSENT_COMMERCIAL_ALIGNMENT_PLAN.md` | CREATE | Detailed plan with legal analysis and implementation checklist |
+| `lib/l10n/arb/app_pt.arb` | MODIFY | Updated 3 consent texts + added 3 detailed "Learn More" texts (PT-BR) |
+| `lib/l10n/arb/app_en.arb` | MODIFY | Updated 3 consent texts + added 3 detailed "Learn More" texts (EN) |
+| `lib/privacy/agro_privacy_keys.dart` | MODIFY | Updated documentation comments for consent keys |
+| `lib/l10n/generated/app_localizations.dart` | GENERATE | Added consentOption1/2/3LearnMore getters |
+| `lib/l10n/generated/app_localizations_pt.dart` | GENERATE | PT translations with new commercial language |
+| `lib/l10n/generated/app_localizations_en.dart` | GENERATE | EN translations with new commercial language |
+
+### Consent Changes Summary
+
+**Checkbox 1: "Uso de Dados e Inteligência de Mercado" (Data Usage and Market Intelligence)**
+- ✅ Authorizes data commercialization, sale, and licensing
+- ✅ Covers individual AND aggregated data
+- ✅ Partners in ANY sector (agribusiness, finance, retail, digital entertainment)
+- 📊 Learn More: Detailed examples of data monetization use cases
+
+**Checkbox 2: "Receber Ofertas e Oportunidades" (Receive Offers and Opportunities)**
+- ✅ Authorizes direct communication from partners (app, email, SMS, WhatsApp)
+- ✅ Explicitly includes controversial sectors (gaming, betting)
+- ⚠️ Disclaimer: Partners are NOT curated by PlanejaCampo
+- ⚠️ Disclaimer: Ad platforms (Google, Meta) control advertisements
+- 📢 Learn More: List of all possible partner types and communication channels
+
+**Checkbox 3: "Publicidade Personalizada" (Personalized Advertising)**
+- ✅ Authorizes third-party ad networks (Google Ads, Meta)
+- ✅ Explicitly mentions data sharing for ad targeting
+- ✅ Includes lookalike audiences and behavioral profiling
+- 🎯 Learn More: Detailed explanation of how ad tracking works, shadow profiles, and cross-platform targeting
+
+### Legal Compliance
+
+- ✅ LGPD Art. 7, IX - Explicit consent maintained
+- ✅ LGPD Art. 9, §3 - Specific purposes clearly stated
+- ✅ LGPD Art. 9, §4 - Language is clear (enhanced with "Learn More")
+- ✅ No re-consent required (no existing users yet)
+- ✅ Google Play Data Safety compatible (requires disclosure in app store listing)
+
+### Key Features
+
+- **Transparency**: "Learn More" texts explain in detail what each consent means
+- **User Control**: Users can still use app 100% offline without accepting any consent
+- **Commercial Flexibility**: Enables data monetization, partnerships, and ad networks
+- **Legal Safety**: Explicit mentions of commercialization, sale, and third-party sharing
+
+### Notes
+
+- Privacy keys remain unchanged (backwards compatible)
+- Consent screen code requires NO changes (UI is driven by l10n)
+- Phase 15.0 (Regional Statistics) and 14.0 (Weather Forecast) are NOT affected
+
+---
+
 ## Phase 2.0: Standard Menu and Base Screens
 
 ### Status: [DONE]

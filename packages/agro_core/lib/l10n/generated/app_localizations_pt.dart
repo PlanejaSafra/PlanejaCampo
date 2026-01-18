@@ -52,25 +52,34 @@ class AgroLocalizationsPt extends AgroLocalizations {
   String get consentTitle => 'Recursos e compartilhamento (opcional)';
 
   @override
-  String get consentIntro => 'Você pode usar o app em modo privado (offline), ou ativar recursos extras baseados em dados agregados da comunidade.\n\nMarque o que você autoriza:';
+  String get consentIntro => 'Você pode usar o app em modo privado (offline), ou ativar recursos extras baseados em dados da comunidade.\n\nMarque o que você autoriza:';
 
   @override
-  String get consentOption1Title => 'Dados agregados para métricas regionais';
+  String get consentOption1Title => 'Uso de Dados e Inteligência de Mercado';
 
   @override
-  String get consentOption1Desc => 'Usar seus registros de forma agregada e estatística para gerar indicadores como chuva por região, preço médio regional, tendências e comparativos.';
+  String get consentOption1Desc => 'Autorizo o uso dos meus registros (de forma individual ou agregada) para gerar inteligência de mercado, relatórios comerciais, análises preditivas e licenciamento de dados para terceiros. Isso pode incluir comercialização, venda ou compartilhamento com parceiros em qualquer setor (agronegócio, finanças, varejo, entretenimento digital, etc.).';
 
   @override
-  String get consentOption2Title => 'Compartilhamento com parceiros (agregado)';
+  String get consentOption1LearnMore => '📊 O QUE ISSO SIGNIFICA?\n\nSeus dados de chuva, preços e outras informações podem ser:\n\n• Vendidos ou licenciados para empresas (seguradoras, consultorias, traders)\n• Usados para criar relatórios comerciais e análises de mercado\n• Compartilhados com parceiros em QUALQUER setor (não apenas agronegócio)\n• Analisados individualmente (não apenas de forma agregada)\n\n✅ EXEMPLOS DE USO:\n• Seguradora compra histórico de chuvas para calcular riscos climáticos\n• Consultoria agrícola paga por dados de preços regionais\n• Plataforma de trading acessa suas informações para análise de commodities\n• Empresa de tecnologia usa seus registros para treinar modelos de IA\n\n⚠️ IMPORTANTE: Ao aceitar, você autoriza a COMERCIALIZAÇÃO dos seus dados. Isso pode gerar receita para a PlanejaCampo, mas você não receberá pagamento direto.\n\n🔒 PRIVACIDADE: Seus dados podem incluir localização aproximada (região) mas nunca nome ou CPF.\n\n❌ COMO REVOGAR: Configurações → Privacidade → Desmarcar esta opção';
 
   @override
-  String get consentOption2Desc => 'Compartilhar somente dados agregados/estatísticos com terceiros para relatórios, inteligência regional e melhorias.';
+  String get consentOption2Title => 'Receber Ofertas e Oportunidades';
 
   @override
-  String get consentOption3Title => 'Anúncios e ofertas mais relevantes';
+  String get consentOption2Desc => 'Aceito receber ofertas comerciais, promoções, conteúdo patrocinado e oportunidades de parceiros em qualquer setor (agronegócio, financeiro, entretenimento digital, varejo, etc.) via notificações no app, email, SMS ou WhatsApp. Compreendo que os parceiros não são selecionados ou curados pela PlanejaCampo.';
 
   @override
-  String get consentOption3Desc => 'Usar dados de uso para melhorar anúncios, promoções e sugestões (quando houver).';
+  String get consentOption2LearnMore => '📢 O QUE VOCÊ VAI RECEBER?\n\nAo aceitar, você pode receber mensagens de QUALQUER tipo de parceiro comercial:\n\n• 🌾 Agronegócio: Fertilizantes, sementes, maquinário, agroquímicos\n• 💰 Finanças: Crédito rural, consórcios, investimentos, precatórios\n• 🎮 Entretenimento: Jogos, apostas online, streaming, redes sociais\n• 🛒 Varejo: Lojas, e-commerce, marketplaces\n• 📱 Tecnologia: Apps, serviços digitais, gadgets\n• 👕 Diversos: Roupas, acessórios, viagens, etc.\n\n📬 CANAIS DE COMUNICAÇÃO:\n• Notificações push no app\n• E-mail\n• SMS\n• WhatsApp\n• Banners e conteúdo patrocinado dentro do app\n\n⚠️ IMPORTANTE:\n• Os parceiros NÃO são selecionados ou curados pela PlanejaCampo\n• Você pode receber ofertas de setores polêmicos (jogos de azar, apostas, etc.)\n• Quem controla os anúncios é a plataforma de ads (Google, Meta, etc.)\n• A PlanejaCampo não se responsabiliza pela qualidade ou legalidade das ofertas\n\n✅ COMO FUNCIONA:\n• Parceiros pagam para exibir ofertas para você\n• Quanto mais dados você compartilhar, mais relevantes serão as ofertas\n• Você pode optar por sair (opt-out) a qualquer momento\n\n❌ COMO PARAR DE RECEBER: Configurações → Privacidade → Desmarcar esta opção';
+
+  @override
+  String get consentOption3Title => 'Publicidade Personalizada';
+
+  @override
+  String get consentOption3Desc => 'Autorizo o uso de dados do meu perfil, comportamento de uso e preferências para exibir anúncios personalizados via redes de anúncios terceiras (Google Ads, Meta, etc.). Compreendo que meus dados podem ser compartilhados com essas redes para segmentação publicitária e geração de audiências personalizadas (lookalike audiences).';
+
+  @override
+  String get consentOption3LearnMore => '🎯 COMO FUNCIONA A PUBLICIDADE PERSONALIZADA?\n\nAo aceitar, você autoriza:\n\n1️⃣ COLETA DE DADOS:\n• Que páginas você visita no app\n• Quanto tempo passa em cada tela\n• Quais funcionalidades você mais usa\n• Seu perfil demográfico (idade estimada, região, interesses)\n\n2️⃣ COMPARTILHAMENTO COM REDES DE ANÚNCIOS:\n• Google Ads (AdMob, AdSense)\n• Meta (Facebook Ads, Instagram Ads)\n• Outras plataformas de publicidade digital\n\n3️⃣ O QUE AS REDES FAZEM COM SEUS DADOS:\n• Criam um perfil comportamental seu\n• Te adicionam a \"audiências personalizadas\" (custom audiences)\n• Criam \"audiências semelhantes\" (lookalike) com base no seu perfil\n• Rastreiam suas conversões (se você clica em anúncios e compra produtos)\n\n🔍 EXEMPLOS PRÁTICOS:\n• Você registra chuvas → Recebe anúncios de sementes resistentes à seca\n• Você usa muito o app → Recebe ofertas de versão premium\n• Seu perfil é usado para encontrar outros usuários parecidos com você\n• Suas ações são rastreadas para medir eficácia de campanhas publicitárias\n\n⚠️ CONSEQUÊNCIAS:\n• Anúncios que você vê EM QUALQUER LUGAR (não só no app) podem ser influenciados\n• Suas informações podem ser cruzadas com dados de outras fontes (redes sociais, histórico de navegação)\n• Empresas podem criar \"shadow profiles\" (perfis invisíveis) baseados no seu comportamento\n\n💰 POR QUE ISSO EXISTE:\n• Anúncios personalizados pagam MUITO MAIS do que anúncios genéricos\n• Isso permite que o app seja gratuito e gere receita\n• Sem isso, o app precisaria ser pago ou ter anúncios ruins e invasivos\n\n✅ BENEFÍCIO PARA VOCÊ:\n• Anúncios mais relevantes (menos spam de coisas que você não quer)\n• App gratuito de qualidade\n• Ofertas personalizadas baseadas no seu perfil\n\n❌ COMO DESATIVAR: Configurações → Privacidade → Desmarcar esta opção\n\n⚠️ NOTA: Mesmo desativando, você ainda verá anúncios, mas serão genéricos (não personalizados).';
 
   @override
   String get consentSmallNoteUnderDecline => 'Sem aceitar, você pode usar o app normalmente no modo privado (funções básicas offline).';

@@ -188,44 +188,62 @@ abstract class AgroLocalizations {
   /// No description provided for @consentIntro.
   ///
   /// In en, this message translates to:
-  /// **'You can use the app in private mode (offline), or enable extra features based on aggregated community data.\n\nSelect what you authorize:'**
+  /// **'You can use the app in private mode (offline), or enable extra features based on community data.\n\nSelect what you authorize:'**
   String get consentIntro;
 
   /// No description provided for @consentOption1Title.
   ///
   /// In en, this message translates to:
-  /// **'Aggregated data for regional metrics'**
+  /// **'Data Usage and Market Intelligence'**
   String get consentOption1Title;
 
   /// No description provided for @consentOption1Desc.
   ///
   /// In en, this message translates to:
-  /// **'Use your records in aggregated and statistical form to generate indicators such as rainfall by region, regional average prices, trends, and comparisons.'**
+  /// **'I authorize the use of my records (individually or aggregated) to generate market intelligence, commercial reports, predictive analytics, and data licensing to third parties. This may include commercialization, sale, or sharing with partners in any sector (agribusiness, finance, retail, digital entertainment, etc.).'**
   String get consentOption1Desc;
+
+  /// No description provided for @consentOption1LearnMore.
+  ///
+  /// In en, this message translates to:
+  /// **'📊 WHAT DOES THIS MEAN?\n\nYour rainfall, price, and other data can be:\n\n• Sold or licensed to companies (insurers, consultancies, traders)\n• Used to create commercial reports and market analyses\n• Shared with partners in ANY sector (not just agribusiness)\n• Analyzed individually (not just in aggregated form)\n\n✅ USAGE EXAMPLES:\n• Insurance company buys rainfall history to calculate climate risks\n• Agricultural consultancy pays for regional price data\n• Trading platform accesses your information for commodity analysis\n• Technology company uses your records to train AI models\n\n⚠️ IMPORTANT: By accepting, you authorize the COMMERCIALIZATION of your data. This may generate revenue for PlanejaCampo, but you will not receive direct payment.\n\n🔒 PRIVACY: Your data may include approximate location (region) but never name or ID number.\n\n❌ HOW TO REVOKE: Settings → Privacy → Uncheck this option'**
+  String get consentOption1LearnMore;
 
   /// No description provided for @consentOption2Title.
   ///
   /// In en, this message translates to:
-  /// **'Sharing with partners (aggregated)'**
+  /// **'Receive Offers and Opportunities'**
   String get consentOption2Title;
 
   /// No description provided for @consentOption2Desc.
   ///
   /// In en, this message translates to:
-  /// **'Share only aggregated/statistical data with third parties for reports, regional intelligence, and improvements.'**
+  /// **'I agree to receive commercial offers, promotions, sponsored content, and opportunities from partners in any sector (agribusiness, finance, digital entertainment, retail, etc.) via app notifications, email, SMS, or WhatsApp. I understand that partners are not selected or curated by PlanejaCampo.'**
   String get consentOption2Desc;
+
+  /// No description provided for @consentOption2LearnMore.
+  ///
+  /// In en, this message translates to:
+  /// **'📢 WHAT WILL YOU RECEIVE?\n\nBy accepting, you may receive messages from ANY type of commercial partner:\n\n• 🌾 Agribusiness: Fertilizers, seeds, machinery, agrochemicals\n• 💰 Finance: Rural credit, consortia, investments, legal settlements\n• 🎮 Entertainment: Games, online betting, streaming, social networks\n• 🛒 Retail: Stores, e-commerce, marketplaces\n• 📱 Technology: Apps, digital services, gadgets\n• 👕 Miscellaneous: Clothing, accessories, travel, etc.\n\n📬 COMMUNICATION CHANNELS:\n• Push notifications in the app\n• Email\n• SMS\n• WhatsApp\n• Banners and sponsored content within the app\n\n⚠️ IMPORTANT:\n• Partners are NOT selected or curated by PlanejaCampo\n• You may receive offers from controversial sectors (gambling, betting, etc.)\n• Ad platforms (Google, Meta, etc.) control the advertisements\n• PlanejaCampo is not responsible for the quality or legality of offers\n\n✅ HOW IT WORKS:\n• Partners pay to display offers to you\n• The more data you share, the more relevant the offers\n• You can opt-out at any time\n\n❌ HOW TO STOP RECEIVING: Settings → Privacy → Uncheck this option'**
+  String get consentOption2LearnMore;
 
   /// No description provided for @consentOption3Title.
   ///
   /// In en, this message translates to:
-  /// **'More relevant ads and offers'**
+  /// **'Personalized Advertising'**
   String get consentOption3Title;
 
   /// No description provided for @consentOption3Desc.
   ///
   /// In en, this message translates to:
-  /// **'Use usage data to improve ads, promotions, and suggestions (when available).'**
+  /// **'I authorize the use of my profile data, usage behavior, and preferences to display personalized ads via third-party ad networks (Google Ads, Meta, etc.). I understand that my data may be shared with these networks for ad targeting and creation of custom audiences (lookalike audiences).'**
   String get consentOption3Desc;
+
+  /// No description provided for @consentOption3LearnMore.
+  ///
+  /// In en, this message translates to:
+  /// **'🎯 HOW DOES PERSONALIZED ADVERTISING WORK?\n\nBy accepting, you authorize:\n\n1️⃣ DATA COLLECTION:\n• Which pages you visit in the app\n• How much time you spend on each screen\n• Which features you use most\n• Your demographic profile (estimated age, region, interests)\n\n2️⃣ SHARING WITH AD NETWORKS:\n• Google Ads (AdMob, AdSense)\n• Meta (Facebook Ads, Instagram Ads)\n• Other digital advertising platforms\n\n3️⃣ WHAT AD NETWORKS DO WITH YOUR DATA:\n• Create a behavioral profile of you\n• Add you to \"custom audiences\"\n• Create \"lookalike audiences\" based on your profile\n• Track your conversions (if you click ads and buy products)\n\n🔍 PRACTICAL EXAMPLES:\n• You record rainfall → Receive ads for drought-resistant seeds\n• You use the app frequently → Receive premium version offers\n• Your profile is used to find other similar users\n• Your actions are tracked to measure campaign effectiveness\n\n⚠️ CONSEQUENCES:\n• Ads you see ANYWHERE (not just in the app) may be influenced\n• Your information may be cross-referenced with data from other sources (social media, browsing history)\n• Companies can create \"shadow profiles\" based on your behavior\n\n💰 WHY THIS EXISTS:\n• Personalized ads pay MUCH MORE than generic ads\n• This allows the app to be free and generate revenue\n• Without this, the app would need to be paid or have poor, invasive ads\n\n✅ BENEFIT TO YOU:\n• More relevant ads (less spam of things you don\'t want)\n• Quality free app\n• Personalized offers based on your profile\n\n❌ HOW TO DISABLE: Settings → Privacy → Uncheck this option\n\n⚠️ NOTE: Even when disabled, you will still see ads, but they will be generic (not personalized).'**
+  String get consentOption3LearnMore;
 
   /// No description provided for @consentSmallNoteUnderDecline.
   ///
