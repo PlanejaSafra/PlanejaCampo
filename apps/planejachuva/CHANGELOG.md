@@ -919,7 +919,8 @@ int _calculateAreaSize(int precision) {
 
 ## Phase 14.0: Previsão do Tempo (Open-Meteo + Cache)
 
-### Status: [TODO]
+### Status: [DONE]
+**Date Completed**: 2026-01-18
 **Prioridade**: 🟢 ENHANCEMENT
 **Objetivo**: Exibir previsão meteorológica para localização cadastrada.
 
@@ -947,46 +948,66 @@ int _calculateAreaSize(int precision) {
 
 | Sub-Phase | Description | Status |
 |-----------|-------------|--------|
-| 14.0.1 | Create PropriedadeSettings model with lat/lon | ⏳ TODO |
-| 14.0.2 | Create PropriedadeConfigScreen (GPS + city search) | ⏳ TODO |
-| 14.0.3 | Create WeatherService with Open-Meteo integration | ⏳ TODO |
-| 14.0.4 | Create WeatherForecast model + cache in Hive | ⏳ TODO |
-| 14.0.5 | Create WeatherCard widget for home | ⏳ TODO |
-| 14.0.6 | Create WeatherDetailScreen (5 days) | ⏳ TODO |
-| 14.0.7 | Add geolocator and http dependencies | ⏳ TODO |
+| 14.0.1 | Use existing Property model (latitude/longitude) | ✅ DONE |
+| 14.0.2 | Create WeatherForecast model (Hive typeId: 3) | ✅ DONE |
+| 14.0.3 | Create WeatherService with Open-Meteo integration | ✅ DONE |
+| 14.0.4 | Create WeatherCard widget for home | ✅ DONE |
+| 14.0.5 | Create WeatherDetailScreen (5 days) | ✅ DONE |
+| 14.0.6 | Initialize WeatherService in main.dart | ✅ DONE |
+| 14.0.7 | Add http dependency | ✅ DONE |
 
-### Files to Create/Modify
+### Files Modified
 
 | File | Action | Description |
 |------|--------|-------------|
-| `lib/models/propriedade_settings.dart` | CREATE | Hive model for location |
-| `lib/models/propriedade_settings.g.dart` | GENERATE | Hive adapter |
-| `lib/models/weather_forecast.dart` | CREATE | Forecast data model |
-| `lib/models/weather_forecast.g.dart` | GENERATE | Hive adapter (for cache) |
-| `lib/services/weather_service.dart` | CREATE | Open-Meteo HTTP client |
-| `lib/screens/propriedade_config_screen.dart` | CREATE | Location setup |
-| `lib/widgets/weather_card.dart` | CREATE | Home screen widget |
-| `lib/screens/weather_detail_screen.dart` | CREATE | 5-day forecast |
-| `pubspec.yaml` | MODIFY | Add geolocator, http |
+| `lib/models/weather_forecast.dart` | CREATE | WeatherForecast model with Hive annotations (typeId: 3) |
+| `lib/models/weather_forecast.g.dart` | GENERATE | Hive adapter for WeatherForecast |
+| `lib/services/weather_service.dart` | CREATE | Open-Meteo HTTP client with 6-hour cache |
+| `lib/widgets/weather_card.dart` | CREATE | Home screen weather widget (303 lines) |
+| `lib/screens/weather_detail_screen.dart` | CREATE | 5-day forecast detail screen (417 lines) |
+| `lib/screens/lista_chuvas_screen.dart` | MODIFY | Added WeatherCard to home screen |
+| `lib/main.dart` | MODIFY | Register WeatherForecastAdapter, init WeatherService |
+| `pubspec.yaml` | MODIFY | Added http: ^1.2.2 dependency |
 
-### Model: PropriedadeSettings
+### Key Features
 
-| Campo | Tipo | Descrição |
-|-------|------|-----------|
-| farmName | String? | Nome da fazenda (opcional) |
-| latitude | double? | Coordenada GPS |
-| longitude | double? | Coordenada GPS |
-| cityName | String? | Nome da cidade (fallback) |
-| setupCompleted | bool | Se configurou localização |
+**WeatherForecast Model:**
+- date, precipitationMm, temperatureMax, temperatureMin, weatherCode
+- cachedAt timestamp for cache validation
+- propertyId link to Property model
+- isCacheValid (< 6 hours)
+- getWeatherDescription() and getWeatherIcon() helpers
 
-### Model: WeatherForecast
+**WeatherService:**
+- getForecast() with automatic cache validation
+- refreshForecast() to force update
+- 3-second timeout for API calls
+- Graceful error handling (returns stale cache if API fails)
+- Clears old forecasts when fetching new data
 
-| Campo | Tipo | Descrição |
-|-------|------|-----------|
-| date | DateTime | Data da previsão |
-| precipitationMm | double | Chuva prevista (mm) |
-| temperatureMax | double | Temperatura máxima (°C) |
-| cachedAt | DateTime | Quando foi salvo no cache |
+**UI/UX:**
+- WeatherCard shows today's forecast on home (compact)
+- Only visible if property has latitude/longitude configured
+- Tap card to open WeatherDetailScreen
+- Pull-to-refresh to update forecast
+- Cache age indicator ("Atualizado há X horas")
+- Warning badge for stale cache (> 6 hours old)
+- 5-day detailed forecast with precipitation and temperature
+
+**Technical Notes:**
+- Uses existing Property.latitude/longitude (no new location model)
+- Open-Meteo API is free, no API key required
+- Works offline (shows cached data with age indicator)
+- Cache stored in Hive (weather_cache box)
+- Weather codes mapped to emoji icons and PT-BR descriptions
+
+### Next Phase: Advanced Property Mapping (Phase 17.0)
+
+**Sugestões do usuário:**
+- Google Maps integration for property location selection
+- Import KML/KMZ files (John Deere format)
+- Draw polygons on map (finger drawing on mobile)
+- GPS tracking (walk the field boundary with phone)
 
 ---
 
