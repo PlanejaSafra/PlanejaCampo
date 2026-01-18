@@ -100,6 +100,7 @@ class _EditarChuvaScreenState extends State<EditarChuvaScreen> {
             ? null
             : _observacaoController.text,
         criadoEm: widget.registro.criadoEm,
+        propertyId: widget.registro.propertyId,
       );
 
       await ChuvaService().atualizar(registroAtualizado);

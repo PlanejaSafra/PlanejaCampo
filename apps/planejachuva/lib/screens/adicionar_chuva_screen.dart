@@ -23,13 +23,25 @@ class _AdicionarChuvaScreenState extends State<AdicionarChuvaScreen> {
 
   DateTime _dataSelecionada = DateTime.now();
   bool _salvando = false;
+  Property? _propriedadeSelecionada;
 
   @override
   void initState() {
     super.initState();
+    _carregarPropriedadePadrao();
     // Auto-focus on millimeters field
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _milimetrosFocus.requestFocus();
+    });
+  }
+
+  Future<void> _carregarPropriedadePadrao() async {
+    final propertyService = PropertyService();
+    final defaultProperty = await propertyService.ensureDefaultProperty(
+      l10n: AgroLocalizations.of(context),
+    );
+    setState(() {
+      _propriedadeSelecionada = defaultProperty;
     });
   }
 
@@ -133,12 +145,18 @@ class _AdicionarChuvaScreenState extends State<AdicionarChuvaScreen> {
         }
       }
 
+      // Ensure property is selected (should never be null after init)
+      if (_propriedadeSelecionada == null) {
+        await _carregarPropriedadePadrao();
+      }
+
       final registro = RegistroChuva.novo(
         data: _dataSelecionada,
         milimetros: mm,
         observacao: _observacaoController.text.isEmpty
             ? null
             : _observacaoController.text,
+        propertyId: _propriedadeSelecionada!.id,
       );
 
       await ChuvaService().adicionar(registro);

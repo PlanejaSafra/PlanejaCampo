@@ -127,6 +127,14 @@ class _ListaChuvasScreenState extends State<ListaChuvasScreen> {
           ),
         );
         break;
+      case AgroRouteKeys.properties:
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const PropertyListScreen(),
+          ),
+        ).then((_) => _carregarDados());
+        break;
       case 'estatisticas':
         Navigator.push(
           context,
