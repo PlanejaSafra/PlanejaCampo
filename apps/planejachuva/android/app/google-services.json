@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "83388840935",
+    "project_id": "planejachuvadev",
+    "storage_bucket": "planejachuvadev.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:83388840935:android:3b4240bb1c5ab7bb02db42",
+        "android_client_info": {
+          "package_name": "br.com.planejacampo.planejachuva"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDC9FN0hgm_uG5JDhnWoV1isLBahy0tuWw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
