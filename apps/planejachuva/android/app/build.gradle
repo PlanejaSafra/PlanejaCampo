@@ -25,7 +25,6 @@ android {
     productFlavors {
         dev {
             dimension "env"
-            isDefault = true
             // applicationIdSuffix ".dev" // Uncomment if you have a separate Firebase app with this ID
             resValue "string", "app_name", "Planeja Chuva (DEV)"
         }
