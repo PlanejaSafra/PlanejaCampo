@@ -43,3 +43,7 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Google Services - Protect Production
+**/google-services.json
+!**/src/dev/google-services.json
