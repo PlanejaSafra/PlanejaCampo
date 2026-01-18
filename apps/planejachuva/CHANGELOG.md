@@ -657,7 +657,8 @@ flutter pub deps | grep firebase_core
 
 ## Phase 15.0: Estatísticas Regionais (Firestore + Crowdsourcing)
 
-### Status: [TODO]
+### Status: [DONE]
+**Date Completed**: 2026-01-18
 **Prioridade**: 🟡 DIFERENCIAL
 **Objetivo**: Comparar chuva da propriedade com média da região usando Firestore.
 
