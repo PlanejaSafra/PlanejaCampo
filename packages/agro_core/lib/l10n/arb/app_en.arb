@@ -54,5 +54,95 @@
   "consentReceiveRegionalMetricsDesc": "Get insights based on aggregated community data.",
   "consentPersonalizedAds": "Personalized ads",
   "consentPersonalizedAdsDesc": "See more relevant ads based on your usage.",
-  "privacySaved": "Preferences saved"
+  "privacySaved": "Preferences saved",
+
+  "chuvaAppTitle": "Planeja Chuva",
+  "chuvaListaVaziaTitle": "No rainfall recorded",
+  "chuvaListaVaziaSubtitle": "Tap + to record your first rainfall",
+  "chuvaAdicionarTitle": "Record Rainfall",
+  "chuvaEditarTitle": "Edit Record",
+  "chuvaCampoMilimetros": "Millimeters (mm)",
+  "chuvaCampoMilimetrosHint": "E.g.: 25.5",
+  "chuvaCampoData": "Date",
+  "chuvaCampoObservacao": "Note (optional)",
+  "chuvaCampoObservacaoHint": "E.g.: Heavy rain in the afternoon",
+  "chuvaBotaoSalvar": "SAVE",
+  "chuvaBotaoCancelar": "CANCEL",
+  "chuvaBotaoExcluir": "DELETE",
+  "chuvaConfirmarExclusaoTitle": "Delete record?",
+  "chuvaConfirmarExclusaoMsg": "Are you sure you want to delete this rainfall record?",
+  "chuvaRegistrada": "Rainfall of {mm}mm recorded!",
+  "@chuvaRegistrada": {
+    "placeholders": {
+      "mm": {
+        "type": "String"
+      }
+    }
+  },
+  "chuvaAtualizada": "Record updated!",
+  "chuvaExcluida": "Record deleted",
+  "chuvaDesfazer": "UNDO",
+  "chuvaTotalDoMes": "Month total",
+  "chuvaMesAnterior": "Previous month",
+  "chuvaEstatisticas": "Statistics",
+  "chuvaEstatisticasTitle": "Rainfall Statistics",
+  "chuvaTotalAno": "Year total",
+  "chuvaMediaPorChuva": "Average per rain",
+  "chuvaMaiorRegistro": "Highest record",
+  "chuvaTotalRegistros": "Total records",
+  "chuvaBackup": "Backup",
+  "chuvaBackupTitle": "Data Backup",
+  "chuvaExportarDados": "Export data",
+  "chuvaExportarDescricao": "Generate a file with all your records to save or share.",
+  "chuvaImportarDados": "Import data",
+  "chuvaImportarDescricao": "Restore records from a backup file.",
+  "chuvaExportarSucesso": "Backup exported successfully!",
+  "chuvaImportarSucesso": "{count} records imported!",
+  "@chuvaImportarSucesso": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "chuvaImportarDuplicados": "{count} records imported ({duplicados} duplicates skipped)",
+  "@chuvaImportarDuplicados": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "duplicados": {
+        "type": "int"
+      }
+    }
+  },
+  "chuvaErroValorInvalido": "Enter a value between 0.1 and 500 mm",
+  "chuvaErroDataObrigatoria": "Select a date",
+  "chuvaErroArquivoInvalido": "Invalid backup file",
+  "chuvaIntensidadeLeve": "Light rain",
+  "chuvaIntensidadeModerada": "Moderate rain",
+  "chuvaIntensidadeForte": "Heavy rain",
+  "chuvaSemRegistrosMes": "No records this month",
+  "chuvaHoje": "Today",
+  "chuvaOntem": "Yesterday",
+  "chuvaMm": "mm",
+  "chuvaRegistrosEncontrados": "{count} records found",
+  "@chuvaRegistrosEncontrados": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "chuvaConfirmarImportacao": "Import {count} records?",
+  "@chuvaConfirmarImportacao": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "chuvaNenhumRegistroBackup": "No records to export",
+  "chuvaComparacaoMesAcima": "Above previous month",
+  "chuvaComparacaoMesAbaixo": "Below previous month"
 }

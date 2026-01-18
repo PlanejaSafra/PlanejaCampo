@@ -44,293 +44,202 @@
 
 ## Phase 6.0: Backup e Compartilhamento
 
-### Status: [TODO]
+### Status: [DONE]
+**Date Completed**: 2026-01-17
 **Prioridade**: 🟢 ENHANCEMENT
 **Objetivo**: Permitir exportar e importar dados de chuva de forma simples.
 
-### Contexto
-O produtor precisa ter segurança de que seus dados não serão perdidos se trocar de celular. A solução deve ser SIMPLES: compartilhar um arquivo que pode ser guardado no WhatsApp ou Google Drive.
+### Implementation Summary
 
-### Requisitos Funcionais
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 6.0.1 | Create BackupService with export/import JSON | ✅ DONE |
+| 6.0.2 | Create BackupScreen with export/import UI | ✅ DONE |
+| 6.0.3 | Add share_plus and file_picker dependencies | ✅ DONE |
+| 6.0.4 | Add Backup menu item in drawer | ✅ DONE |
+| 6.0.5 | Text summary export for WhatsApp | ✅ DONE |
+| 6.0.6 | Duplicate detection on import | ✅ DONE |
 
-| ID | Requisito | Prioridade |
-|----|-----------|------------|
-| 6.1 | Exportar todos os registros para arquivo JSON | Alta |
-| 6.2 | Botão "Compartilhar" que abre share sheet do sistema | Alta |
-| 6.3 | Importar dados de arquivo JSON | Média |
-| 6.4 | Detectar e evitar duplicatas na importação | Média |
-| 6.5 | Mostrar resumo antes de importar (X registros encontrados) | Baixa |
+### Files Created/Modified
 
-### Arquivos a Criar/Modificar
-
-| Arquivo | Ação | Descrição |
-|---------|------|-----------|
-| `lib/services/backup_service.dart` | CREATE | Lógica de export/import JSON |
-| `lib/screens/backup_screen.dart` | CREATE | Tela com botões Exportar/Importar |
-| Drawer menu | MODIFY | Adicionar item "Backup" |
-
-### Considerações Técnicas
-- Usar `share_plus` para compartilhamento
-- Formato JSON legível (pretty print)
-- Incluir metadados: versão do app, data do backup, total de registros
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/services/backup_service.dart` | CREATE | Export/import JSON logic with share_plus |
+| `lib/screens/backup_screen.dart` | CREATE | Backup screen with export/import buttons |
+| `pubspec.yaml` | MODIFY | Added share_plus, file_picker, path_provider |
+| `lib/screens/lista_chuvas_screen.dart` | MODIFY | Added Backup drawer item |
 
 ---
 
 ## Phase 5.0: Resumos e Estatísticas Simples
 
-### Status: [TODO]
+### Status: [DONE]
+**Date Completed**: 2026-01-17
 **Prioridade**: 🟢 ENHANCEMENT
 **Objetivo**: Mostrar informações úteis sobre o histórico de chuvas sem gráficos complexos.
 
-### Contexto
-O produtor quer saber: "Quanto choveu este mês?", "E no mês passado?", "Qual foi a maior chuva?". Respostas devem ser NÚMEROS GRANDES e CLAROS.
+### Implementation Summary
 
-### Requisitos Funcionais
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 5.0.1 | Create ResumoMensalCard widget | ✅ DONE |
+| 5.0.2 | Create EstatisticasScreen with all stats | ✅ DONE |
+| 5.0.3 | Add monthly summary to home screen | ✅ DONE |
+| 5.0.4 | Add month comparison indicator | ✅ DONE |
+| 5.0.5 | Add Statistics menu item in drawer | ✅ DONE |
 
-| ID | Requisito | Prioridade |
-|----|-----------|------------|
-| 5.1 | Card na home mostrando total do mês atual (destaque) | Alta |
-| 5.2 | Card mostrando total do mês anterior (comparação) | Alta |
-| 5.3 | Tela de estatísticas com: total do ano, média por chuva, maior chuva registrada | Média |
-| 5.4 | Indicador visual se mês atual está acima/abaixo do anterior | Baixa |
+### Files Created/Modified
 
-### Arquivos a Criar/Modificar
-
-| Arquivo | Ação | Descrição |
-|---------|------|-----------|
-| `lib/widgets/resumo_mensal_card.dart` | CREATE | Card com total do mês |
-| `lib/screens/estatisticas_screen.dart` | CREATE | Tela com estatísticas detalhadas |
-| `lib/screens/lista_chuvas_screen.dart` | MODIFY | Adicionar cards de resumo no topo |
-
-### Considerações de UX
-- Números em fonte GRANDE (32sp+)
-- Cores: verde = acima da média, vermelho = abaixo
-- Unidade sempre visível: "mm" ao lado do número
-- Nenhum gráfico nesta fase (complexidade desnecessária para MVP)
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/widgets/resumo_mensal_card.dart` | CREATE | Monthly total card with comparison |
+| `lib/screens/estatisticas_screen.dart` | CREATE | Full statistics screen |
+| `lib/screens/lista_chuvas_screen.dart` | MODIFY | Added summary card and stats menu |
 
 ---
 
 ## Phase 4.0: Edição e Exclusão de Registros
 
-### Status: [TODO]
+### Status: [DONE]
+**Date Completed**: 2026-01-17
 **Prioridade**: 🟡 IMPORTANTE
 **Objetivo**: Permitir corrigir erros e remover registros incorretos.
 
-### Contexto
-Erros acontecem: digitou 50mm ao invés de 5mm, ou registrou no dia errado. O produtor precisa poder corrigir SEM perder dados.
+### Implementation Summary
 
-### Requisitos Funcionais
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 4.0.1 | Create EditarChuvaScreen | ✅ DONE |
+| 4.0.2 | Implement delete with confirmation dialog | ✅ DONE |
+| 4.0.3 | Add undo functionality via SnackBar | ✅ DONE |
+| 4.0.4 | Add swipe-to-delete in list | ✅ DONE |
 
-| ID | Requisito | Prioridade |
-|----|-----------|------------|
-| 4.1 | Tocar em um registro abre tela de edição | Alta |
-| 4.2 | Tela de edição idêntica à de adicionar, mas com dados preenchidos | Alta |
-| 4.3 | Botão "Excluir" na tela de edição (com confirmação) | Alta |
-| 4.4 | Diálogo de confirmação: "Tem certeza que deseja excluir?" | Alta |
-| 4.5 | SnackBar com opção "Desfazer" após exclusão | Média |
-| 4.6 | Swipe-to-delete na lista (alternativa ao botão) | Baixa |
+### Files Created/Modified
 
-### Arquivos a Criar/Modificar
-
-| Arquivo | Ação | Descrição |
-|---------|------|-----------|
-| `lib/screens/editar_chuva_screen.dart` | CREATE | Tela de edição (reutiliza form de adicionar) |
-| `lib/screens/lista_chuvas_screen.dart` | MODIFY | Adicionar onTap para navegar à edição |
-| `lib/widgets/registro_chuva_tile.dart` | MODIFY | Suportar Dismissible para swipe |
-
-### Considerações de UX
-- Botão excluir deve ser VERMELHO e posicionado longe do "Salvar"
-- Confirmação obrigatória antes de excluir
-- Mostrar claramente qual registro está sendo editado (data no AppBar)
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/screens/editar_chuva_screen.dart` | CREATE | Edit screen with delete button |
+| `lib/widgets/registro_chuva_tile.dart` | MODIFY | Added Dismissible for swipe-to-delete |
 
 ---
 
 ## Phase 3.0: Registro de Nova Chuva
 
-### Status: [TODO]
+### Status: [DONE]
+**Date Completed**: 2026-01-17
 **Prioridade**: 🔴 CRÍTICO
 **Objetivo**: Permitir registrar uma nova chuva de forma rápida e simples.
 
-### Contexto
-Este é o CORE do app. O produtor acabou de medir a chuva no pluviômetro e quer registrar. Deve ser possível em MENOS DE 10 SEGUNDOS.
+### Implementation Summary
 
-### Requisitos Funcionais
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 3.0.1 | Create AdicionarChuvaScreen | ✅ DONE |
+| 3.0.2 | Large numeric input for millimeters | ✅ DONE |
+| 3.0.3 | Date picker with today as default | ✅ DONE |
+| 3.0.4 | Optional observation field | ✅ DONE |
+| 3.0.5 | Validation (0.1 - 500mm) | ✅ DONE |
+| 3.0.6 | Success feedback via SnackBar | ✅ DONE |
+| 3.0.7 | FAB on home screen | ✅ DONE |
 
-| ID | Requisito | Prioridade |
-|----|-----------|------------|
-| 3.1 | FAB (botão flutuante) visível e grande na tela principal | Alta |
-| 3.2 | Tela de registro com campo de milímetros (numérico) | Alta |
-| 3.3 | Campo de data com default = HOJE | Alta |
-| 3.4 | Botão grande "SALVAR" no final da tela | Alta |
-| 3.5 | Validação: valor deve ser > 0 e ≤ 500mm | Alta |
-| 3.6 | Campo opcional de observação (ex: "chuva com granizo") | Média |
-| 3.7 | Feedback visual após salvar (SnackBar verde) | Alta |
-| 3.8 | Voltar automaticamente para lista após salvar | Alta |
+### Files Created/Modified
 
-### Arquivos a Criar/Modificar
-
-| Arquivo | Ação | Descrição |
-|---------|------|-----------|
-| `lib/screens/adicionar_chuva_screen.dart` | CREATE | Tela de registro |
-| `lib/screens/lista_chuvas_screen.dart` | MODIFY | Adicionar FAB com navegação |
-| `lib/l10n/` | MODIFY | Adicionar strings da tela |
-
-### Fluxo de Interação
-```
-1. Usuário toca no FAB (+)
-2. Abre tela com campo de mm focado e teclado numérico aberto
-3. Digita valor (ex: 25)
-4. [Opcional] Ajusta data se não for hoje
-5. [Opcional] Adiciona observação
-6. Toca "SALVAR"
-7. Retorna à lista com SnackBar "Chuva de 25mm registrada!"
-```
-
-### Considerações de UX
-- Campo de mm deve ter fonte GRANDE (48sp+)
-- Teclado numérico deve abrir automaticamente
-- Botão salvar deve ocupar toda a largura inferior
-- Data picker deve mostrar calendário visual, não dropdown
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/screens/adicionar_chuva_screen.dart` | CREATE | Add rainfall screen with large input |
+| `lib/screens/lista_chuvas_screen.dart` | MODIFY | Added FAB with navigation |
 
 ---
 
 ## Phase 2.5: Lista de Registros de Chuva
 
-### Status: [TODO]
+### Status: [DONE]
+**Date Completed**: 2026-01-17
 **Prioridade**: 🔴 CRÍTICO
 **Objetivo**: Exibir histórico de chuvas registradas de forma clara e organizada.
 
-### Contexto
-O produtor quer ver rapidamente: "Quando choveu?", "Quanto choveu?". A lista é a principal interface do app após o onboarding.
+### Implementation Summary
 
-### Requisitos Funcionais
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 2.5.1 | Create RegistroChuvasTile widget | ✅ DONE |
+| 2.5.2 | Create EstadoVazio widget | ✅ DONE |
+| 2.5.3 | Group records by month with headers | ✅ DONE |
+| 2.5.4 | Intensity icons (light/moderate/heavy) | ✅ DONE |
+| 2.5.5 | Implement CustomScrollView with slivers | ✅ DONE |
+| 2.5.6 | Pull-to-refresh | ✅ DONE |
 
-| ID | Requisito | Prioridade |
-|----|-----------|------------|
-| 2.5.1 | Lista ordenada por data (mais recente primeiro) | Alta |
-| 2.5.2 | Cada item mostra: data, valor em mm, observação (se houver) | Alta |
-| 2.5.3 | Separadores visuais por mês/ano | Alta |
-| 2.5.4 | Estado vazio amigável quando não há registros | Alta |
-| 2.5.5 | Pull-to-refresh para recarregar lista | Baixa |
-| 2.5.6 | Ícone indicativo de intensidade (garoa, chuva, tempestade) | Baixa |
+### Files Created/Modified
 
-### Arquivos a Criar/Modificar
-
-| Arquivo | Ação | Descrição |
-|---------|------|-----------|
-| `lib/widgets/registro_chuva_tile.dart` | CREATE | Widget do item da lista |
-| `lib/widgets/separador_mes.dart` | CREATE | Header de separação por mês |
-| `lib/widgets/estado_vazio.dart` | CREATE | Widget para lista vazia |
-| `lib/screens/lista_chuvas_screen.dart` | MODIFY | Implementar ListView com dados reais |
-
-### Design do Item da Lista
-```
-┌─────────────────────────────────────┐
-│ 🌧️  15 de Janeiro, 2026            │
-│      32 mm                    💧    │
-│      "Chuva forte à tarde"          │
-└─────────────────────────────────────┘
-```
-
-### Considerações de UX
-- Ícones de intensidade: 💧 (leve <10mm), 🌧️ (moderada 10-30mm), ⛈️ (forte >30mm)
-- Valor em mm deve ser o elemento mais destacado visualmente
-- Observação em texto menor e cor mais suave
-- Separador de mês deve ser sticky (ficar fixo ao scrollar)
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/widgets/registro_chuva_tile.dart` | CREATE | Record tile with intensity icon |
+| `lib/widgets/estado_vazio.dart` | CREATE | Empty state widget |
+| `lib/screens/lista_chuvas_screen.dart` | MODIFY | Full implementation with real data |
 
 ---
 
 ## Phase 2.4: Modelo de Dados e Persistência
 
-### Status: [TODO]
+### Status: [DONE]
+**Date Completed**: 2026-01-17
 **Prioridade**: 🔴 CRÍTICO
 **Objetivo**: Definir estrutura de dados e implementar persistência com Hive.
 
-### Contexto
-Os dados de chuva precisam ser salvos localmente e sobreviver ao fechamento do app. Hive é o banco escolhido por ser rápido e offline-first.
+### Implementation Summary
 
-### Modelo de Dados: RegistroChuva
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 2.4.1 | Create RegistroChuva model with @HiveType | ✅ DONE |
+| 2.4.2 | Generate Hive adapter with build_runner | ✅ DONE |
+| 2.4.3 | Create ChuvaService with CRUD operations | ✅ DONE |
+| 2.4.4 | Initialize service in main.dart | ✅ DONE |
 
-| Campo | Tipo | Obrigatório | Descrição |
-|-------|------|-------------|-----------|
-| id | int | Sim | Timestamp em milliseconds (chave única) |
-| data | DateTime | Sim | Data da chuva |
-| milimetros | double | Sim | Volume em mm (0.1 a 500.0) |
-| observacao | String? | Não | Nota opcional |
-| criadoEm | DateTime | Sim | Quando foi registrado (auditoria) |
+### Files Created/Modified
 
-### Arquivos a Criar
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/models/registro_chuva.dart` | CREATE | Hive model with factory constructor |
+| `lib/models/registro_chuva.g.dart` | GENERATE | Hive TypeAdapter |
+| `lib/services/chuva_service.dart` | CREATE | Singleton service with CRUD |
+| `lib/main.dart` | MODIFY | Added ChuvaService initialization |
 
-| Arquivo | Ação | Descrição |
-|---------|------|-----------|
-| `lib/models/registro_chuva.dart` | CREATE | Classe do modelo com @HiveType |
-| `lib/models/registro_chuva.g.dart` | GENERATE | Adapter gerado pelo build_runner |
-| `lib/services/chuva_service.dart` | CREATE | CRUD operations no Hive |
+### Model: RegistroChuva
 
-### Operações do ChuvaService
-
-| Método | Descrição |
-|--------|-----------|
-| `init()` | Registra adapter e abre box |
-| `listarTodos()` | Retorna todos registros ordenados por data |
-| `adicionar(RegistroChuva)` | Salva novo registro |
-| `atualizar(RegistroChuva)` | Atualiza registro existente |
-| `excluir(int id)` | Remove registro |
-| `totalDoMes(DateTime)` | Soma mm de um mês específico |
-
-### Considerações Técnicas
-- Box name: `'registros_chuva'`
-- TypeId do HiveType: `1` (0 já usado pelo core para settings)
-- Ordenação sempre por `data` DESC (mais recente primeiro)
-- Validação de milimetros: min 0.1, max 500.0
+| Campo | Tipo | Descrição |
+|-------|------|-----------|
+| id | int | Timestamp em milliseconds (chave única) |
+| data | DateTime | Data da chuva |
+| milimetros | double | Volume em mm (0.1 a 500.0) |
+| observacao | String? | Nota opcional |
+| criadoEm | DateTime | Quando foi registrado |
 
 ---
 
 ## Phase 2.3: Localização (l10n) do App
 
-### Status: [TODO]
+### Status: [DONE]
+**Date Completed**: 2026-01-17
 **Prioridade**: 🟡 IMPORTANTE
 **Objetivo**: Adicionar todas as strings do app nos arquivos ARB.
 
-### Strings Necessárias (PT-BR)
+### Implementation Summary
 
-| Chave | Valor PT-BR |
-|-------|-------------|
-| appTitle | Planeja Chuva |
-| listaVaziaTitle | Nenhuma chuva registrada |
-| listaVaziaSubtitle | Toque no + para registrar sua primeira chuva |
-| adicionarChuvaTitle | Registrar Chuva |
-| campoMilimetros | Milímetros (mm) |
-| campoData | Data |
-| campoObservacao | Observação (opcional) |
-| botaoSalvar | SALVAR |
-| botaoCancelar | CANCELAR |
-| botaoExcluir | EXCLUIR |
-| confirmarExclusao | Tem certeza que deseja excluir este registro? |
-| chuvaRegistrada | Chuva de {mm}mm registrada! |
-| chuvaExcluida | Registro excluído |
-| desfazer | DESFAZER |
-| totalDoMes | Total do mês |
-| mesAnterior | Mês anterior |
-| estatisticas | Estatísticas |
-| backup | Backup |
-| exportarDados | Exportar dados |
-| importarDados | Importar dados |
-| erroValorInvalido | Digite um valor entre 0.1 e 500 mm |
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 2.3.1 | Add chuva* strings to agro_core ARB files | ✅ DONE |
+| 2.3.2 | Regenerate l10n with flutter gen-l10n | ✅ DONE |
+| 2.3.3 | Remove redundant app-specific l10n | ✅ DONE |
 
-### Arquivos a Criar/Modificar
+### Files Modified
 
-| Arquivo | Ação | Descrição |
-|---------|------|-----------|
-| `lib/l10n/app_pt_BR.arb` | CREATE | Strings em português |
-| `lib/l10n/app_en.arb` | CREATE | Strings em inglês |
-| `l10n.yaml` | CREATE | Configuração do gen-l10n |
+| File | Action | Description |
+|------|--------|-------------|
+| `packages/agro_core/lib/l10n/arb/app_pt.arb` | MODIFY | Added 40+ chuva* strings |
+| `packages/agro_core/lib/l10n/arb/app_en.arb` | MODIFY | Added 40+ chuva* strings (EN) |
 
-### Nota
-O core já tem AgroLocalizations. Este app pode:
-1. Usar as strings do core diretamente
-2. Criar AppLocalizations próprio para strings específicas
-3. Ou estender o ARB do core (preferível para manter DRY)
+### Note
+All l10n strings are centralized in agro_core following the DRY principle. The app uses AgroLocalizations directly.
 
 ---
 
@@ -384,20 +293,45 @@ O core já tem AgroLocalizations. Este app pode:
 DONE ─────────────────────────────────────────────────
   [1.0] Privacy Onboarding ✅
   [2.0] Menu Integration ✅
-
-TODO ─────────────────────────────────────────────────
-  [2.3] Localização (l10n) ⏳
-  [2.4] Modelo de Dados (Hive) ⏳
-  [2.5] Lista de Registros ⏳
-  [3.0] Registro de Nova Chuva 🔴 MVP CORE
-  [4.0] Edição e Exclusão ⏳
-  [5.0] Resumos e Estatísticas ⏳
-  [6.0] Backup e Compartilhamento ⏳
+  [2.3] Localização (l10n) ✅
+  [2.4] Modelo de Dados (Hive) ✅
+  [2.5] Lista de Registros ✅
+  [3.0] Registro de Nova Chuva ✅ MVP CORE
+  [4.0] Edição e Exclusão ✅
+  [5.0] Resumos e Estatísticas ✅
+  [6.0] Backup e Compartilhamento ✅
 
 FUTURO ───────────────────────────────────────────────
-  [7.0] Gráficos de Histórico
+  [7.0] Gráficos de Histórico (fl_chart)
   [8.0] Sincronização de Dados Agregados
   [9.0] Notificações/Lembretes
+```
+
+---
+
+## Arquivos do Projeto
+
+### Estrutura Final
+
+```
+lib/
+├── main.dart                         # Entry point with Hive init
+├── models/
+│   ├── registro_chuva.dart           # Hive model
+│   └── registro_chuva.g.dart         # Generated adapter
+├── services/
+│   ├── chuva_service.dart            # CRUD operations
+│   └── backup_service.dart           # Export/import logic
+├── screens/
+│   ├── lista_chuvas_screen.dart      # Main screen with list
+│   ├── adicionar_chuva_screen.dart   # Add new record
+│   ├── editar_chuva_screen.dart      # Edit/delete record
+│   ├── estatisticas_screen.dart      # Statistics
+│   └── backup_screen.dart            # Backup/restore
+└── widgets/
+    ├── registro_chuva_tile.dart      # List item
+    ├── estado_vazio.dart             # Empty state
+    └── resumo_mensal_card.dart       # Monthly summary
 ```
 
 ---

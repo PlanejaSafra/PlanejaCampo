@@ -36,51 +36,60 @@ class TermsPrivacyScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Spacer(flex: 1),
-              Icon(
-                Icons.shield_outlined,
-                size: 64,
-                color: theme.colorScheme.primary,
-              ),
-              const SizedBox(height: 24),
-              Text(
-                l10n.termsTitle,
-                style: theme.textTheme.headlineMedium,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 24),
-              Text(
-                l10n.termsBodyIntro,
-                style: theme.textTheme.bodyMedium,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 24),
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+              Expanded(
+                child: SingleChildScrollView(
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Text(
-                        l10n.termsSummaryTitle,
-                        style: theme.textTheme.titleSmall,
+                      const SizedBox(height: 16),
+                      Icon(
+                        Icons.shield_outlined,
+                        size: 64,
+                        color: theme.colorScheme.primary,
                       ),
-                      const SizedBox(height: 12),
-                      _BulletPoint(text: l10n.termsSummaryItem1),
-                      _BulletPoint(text: l10n.termsSummaryItem2),
-                      _BulletPoint(text: l10n.termsSummaryItem3),
-                      _BulletPoint(text: l10n.termsSummaryItem4),
+                      const SizedBox(height: 24),
+                      Text(
+                        l10n.termsTitle,
+                        style: theme.textTheme.headlineMedium,
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 24),
+                      Text(
+                        l10n.termsBodyIntro,
+                        style: theme.textTheme.bodyMedium,
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 24),
+                      Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                l10n.termsSummaryTitle,
+                                style: theme.textTheme.titleSmall,
+                              ),
+                              const SizedBox(height: 12),
+                              _BulletPoint(text: l10n.termsSummaryItem1),
+                              _BulletPoint(text: l10n.termsSummaryItem2),
+                              _BulletPoint(text: l10n.termsSummaryItem3),
+                              _BulletPoint(text: l10n.termsSummaryItem4),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        l10n.termsFooter,
+                        style: theme.textTheme.bodySmall,
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 24),
                     ],
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
-              Text(
-                l10n.termsFooter,
-                style: theme.textTheme.bodySmall,
-                textAlign: TextAlign.center,
-              ),
-              const Spacer(flex: 2),
               ElevatedButton(
                 onPressed: () => _acceptTerms(context),
                 style: ElevatedButton.styleFrom(
@@ -99,7 +108,6 @@ class TermsPrivacyScreen extends StatelessWidget {
                 ),
                 child: Text(l10n.declineAndExitLabel),
               ),
-              const SizedBox(height: 24),
             ],
           ),
         ),

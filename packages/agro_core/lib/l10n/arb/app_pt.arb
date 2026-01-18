@@ -54,5 +54,95 @@
   "consentReceiveRegionalMetricsDesc": "Receber insights baseados em dados agregados da comunidade.",
   "consentPersonalizedAds": "Anúncios personalizados",
   "consentPersonalizedAdsDesc": "Ver anúncios mais relevantes com base no seu uso.",
-  "privacySaved": "Preferências salvas"
+  "privacySaved": "Preferências salvas",
+
+  "chuvaAppTitle": "Planeja Chuva",
+  "chuvaListaVaziaTitle": "Nenhuma chuva registrada",
+  "chuvaListaVaziaSubtitle": "Toque no + para registrar sua primeira chuva",
+  "chuvaAdicionarTitle": "Registrar Chuva",
+  "chuvaEditarTitle": "Editar Registro",
+  "chuvaCampoMilimetros": "Milímetros (mm)",
+  "chuvaCampoMilimetrosHint": "Ex: 25.5",
+  "chuvaCampoData": "Data",
+  "chuvaCampoObservacao": "Observação (opcional)",
+  "chuvaCampoObservacaoHint": "Ex: Chuva forte à tarde",
+  "chuvaBotaoSalvar": "SALVAR",
+  "chuvaBotaoCancelar": "CANCELAR",
+  "chuvaBotaoExcluir": "EXCLUIR",
+  "chuvaConfirmarExclusaoTitle": "Excluir registro?",
+  "chuvaConfirmarExclusaoMsg": "Tem certeza que deseja excluir este registro de chuva?",
+  "chuvaRegistrada": "Chuva de {mm}mm registrada!",
+  "@chuvaRegistrada": {
+    "placeholders": {
+      "mm": {
+        "type": "String"
+      }
+    }
+  },
+  "chuvaAtualizada": "Registro atualizado!",
+  "chuvaExcluida": "Registro excluído",
+  "chuvaDesfazer": "DESFAZER",
+  "chuvaTotalDoMes": "Total do mês",
+  "chuvaMesAnterior": "Mês anterior",
+  "chuvaEstatisticas": "Estatísticas",
+  "chuvaEstatisticasTitle": "Estatísticas de Chuva",
+  "chuvaTotalAno": "Total do ano",
+  "chuvaMediaPorChuva": "Média por chuva",
+  "chuvaMaiorRegistro": "Maior registro",
+  "chuvaTotalRegistros": "Total de registros",
+  "chuvaBackup": "Backup",
+  "chuvaBackupTitle": "Backup de Dados",
+  "chuvaExportarDados": "Exportar dados",
+  "chuvaExportarDescricao": "Gere um arquivo com todos os seus registros para guardar ou enviar.",
+  "chuvaImportarDados": "Importar dados",
+  "chuvaImportarDescricao": "Restaure registros a partir de um arquivo de backup.",
+  "chuvaExportarSucesso": "Backup exportado com sucesso!",
+  "chuvaImportarSucesso": "{count} registros importados!",
+  "@chuvaImportarSucesso": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "chuvaImportarDuplicados": "{count} registros importados ({duplicados} duplicados ignorados)",
+  "@chuvaImportarDuplicados": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "duplicados": {
+        "type": "int"
+      }
+    }
+  },
+  "chuvaErroValorInvalido": "Digite um valor entre 0.1 e 500 mm",
+  "chuvaErroDataObrigatoria": "Selecione uma data",
+  "chuvaErroArquivoInvalido": "Arquivo de backup inválido",
+  "chuvaIntensidadeLeve": "Chuva leve",
+  "chuvaIntensidadeModerada": "Chuva moderada",
+  "chuvaIntensidadeForte": "Chuva forte",
+  "chuvaSemRegistrosMes": "Sem registros este mês",
+  "chuvaHoje": "Hoje",
+  "chuvaOntem": "Ontem",
+  "chuvaMm": "mm",
+  "chuvaRegistrosEncontrados": "{count} registros encontrados",
+  "@chuvaRegistrosEncontrados": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "chuvaConfirmarImportacao": "Importar {count} registros?",
+  "@chuvaConfirmarImportacao": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "chuvaNenhumRegistroBackup": "Nenhum registro para exportar",
+  "chuvaComparacaoMesAcima": "Acima do mês anterior",
+  "chuvaComparacaoMesAbaixo": "Abaixo do mês anterior"
 }

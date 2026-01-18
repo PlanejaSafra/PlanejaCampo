@@ -4,6 +4,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import 'screens/lista_chuvas_screen.dart';
+import 'services/chuva_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -13,6 +14,9 @@ Future<void> main() async {
 
   // Initialize privacy store
   await AgroPrivacyStore.init();
+
+  // Initialize chuva service (registers adapter and opens box)
+  await ChuvaService().init();
 
   runApp(const PlanejaChuvaApp());
 }

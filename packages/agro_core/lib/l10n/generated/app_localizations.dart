@@ -382,6 +382,312 @@ abstract class AgroLocalizations {
   /// In en, this message translates to:
   /// **'Preferences saved'**
   String get privacySaved;
+
+  /// No description provided for @chuvaAppTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Planeja Chuva'**
+  String get chuvaAppTitle;
+
+  /// No description provided for @chuvaListaVaziaTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No rainfall recorded'**
+  String get chuvaListaVaziaTitle;
+
+  /// No description provided for @chuvaListaVaziaSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap + to record your first rainfall'**
+  String get chuvaListaVaziaSubtitle;
+
+  /// No description provided for @chuvaAdicionarTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Record Rainfall'**
+  String get chuvaAdicionarTitle;
+
+  /// No description provided for @chuvaEditarTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Record'**
+  String get chuvaEditarTitle;
+
+  /// No description provided for @chuvaCampoMilimetros.
+  ///
+  /// In en, this message translates to:
+  /// **'Millimeters (mm)'**
+  String get chuvaCampoMilimetros;
+
+  /// No description provided for @chuvaCampoMilimetrosHint.
+  ///
+  /// In en, this message translates to:
+  /// **'E.g.: 25.5'**
+  String get chuvaCampoMilimetrosHint;
+
+  /// No description provided for @chuvaCampoData.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get chuvaCampoData;
+
+  /// No description provided for @chuvaCampoObservacao.
+  ///
+  /// In en, this message translates to:
+  /// **'Note (optional)'**
+  String get chuvaCampoObservacao;
+
+  /// No description provided for @chuvaCampoObservacaoHint.
+  ///
+  /// In en, this message translates to:
+  /// **'E.g.: Heavy rain in the afternoon'**
+  String get chuvaCampoObservacaoHint;
+
+  /// No description provided for @chuvaBotaoSalvar.
+  ///
+  /// In en, this message translates to:
+  /// **'SAVE'**
+  String get chuvaBotaoSalvar;
+
+  /// No description provided for @chuvaBotaoCancelar.
+  ///
+  /// In en, this message translates to:
+  /// **'CANCEL'**
+  String get chuvaBotaoCancelar;
+
+  /// No description provided for @chuvaBotaoExcluir.
+  ///
+  /// In en, this message translates to:
+  /// **'DELETE'**
+  String get chuvaBotaoExcluir;
+
+  /// No description provided for @chuvaConfirmarExclusaoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete record?'**
+  String get chuvaConfirmarExclusaoTitle;
+
+  /// No description provided for @chuvaConfirmarExclusaoMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this rainfall record?'**
+  String get chuvaConfirmarExclusaoMsg;
+
+  /// No description provided for @chuvaRegistrada.
+  ///
+  /// In en, this message translates to:
+  /// **'Rainfall of {mm}mm recorded!'**
+  String chuvaRegistrada(String mm);
+
+  /// No description provided for @chuvaAtualizada.
+  ///
+  /// In en, this message translates to:
+  /// **'Record updated!'**
+  String get chuvaAtualizada;
+
+  /// No description provided for @chuvaExcluida.
+  ///
+  /// In en, this message translates to:
+  /// **'Record deleted'**
+  String get chuvaExcluida;
+
+  /// No description provided for @chuvaDesfazer.
+  ///
+  /// In en, this message translates to:
+  /// **'UNDO'**
+  String get chuvaDesfazer;
+
+  /// No description provided for @chuvaTotalDoMes.
+  ///
+  /// In en, this message translates to:
+  /// **'Month total'**
+  String get chuvaTotalDoMes;
+
+  /// No description provided for @chuvaMesAnterior.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous month'**
+  String get chuvaMesAnterior;
+
+  /// No description provided for @chuvaEstatisticas.
+  ///
+  /// In en, this message translates to:
+  /// **'Statistics'**
+  String get chuvaEstatisticas;
+
+  /// No description provided for @chuvaEstatisticasTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Rainfall Statistics'**
+  String get chuvaEstatisticasTitle;
+
+  /// No description provided for @chuvaTotalAno.
+  ///
+  /// In en, this message translates to:
+  /// **'Year total'**
+  String get chuvaTotalAno;
+
+  /// No description provided for @chuvaMediaPorChuva.
+  ///
+  /// In en, this message translates to:
+  /// **'Average per rain'**
+  String get chuvaMediaPorChuva;
+
+  /// No description provided for @chuvaMaiorRegistro.
+  ///
+  /// In en, this message translates to:
+  /// **'Highest record'**
+  String get chuvaMaiorRegistro;
+
+  /// No description provided for @chuvaTotalRegistros.
+  ///
+  /// In en, this message translates to:
+  /// **'Total records'**
+  String get chuvaTotalRegistros;
+
+  /// No description provided for @chuvaBackup.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup'**
+  String get chuvaBackup;
+
+  /// No description provided for @chuvaBackupTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Data Backup'**
+  String get chuvaBackupTitle;
+
+  /// No description provided for @chuvaExportarDados.
+  ///
+  /// In en, this message translates to:
+  /// **'Export data'**
+  String get chuvaExportarDados;
+
+  /// No description provided for @chuvaExportarDescricao.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate a file with all your records to save or share.'**
+  String get chuvaExportarDescricao;
+
+  /// No description provided for @chuvaImportarDados.
+  ///
+  /// In en, this message translates to:
+  /// **'Import data'**
+  String get chuvaImportarDados;
+
+  /// No description provided for @chuvaImportarDescricao.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore records from a backup file.'**
+  String get chuvaImportarDescricao;
+
+  /// No description provided for @chuvaExportarSucesso.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup exported successfully!'**
+  String get chuvaExportarSucesso;
+
+  /// No description provided for @chuvaImportarSucesso.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} records imported!'**
+  String chuvaImportarSucesso(int count);
+
+  /// No description provided for @chuvaImportarDuplicados.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} records imported ({duplicados} duplicates skipped)'**
+  String chuvaImportarDuplicados(int count, int duplicados);
+
+  /// No description provided for @chuvaErroValorInvalido.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a value between 0.1 and 500 mm'**
+  String get chuvaErroValorInvalido;
+
+  /// No description provided for @chuvaErroDataObrigatoria.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a date'**
+  String get chuvaErroDataObrigatoria;
+
+  /// No description provided for @chuvaErroArquivoInvalido.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid backup file'**
+  String get chuvaErroArquivoInvalido;
+
+  /// No description provided for @chuvaIntensidadeLeve.
+  ///
+  /// In en, this message translates to:
+  /// **'Light rain'**
+  String get chuvaIntensidadeLeve;
+
+  /// No description provided for @chuvaIntensidadeModerada.
+  ///
+  /// In en, this message translates to:
+  /// **'Moderate rain'**
+  String get chuvaIntensidadeModerada;
+
+  /// No description provided for @chuvaIntensidadeForte.
+  ///
+  /// In en, this message translates to:
+  /// **'Heavy rain'**
+  String get chuvaIntensidadeForte;
+
+  /// No description provided for @chuvaSemRegistrosMes.
+  ///
+  /// In en, this message translates to:
+  /// **'No records this month'**
+  String get chuvaSemRegistrosMes;
+
+  /// No description provided for @chuvaHoje.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get chuvaHoje;
+
+  /// No description provided for @chuvaOntem.
+  ///
+  /// In en, this message translates to:
+  /// **'Yesterday'**
+  String get chuvaOntem;
+
+  /// No description provided for @chuvaMm.
+  ///
+  /// In en, this message translates to:
+  /// **'mm'**
+  String get chuvaMm;
+
+  /// No description provided for @chuvaRegistrosEncontrados.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} records found'**
+  String chuvaRegistrosEncontrados(int count);
+
+  /// No description provided for @chuvaConfirmarImportacao.
+  ///
+  /// In en, this message translates to:
+  /// **'Import {count} records?'**
+  String chuvaConfirmarImportacao(int count);
+
+  /// No description provided for @chuvaNenhumRegistroBackup.
+  ///
+  /// In en, this message translates to:
+  /// **'No records to export'**
+  String get chuvaNenhumRegistroBackup;
+
+  /// No description provided for @chuvaComparacaoMesAcima.
+  ///
+  /// In en, this message translates to:
+  /// **'Above previous month'**
+  String get chuvaComparacaoMesAcima;
+
+  /// No description provided for @chuvaComparacaoMesAbaixo.
+  ///
+  /// In en, this message translates to:
+  /// **'Below previous month'**
+  String get chuvaComparacaoMesAbaixo;
 }
 
 class _AgroLocalizationsDelegate extends LocalizationsDelegate<AgroLocalizations> {

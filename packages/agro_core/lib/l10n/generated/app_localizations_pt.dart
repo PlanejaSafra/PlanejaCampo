@@ -149,4 +149,167 @@ class AgroLocalizationsPt extends AgroLocalizations {
 
   @override
   String get privacySaved => 'Preferências salvas';
+
+  @override
+  String get chuvaAppTitle => 'Planeja Chuva';
+
+  @override
+  String get chuvaListaVaziaTitle => 'Nenhuma chuva registrada';
+
+  @override
+  String get chuvaListaVaziaSubtitle => 'Toque no + para registrar sua primeira chuva';
+
+  @override
+  String get chuvaAdicionarTitle => 'Registrar Chuva';
+
+  @override
+  String get chuvaEditarTitle => 'Editar Registro';
+
+  @override
+  String get chuvaCampoMilimetros => 'Milímetros (mm)';
+
+  @override
+  String get chuvaCampoMilimetrosHint => 'Ex: 25.5';
+
+  @override
+  String get chuvaCampoData => 'Data';
+
+  @override
+  String get chuvaCampoObservacao => 'Observação (opcional)';
+
+  @override
+  String get chuvaCampoObservacaoHint => 'Ex: Chuva forte à tarde';
+
+  @override
+  String get chuvaBotaoSalvar => 'SALVAR';
+
+  @override
+  String get chuvaBotaoCancelar => 'CANCELAR';
+
+  @override
+  String get chuvaBotaoExcluir => 'EXCLUIR';
+
+  @override
+  String get chuvaConfirmarExclusaoTitle => 'Excluir registro?';
+
+  @override
+  String get chuvaConfirmarExclusaoMsg => 'Tem certeza que deseja excluir este registro de chuva?';
+
+  @override
+  String chuvaRegistrada(String mm) {
+    return 'Chuva de ${mm}mm registrada!';
+  }
+
+  @override
+  String get chuvaAtualizada => 'Registro atualizado!';
+
+  @override
+  String get chuvaExcluida => 'Registro excluído';
+
+  @override
+  String get chuvaDesfazer => 'DESFAZER';
+
+  @override
+  String get chuvaTotalDoMes => 'Total do mês';
+
+  @override
+  String get chuvaMesAnterior => 'Mês anterior';
+
+  @override
+  String get chuvaEstatisticas => 'Estatísticas';
+
+  @override
+  String get chuvaEstatisticasTitle => 'Estatísticas de Chuva';
+
+  @override
+  String get chuvaTotalAno => 'Total do ano';
+
+  @override
+  String get chuvaMediaPorChuva => 'Média por chuva';
+
+  @override
+  String get chuvaMaiorRegistro => 'Maior registro';
+
+  @override
+  String get chuvaTotalRegistros => 'Total de registros';
+
+  @override
+  String get chuvaBackup => 'Backup';
+
+  @override
+  String get chuvaBackupTitle => 'Backup de Dados';
+
+  @override
+  String get chuvaExportarDados => 'Exportar dados';
+
+  @override
+  String get chuvaExportarDescricao => 'Gere um arquivo com todos os seus registros para guardar ou enviar.';
+
+  @override
+  String get chuvaImportarDados => 'Importar dados';
+
+  @override
+  String get chuvaImportarDescricao => 'Restaure registros a partir de um arquivo de backup.';
+
+  @override
+  String get chuvaExportarSucesso => 'Backup exportado com sucesso!';
+
+  @override
+  String chuvaImportarSucesso(int count) {
+    return '$count registros importados!';
+  }
+
+  @override
+  String chuvaImportarDuplicados(int count, int duplicados) {
+    return '$count registros importados ($duplicados duplicados ignorados)';
+  }
+
+  @override
+  String get chuvaErroValorInvalido => 'Digite um valor entre 0.1 e 500 mm';
+
+  @override
+  String get chuvaErroDataObrigatoria => 'Selecione uma data';
+
+  @override
+  String get chuvaErroArquivoInvalido => 'Arquivo de backup inválido';
+
+  @override
+  String get chuvaIntensidadeLeve => 'Chuva leve';
+
+  @override
+  String get chuvaIntensidadeModerada => 'Chuva moderada';
+
+  @override
+  String get chuvaIntensidadeForte => 'Chuva forte';
+
+  @override
+  String get chuvaSemRegistrosMes => 'Sem registros este mês';
+
+  @override
+  String get chuvaHoje => 'Hoje';
+
+  @override
+  String get chuvaOntem => 'Ontem';
+
+  @override
+  String get chuvaMm => 'mm';
+
+  @override
+  String chuvaRegistrosEncontrados(int count) {
+    return '$count registros encontrados';
+  }
+
+  @override
+  String chuvaConfirmarImportacao(int count) {
+    return 'Importar $count registros?';
+  }
+
+  @override
+  String get chuvaNenhumRegistroBackup => 'Nenhum registro para exportar';
+
+  @override
+  String get chuvaComparacaoMesAcima => 'Acima do mês anterior';
+
+  @override
+  String get chuvaComparacaoMesAbaixo => 'Abaixo do mês anterior';
 }

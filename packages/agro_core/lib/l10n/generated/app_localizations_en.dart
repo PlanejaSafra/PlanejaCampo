@@ -149,4 +149,167 @@ class AgroLocalizationsEn extends AgroLocalizations {
 
   @override
   String get privacySaved => 'Preferences saved';
+
+  @override
+  String get chuvaAppTitle => 'Planeja Chuva';
+
+  @override
+  String get chuvaListaVaziaTitle => 'No rainfall recorded';
+
+  @override
+  String get chuvaListaVaziaSubtitle => 'Tap + to record your first rainfall';
+
+  @override
+  String get chuvaAdicionarTitle => 'Record Rainfall';
+
+  @override
+  String get chuvaEditarTitle => 'Edit Record';
+
+  @override
+  String get chuvaCampoMilimetros => 'Millimeters (mm)';
+
+  @override
+  String get chuvaCampoMilimetrosHint => 'E.g.: 25.5';
+
+  @override
+  String get chuvaCampoData => 'Date';
+
+  @override
+  String get chuvaCampoObservacao => 'Note (optional)';
+
+  @override
+  String get chuvaCampoObservacaoHint => 'E.g.: Heavy rain in the afternoon';
+
+  @override
+  String get chuvaBotaoSalvar => 'SAVE';
+
+  @override
+  String get chuvaBotaoCancelar => 'CANCEL';
+
+  @override
+  String get chuvaBotaoExcluir => 'DELETE';
+
+  @override
+  String get chuvaConfirmarExclusaoTitle => 'Delete record?';
+
+  @override
+  String get chuvaConfirmarExclusaoMsg => 'Are you sure you want to delete this rainfall record?';
+
+  @override
+  String chuvaRegistrada(String mm) {
+    return 'Rainfall of ${mm}mm recorded!';
+  }
+
+  @override
+  String get chuvaAtualizada => 'Record updated!';
+
+  @override
+  String get chuvaExcluida => 'Record deleted';
+
+  @override
+  String get chuvaDesfazer => 'UNDO';
+
+  @override
+  String get chuvaTotalDoMes => 'Month total';
+
+  @override
+  String get chuvaMesAnterior => 'Previous month';
+
+  @override
+  String get chuvaEstatisticas => 'Statistics';
+
+  @override
+  String get chuvaEstatisticasTitle => 'Rainfall Statistics';
+
+  @override
+  String get chuvaTotalAno => 'Year total';
+
+  @override
+  String get chuvaMediaPorChuva => 'Average per rain';
+
+  @override
+  String get chuvaMaiorRegistro => 'Highest record';
+
+  @override
+  String get chuvaTotalRegistros => 'Total records';
+
+  @override
+  String get chuvaBackup => 'Backup';
+
+  @override
+  String get chuvaBackupTitle => 'Data Backup';
+
+  @override
+  String get chuvaExportarDados => 'Export data';
+
+  @override
+  String get chuvaExportarDescricao => 'Generate a file with all your records to save or share.';
+
+  @override
+  String get chuvaImportarDados => 'Import data';
+
+  @override
+  String get chuvaImportarDescricao => 'Restore records from a backup file.';
+
+  @override
+  String get chuvaExportarSucesso => 'Backup exported successfully!';
+
+  @override
+  String chuvaImportarSucesso(int count) {
+    return '$count records imported!';
+  }
+
+  @override
+  String chuvaImportarDuplicados(int count, int duplicados) {
+    return '$count records imported ($duplicados duplicates skipped)';
+  }
+
+  @override
+  String get chuvaErroValorInvalido => 'Enter a value between 0.1 and 500 mm';
+
+  @override
+  String get chuvaErroDataObrigatoria => 'Select a date';
+
+  @override
+  String get chuvaErroArquivoInvalido => 'Invalid backup file';
+
+  @override
+  String get chuvaIntensidadeLeve => 'Light rain';
+
+  @override
+  String get chuvaIntensidadeModerada => 'Moderate rain';
+
+  @override
+  String get chuvaIntensidadeForte => 'Heavy rain';
+
+  @override
+  String get chuvaSemRegistrosMes => 'No records this month';
+
+  @override
+  String get chuvaHoje => 'Today';
+
+  @override
+  String get chuvaOntem => 'Yesterday';
+
+  @override
+  String get chuvaMm => 'mm';
+
+  @override
+  String chuvaRegistrosEncontrados(int count) {
+    return '$count records found';
+  }
+
+  @override
+  String chuvaConfirmarImportacao(int count) {
+    return 'Import $count records?';
+  }
+
+  @override
+  String get chuvaNenhumRegistroBackup => 'No records to export';
+
+  @override
+  String get chuvaComparacaoMesAcima => 'Above previous month';
+
+  @override
+  String get chuvaComparacaoMesAbaixo => 'Below previous month';
 }
