@@ -20,6 +20,21 @@ android {
         jvmTarget = '17'
     }
 
+    flavorDimensions "env"
+
+    productFlavors {
+        dev {
+            dimension "env"
+            isDefault = true
+            // applicationIdSuffix ".dev" // Uncomment if you have a separate Firebase app with this ID
+            resValue "string", "app_name", "Planeja Chuva (DEV)"
+        }
+        prod {
+            dimension "env"
+            resValue "string", "app_name", "Planeja Chuva"
+        }
+    }
+
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "br.com.planejacampo.planejachuva"
