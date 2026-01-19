@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 import '../l10n/generated/app_localizations.dart';
@@ -46,6 +47,22 @@ class _AgroPrivacyScreenState extends State<AgroPrivacyScreen> {
     }
   }
 
+  void _showTermsOfUse() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const TermsOfUseScreen(),
+      ),
+    );
+  }
+
+  void _showPrivacyPolicy() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const PrivacyPolicyScreen(),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AgroLocalizations.of(context)!;
@@ -58,76 +75,7 @@ class _AgroPrivacyScreenState extends State<AgroPrivacyScreen> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          // Terms section
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.description,
-                        color: theme.colorScheme.primary,
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          l10n.privacyTermsSection,
-                          style: theme.textTheme.titleMedium,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    l10n.privacyTermsSummary,
-                    style: theme.textTheme.bodyMedium,
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: OutlinedButton.icon(
-                          onPressed: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => const TermsOfUseScreen(),
-                              ),
-                            );
-                          },
-                          icon: const Icon(Icons.article_outlined, size: 18),
-                          label: const Text('Termos de Uso'),
-                          style: OutlinedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: OutlinedButton.icon(
-                          onPressed: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => const PrivacyPolicyScreen(),
-                              ),
-                            );
-                          },
-                          icon: const Icon(Icons.privacy_tip_outlined, size: 18),
-                          label: const Text('Privacidade'),
-                          style: OutlinedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 8),
           // Consents section
           Text(
             l10n.privacyConsentsSection,
@@ -171,6 +119,42 @@ class _AgroPrivacyScreenState extends State<AgroPrivacyScreen> {
               _saveConsent('consent_ads_personalization', value);
             },
           ),
+          const SizedBox(height: 32),
+          // Terms and Privacy links
+          RichText(
+            textAlign: TextAlign.center,
+            text: TextSpan(
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+              ),
+              children: [
+                const TextSpan(text: 'Você pode revisar nossos '),
+                TextSpan(
+                  text: 'Termos de Uso',
+                  style: TextStyle(
+                    color: theme.colorScheme.primary,
+                    decoration: TextDecoration.underline,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  recognizer: TapGestureRecognizer()
+                    ..onTap = _showTermsOfUse,
+                ),
+                const TextSpan(text: ' e '),
+                TextSpan(
+                  text: 'Políticas de Privacidade',
+                  style: TextStyle(
+                    color: theme.colorScheme.primary,
+                    decoration: TextDecoration.underline,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  recognizer: TapGestureRecognizer()
+                    ..onTap = _showPrivacyPolicy,
+                ),
+                const TextSpan(text: ' a qualquer momento.'),
+              ],
+            ),
+          ),
+          const SizedBox(height: 24),
         ],
       ),
     );
