@@ -2,6 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../privacy/agro_privacy_store.dart';
 import '../screens/privacy_policy_screen.dart';
 import '../screens/terms_of_use_screen.dart';
 import '../services/auth_service.dart';
@@ -44,6 +45,8 @@ class _LoginScreenState extends State<LoginScreen> {
       final user = await AuthService.signInWithGoogle();
 
       if (user != null && mounted) {
+        // Mark terms as accepted (user clicked button agreeing to terms)
+        await AgroPrivacyStore.setAcceptedTerms(true);
         widget.onLoginSuccess();
       }
     } catch (e) {
@@ -71,6 +74,8 @@ class _LoginScreenState extends State<LoginScreen> {
       final user = await AuthService.signInAnonymous();
 
       if (user != null && mounted) {
+        // Mark terms as accepted (user clicked button agreeing to terms)
+        await AgroPrivacyStore.setAcceptedTerms(true);
         widget.onLoginSuccess();
       }
     } catch (e) {
