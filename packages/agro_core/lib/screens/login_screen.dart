@@ -237,8 +237,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       label: const Text(
                         'Continuar sem login',
                         style: TextStyle(
-                          fontSize: 18, // Increased font size
-                          fontWeight: FontWeight.w500,
+                          fontSize: 20, // Increased to 20px
+                          fontWeight: FontWeight.w400, // Removed Bold (Normal)
                           fontFamily: 'Roboto',
                         ),
                       ),
@@ -399,8 +399,8 @@ class _GoogleSignInButton extends StatelessWidget {
                   child: Text(
                     'Entrar com o Google',
                     style: TextStyle(
-                      fontSize: 18, // Increased font size
-                      fontWeight: FontWeight.w500,
+                      fontSize: 20, // Increased to 20px
+                      fontWeight: FontWeight.w400, // Removed Bold (Normal)
                       fontFamily: 'Roboto',
                       color: Color(0xFF1F1F1F),
                     ),

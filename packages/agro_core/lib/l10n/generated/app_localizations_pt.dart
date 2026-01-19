@@ -16,6 +16,12 @@ class AgroLocalizationsPt extends AgroLocalizations {
   String get acceptAndContinueLabel => 'ACEITAR E CONTINUAR';
 
   @override
+  String get acceptAllButton => 'Aceitar TUDO e Continuar';
+
+  @override
+  String get confirmSelectionButton => 'Confirmar Minha Seleção';
+
+  @override
   String get declineLabel => 'NÃO ACEITAR';
 
   @override

@@ -54,11 +54,12 @@ class _ConsentScreenState extends State<ConsentScreen> {
   }
 
   /// Returns dynamic button text based on user interaction
-  String _getPrimaryButtonText() {
+  String _getPrimaryButtonText(BuildContext context) {
+    final l10n = AgroLocalizations.of(context)!;
     if (!_userTouchedAnyCheckbox) {
-      return 'Aceitar TUDO e Continuar / Accept ALL and Continue';
+      return l10n.acceptAllButton;
     } else {
-      return 'Confirmar Minha Seleção / Confirm My Selection';
+      return l10n.confirmSelectionButton;
     }
   }
 
@@ -145,7 +146,7 @@ class _ConsentScreenState extends State<ConsentScreen> {
                   padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
                 child: Text(
-                  _getPrimaryButtonText(),
+                  _getPrimaryButtonText(context),
                   textAlign: TextAlign.center,
                 ),
               ),

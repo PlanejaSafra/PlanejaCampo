@@ -16,6 +16,12 @@ class AgroLocalizationsEn extends AgroLocalizations {
   String get acceptAndContinueLabel => 'ACCEPT AND CONTINUE';
 
   @override
+  String get acceptAllButton => 'Accept ALL and Continue';
+
+  @override
+  String get confirmSelectionButton => 'Confirm My Selection';
+
+  @override
   String get declineLabel => 'DECLINE';
 
   @override

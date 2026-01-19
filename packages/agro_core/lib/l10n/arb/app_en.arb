@@ -4,6 +4,8 @@
   "appName": "PlanejaSafra",
   "continueLabel": "CONTINUE",
   "acceptAndContinueLabel": "ACCEPT AND CONTINUE",
+  "acceptAllButton": "Accept ALL and Continue",
+  "confirmSelectionButton": "Confirm My Selection",
   "declineLabel": "DECLINE",
   "declineAndExitLabel": "DECLINE (EXIT)",
   "privacySettingsHint": "You can review the full documents in Settings → Privacy.",
