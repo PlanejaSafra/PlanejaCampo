@@ -12,9 +12,9 @@ class ChuvaService {
 
   late Box<RegistroChuva> _box;
 
-  /// Initializes the Hive box and registers the adapter.
+  /// Initializes the Hive box.
+  /// Note: RegistroChuvaAdapter must be registered BEFORE calling this method.
   Future<void> init() async {
-    Hive.registerAdapter(RegistroChuvaAdapter());
     _box = await Hive.openBox<RegistroChuva>(_boxName);
   }
 

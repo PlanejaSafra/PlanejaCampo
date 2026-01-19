@@ -42,6 +42,7 @@ Future<void> main() async {
   Hive.registerAdapter(DeviceInfoAdapter());
   Hive.registerAdapter(ConsentDataAdapter());
   Hive.registerAdapter(UserCloudDataAdapter());
+  Hive.registerAdapter(PropertyAdapter());
   Hive.registerAdapter(WeatherForecastAdapter());
   Hive.registerAdapter(SyncQueueItemAdapter());
 

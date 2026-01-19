@@ -17,10 +17,10 @@ class PropertyService {
 
   late Box<Property> _box;
 
-  /// Initialize Hive box and register adapter
+  /// Initialize Hive box
   /// Must be called from main.dart during app initialization
+  /// Note: PropertyAdapter must be registered BEFORE calling this method
   Future<void> init() async {
-    Hive.registerAdapter(PropertyAdapter());
     _box = await Hive.openBox<Property>(_boxName);
   }
 
