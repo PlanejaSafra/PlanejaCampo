@@ -2,6 +2,41 @@
 
 ---
 
+## Phase 20.0: Location Consent & Auto-Save
+### Status: [DONE]
+**Date Completed**: 2026-01-19
+**Priority**: 🔴 CRITICAL
+**Objective**: Streamline the "Default Property" location setup by bundling GPS permission with the "Data Usage & Market Intelligence" consent option during onboarding.
+
+### Problem Analysis
+- Users install the app and get a "Default Property" without location.
+- Weather forecast and Regional Stats require location.
+- Current flow requires users to manually edit the property to add location, which is friction.
+- Adding a 4th separate checkbox for "Location" in onboarding is clutter.
+
+### Solution
+- **Bundle Consent**: The "Data Usage" consent (Option 1) already implies location usage for market intelligence. We will make this explicit in the text.
+- **Auto-Save**: When the user accepts this option (or "Accept All"), the app will immediately request GPS permission.
+- **Immediate Value**: If granted, the app gets the current location and **automatically saves it to the default property**.
+- **Result**: User enters the Home Screen and Weather/Stats work immediately "like magic".
+
+### Implementation Summary
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 20.1 | Update `app_pt.arb` and `app_en.arb` to explicitly mention Location/GPS in Option 1 description | ✅ DONE |
+| 20.2 | Implement `_requestAndSaveLocation` in `ConsentScreen` to capture and persist coordinates | ✅ DONE |
+| 20.3 | Trigger location logic when Option 1 is selected or "Accept All" is clicked | ✅ DONE |
+| 20.4 | Verify integration with `PropertyService` (ensure default property exists and is updated) | ✅ DONE |
+
+### Files to Modify
+| File | Action | Description |
+|------|--------|-------------|
+| `packages/agro_core/lib/l10n/arb/app_pt.arb` | MODIFY | Update `consentOption1Desc` text |
+| `packages/agro_core/lib/l10n/arb/app_en.arb` | MODIFY | Update `consentOption1Desc` text |
+| `packages/agro_core/lib/privacy/consent_screen.dart` | MODIFY | Add logic to request permission and update `Property` |
+
+---
+
 ## Phase 19.0: Talhões (Field Plots/Subdivisions)
 
 ### Status: [DONE]

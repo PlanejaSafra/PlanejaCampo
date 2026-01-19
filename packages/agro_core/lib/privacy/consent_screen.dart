@@ -1,9 +1,11 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 
 import '../l10n/generated/app_localizations.dart';
 import '../screens/privacy_policy_screen.dart';
 import '../screens/terms_of_use_screen.dart';
+import '../services/property_service.dart';
 import 'agro_privacy_keys.dart';
 import 'agro_privacy_store.dart';
 
@@ -26,34 +28,88 @@ class _ConsentScreenState extends State<ConsentScreen> {
   bool _aggregateMetrics = false;
   bool _sharePartners = false;
   bool _adsPersonalization = false;
+  bool _isProcessing = false;
 
   /// Check if any consent is selected
-  bool get _hasAnyConsent => _aggregateMetrics || _sharePartners || _adsPersonalization;
+  bool get _hasAnyConsent =>
+      _aggregateMetrics || _sharePartners || _adsPersonalization;
 
   /// Smart "Chameleon Button":
   /// - If NO checkboxes are marked: "Accept ALL and Continue" (accepts everything)
   /// - If ANY checkbox is marked: "Confirm My Selection" (respects user choices)
   Future<void> _handlePrimaryButton() async {
-    if (!_hasAnyConsent) {
-      // Scenario A: No checkboxes marked → Accept ALL
-      await AgroPrivacyStore.acceptAllConsents();
-    } else {
-      // Scenario B: User made manual selections → Respect them
-      await AgroPrivacyStore.setConsent(
-        AgroPrivacyKeys.consentAggregateMetrics,
-        _aggregateMetrics,
-      );
-      await AgroPrivacyStore.setConsent(
-        AgroPrivacyKeys.consentSharePartners,
-        _sharePartners,
-      );
-      await AgroPrivacyStore.setConsent(
-        AgroPrivacyKeys.consentAdsPersonalization,
-        _adsPersonalization,
-      );
+    final l10n = AgroLocalizations.of(context)!;
+    setState(() => _isProcessing = true);
+
+    try {
+      // Logic for "Accept All" OR if "Aggregate Metrics (Option 1)" is manually selected
+      // Option 1 includes location consent
+      bool shouldRequestLocation = !_hasAnyConsent || _aggregateMetrics;
+
+      if (shouldRequestLocation) {
+        await _requestAndSaveLocation(l10n);
+      }
+
+      if (!_hasAnyConsent) {
+        // Scenario A: No checkboxes marked → Accept ALL
+        await AgroPrivacyStore.acceptAllConsents();
+      } else {
+        // Scenario B: User made manual selections → Respect them
+        await AgroPrivacyStore.setConsent(
+          AgroPrivacyKeys.consentAggregateMetrics,
+          _aggregateMetrics,
+        );
+        await AgroPrivacyStore.setConsent(
+          AgroPrivacyKeys.consentSharePartners,
+          _sharePartners,
+        );
+        await AgroPrivacyStore.setConsent(
+          AgroPrivacyKeys.consentAdsPersonalization,
+          _adsPersonalization,
+        );
+      }
+      await AgroPrivacyStore.setOnboardingCompleted(true);
+      widget.onCompleted?.call();
+    } finally {
+      if (mounted) {
+        setState(() => _isProcessing = false);
+      }
     }
-    await AgroPrivacyStore.setOnboardingCompleted(true);
-    widget.onCompleted?.call();
+  }
+
+  /// Requests location permission and updates default property if granted
+  Future<void> _requestAndSaveLocation(AgroLocalizations l10n) async {
+    try {
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) return;
+
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) return;
+      }
+
+      if (permission == LocationPermission.deniedForever) return;
+
+      // Permission granted, get location
+      final position = await Geolocator.getCurrentPosition(
+        timeLimit: const Duration(seconds: 5),
+      );
+
+      // Save to default property
+      final propertyService = PropertyService();
+      // Ensure default property exists (creates one if needed)
+      final property = await propertyService.ensureDefaultProperty(l10n: l10n);
+
+      // Update coordinates
+      property.latitude = position.latitude;
+      property.longitude = position.longitude;
+
+      await propertyService.updateProperty(property);
+    } catch (e) {
+      // Silently fail - location is optional enhancement, shouldn't block onboarding
+      debugPrint('Error auto-saving location: $e');
+    }
   }
 
   /// Returns dynamic button text based on user selection
@@ -155,16 +211,25 @@ class _ConsentScreenState extends State<ConsentScreen> {
               ),
               const SizedBox(height: 16),
               ElevatedButton(
-                onPressed: _handlePrimaryButton,
+                onPressed: _isProcessing ? null : _handlePrimaryButton,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
-                child: Text(
-                  _getPrimaryButtonText(context),
-                  textAlign: TextAlign.center,
-                ),
+                child: _isProcessing
+                    ? const SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
+                    : Text(
+                        _getPrimaryButtonText(context),
+                        textAlign: TextAlign.center,
+                      ),
               ),
               const SizedBox(height: 12),
               OutlinedButton(

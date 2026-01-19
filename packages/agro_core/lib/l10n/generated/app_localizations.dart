@@ -212,7 +212,7 @@ abstract class AgroLocalizations {
   /// No description provided for @consentOption1Desc.
   ///
   /// In en, this message translates to:
-  /// **'I authorize the use of my records (individually or aggregated) to generate market intelligence, commercial reports, predictive analytics, and data licensing to third parties. This may include commercialization, sale, or sharing with partners in any sector (agribusiness, finance, retail, digital entertainment, etc.).'**
+  /// **'I authorize the use of my records and location (GPS) to generate market intelligence, commercial reports, predictive analytics, and data licensing to third parties. This may include marketing, selling, or sharing with partners in any sector (agribusiness, finance, retail, digital entertainment, etc.).'**
   String get consentOption1Desc;
 
   /// No description provided for @consentOption1LearnMore.
