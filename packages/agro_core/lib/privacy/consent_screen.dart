@@ -241,17 +241,14 @@ class _ConsentTile extends StatelessWidget {
         title: Text(
           title,
           style: theme.textTheme.bodyMedium?.copyWith(
-            fontSize: 13,
             fontWeight: FontWeight.w500,
           ),
         ),
         subtitle: Padding(
-          padding: const EdgeInsets.only(top: 2.0),
+          padding: const EdgeInsets.only(top: 4.0),
           child: Text(
             subtitle,
-            style: theme.textTheme.bodySmall?.copyWith(
-              fontSize: 11,
-            ),
+            style: theme.textTheme.bodySmall,
           ),
         ),
         value: value,
@@ -259,7 +256,7 @@ class _ConsentTile extends StatelessWidget {
         controlAffinity: ListTileControlAffinity.leading,
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 12,
-          vertical: 6,
+          vertical: 8,
         ),
       ),
     );
