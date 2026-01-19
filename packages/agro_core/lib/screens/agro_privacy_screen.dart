@@ -48,12 +48,31 @@ class _AgroPrivacyScreenState extends State<AgroPrivacyScreen> {
   }
 
   Future<void> _acceptAll() async {
-    await AgroPrivacyStore.acceptAllConsents();
-    setState(() {
-      _shareAggregated = true;
-      _receiveMetrics = true;
-      _personalizedAds = true;
-    });
+    if (!_hasAnyConsent) {
+      // Scenario A: No checkboxes marked → Accept ALL
+      await AgroPrivacyStore.acceptAllConsents();
+      setState(() {
+        _shareAggregated = true;
+        _receiveMetrics = true;
+        _personalizedAds = true;
+      });
+    } else {
+      // Scenario B: User made manual selections → Just save them
+      // (already saved by individual switches via _saveConsent)
+      // Just need to ensure all are properly persisted
+      await AgroPrivacyStore.setConsent(
+        'consent_aggregate_metrics',
+        _shareAggregated,
+      );
+      await AgroPrivacyStore.setConsent(
+        'consent_share_partners',
+        _receiveMetrics,
+      );
+      await AgroPrivacyStore.setConsent(
+        'consent_ads_personalization',
+        _personalizedAds,
+      );
+    }
 
     if (mounted) {
       final l10n = AgroLocalizations.of(context)!;
@@ -103,6 +122,19 @@ class _AgroPrivacyScreenState extends State<AgroPrivacyScreen> {
         builder: (context) => const PrivacyPolicyScreen(),
       ),
     );
+  }
+
+  /// Check if any consent is selected
+  bool get _hasAnyConsent => _shareAggregated || _receiveMetrics || _personalizedAds;
+
+  /// Returns dynamic button text based on user selection
+  String _getPrimaryButtonText(BuildContext context) {
+    final l10n = AgroLocalizations.of(context)!;
+    if (!_hasAnyConsent) {
+      return l10n.acceptAllButton;
+    } else {
+      return l10n.confirmSelectionButton;
+    }
   }
 
   @override
@@ -183,7 +215,7 @@ class _AgroPrivacyScreenState extends State<AgroPrivacyScreen> {
                 padding: const EdgeInsets.symmetric(vertical: 16),
               ),
               child: Text(
-                l10n.acceptAllButton,
+                _getPrimaryButtonText(context),
                 textAlign: TextAlign.center,
               ),
             ),
