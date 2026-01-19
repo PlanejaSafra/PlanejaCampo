@@ -1,11 +1,10 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:sign_in_button/sign_in_button.dart';
 
 import '../screens/agro_privacy_screen.dart';
 import '../services/auth_service.dart';
 
-/// Login screen with Google Sign-In (official button).
+/// Login screen with Google Sign-In (official button design).
 /// Follows Google Sign-In Branding Guidelines:
 /// https://developers.google.com/identity/branding-guidelines
 ///
@@ -108,6 +107,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
 
     return Scaffold(
       body: SafeArea(
@@ -175,13 +175,11 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
 
-                // Google Sign-In Button (Official)
+                // Google Sign-In Button (Official Design)
                 // Follows Google Branding Guidelines
-                SignInButton(
-                  Buttons.googleDark,
-                  text: "Entrar com o Google",
-                  onPressed: _isLoading ? () {} : _handleGoogleSignIn,
-                  elevation: 2.0,
+                _GoogleSignInButton(
+                  onPressed: _isLoading ? null : _handleGoogleSignIn,
+                  isDarkMode: isDarkMode,
                 ),
                 const SizedBox(height: 16),
 
@@ -303,6 +301,92 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
       ],
+    );
+  }
+}
+
+/// Official Google Sign-In Button following Google Branding Guidelines
+/// https://developers.google.com/identity/branding-guidelines
+class _GoogleSignInButton extends StatelessWidget {
+  final VoidCallback? onPressed;
+  final bool isDarkMode;
+
+  const _GoogleSignInButton({
+    required this.onPressed,
+    required this.isDarkMode,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    // Google Brand Colors (Official)
+    const googleBlue = Color(0xFF4285F4);
+    const googleWhite = Color(0xFFFFFFFF);
+    const googleDarkGrey = Color(0xFF757575);
+
+    final backgroundColor = isDarkMode ? googleBlue : googleWhite;
+    final textColor = isDarkMode ? googleWhite : googleDarkGrey;
+    final borderColor = isDarkMode ? Colors.transparent : Color(0xFFDADADA);
+
+    return SizedBox(
+      height: 50,
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: backgroundColor,
+          foregroundColor: textColor,
+          elevation: isDarkMode ? 0 : 1,
+          shadowColor: Colors.black.withValues(alpha: 0.25),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(4),
+            side: BorderSide(color: borderColor, width: 1),
+          ),
+          padding: EdgeInsets.zero,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Google Logo
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: googleWhite,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(3),
+                  bottomLeft: Radius.circular(3),
+                ),
+              ),
+              child: Image.network(
+                'https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg',
+                width: 18,
+                height: 18,
+                errorBuilder: (context, error, stackTrace) {
+                  // Fallback icon if image fails to load
+                  return const Icon(
+                    Icons.login,
+                    size: 18,
+                    color: Colors.grey,
+                  );
+                },
+              ),
+            ),
+            const SizedBox(width: 12),
+            // Button Text
+            Expanded(
+              child: Text(
+                'Entrar com o Google',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: textColor,
+                  letterSpacing: 0.25,
+                ),
+              ),
+            ),
+            const SizedBox(width: 48), // Balance the logo padding
+          ],
+        ),
+      ),
     );
   }
 }
