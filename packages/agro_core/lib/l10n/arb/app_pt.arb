@@ -57,6 +57,9 @@
   "settingsLanguage": "Idioma",
   "settingsLanguageAuto": "Automático",
   "settingsAboutApp": "Sobre o App",
+  "settingsPropertiesAndTalhoes": "Propriedades e Talhões",
+  "settingsPropertiesAndTalhoesDesc": "Gerencie seus locais de produção",
+  "settingsManagement": "Gerenciamento",
 
   "aboutTitle": "Sobre",
   "aboutDescription": "Este app faz parte da suíte PlanejaSafra, projetada para ajudar produtores rurais a gerenciar suas atividades no campo.",

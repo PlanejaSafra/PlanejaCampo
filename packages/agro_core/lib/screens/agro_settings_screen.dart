@@ -211,7 +211,7 @@ class AgroSettingsScreen extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
             child: Text(
-              'Gerenciamento / Management',
+              l10n.settingsManagement,
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
                     color: Theme.of(context).colorScheme.primary,
                   ),
@@ -219,8 +219,8 @@ class AgroSettingsScreen extends StatelessWidget {
           ),
           ListTile(
             leading: const Icon(Icons.landscape),
-            title: const Text('Propriedades e Talhões'),
-            subtitle: const Text('Properties & Field Plots'),
+            title: Text(l10n.settingsPropertiesAndTalhoes),
+            subtitle: Text(l10n.settingsPropertiesAndTalhoesDesc),
             trailing: const Icon(Icons.chevron_right),
             onTap: () {
               Navigator.pushNamed(context, '/properties');

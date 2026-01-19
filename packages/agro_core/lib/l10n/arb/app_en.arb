@@ -57,6 +57,9 @@
   "settingsLanguage": "Language",
   "settingsLanguageAuto": "Automatic",
   "settingsAboutApp": "About the App",
+  "settingsPropertiesAndTalhoes": "Properties & Field Plots",
+  "settingsPropertiesAndTalhoesDesc": "Manage your production sites",
+  "settingsManagement": "Management",
 
   "aboutTitle": "About",
   "aboutDescription": "This app is part of the PlanejaSafra Suite, designed to help rural producers manage their activities in the field.",
