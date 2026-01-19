@@ -7,6 +7,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import 'firebase_options.dart';
+import 'models/registro_chuva.dart';
 import 'models/sync_queue_item.dart';
 import 'models/user_preferences.dart';
 import 'models/weather_forecast.dart';
@@ -43,6 +44,7 @@ Future<void> main() async {
   Hive.registerAdapter(ConsentDataAdapter());
   Hive.registerAdapter(UserCloudDataAdapter());
   Hive.registerAdapter(PropertyAdapter());
+  Hive.registerAdapter(RegistroChuvaAdapter());
   Hive.registerAdapter(WeatherForecastAdapter());
   Hive.registerAdapter(SyncQueueItemAdapter());
 
