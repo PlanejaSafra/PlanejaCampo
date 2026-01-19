@@ -142,7 +142,12 @@ class _RegionalStatsScreenState extends State<RegionalStatsScreen> {
                 ElevatedButton.icon(
                   onPressed: () {
                     Navigator.pop(context);
-                    // User should go to settings to enable consent
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const AgroPrivacyScreen(),
+                      ),
+                    );
                   },
                   icon: const Icon(Icons.settings),
                   label: const Text('Ir para Configurações'),
