@@ -24,6 +24,12 @@ class RegistroChuva extends HiveObject {
   @HiveField(5)
   final String propertyId;
 
+  /// Talhão ID (foreign key to Talhao model in agro_core)
+  /// Optional: Links to a specific field plot/subdivision within the property
+  /// If null, the rainfall is registered at property level (whole property)
+  @HiveField(6)
+  final String? talhaoId;
+
   RegistroChuva({
     required this.id,
     required this.data,
@@ -31,6 +37,7 @@ class RegistroChuva extends HiveObject {
     this.observacao,
     required this.criadoEm,
     required this.propertyId,
+    this.talhaoId,
   });
 
   /// Factory for creating a new record with auto-generated ID
@@ -39,6 +46,7 @@ class RegistroChuva extends HiveObject {
     required double milimetros,
     String? observacao,
     required String propertyId,
+    String? talhaoId,
   }) {
     final agora = DateTime.now();
     return RegistroChuva(
@@ -48,6 +56,7 @@ class RegistroChuva extends HiveObject {
       observacao: observacao,
       criadoEm: agora,
       propertyId: propertyId,
+      talhaoId: talhaoId,
     );
   }
 }

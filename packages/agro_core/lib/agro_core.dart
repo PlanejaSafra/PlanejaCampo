@@ -12,6 +12,7 @@ export 'utils/locale_extension.dart';
 // Widgets
 export 'widgets/custom_card.dart';
 export 'widgets/primary_button.dart';
+export 'widgets/talhao_selector.dart';
 
 // L10n
 export 'l10n/generated/app_localizations.dart';
@@ -30,6 +31,7 @@ export 'models/user_cloud_data.dart';
 
 // Models (Property Management)
 export 'models/property.dart';
+export 'models/talhao.dart';
 
 // Services (Auth & Cloud Sync)
 export 'services/auth_service.dart';
@@ -38,6 +40,7 @@ export 'services/user_cloud_service.dart';
 // Services (Property Management)
 export 'services/property_service.dart';
 export 'services/property_helper.dart';
+export 'services/talhao_service.dart';
 
 // Menu
 export 'menu/agro_drawer.dart';
@@ -54,3 +57,5 @@ export 'screens/privacy_policy_screen.dart';
 // Screens (Property Management)
 export 'screens/property_list_screen.dart';
 export 'screens/property_form_screen.dart';
+export 'screens/talhao_list_screen.dart';
+export 'screens/talhao_form_screen.dart';

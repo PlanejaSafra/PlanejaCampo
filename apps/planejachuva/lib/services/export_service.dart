@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:agro_core/agro_core.dart';
 import 'package:csv/csv.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
@@ -78,19 +79,42 @@ class ExportService {
 
     // Header row
     if (locale.startsWith('pt')) {
-      rows.add(['Data', 'Milímetros (mm)', 'Observação', 'Criado em']);
+      rows.add([
+        'Data',
+        'Milímetros (mm)',
+        'Propriedade',
+        'Talhão', // Added Talhão column
+        'Observação',
+        'Criado em'
+      ]);
     } else {
-      rows.add(['Date', 'Millimeters (mm)', 'Observation', 'Created at']);
+      rows.add([
+        'Date',
+        'Millimeters (mm)',
+        'Property',
+        'Field Plot', // Added Field Plot column
+        'Observation',
+        'Created at'
+      ]);
     }
 
     // Data rows
     final dateFormat = DateFormat.yMd(locale);
     final dateTimeFormat = DateFormat('yyyy-MM-dd HH:mm', locale);
+    final propertyHelper = PropertyHelper();
+    final talhaoService = TalhaoService();
 
     for (final r in registros) {
+      final propertyName = propertyHelper.getPropertyName(r.propertyId);
+      final talhaoName = r.talhaoId != null
+          ? (talhaoService.getById(r.talhaoId!)?.nome ?? '')
+          : '';
+
       rows.add([
         dateFormat.format(r.data),
         r.milimetros.toStringAsFixed(1),
+        propertyName,
+        talhaoName,
         r.observacao ?? '',
         dateTimeFormat.format(r.criadoEm),
       ]);
@@ -236,9 +260,11 @@ class ExportService {
               pw.Table(
                 border: pw.TableBorder.all(color: PdfColors.grey400),
                 columnWidths: {
-                  0: const pw.FlexColumnWidth(2),
-                  1: const pw.FlexColumnWidth(2),
-                  2: const pw.FlexColumnWidth(4),
+                  0: const pw.FlexColumnWidth(2), // Date
+                  1: const pw.FlexColumnWidth(1.5), // mm
+                  2: const pw.FlexColumnWidth(2.5), // Property
+                  3: const pw.FlexColumnWidth(2), // Talhão
+                  4: const pw.FlexColumnWidth(3), // Observation
                 },
                 children: [
                   // Header
@@ -255,6 +281,14 @@ class ExportService {
                         bold: true,
                       ),
                       _buildTableCell(
+                        locale.startsWith('pt') ? 'Propriedade' : 'Property',
+                        bold: true,
+                      ),
+                      _buildTableCell(
+                        locale.startsWith('pt') ? 'Talhão' : 'Field Plot',
+                        bold: true,
+                      ),
+                      _buildTableCell(
                         locale.startsWith('pt') ? 'Observação' : 'Observation',
                         bold: true,
                       ),
@@ -262,10 +296,18 @@ class ExportService {
                   ),
                   // Data rows
                   ...chunks[i].map((r) {
+                    final propertyName =
+                        PropertyHelper().getPropertyName(r.propertyId);
+                    final talhaoName = r.talhaoId != null
+                        ? (TalhaoService().getById(r.talhaoId!)?.nome ?? '')
+                        : '';
+
                     return pw.TableRow(
                       children: [
                         _buildTableCell(dateFormat.format(r.data)),
                         _buildTableCell(r.milimetros.toStringAsFixed(1)),
+                        _buildTableCell(propertyName),
+                        _buildTableCell(talhaoName),
                         _buildTableCell(r.observacao ?? ''),
                       ],
                     );

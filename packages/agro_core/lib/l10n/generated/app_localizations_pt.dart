@@ -477,4 +477,111 @@ class AgroLocalizationsPt extends AgroLocalizations {
 
   @override
   String get chuvaComparacaoMesAbaixo => 'Abaixo do mês anterior';
+
+  @override
+  String get talhaoTitle => 'Talhões';
+
+  @override
+  String get talhaoAdd => 'Adicionar Talhão';
+
+  @override
+  String get talhaoEdit => 'Editar Talhão';
+
+  @override
+  String get talhaoDelete => 'Excluir Talhão';
+
+  @override
+  String get talhaoName => 'Nome do Talhão';
+
+  @override
+  String get talhaoNameHint => 'Ex: Talhão A - Soja';
+
+  @override
+  String get talhaoArea => 'Área (ha)';
+
+  @override
+  String get talhaoAreaHint => 'Ex: 50.5';
+
+  @override
+  String get talhaoCultura => 'Cultura (opcional)';
+
+  @override
+  String get talhaoCulturaHint => 'Ex: Soja, Milho, Café';
+
+  @override
+  String get talhaoListEmpty => 'Nenhum talhão cadastrado';
+
+  @override
+  String get talhaoListEmptyDesc => 'Toque no + para dividir esta propriedade em talhões';
+
+  @override
+  String get talhaoDeleteConfirm => 'Excluir talhão?';
+
+  @override
+  String get talhaoDeleteConfirmMsg => 'Tem certeza que deseja excluir este talhão?';
+
+  @override
+  String talhaoDeleteWithRecords(int count) {
+    return 'Este talhão possui $count registro(s) vinculado(s). Eles serão movidos para \"Propriedade toda\".';
+  }
+
+  @override
+  String get talhaoDeleted => 'Talhão excluído';
+
+  @override
+  String get talhaoSaved => 'Talhão salvo!';
+
+  @override
+  String get talhaoUpdated => 'Talhão atualizado!';
+
+  @override
+  String get talhaoNameRequired => 'Digite o nome do talhão';
+
+  @override
+  String get talhaoNameTooShort => 'Nome muito curto (mínimo 2 caracteres)';
+
+  @override
+  String get talhaoNameTooLong => 'Nome muito longo (máximo 50 caracteres)';
+
+  @override
+  String get talhaoNameExists => 'Já existe um talhão com este nome nesta propriedade';
+
+  @override
+  String get talhaoAreaInvalid => 'Área deve ser maior que zero';
+
+  @override
+  String talhaoAreaExceedsProperty(String totalTalhoes, String propertyArea) {
+    return 'A soma das áreas dos talhões ($totalTalhoes ha) excede a área total da propriedade ($propertyArea ha)';
+  }
+
+  @override
+  String get talhaoSelectOptional => 'Talhão (opcional)';
+
+  @override
+  String get talhaoWholeProperty => 'Propriedade toda';
+
+  @override
+  String get talhaoCreateNew => '+ Criar novo talhão';
+
+  @override
+  String get talhaoManage => 'Gerenciar Talhões';
+
+  @override
+  String talhaoSummaryDivided(String dividedArea, String totalArea, String percentage) {
+    return '$dividedArea ha divididos / $totalArea ha total ($percentage% dividido)';
+  }
+
+  @override
+  String talhaoWithRecords(int count) {
+    return '$count registro(s)';
+  }
+
+  @override
+  String get talhaoFilterAll => 'Todos os talhões';
+
+  @override
+  String get talhaoFilterBy => 'Filtrar por talhão';
+
+  @override
+  String get talhaoNoSelection => 'Nenhum talhão selecionado';
 }

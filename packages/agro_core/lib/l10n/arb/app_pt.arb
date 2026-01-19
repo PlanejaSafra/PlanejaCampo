@@ -201,5 +201,76 @@
   },
   "chuvaNenhumRegistroBackup": "Nenhum registro para exportar",
   "chuvaComparacaoMesAcima": "Acima do mês anterior",
-  "chuvaComparacaoMesAbaixo": "Abaixo do mês anterior"
+  "chuvaComparacaoMesAbaixo": "Abaixo do mês anterior",
+
+  "talhaoTitle": "Talhões",
+  "talhaoAdd": "Adicionar Talhão",
+  "talhaoEdit": "Editar Talhão",
+  "talhaoDelete": "Excluir Talhão",
+  "talhaoName": "Nome do Talhão",
+  "talhaoNameHint": "Ex: Talhão A - Soja",
+  "talhaoArea": "Área (ha)",
+  "talhaoAreaHint": "Ex: 50.5",
+  "talhaoCultura": "Cultura (opcional)",
+  "talhaoCulturaHint": "Ex: Soja, Milho, Café",
+  "talhaoListEmpty": "Nenhum talhão cadastrado",
+  "talhaoListEmptyDesc": "Toque no + para dividir esta propriedade em talhões",
+  "talhaoDeleteConfirm": "Excluir talhão?",
+  "talhaoDeleteConfirmMsg": "Tem certeza que deseja excluir este talhão?",
+  "talhaoDeleteWithRecords": "Este talhão possui {count} registro(s) vinculado(s). Eles serão movidos para \"Propriedade toda\".",
+  "@talhaoDeleteWithRecords": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "talhaoDeleted": "Talhão excluído",
+  "talhaoSaved": "Talhão salvo!",
+  "talhaoUpdated": "Talhão atualizado!",
+  "talhaoNameRequired": "Digite o nome do talhão",
+  "talhaoNameTooShort": "Nome muito curto (mínimo 2 caracteres)",
+  "talhaoNameTooLong": "Nome muito longo (máximo 50 caracteres)",
+  "talhaoNameExists": "Já existe um talhão com este nome nesta propriedade",
+  "talhaoAreaInvalid": "Área deve ser maior que zero",
+  "talhaoAreaExceedsProperty": "A soma das áreas dos talhões ({totalTalhoes} ha) excede a área total da propriedade ({propertyArea} ha)",
+  "@talhaoAreaExceedsProperty": {
+    "placeholders": {
+      "totalTalhoes": {
+        "type": "String"
+      },
+      "propertyArea": {
+        "type": "String"
+      }
+    }
+  },
+  "talhaoSelectOptional": "Talhão (opcional)",
+  "talhaoWholeProperty": "Propriedade toda",
+  "talhaoCreateNew": "+ Criar novo talhão",
+  "talhaoManage": "Gerenciar Talhões",
+  "talhaoSummaryDivided": "{dividedArea} ha divididos / {totalArea} ha total ({percentage}% dividido)",
+  "@talhaoSummaryDivided": {
+    "placeholders": {
+      "dividedArea": {
+        "type": "String"
+      },
+      "totalArea": {
+        "type": "String"
+      },
+      "percentage": {
+        "type": "String"
+      }
+    }
+  },
+  "talhaoWithRecords": "{count} registro(s)",
+  "@talhaoWithRecords": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "talhaoFilterAll": "Todos os talhões",
+  "talhaoFilterBy": "Filtrar por talhão",
+  "talhaoNoSelection": "Nenhum talhão selecionado"
 }

@@ -173,7 +173,9 @@ class AgroSettingsScreen extends StatelessWidget {
             title: Text(l10n.settingsLanguage),
             subtitle: Text(_getLanguageLabel(context, currentLocale)),
             trailing: const Icon(Icons.chevron_right),
-            onTap: onChangeLocale != null ? () => _showLanguageDialog(context) : null,
+            onTap: onChangeLocale != null
+                ? () => _showLanguageDialog(context)
+                : null,
           ),
           const Divider(),
           // Theme option
@@ -182,7 +184,9 @@ class AgroSettingsScreen extends StatelessWidget {
             title: const Text('Tema / Theme'),
             subtitle: Text(_getThemeModeLabel(context, currentThemeMode)),
             trailing: const Icon(Icons.chevron_right),
-            onTap: onChangeThemeMode != null ? () => _showThemeDialog(context) : null,
+            onTap: onChangeThemeMode != null
+                ? () => _showThemeDialog(context)
+                : null,
           ),
           const Divider(),
           // Privacy & Data section header
@@ -201,6 +205,26 @@ class AgroSettingsScreen extends StatelessWidget {
             title: const Text('Gerenciar Consentimentos / Manage Consents'),
             trailing: const Icon(Icons.chevron_right),
             onTap: onNavigateToPrivacy,
+          ),
+          const Divider(),
+          // Property & Talhão management (Phase 19)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+            child: Text(
+              'Gerenciamento / Management',
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.landscape),
+            title: const Text('Propriedades e Talhões'),
+            subtitle: const Text('Properties & Field Plots'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () {
+              Navigator.pushNamed(context, '/properties');
+            },
           ),
           // Cloud sync toggle
           SwitchListTile(

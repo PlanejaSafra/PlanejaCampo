@@ -56,19 +56,23 @@ class _ListaChuvasScreenState extends State<ListaChuvasScreen> {
   double _totalMesAtual = 0;
   double _totalMesAnterior = 0;
   Property? _defaultProperty;
+  String? _selectedTalhaoId;
+  final _talhaoService = TalhaoService();
 
   @override
   void initState() {
     super.initState();
-    _carregarDados();
-    _carregarPropriedadePadrao();
+    _carregarPropriedadePadrao().then((_) => _carregarDados());
   }
 
-  void _carregarPropriedadePadrao() {
+  Future<void> _carregarPropriedadePadrao() async {
     final propertyService = PropertyService();
-    setState(() {
-      _defaultProperty = propertyService.getDefaultProperty();
-    });
+    final property = await propertyService.getDefaultProperty();
+    if (mounted) {
+      setState(() {
+        _defaultProperty = property;
+      });
+    }
   }
 
   void _carregarDados() {
@@ -77,11 +81,47 @@ class _ListaChuvasScreenState extends State<ListaChuvasScreen> {
     final mesAtual = DateTime(now.year, now.month, 1);
     final mesAnterior = DateTime(now.year, now.month - 1, 1);
 
-    setState(() {
-      _registros = service.listarTodos();
-      _totalMesAtual = service.totalDoMes(mesAtual);
-      _totalMesAnterior = service.totalDoMes(mesAnterior);
-    });
+    if (_defaultProperty == null) {
+      if (mounted) {
+        setState(() {
+          _registros = [];
+          _totalMesAtual = 0;
+          _totalMesAnterior = 0;
+        });
+      }
+      return;
+    }
+
+    final propertyId = _defaultProperty!.id;
+    List<RegistroChuva> registros;
+
+    if (_selectedTalhaoId == null) {
+      // Aggregate: All records for the property
+      registros = service.listarTodos(propertyId: propertyId);
+    } else {
+      // Specific Talhão
+      registros = service.listarPorTalhao(propertyId, _selectedTalhaoId!);
+    }
+
+    // Calculate totals respecting the filter
+    final totalAtual = service.totalDoMesByTalhao(
+      mesAtual,
+      propertyId,
+      talhaoId: _selectedTalhaoId,
+    );
+    final totalAnterior = service.totalDoMesByTalhao(
+      mesAnterior,
+      propertyId,
+      talhaoId: _selectedTalhaoId,
+    );
+
+    if (mounted) {
+      setState(() {
+        _registros = registros;
+        _totalMesAtual = totalAtual;
+        _totalMesAnterior = totalAnterior;
+      });
+    }
   }
 
   void _handleDrawerNavigation(String routeKey) {
@@ -167,7 +207,8 @@ class _ListaChuvasScreenState extends State<ListaChuvasScreen> {
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Configure uma propriedade com localização primeiro'),
+              content:
+                  Text('Configure uma propriedade com localização primeiro'),
             ),
           );
         }
@@ -262,7 +303,8 @@ class _ListaChuvasScreenState extends State<ListaChuvasScreen> {
           ),
           child: Row(
             children: [
-              Icon(Icons.warning_amber, color: Colors.orange.shade900, size: 32),
+              Icon(Icons.warning_amber,
+                  color: Colors.orange.shade900, size: 32),
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
@@ -324,6 +366,32 @@ class _ListaChuvasScreenState extends State<ListaChuvasScreen> {
             ? const EstadoVazio()
             : CustomScrollView(
                 slivers: [
+                  // Talhão Selector
+                  if (_defaultProperty != null)
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 8),
+                        child: TalhaoSelector(
+                          propertyId: _defaultProperty!.id,
+                          selectedTalhaoId: _selectedTalhaoId,
+                          talhaoService: _talhaoService,
+                          onChanged: (id) {
+                            setState(() {
+                              _selectedTalhaoId = id;
+                              _carregarDados();
+                            });
+                          },
+                          // Allow creating new talhão from list screen
+                          onCreateNew: () async {
+                            await Navigator.pushNamed(context, '/talhoes',
+                                arguments: _defaultProperty!.id);
+                            // Refresh logic handled by lifecycle mostly, but good to reload selector
+                            setState(() {});
+                          },
+                        ),
+                      ),
+                    ),
                   // Drought warning (if applicable)
                   ..._buildDroughtWarning(),
                   // Weather forecast card
@@ -354,7 +422,8 @@ class _ListaChuvasScreenState extends State<ListaChuvasScreen> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _adicionarChuva,
-        icon: const Icon(Icons.add, size: 28), // Larger icon for better visibility
+        icon: const Icon(Icons.add,
+            size: 28), // Larger icon for better visibility
         label: Text(
           l10n.chuvaAdicionarTitle,
           style: const TextStyle(

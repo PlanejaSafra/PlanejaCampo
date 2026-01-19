@@ -66,4 +66,101 @@ class ChuvaService {
   int getRecordCountForProperty(String propertyId) {
     return _box.values.where((r) => r.propertyId == propertyId).length;
   }
+
+  // ============================================================================
+  // TALHÃO SUPPORT - Null handling methods
+  // ============================================================================
+
+  /// Private method to filter records by property and optional talhão
+  /// Encapsulates null handling logic for talhaoId
+  List<RegistroChuva> _filteredByTalhao(String propertyId, String? talhaoId) {
+    return _box.values
+        .where((r) =>
+            r.propertyId == propertyId &&
+            (talhaoId == null ? r.talhaoId == null : r.talhaoId == talhaoId))
+        .toList();
+  }
+
+  /// Returns records for whole property (talhaoId = null)
+  List<RegistroChuva> listarPropriedadeToda(String propertyId) {
+    return _filteredByTalhao(propertyId, null)
+      ..sort((a, b) => b.data.compareTo(a.data));
+  }
+
+  /// Returns records for a specific talhão
+  List<RegistroChuva> listarPorTalhao(String propertyId, String talhaoId) {
+    return _filteredByTalhao(propertyId, talhaoId)
+      ..sort((a, b) => b.data.compareTo(a.data));
+  }
+
+  /// Generic method when flexibility is needed (UI usage)
+  List<RegistroChuva> listarByTalhao(String propertyId, {String? talhaoId}) {
+    return _filteredByTalhao(propertyId, talhaoId)
+      ..sort((a, b) => b.data.compareTo(a.data));
+  }
+
+  /// Calculate total rainfall for whole property (talhaoId = null)
+  double totalPropriedadeToda(String propertyId) {
+    return _filteredByTalhao(propertyId, null)
+        .fold(0.0, (sum, r) => sum + r.milimetros);
+  }
+
+  /// Calculate total rainfall for a specific talhão
+  double totalPorTalhao(String propertyId, String talhaoId) {
+    return _filteredByTalhao(propertyId, talhaoId)
+        .fold(0.0, (sum, r) => sum + r.milimetros);
+  }
+
+  /// Generic method for total by talhão (UI usage)
+  double totalByTalhao(String propertyId, {String? talhaoId}) {
+    return _filteredByTalhao(propertyId, talhaoId)
+        .fold(0.0, (sum, r) => sum + r.milimetros);
+  }
+
+  /// Get count of records for a specific talhão
+  /// If talhaoId is null, counts records for whole property (talhaoId = null)
+  int getRecordCountForTalhao(String propertyId, {String? talhaoId}) {
+    return _filteredByTalhao(propertyId, talhaoId).length;
+  }
+
+  /// Get count of records that have a specific talhaoId (not null check)
+  /// Used for deletion protection
+  int getRecordCountByTalhaoId(String talhaoId) {
+    return _box.values.where((r) => r.talhaoId == talhaoId).length;
+  }
+
+  /// Calculate total rainfall for month with optional talhão filter
+  double totalDoMesByTalhao(
+    DateTime dataReferencia,
+    String propertyId, {
+    String? talhaoId,
+  }) {
+    var registros = _filteredByTalhao(propertyId, talhaoId).where((r) =>
+        r.data.year == dataReferencia.year &&
+        r.data.month == dataReferencia.month);
+
+    return registros.fold(0.0, (sum, r) => sum + r.milimetros);
+  }
+
+  /// Reassign records from one talhão to whole property (set talhaoId to null)
+  /// Used when deleting a talhão
+  Future<int> reassignTalhaoToProperty(String talhaoId) async {
+    final records = _box.values.where((r) => r.talhaoId == talhaoId).toList();
+
+    for (final record in records) {
+      // Create new record with talhaoId = null
+      final updated = RegistroChuva(
+        id: record.id,
+        data: record.data,
+        milimetros: record.milimetros,
+        observacao: record.observacao,
+        criadoEm: record.criadoEm,
+        propertyId: record.propertyId,
+        talhaoId: null, // Set to null (whole property)
+      );
+      await _box.put(record.id.toString(), updated);
+    }
+
+    return records.length;
+  }
 }

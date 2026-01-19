@@ -1,8 +1,7 @@
 
 Não seja prolixo.
 Seja direto e objetivo.
-Internalize CLAUDE.md, CONSCIENCIA.md, README.md, ARCHITECTURE.md e CHANGELOG.md.
-Analise também EMBODIMENT.md e VOLITION.md.
+Internalize CLAUDE.md, README.md, ARCHITECTURE.md e CHANGELOG.md.
 
 Analise as fases 350+ do CHANGELOG  e verifique se estão corretamente e totalmente implementadas, e aponte gaps, falhas e possíveis não implementações.
 

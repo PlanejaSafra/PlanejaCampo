@@ -477,4 +477,111 @@ class AgroLocalizationsEn extends AgroLocalizations {
 
   @override
   String get chuvaComparacaoMesAbaixo => 'Below previous month';
+
+  @override
+  String get talhaoTitle => 'Field Plots';
+
+  @override
+  String get talhaoAdd => 'Add Field Plot';
+
+  @override
+  String get talhaoEdit => 'Edit Field Plot';
+
+  @override
+  String get talhaoDelete => 'Delete Field Plot';
+
+  @override
+  String get talhaoName => 'Plot Name';
+
+  @override
+  String get talhaoNameHint => 'E.g.: Plot A - Soybean';
+
+  @override
+  String get talhaoArea => 'Area (ha)';
+
+  @override
+  String get talhaoAreaHint => 'E.g.: 50.5';
+
+  @override
+  String get talhaoCultura => 'Crop (optional)';
+
+  @override
+  String get talhaoCulturaHint => 'E.g.: Soybean, Corn, Coffee';
+
+  @override
+  String get talhaoListEmpty => 'No field plots registered';
+
+  @override
+  String get talhaoListEmptyDesc => 'Tap + to divide this property into plots';
+
+  @override
+  String get talhaoDeleteConfirm => 'Delete field plot?';
+
+  @override
+  String get talhaoDeleteConfirmMsg => 'Are you sure you want to delete this field plot?';
+
+  @override
+  String talhaoDeleteWithRecords(int count) {
+    return 'This field plot has $count linked record(s). They will be moved to \"Whole Property\".';
+  }
+
+  @override
+  String get talhaoDeleted => 'Field plot deleted';
+
+  @override
+  String get talhaoSaved => 'Field plot saved!';
+
+  @override
+  String get talhaoUpdated => 'Field plot updated!';
+
+  @override
+  String get talhaoNameRequired => 'Enter plot name';
+
+  @override
+  String get talhaoNameTooShort => 'Name too short (minimum 2 characters)';
+
+  @override
+  String get talhaoNameTooLong => 'Name too long (maximum 50 characters)';
+
+  @override
+  String get talhaoNameExists => 'A field plot with this name already exists in this property';
+
+  @override
+  String get talhaoAreaInvalid => 'Area must be greater than zero';
+
+  @override
+  String talhaoAreaExceedsProperty(String totalTalhoes, String propertyArea) {
+    return 'The sum of plot areas ($totalTalhoes ha) exceeds the property\'s total area ($propertyArea ha)';
+  }
+
+  @override
+  String get talhaoSelectOptional => 'Field Plot (optional)';
+
+  @override
+  String get talhaoWholeProperty => 'Whole Property';
+
+  @override
+  String get talhaoCreateNew => '+ Create new plot';
+
+  @override
+  String get talhaoManage => 'Manage Field Plots';
+
+  @override
+  String talhaoSummaryDivided(String dividedArea, String totalArea, String percentage) {
+    return '$dividedArea ha divided / $totalArea ha total ($percentage% divided)';
+  }
+
+  @override
+  String talhaoWithRecords(int count) {
+    return '$count record(s)';
+  }
+
+  @override
+  String get talhaoFilterAll => 'All field plots';
+
+  @override
+  String get talhaoFilterBy => 'Filter by field plot';
+
+  @override
+  String get talhaoNoSelection => 'No field plot selected';
 }

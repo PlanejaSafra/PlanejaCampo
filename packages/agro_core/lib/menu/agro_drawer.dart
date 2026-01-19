@@ -87,24 +87,7 @@ class AgroDrawer extends StatelessWidget {
               onNavigate(AgroRouteKeys.properties);
             },
           ),
-          // Settings
-          _DrawerTile(
-            icon: Icons.settings,
-            title: l10n.drawerSettings,
-            onTap: () {
-              Navigator.pop(context);
-              onNavigate(AgroRouteKeys.settings);
-            },
-          ),
-          // Privacy
-          _DrawerTile(
-            icon: Icons.privacy_tip,
-            title: l10n.drawerPrivacy,
-            onTap: () {
-              Navigator.pop(context);
-              onNavigate(AgroRouteKeys.privacy);
-            },
-          ),
+
           // Extra items (app-specific)
           ...extraItems.map((item) => _DrawerTile(
                 icon: item.icon,
@@ -114,7 +97,26 @@ class AgroDrawer extends StatelessWidget {
                   onNavigate(item.key);
                 },
               )),
+
+          // Settings (Moved below Extra Items)
+          _DrawerTile(
+            icon: Icons.settings,
+            title: l10n.drawerSettings,
+            onTap: () {
+              Navigator.pop(context);
+              onNavigate(AgroRouteKeys.settings);
+            },
+          ),
           const Divider(),
+          // Privacy
+          _DrawerTile(
+            icon: Icons.privacy_tip,
+            title: l10n.drawerPrivacy,
+            onTap: () {
+              Navigator.pop(context);
+              onNavigate(AgroRouteKeys.privacy);
+            },
+          ),
           // About
           _DrawerTile(
             icon: Icons.info,

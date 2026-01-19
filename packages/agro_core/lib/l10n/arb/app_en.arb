@@ -201,5 +201,76 @@
   },
   "chuvaNenhumRegistroBackup": "No records to export",
   "chuvaComparacaoMesAcima": "Above previous month",
-  "chuvaComparacaoMesAbaixo": "Below previous month"
+  "chuvaComparacaoMesAbaixo": "Below previous month",
+
+  "talhaoTitle": "Field Plots",
+  "talhaoAdd": "Add Field Plot",
+  "talhaoEdit": "Edit Field Plot",
+  "talhaoDelete": "Delete Field Plot",
+  "talhaoName": "Plot Name",
+  "talhaoNameHint": "E.g.: Plot A - Soybean",
+  "talhaoArea": "Area (ha)",
+  "talhaoAreaHint": "E.g.: 50.5",
+  "talhaoCultura": "Crop (optional)",
+  "talhaoCulturaHint": "E.g.: Soybean, Corn, Coffee",
+  "talhaoListEmpty": "No field plots registered",
+  "talhaoListEmptyDesc": "Tap + to divide this property into plots",
+  "talhaoDeleteConfirm": "Delete field plot?",
+  "talhaoDeleteConfirmMsg": "Are you sure you want to delete this field plot?",
+  "talhaoDeleteWithRecords": "This field plot has {count} linked record(s). They will be moved to \"Whole Property\".",
+  "@talhaoDeleteWithRecords": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "talhaoDeleted": "Field plot deleted",
+  "talhaoSaved": "Field plot saved!",
+  "talhaoUpdated": "Field plot updated!",
+  "talhaoNameRequired": "Enter plot name",
+  "talhaoNameTooShort": "Name too short (minimum 2 characters)",
+  "talhaoNameTooLong": "Name too long (maximum 50 characters)",
+  "talhaoNameExists": "A field plot with this name already exists in this property",
+  "talhaoAreaInvalid": "Area must be greater than zero",
+  "talhaoAreaExceedsProperty": "The sum of plot areas ({totalTalhoes} ha) exceeds the property's total area ({propertyArea} ha)",
+  "@talhaoAreaExceedsProperty": {
+    "placeholders": {
+      "totalTalhoes": {
+        "type": "String"
+      },
+      "propertyArea": {
+        "type": "String"
+      }
+    }
+  },
+  "talhaoSelectOptional": "Field Plot (optional)",
+  "talhaoWholeProperty": "Whole Property",
+  "talhaoCreateNew": "+ Create new plot",
+  "talhaoManage": "Manage Field Plots",
+  "talhaoSummaryDivided": "{dividedArea} ha divided / {totalArea} ha total ({percentage}% divided)",
+  "@talhaoSummaryDivided": {
+    "placeholders": {
+      "dividedArea": {
+        "type": "String"
+      },
+      "totalArea": {
+        "type": "String"
+      },
+      "percentage": {
+        "type": "String"
+      }
+    }
+  },
+  "talhaoWithRecords": "{count} record(s)",
+  "@talhaoWithRecords": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "talhaoFilterAll": "All field plots",
+  "talhaoFilterBy": "Filter by field plot",
+  "talhaoNoSelection": "No field plot selected"
 }

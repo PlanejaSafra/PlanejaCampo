@@ -142,6 +142,38 @@ class RegistroChuvasTile extends StatelessWidget {
                           fontWeight: FontWeight.w600,
                         ),
                       ),
+                      if (registro.talhaoId != null)
+                        FutureBuilder<String?>(
+                          future: Future.value(TalhaoService()
+                              .getById(registro.talhaoId!)
+                              ?.nome), // Hive is sync but just in case
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData && snapshot.data != null) {
+                              return Padding(
+                                padding: const EdgeInsets.only(top: 2),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.landscape,
+                                      size: 14,
+                                      color: theme.colorScheme.secondary,
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      snapshot.data!,
+                                      style:
+                                          theme.textTheme.labelSmall?.copyWith(
+                                        color: theme.colorScheme.secondary,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
+                            return const SizedBox.shrink();
+                          },
+                        ),
                       if (registro.observacao != null &&
                           registro.observacao!.isNotEmpty)
                         Padding(
@@ -149,7 +181,8 @@ class RegistroChuvasTile extends StatelessWidget {
                           child: Text(
                             registro.observacao!,
                             style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                              color: theme.colorScheme.onSurface
+                                  .withValues(alpha: 0.6),
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -173,7 +206,8 @@ class RegistroChuvasTile extends StatelessWidget {
                     Text(
                       l10n.chuvaMm,
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                        color:
+                            theme.colorScheme.onSurface.withValues(alpha: 0.6),
                       ),
                     ),
                   ],

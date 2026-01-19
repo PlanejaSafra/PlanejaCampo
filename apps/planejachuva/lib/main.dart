@@ -43,6 +43,7 @@ Future<void> main() async {
   Hive.registerAdapter(ConsentDataAdapter());
   Hive.registerAdapter(UserCloudDataAdapter());
   Hive.registerAdapter(PropertyAdapter());
+  Hive.registerAdapter(TalhaoAdapter());
   Hive.registerAdapter(RegistroChuvaAdapter());
   Hive.registerAdapter(WeatherForecastAdapter());
   Hive.registerAdapter(SyncQueueItemAdapter());
@@ -55,6 +56,9 @@ Future<void> main() async {
 
   // Initialize property service (must be before chuva service for migration)
   await PropertyService().init();
+
+  // Initialize talhao service (field plots management)
+  await TalhaoService().init();
 
   // Initialize chuva service (registers adapter and opens box)
   await ChuvaService().init();

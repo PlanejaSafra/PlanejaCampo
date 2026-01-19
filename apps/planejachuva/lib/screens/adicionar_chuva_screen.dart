@@ -24,6 +24,8 @@ class _AdicionarChuvaScreenState extends State<AdicionarChuvaScreen> {
   DateTime _dataSelecionada = DateTime.now();
   bool _salvando = false;
   Property? _propriedadeSelecionada;
+  String? _talhaoSelecionado;  // null = whole property
+  final _talhaoService = TalhaoService();
 
   @override
   void initState() {
@@ -157,6 +159,7 @@ class _AdicionarChuvaScreenState extends State<AdicionarChuvaScreen> {
             ? null
             : _observacaoController.text,
         propertyId: _propriedadeSelecionada!.id,
+        talhaoId: _talhaoSelecionado,  // null = whole property
       );
 
       await ChuvaService().adicionar(registro);
@@ -267,6 +270,18 @@ class _AdicionarChuvaScreenState extends State<AdicionarChuvaScreen> {
               ),
             ),
             const SizedBox(height: 16),
+            // Talhão selector (optional, only show if property is selected)
+            if (_propriedadeSelecionada != null)
+              TalhaoSelector(
+                propertyId: _propriedadeSelecionada!.id,
+                selectedTalhaoId: _talhaoSelecionado,
+                onChanged: (talhaoId) {
+                  setState(() => _talhaoSelecionado = talhaoId);
+                },
+                talhaoService: _talhaoService,
+                enabled: !_salvando,
+              ),
+            if (_propriedadeSelecionada != null) const SizedBox(height: 16),
             // Observation field (optional)
             Card(
               child: Padding(

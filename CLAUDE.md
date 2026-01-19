@@ -36,6 +36,7 @@ PlanejaSafra\
 
 * Default: Hive (offline-first)
 * No login, sync, Firebase, multi-user, mandatory online (only if you request)
+* **Never use subcollections** (always use root collections/boxes or flat structures).
 
 ## 5) Privacy and Consent (mandatory in every app)
 

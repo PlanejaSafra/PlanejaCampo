@@ -2,6 +2,293 @@
 
 ---
 
+## Phase 19.0: Talhões (Field Plots/Subdivisions)
+
+### Status: [DONE]
+**Date Completed**: 2026-01-19
+**Priority**: 🟡 ARCHITECTURAL
+**Objective**: Implement field plot (talhão) management system to allow rainfall registration at subdivision level, enabling more granular data tracking and analysis.
+
+### Current State Analysis
+
+**How is rainfall currently registered?**
+- Rainfall is registered at the Property level via the `propertyId` field in `RegistroChuva` model
+- Each `RegistroChuva` has a foreign key `propertyId` linking it to a `Property`
+- Current model: Property → RegistroChuva (one-to-many)
+
+**How to change property for rainfall registration?**
+- In `AdicionarChuvaScreen`, there's a property selector that allows choosing from registered properties
+- The selected property's ID is saved when creating the rainfall record
+- Property defaults to the user's default property (`_propriedadeSelecionada`)
+
+**Can rainfall be registered by talhão?**
+- Currently: NO - only property-level registration exists
+- Proposed: YES - add optional `talhaoId` field to `RegistroChuva` for subdivision-level tracking
+
+### Proposed Architecture
+
+**Data Model Hierarchy:**
+```
+Property (Propriedade)
+  ├─ name, totalArea, location
+  └─ Talhão 1..N (optional)
+      ├─ id, nome, area, coordenadas
+      └─ RegistroChuva 0..N
+          └─ propertyId (required), talhaoId (optional)
+```
+
+**Key Design Decisions:**
+1. **Talhão is optional** - Users can continue registering rainfall at property level
+2. **Backward compatible** - Existing rainfall records without `talhaoId` remain valid
+3. **Cascade selector** - Property selection → Optional talhão selection
+4. **Area validation** - Sum of talhão areas cannot exceed property total area
+5. **Statistics flexibility** - Can aggregate by property (all talhões) or by specific talhão
+6. **Null handling strategy** - Service Layer encapsulates null complexity, UI uses clean methods
+
+### Null Handling Strategy
+
+**Problem:** `talhaoId` is nullable (`String?`), which can make queries verbose and error-prone if handled everywhere.
+
+**Solution:** Centralize null logic in Service Layer with clean public API:
+
+```dart
+// ChuvaService (apps/planejachuva/lib/services/chuva_service.dart)
+class ChuvaService {
+  // Private method handles null logic
+  List<RegistroChuva> _filteredByTalhao(String propertyId, String? talhaoId) {
+    return _box.values.where((r) =>
+      r.propertyId == propertyId &&
+      (talhaoId == null ? r.talhaoId == null : r.talhaoId == talhaoId)
+    ).toList();
+  }
+
+  // Public API - Clean methods without null exposure
+  double totalPropriedadeToda(String propertyId) {
+    return _filteredByTalhao(propertyId, null)
+      .fold(0.0, (sum, r) => sum + r.milimetros);
+  }
+
+  double totalPorTalhao(String propertyId, String talhaoId) {
+    return _filteredByTalhao(propertyId, talhaoId)
+      .fold(0.0, (sum, r) => sum + r.milimetros);
+  }
+
+  // Generic method when UI needs flexibility
+  double totalByTalhao(String propertyId, {String? talhaoId}) {
+    return _filteredByTalhao(propertyId, talhaoId)
+      .fold(0.0, (sum, r) => sum + r.milimetros);
+  }
+}
+
+// UI Usage - No null checks needed
+final totalGeral = chuvaService.totalPropriedadeToda(propertyId);
+final totalTalhao = chuvaService.totalPorTalhao(propertyId, talhaoId);
+```
+
+**Benefits:**
+- ✅ Null logic isolated in service layer
+- ✅ UI code remains clean and readable
+- ✅ Single source of truth for queries
+- ✅ Easy to add indexes/optimizations later
+
+### Implementation Summary
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 19.1 | Create Talhao model in agro_core with Hive adapter | ✅ DONE |
+| 19.2 | Add talhaoId optional field to RegistroChuva model | ✅ DONE |
+| 19.3 | Migrate existing data (backward compatible - no migration needed) | ✅ DONE |
+| 19.4 | Create TalhaoService for CRUD operations | ✅ DONE |
+| 19.5 | Create TalhaoListScreen for talhão management | ✅ DONE |
+| 19.6 | Create TalhaoFormScreen for add/edit talhão | ✅ DONE |
+| 19.7 | Update AdicionarChuvaScreen with talhão selector | ✅ DONE |
+| 19.8 | Update EditarChuvaScreen with talhão display/edit | ✅ DONE |
+| 19.9 | Update ChuvaService with helper methods that encapsulate null handling | ✅ DONE |
+| 19.10 | Update EstatisticasScreen to filter by talhão | ✅ DONE |
+| 19.11 | Add talhão selector to ListaChuvasScreen filter | ✅ DONE |
+| 19.12 | Update export/import services to handle talhões | ✅ DONE |
+| 19.13 | Add l10n strings (pt-BR + en) for talhão feature | ✅ DONE |
+| 19.14 | Add Property management link in Settings | ✅ DONE |
+
+### Files to Create
+
+| File | Action | Description |
+|------|--------|-------------|
+| `packages/agro_core/lib/models/talhao.dart` | CREATE | Talhao model with Hive annotations (@HiveType typeId: 14) |
+| `packages/agro_core/lib/services/talhao_service.dart` | CREATE | CRUD operations for talhões (create, read, update, delete, list by property) |
+| `packages/agro_core/lib/screens/talhao_list_screen.dart` | CREATE | Screen to list talhões per property with add/edit/delete actions |
+| `packages/agro_core/lib/screens/talhao_form_screen.dart` | CREATE | Form screen to add/edit talhão (name, area, optional coordinates) |
+| `packages/agro_core/lib/widgets/talhao_selector.dart` | CREATE | Reusable widget for talhão selection (filtered by property) |
+
+### Files to Modify
+
+| File | Action | Description |
+|------|--------|-------------|
+| `apps/planejachuva/lib/models/registro_chuva.dart` | MODIFY | Add `@HiveField(6) String? talhaoId` field |
+| `apps/planejachuva/lib/screens/adicionar_chuva_screen.dart` | MODIFY | Add TalhaoSelector widget (appears after property selection) |
+| `apps/planejachuva/lib/screens/editar_chuva_screen.dart` | MODIFY | Display/edit talhão if present, allow changing talhão |
+| `apps/planejachuva/lib/screens/lista_chuvas_screen.dart` | MODIFY | Add talhão filter option, display talhão name in list items |
+| `apps/planejachuva/lib/screens/estatisticas_screen.dart` | MODIFY | Add talhão selector for filtered statistics |
+| `apps/planejachuva/lib/services/chuva_service.dart` | MODIFY | Add helper methods that encapsulate null handling: `totalPropriedadeToda()`, `totalPorTalhao()`, `_filteredByTalhao()` |
+| `apps/planejachuva/lib/services/export_service.dart` | MODIFY | Include talhão data in exports, handle talhão on import |
+| `packages/agro_core/lib/models/property.dart` | MODIFY | Add helper method to load talhões for a property |
+| `packages/agro_core/lib/screens/agro_settings_screen.dart` | MODIFY | Add "Gerenciar Propriedades e Talhões" menu item |
+| `packages/agro_core/lib/agro_core.dart` | MODIFY | Export new talhão models, services, screens, widgets |
+| `packages/agro_core/lib/l10n/arb/app_pt.arb` | MODIFY | Add ~30 new strings for talhão feature |
+| `packages/agro_core/lib/l10n/arb/app_en.arb` | MODIFY | Add ~30 new strings for talhão feature |
+| `apps/planejachuva/lib/main.dart` | MODIFY | Register Talhao Hive adapter in initHive() |
+
+### Proposed UI/UX Flow
+
+#### Rainfall Registration Flow (with Talhão)
+```
+AdicionarChuvaScreen
+  ├─ 1. Select Property (required) [dropdown]
+  │   └─ Shows: "Fazenda Primavera (150.5 ha)"
+  │
+  ├─ 2. Select Talhão (optional) [dropdown, appears after property selection]
+  │   ├─ Option: "Propriedade toda" (default, talhaoId = null)
+  │   ├─ Option: "Talhão A - Soja (50 ha)"
+  │   ├─ Option: "Talhão B - Milho (75 ha)"
+  │   └─ Option: "+ Criar novo talhão" → Opens TalhaoFormScreen
+  │
+  ├─ 3. Enter millimeters (existing)
+  ├─ 4. Select date (existing)
+  └─ 5. Add observation (existing)
+```
+
+#### Talhão Management Flow
+```
+Settings → Properties & Talhões
+  └─ PropertyListScreen (existing, enhanced)
+      ├─ Property Card
+      │   ├─ "Fazenda Primavera - 150.5 ha"
+      │   ├─ Tap → PropertyFormScreen (edit property)
+      │   └─ "Gerenciar Talhões" button → TalhaoListScreen
+      │
+      └─ TalhaoListScreen (per property)
+          ├─ Header: "Talhões - Fazenda Primavera"
+          ├─ Summary: "75 ha divididos / 150.5 ha total (50% dividido)"
+          ├─ List of talhões
+          │   ├─ Talhão A - Soja (50 ha) - 12 registros
+          │   └─ Talhão B - Milho (25 ha) - 5 registros
+          └─ FAB: + Add Talhão → TalhaoFormScreen
+```
+
+#### Statistics with Talhão Filter
+```
+EstatisticasScreen
+  ├─ Property Selector (existing)
+  ├─ Talhão Selector (NEW, optional)
+  │   ├─ "Todos os talhões" (default)
+  │   ├─ "Talhão A - Soja"
+  │   └─ "Talhão B - Milho"
+  └─ Statistics (filtered by property + talhão)
+```
+
+### Data Model Details
+
+#### Talhao Model (packages/agro_core)
+```dart
+@HiveType(typeId: 14)
+class Talhao extends HiveObject {
+  @HiveField(0)
+  final String id;  // UUID
+
+  @HiveField(1)
+  final String userId;  // Owner (for multi-user sync)
+
+  @HiveField(2)
+  final String propertyId;  // Foreign key to Property
+
+  @HiveField(3)
+  String nome;  // e.g., "Talhão A - Soja"
+
+  @HiveField(4)
+  double area;  // in hectares
+
+  @HiveField(5)
+  String? cultura;  // Optional: current crop (e.g., "Soja", "Milho")
+
+  @HiveField(6)
+  List<Map<String, double>>? coordenadas;  // Optional: polygon coordinates [{lat, lng}, ...]
+
+  @HiveField(7)
+  final DateTime createdAt;
+
+  @HiveField(8)
+  DateTime updatedAt;
+}
+```
+
+#### Updated RegistroChuva Model
+```dart
+@HiveType(typeId: 1)
+class RegistroChuva extends HiveObject {
+  @HiveField(0) final int id;
+  @HiveField(1) final DateTime data;
+  @HiveField(2) final double milimetros;
+  @HiveField(3) final String? observacao;
+  @HiveField(4) final DateTime criadoEm;
+  @HiveField(5) final String propertyId;  // Required
+  @HiveField(6) final String? talhaoId;   // NEW: Optional talhão subdivision
+}
+```
+
+### Validation Rules
+
+1. **Talhão name**: Required, 2-50 chars, unique per property
+2. **Talhão area**: Must be > 0 and ≤ property total area
+3. **Total subdivided area**: Sum of all talhão areas in a property cannot exceed property total area
+4. **Talhão-property consistency**: Cannot select talhão from different property
+5. **Deletion protection**: Cannot delete talhão if it has rainfall records (must reassign or delete records first)
+6. **Property deletion**: When deleting property with talhões, cascade delete talhões or block deletion
+
+### Migration Strategy
+
+**For existing rainfall records (without talhaoId):**
+- `talhaoId` field defaults to `null`
+- Service Layer methods handle null gracefully (`null` = property-level record)
+- No data migration needed - backward compatible
+- All existing queries automatically work via `totalPropriedadeToda()` method
+
+**Hive Schema Update:**
+1. Add `TalhaoAdapter` registration in `main.dart`
+2. Bump `RegistroChuva` model version (regenerate adapter with `dart run build_runner build --delete-conflicting-outputs`)
+3. Test data persistence before/after migration
+4. Verify existing records still accessible through service methods
+
+### Benefits
+
+1. **Granular tracking**: Track rainfall per field subdivision, not just whole property
+2. **Better insights**: Compare rainfall between different crops/areas within same property
+3. **Flexibility**: Optional feature - simple users ignore it, advanced users benefit
+4. **Scalability**: Prepares for future features (irrigation, fertilization, harvest by talhão)
+5. **Professional tool**: Makes app suitable for larger farms with multiple plots
+
+### Localization Strings Needed
+
+**Portuguese (app_pt.arb):**
+- `talhaoTitle`, `talhaoAdd`, `talhaoEdit`, `talhaoDelete`, `talhaoName`, `talhaoArea`, `talhaoCultura`
+- `talhaoListEmpty`, `talhaoListEmptyDesc`, `talhaoDeleteConfirm`, `talhaoDeleted`
+- `talhaoNameRequired`, `talhaoAreaInvalid`, `talhaoAreaExceedsProperty`
+- `talhaoSelectOptional`, `talhaoWholeProperty`, `talhaoCreateNew`
+- `talhaoSummaryDivided`, `talhaoWithRecords`, `talhaoManage`
+
+**English (app_en.arb):**
+- Same keys, translated
+
+### Future Enhancements (Not in this phase)
+
+- Map view with talhão polygons (requires mapping library)
+- Talhão templates (quick setup: "Dividir em X talhões iguais")
+- Import/export talhões from KML/GeoJSON
+- Crop rotation tracking per talhão
+- Soil type per talhão
+- Integration with satellite imagery per talhão
+
+---
+
 ## Phase 18.0: Google Sign-In (Official Button + Branding Compliance)
 
 ### Status: [DONE]

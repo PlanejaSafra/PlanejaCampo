@@ -21,16 +21,19 @@ class EditarChuvaScreen extends StatefulWidget {
 
 class _EditarChuvaScreenState extends State<EditarChuvaScreen> {
   final _formKey = GlobalKey<FormState>();
-  late final TextEditingController _milimetrosController;
-  late final TextEditingController _observacaoController;
+  final _milimetrosController = TextEditingController();
+  final _observacaoController = TextEditingController();
 
   late DateTime _dataSelecionada;
   bool _salvando = false;
+  String? _talhaoSelecionado;
+  final _talhaoService = TalhaoService();
 
   @override
   void initState() {
     super.initState();
     _dataSelecionada = widget.registro.data;
+    _talhaoSelecionado = widget.registro.talhaoId;
   }
 
   @override
@@ -39,7 +42,8 @@ class _EditarChuvaScreenState extends State<EditarChuvaScreen> {
     // Initialize controllers here to have access to context for locale
     if (!_controllersInitialized) {
       final locale = Localizations.localeOf(context).toString();
-      final mmFormatado = NumberFormat('#0.0', locale).format(widget.registro.milimetros);
+      final mmFormatado =
+          NumberFormat('#0.0', locale).format(widget.registro.milimetros);
       _milimetrosController = TextEditingController(text: mmFormatado);
       _observacaoController = TextEditingController(
         text: widget.registro.observacao ?? '',
@@ -101,6 +105,7 @@ class _EditarChuvaScreenState extends State<EditarChuvaScreen> {
             : _observacaoController.text,
         criadoEm: widget.registro.criadoEm,
         propertyId: widget.registro.propertyId,
+        talhaoId: _talhaoSelecionado,
       );
 
       await ChuvaService().atualizar(registroAtualizado);
@@ -263,6 +268,14 @@ class _EditarChuvaScreenState extends State<EditarChuvaScreen> {
                 trailing: const Icon(Icons.chevron_right),
                 onTap: _selecionarData,
               ),
+            ),
+            const SizedBox(height: 16),
+            // Talhão selector
+            TalhaoSelector(
+              propertyId: widget.registro.propertyId,
+              selectedTalhaoId: _talhaoSelecionado,
+              onTalhaoChanged: (id) => setState(() => _talhaoSelecionado = id),
+              onNewTalhao: (id) => setState(() => _talhaoSelecionado = id),
             ),
             const SizedBox(height: 16),
             // Observation field

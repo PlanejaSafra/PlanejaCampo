@@ -27,11 +27,28 @@ class _EstatisticasScreenState extends State<EstatisticasScreen>
   late Map<String, double> _monthlyData;
   late TabController _tabController;
 
+  String? _propertyId;
+  String? _selectedTalhaoId;
+  bool _isLoadingProperty = true;
+  final _propertyService = PropertyService();
+  final _talhaoService = TalhaoService();
+
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-    _calcularEstatisticas();
+    _loadProperty();
+  }
+
+  Future<void> _loadProperty() async {
+    final property = await _propertyService.getDefaultProperty();
+    if (mounted) {
+      setState(() {
+        _propertyId = property?.id;
+        _isLoadingProperty = false;
+        _calcularEstatisticas();
+      });
+    }
   }
 
   @override
@@ -47,8 +64,20 @@ class _EstatisticasScreenState extends State<EstatisticasScreen>
   }
 
   void _calcularEstatisticas() {
-    final service = ChuvaService();
-    _registros = service.listarTodos();
+    if (_propertyId == null) {
+      _registros = [];
+      // If no property, we might fallback to all records or empty
+      // sticking to empty for safety to avoid mixing properties
+    } else {
+      final service = ChuvaService();
+      if (_selectedTalhaoId == null) {
+        // Aggregate: All records for the property
+        _registros = service.listarTodos(propertyId: _propertyId);
+      } else {
+        // Specific Talhão
+        _registros = service.listarPorTalhao(_propertyId!, _selectedTalhaoId!);
+      }
+    }
 
     final now = DateTime.now();
     final inicioAno = DateTime(now.year, 1, 1);
@@ -175,17 +204,42 @@ class _EstatisticasScreenState extends State<EstatisticasScreen>
           ],
         ),
       ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          // Tab 1: Overview (existing statistics)
-          _buildOverviewTab(l10n, theme),
-          // Tab 2: Bar chart visualization
-          _buildBarsTab(locale),
-          // Tab 3: Year comparison
-          _buildComparisonTab(locale),
-        ],
-      ),
+      body: _isLoadingProperty
+          ? const Center(child: CircularProgressIndicator())
+          : Column(
+              children: [
+                if (_propertyId != null)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                    child: TalhaoSelector(
+                      propertyId: _propertyId!,
+                      selectedTalhaoId: _selectedTalhaoId,
+                      talhaoService: _talhaoService,
+                      onChanged: (id) {
+                        setState(() {
+                          _selectedTalhaoId = id;
+                          _calcularEstatisticas();
+                        });
+                      },
+                      // Disable "Create New" in statistics filter
+                      onCreateNew: null,
+                    ),
+                  ),
+                Expanded(
+                  child: TabBarView(
+                    controller: _tabController,
+                    children: [
+                      // Tab 1: Overview (existing statistics)
+                      _buildOverviewTab(l10n, theme),
+                      // Tab 2: Bar chart visualization
+                      _buildBarsTab(locale),
+                      // Tab 3: Year comparison
+                      _buildComparisonTab(locale),
+                    ],
+                  ),
+                ),
+              ],
+            ),
     );
   }
 

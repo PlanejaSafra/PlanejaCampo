@@ -141,6 +141,7 @@ O sistema foi desenhado para funcionar na fazenda, sem sinal de internet.
     * **MVP:** Exportação manual de arquivo `.json` (o usuário compartilha para WhatsApp/Google Drive).
     * **Futuro:** Upload automático desse arquivo para nuvem (Firebase Storage) quando houver Wi-Fi.
     * *Nota:* Não realizamos sincronização em tempo real (sync) para evitar conflitos e complexidade. O dado mestre é sempre o do celular.
+* **Regra:** **NUNCA usar subcoleções**. Mantenha a estrutura de dados sempre "flat" (coleções/boxes na raiz).
 
 ---
 

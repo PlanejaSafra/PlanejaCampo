@@ -1018,6 +1018,204 @@ abstract class AgroLocalizations {
   /// In en, this message translates to:
   /// **'Below previous month'**
   String get chuvaComparacaoMesAbaixo;
+
+  /// No description provided for @talhaoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Field Plots'**
+  String get talhaoTitle;
+
+  /// No description provided for @talhaoAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Field Plot'**
+  String get talhaoAdd;
+
+  /// No description provided for @talhaoEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Field Plot'**
+  String get talhaoEdit;
+
+  /// No description provided for @talhaoDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Field Plot'**
+  String get talhaoDelete;
+
+  /// No description provided for @talhaoName.
+  ///
+  /// In en, this message translates to:
+  /// **'Plot Name'**
+  String get talhaoName;
+
+  /// No description provided for @talhaoNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'E.g.: Plot A - Soybean'**
+  String get talhaoNameHint;
+
+  /// No description provided for @talhaoArea.
+  ///
+  /// In en, this message translates to:
+  /// **'Area (ha)'**
+  String get talhaoArea;
+
+  /// No description provided for @talhaoAreaHint.
+  ///
+  /// In en, this message translates to:
+  /// **'E.g.: 50.5'**
+  String get talhaoAreaHint;
+
+  /// No description provided for @talhaoCultura.
+  ///
+  /// In en, this message translates to:
+  /// **'Crop (optional)'**
+  String get talhaoCultura;
+
+  /// No description provided for @talhaoCulturaHint.
+  ///
+  /// In en, this message translates to:
+  /// **'E.g.: Soybean, Corn, Coffee'**
+  String get talhaoCulturaHint;
+
+  /// No description provided for @talhaoListEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No field plots registered'**
+  String get talhaoListEmpty;
+
+  /// No description provided for @talhaoListEmptyDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap + to divide this property into plots'**
+  String get talhaoListEmptyDesc;
+
+  /// No description provided for @talhaoDeleteConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete field plot?'**
+  String get talhaoDeleteConfirm;
+
+  /// No description provided for @talhaoDeleteConfirmMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this field plot?'**
+  String get talhaoDeleteConfirmMsg;
+
+  /// No description provided for @talhaoDeleteWithRecords.
+  ///
+  /// In en, this message translates to:
+  /// **'This field plot has {count} linked record(s). They will be moved to \"Whole Property\".'**
+  String talhaoDeleteWithRecords(int count);
+
+  /// No description provided for @talhaoDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Field plot deleted'**
+  String get talhaoDeleted;
+
+  /// No description provided for @talhaoSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Field plot saved!'**
+  String get talhaoSaved;
+
+  /// No description provided for @talhaoUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Field plot updated!'**
+  String get talhaoUpdated;
+
+  /// No description provided for @talhaoNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter plot name'**
+  String get talhaoNameRequired;
+
+  /// No description provided for @talhaoNameTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Name too short (minimum 2 characters)'**
+  String get talhaoNameTooShort;
+
+  /// No description provided for @talhaoNameTooLong.
+  ///
+  /// In en, this message translates to:
+  /// **'Name too long (maximum 50 characters)'**
+  String get talhaoNameTooLong;
+
+  /// No description provided for @talhaoNameExists.
+  ///
+  /// In en, this message translates to:
+  /// **'A field plot with this name already exists in this property'**
+  String get talhaoNameExists;
+
+  /// No description provided for @talhaoAreaInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Area must be greater than zero'**
+  String get talhaoAreaInvalid;
+
+  /// No description provided for @talhaoAreaExceedsProperty.
+  ///
+  /// In en, this message translates to:
+  /// **'The sum of plot areas ({totalTalhoes} ha) exceeds the property\'s total area ({propertyArea} ha)'**
+  String talhaoAreaExceedsProperty(String totalTalhoes, String propertyArea);
+
+  /// No description provided for @talhaoSelectOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Field Plot (optional)'**
+  String get talhaoSelectOptional;
+
+  /// No description provided for @talhaoWholeProperty.
+  ///
+  /// In en, this message translates to:
+  /// **'Whole Property'**
+  String get talhaoWholeProperty;
+
+  /// No description provided for @talhaoCreateNew.
+  ///
+  /// In en, this message translates to:
+  /// **'+ Create new plot'**
+  String get talhaoCreateNew;
+
+  /// No description provided for @talhaoManage.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Field Plots'**
+  String get talhaoManage;
+
+  /// No description provided for @talhaoSummaryDivided.
+  ///
+  /// In en, this message translates to:
+  /// **'{dividedArea} ha divided / {totalArea} ha total ({percentage}% divided)'**
+  String talhaoSummaryDivided(String dividedArea, String totalArea, String percentage);
+
+  /// No description provided for @talhaoWithRecords.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} record(s)'**
+  String talhaoWithRecords(int count);
+
+  /// No description provided for @talhaoFilterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All field plots'**
+  String get talhaoFilterAll;
+
+  /// No description provided for @talhaoFilterBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter by field plot'**
+  String get talhaoFilterBy;
+
+  /// No description provided for @talhaoNoSelection.
+  ///
+  /// In en, this message translates to:
+  /// **'No field plot selected'**
+  String get talhaoNoSelection;
 }
 
 class _AgroLocalizationsDelegate extends LocalizationsDelegate<AgroLocalizations> {
