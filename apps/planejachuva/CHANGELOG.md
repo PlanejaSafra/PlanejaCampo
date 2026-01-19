@@ -760,28 +760,83 @@ exports.onRainfallWrite = functions.firestore
 
 | Sub-Phase | Description | Status |
 |-----------|-------------|--------|
-| 15.0.1 | Add cloud_firestore dependency | ⏳ TODO |
-| 15.0.2 | Create SyncService with Firestore offline mode | ⏳ TODO |
-| 15.0.3 | Add opt-in consent in Settings | ⏳ TODO |
-| 15.0.4 | Create background sync job (Wi-Fi only) | ⏳ TODO |
-| 15.0.5 | Create RegionalStatsScreen | ⏳ TODO |
-| 15.0.6 | Deploy Cloud Function for aggregation | ⏳ TODO |
-| 15.0.7 | Configure Firestore security rules (composite) | ⏳ TODO |
+| 15.0.1 | Add cloud_firestore dependency | ✅ DONE |
+| 15.0.2 | Create SyncService with Firestore offline mode | ✅ DONE |
+| 15.0.3 | Add opt-in consent in Settings | ✅ DONE |
+| 15.0.4 | Create background sync job (Wi-Fi only) | ✅ DONE |
+| 15.0.5 | Create RegionalStatsScreen | ✅ DONE |
+| 15.0.6 | Deploy Cloud Function for aggregation | ✅ DONE |
+| 15.0.7 | Configure Firestore security rules (composite) | ✅ DONE |
 
-**⚠️ Nota Crítica sobre Sub-Fase 15.0.7**: O arquivo `firestore.rules` final deve conter a **composição** de TODAS as regras de segurança:
-- Regras da collection `users` (definidas na Fase 15.5)
-- Regras da collection `rainfall_data` e `rainfall_stats` (definidas abaixo)
-- Lembre-se: Firestore usa um único arquivo de regras para todas as collections
+**⚠️ Nota Crítica sobre Sub-Fase 15.0.7**: O arquivo `firestore.rules` final contém a **composição** de TODAS as regras de segurança:
+- Regras da collection `users` (Fase 15.5) ✅
+- Regras da collection `rainfall_data` e `rainfall_stats` (Fase 15.0) ✅
+- K-Anonymity enforcement (minimum 3 contributors) ✅
 
-### Files to Create/Modify
+### Files Modified
 
 | File | Action | Description |
 |------|--------|-------------|
-| `lib/services/sync_service.dart` | CREATE | Firestore sync with offline mode |
-| `lib/models/regional_data.dart` | CREATE | Model for aggregated data |
-| `lib/screens/regional_stats_screen.dart` | CREATE | Comparison screen |
-| `pubspec.yaml` | MODIFY | Add cloud_firestore |
-| `firebase/functions/aggregate.js` | CREATE | Cloud Function for stats |
+| `lib/models/sync_queue_item.dart` | CREATE | SyncQueueItem model with Hive (typeId: 4), retry logic |
+| `lib/models/sync_queue_item.g.dart` | GENERATE | Hive adapter for SyncQueueItem |
+| `lib/models/regional_stats.dart` | CREATE | RegionalStats model for aggregated data |
+| `lib/services/sync_service.dart` | CREATE | Firestore sync with rate limiting, exponential backoff, K-Anonymity |
+| `lib/screens/regional_stats_screen.dart` | CREATE | Regional statistics comparison screen (438 lines) |
+| `lib/main.dart` | MODIFY | Register SyncQueueItemAdapter, init SyncService |
+| `pubspec.yaml` | MODIFY | Added cloud_firestore: ^5.5.0, geolocator: ^13.0.2 |
+| `firestore.rules` | CREATE | Security rules with K-Anonymity enforcement (write-only records, read-only aggregates) |
+| `firebase_functions/index.js` | CREATE | Cloud Functions for hierarchical aggregation (onRainfallWrite, cleanup, recalculate) |
+| `firebase_functions/package.json` | CREATE | Node.js dependencies for Cloud Functions |
+
+### Error Fixes Applied
+
+**Error 1: Missing propertyId in backup_service.dart** (Commit: 495ea8e)
+- **Problem**: RegistroChuva model requires propertyId, but backup/restore didn't include it
+- **Solution**:
+  - Export: Added `'propertyId': r.propertyId` to backup JSON
+  - Import: Added logic to use propertyId from backup or fallback to default property
+  - Maintains backward compatibility with old backups
+
+**Error 2: HiveError - Duplicate TypeAdapter for typeId 10** (Commit: acaf832, 914bafa)
+- **Problem**: PropertyAdapter (typeId: 10) was registered twice, causing black screen crash
+- **Root Cause**:
+  - PropertyAdapter registered in PropertyService.init()
+  - RegistroChuvaAdapter registered in ChuvaService.init()
+  - Both also implicitly registered elsewhere
+- **Solution**:
+  - Removed adapter registration from PropertyService.init() and ChuvaService.init()
+  - Centralized ALL Hive adapter registrations in main.dart before service initialization
+  - Services now only open boxes, never register adapters
+  - Added clear documentation in service code about prerequisite
+- **Pattern Established**: All Hive adapters must be registered centrally in main.dart
+
+### Key Features
+
+**SyncService:**
+- Opt-in consent check (uses AgroPrivacyStore.consentAggregateMetrics)
+- Rate limiting: Maximum 10 writes/day per user
+- Exponential backoff retry logic (1min, 5min, 15min, 1h, 6h)
+- Queue management with Hive (persists across app restarts)
+- Hierarchical GeoHash fallback (5 → 4 → 3) for K-Anonymity
+
+**RegionalStatsScreen:**
+- Comparison of property rainfall vs regional average
+- K-Anonymity protection (minimum 3 contributors)
+- Hierarchical fallback to broader regions if local data insufficient
+- Visual indicators for above/below regional average
+
+**Cloud Functions:**
+- onRainfallWrite: Real-time aggregation at 3 GeoHash levels
+- cleanupOldRecords: Scheduled cleanup of records > 2 years old
+- recalculateAggregates: Manual recalculation trigger for data corrections
+- All use Firebase Admin SDK with transaction safety
+
+**Firestore Security:**
+- Write-only individual records (privacy protection)
+- Read-only aggregated statistics
+- K-Anonymity enforcement in security rules
+- Rate limiting validation
+- Data validation (0 < mm <= 500)
 
 ### Considerações de Privacidade
 
