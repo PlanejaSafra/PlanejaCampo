@@ -1,6 +1,9 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 import '../l10n/generated/app_localizations.dart';
+import '../screens/privacy_policy_screen.dart';
+import '../screens/terms_of_use_screen.dart';
 import 'agro_privacy_keys.dart';
 import 'agro_privacy_store.dart';
 
@@ -67,6 +70,22 @@ class _ConsentScreenState extends State<ConsentScreen> {
     await AgroPrivacyStore.rejectAllConsents();
     await AgroPrivacyStore.setOnboardingCompleted(true);
     widget.onCompleted?.call();
+  }
+
+  void _showTermsOfUse() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const TermsOfUseScreen(),
+      ),
+    );
+  }
+
+  void _showPrivacyPolicy() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const PrivacyPolicyScreen(),
+      ),
+    );
   }
 
   @override
@@ -156,13 +175,40 @@ class _ConsentScreenState extends State<ConsentScreen> {
                 ),
                 child: Text(l10n.declineLabel),
               ),
-              const SizedBox(height: 8),
-              Text(
-                l10n.consentSmallNoteUnderDecline,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: Colors.grey[600],
-                ),
+              const SizedBox(height: 24),
+              // Terms and Privacy links (like in IdentityScreen)
+              RichText(
                 textAlign: TextAlign.center,
+                text: TextSpan(
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: Colors.grey[600],
+                  ),
+                  children: [
+                    const TextSpan(text: 'Você pode revisar nossos '),
+                    TextSpan(
+                      text: 'Termos de Uso',
+                      style: TextStyle(
+                        color: theme.colorScheme.primary,
+                        decoration: TextDecoration.underline,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = _showTermsOfUse,
+                    ),
+                    const TextSpan(text: ' e '),
+                    TextSpan(
+                      text: 'Políticas de Privacidade',
+                      style: TextStyle(
+                        color: theme.colorScheme.primary,
+                        decoration: TextDecoration.underline,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = _showPrivacyPolicy,
+                    ),
+                    const TextSpan(text: ' a qualquer momento.'),
+                  ],
+                ),
               ),
               const SizedBox(height: 16),
             ],
