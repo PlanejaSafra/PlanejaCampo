@@ -47,6 +47,7 @@ export 'menu/agro_drawer_item.dart';
 export 'screens/agro_about_screen.dart';
 export 'screens/agro_privacy_screen.dart';
 export 'screens/agro_settings_screen.dart';
+export 'screens/login_screen.dart';
 
 // Screens (Property Management)
 export 'screens/property_list_screen.dart';

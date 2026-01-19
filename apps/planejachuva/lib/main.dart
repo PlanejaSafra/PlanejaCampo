@@ -1,5 +1,4 @@
 import 'package:agro_core/agro_core.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart' show kIsWeb, defaultTargetPlatform, TargetPlatform;
 import 'package:flutter/material.dart';
@@ -65,40 +64,6 @@ Future<void> main() async {
 
   // Initialize sync service (for regional statistics)
   await SyncService().init();
-
-  // Firebase Anonymous Auth: Sign in or use existing user
-  final auth = FirebaseAuth.instance;
-  if (auth.currentUser == null) {
-    await auth.signInAnonymously();
-  }
-
-  // Migrate existing data to property system (one-time migration)
-  await MigrationService.migrateToPropertySystem();
-
-  // Initialize or restore cloud data
-  final cloudService = UserCloudService.instance;
-  var userData = cloudService.getCurrentUserData();
-
-  if (userData == null && auth.currentUser != null) {
-    // First time: create initial cloud data
-    final consents = ConsentData(
-      termsAccepted: AgroPrivacyStore.hasAcceptedTerms(),
-      termsVersion: '1.0',
-      acceptedAt: DateTime.now(),
-      aggregateMetrics: AgroPrivacyStore.consentAggregateMetrics,
-      sharePartners: AgroPrivacyStore.consentSharePartners,
-      adsPersonalization: AgroPrivacyStore.consentAdsPersonalization,
-      consentVersion: '1.0',
-    );
-
-    await cloudService.createInitialUserData(
-      uid: auth.currentUser!.uid,
-      consents: consents,
-    );
-  }
-
-  // Update last active timestamp (fire-and-forget sync)
-  cloudService.updateLastActive();
 
   // Load user preferences
   final prefs = await UserPreferences.load();
@@ -209,14 +174,132 @@ class _PlanejaChuvaAppState extends State<PlanejaChuvaApp> {
         Locale('pt', 'BR'),
         Locale('en'),
       ],
-      home: AgroOnboardingGate(
-        home: ListaChuvasScreen(
-          onChangeLocale: _changeLocale,
-          onChangeThemeMode: _changeThemeMode,
-          currentLocale: _selectedLocale,
-          currentThemeMode: _themeMode,
-          preferences: widget.initialPreferences,
+      home: AuthGate(
+        onChangeLocale: _changeLocale,
+        onChangeThemeMode: _changeThemeMode,
+        currentLocale: _selectedLocale,
+        currentThemeMode: _themeMode,
+        preferences: widget.initialPreferences,
+      ),
+    );
+  }
+}
+
+/// Widget that checks authentication status and shows Login or Home screen
+class AuthGate extends StatefulWidget {
+  final void Function(Locale?) onChangeLocale;
+  final void Function(ThemeMode) onChangeThemeMode;
+  final Locale? currentLocale;
+  final ThemeMode currentThemeMode;
+  final UserPreferences preferences;
+
+  const AuthGate({
+    super.key,
+    required this.onChangeLocale,
+    required this.onChangeThemeMode,
+    required this.currentLocale,
+    required this.currentThemeMode,
+    required this.preferences,
+  });
+
+  @override
+  State<AuthGate> createState() => _AuthGateState();
+}
+
+class _AuthGateState extends State<AuthGate> {
+  bool _isInitialized = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkAndInitializeUser();
+  }
+
+  Future<void> _checkAndInitializeUser() async {
+    final currentUser = AuthService.currentUser;
+
+    if (currentUser != null) {
+      // User is already signed in, initialize their data
+      await _initializeUserData();
+    }
+
+    setState(() {
+      _isInitialized = true;
+    });
+  }
+
+  Future<void> _initializeUserData() async {
+    // Run migration (preserves data when upgrading from anonymous to Google)
+    await MigrationService.migrateToPropertySystem();
+
+    // Initialize or restore cloud data
+    final cloudService = UserCloudService.instance;
+    final userData = cloudService.getCurrentUserData();
+    final currentUser = AuthService.currentUser;
+
+    if (userData == null && currentUser != null) {
+      // First time: create initial cloud data
+      final consents = ConsentData(
+        termsAccepted: AgroPrivacyStore.hasAcceptedTerms(),
+        termsVersion: '1.0',
+        acceptedAt: DateTime.now(),
+        aggregateMetrics: AgroPrivacyStore.consentAggregateMetrics,
+        sharePartners: AgroPrivacyStore.consentSharePartners,
+        adsPersonalization: AgroPrivacyStore.consentAdsPersonalization,
+        consentVersion: '1.0',
+      );
+
+      await cloudService.createInitialUserData(
+        uid: currentUser.uid,
+        consents: consents,
+      );
+    }
+
+    // Update last active timestamp (fire-and-forget sync)
+    cloudService.updateLastActive();
+  }
+
+  Future<void> _handleLoginSuccess() async {
+    // Initialize user data after successful login
+    await _initializeUserData();
+
+    // Refresh UI
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!_isInitialized) {
+      // Show loading while checking auth status
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
         ),
+      );
+    }
+
+    final currentUser = AuthService.currentUser;
+
+    if (currentUser == null) {
+      // No user signed in, show login screen
+      return LoginScreen(
+        onLoginSuccess: _handleLoginSuccess,
+        appName: 'Planeja Chuva',
+        appDescription: 'Registre e acompanhe as chuvas na sua propriedade',
+        appIcon: Icons.water_drop_outlined,
+      );
+    }
+
+    // User is signed in, show main app
+    return AgroOnboardingGate(
+      home: ListaChuvasScreen(
+        onChangeLocale: widget.onChangeLocale,
+        onChangeThemeMode: widget.onChangeThemeMode,
+        currentLocale: widget.currentLocale,
+        currentThemeMode: widget.currentThemeMode,
+        preferences: widget.preferences,
       ),
     );
   }
