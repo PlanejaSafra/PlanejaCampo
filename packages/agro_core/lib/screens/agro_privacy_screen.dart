@@ -60,9 +60,11 @@ class _AgroPrivacyScreenState extends State<AgroPrivacyScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l10n.privacySaved),
-          duration: const Duration(seconds: 2),
+          duration: const Duration(seconds: 1),
         ),
       );
+      // Close the screen after saving
+      Navigator.pop(context);
     }
   }
 
@@ -79,9 +81,11 @@ class _AgroPrivacyScreenState extends State<AgroPrivacyScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l10n.privacySaved),
-          duration: const Duration(seconds: 2),
+          duration: const Duration(seconds: 1),
         ),
       );
+      // Close the screen after saving
+      Navigator.pop(context);
     }
   }
 
