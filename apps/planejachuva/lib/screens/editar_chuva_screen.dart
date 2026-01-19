@@ -21,8 +21,8 @@ class EditarChuvaScreen extends StatefulWidget {
 
 class _EditarChuvaScreenState extends State<EditarChuvaScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _milimetrosController = TextEditingController();
-  final _observacaoController = TextEditingController();
+  late TextEditingController _milimetrosController;
+  late TextEditingController _observacaoController;
 
   late DateTime _dataSelecionada;
   bool _salvando = false;
@@ -274,8 +274,8 @@ class _EditarChuvaScreenState extends State<EditarChuvaScreen> {
             TalhaoSelector(
               propertyId: widget.registro.propertyId,
               selectedTalhaoId: _talhaoSelecionado,
-              onTalhaoChanged: (id) => setState(() => _talhaoSelecionado = id),
-              onNewTalhao: (id) => setState(() => _talhaoSelecionado = id),
+              onChanged: (id) => setState(() => _talhaoSelecionado = id),
+              talhaoService: _talhaoService,
             ),
             const SizedBox(height: 16),
             // Observation field

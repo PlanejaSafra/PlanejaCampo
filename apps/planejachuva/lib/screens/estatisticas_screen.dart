@@ -32,6 +32,7 @@ class _EstatisticasScreenState extends State<EstatisticasScreen>
   bool _isLoadingProperty = true;
   final _propertyService = PropertyService();
   final _talhaoService = TalhaoService();
+  final _chuvaService = ChuvaService();
 
   @override
   void initState() {
@@ -69,13 +70,13 @@ class _EstatisticasScreenState extends State<EstatisticasScreen>
       // If no property, we might fallback to all records or empty
       // sticking to empty for safety to avoid mixing properties
     } else {
-      final service = ChuvaService();
       if (_selectedTalhaoId == null) {
         // Aggregate: All records for the property
-        _registros = service.listarTodos(propertyId: _propertyId);
+        _registros = _chuvaService.listarTodos(propertyId: _propertyId);
       } else {
         // Specific Talhão
-        _registros = service.listarPorTalhao(_propertyId!, _selectedTalhaoId!);
+        _registros =
+            _chuvaService.listarPorTalhao(_propertyId!, _selectedTalhaoId!);
       }
     }
 
@@ -96,8 +97,8 @@ class _EstatisticasScreenState extends State<EstatisticasScreen>
     _maiorRegistro = _registros.isEmpty
         ? 0.0
         : _registros.map((r) => r.milimetros).reduce((a, b) => a > b ? a : b);
-    _totalMesAtual = service.totalDoMes(mesAtual);
-    _totalMesAnterior = service.totalDoMes(mesAnterior);
+    _totalMesAtual = _chuvaService.totalDoMes(mesAtual);
+    _totalMesAnterior = _chuvaService.totalDoMes(mesAnterior);
 
     // Build monthly data for visualizations
     _monthlyData = {};

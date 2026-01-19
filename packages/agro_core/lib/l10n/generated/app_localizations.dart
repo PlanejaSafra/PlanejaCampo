@@ -401,6 +401,24 @@ abstract class AgroLocalizations {
   /// **'About the App'**
   String get settingsAboutApp;
 
+  /// No description provided for @settingsPropertiesAndTalhoes.
+  ///
+  /// In en, this message translates to:
+  /// **'Properties & Field Plots'**
+  String get settingsPropertiesAndTalhoes;
+
+  /// No description provided for @settingsPropertiesAndTalhoesDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage your production sites'**
+  String get settingsPropertiesAndTalhoesDesc;
+
+  /// No description provided for @settingsManagement.
+  ///
+  /// In en, this message translates to:
+  /// **'Management'**
+  String get settingsManagement;
+
   /// No description provided for @aboutTitle.
   ///
   /// In en, this message translates to:

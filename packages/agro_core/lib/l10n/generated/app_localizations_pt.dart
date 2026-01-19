@@ -160,6 +160,15 @@ class AgroLocalizationsPt extends AgroLocalizations {
   String get settingsAboutApp => 'Sobre o App';
 
   @override
+  String get settingsPropertiesAndTalhoes => 'Propriedades e Talhões';
+
+  @override
+  String get settingsPropertiesAndTalhoesDesc => 'Gerencie seus locais de produção';
+
+  @override
+  String get settingsManagement => 'Gerenciamento';
+
+  @override
   String get aboutTitle => 'Sobre';
 
   @override
