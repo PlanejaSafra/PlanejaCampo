@@ -286,7 +286,7 @@ class _AuthGateState extends State<AuthGate> {
       // No user signed in, show login screen
       return LoginScreen(
         onLoginSuccess: _handleLoginSuccess,
-        appName: 'Planeja Chuva',
+        appName: 'PlanejaChuva',
         appDescription: 'Registre e acompanhe as chuvas na sua propriedade',
         appIcon: Icons.water_drop_outlined,
       );

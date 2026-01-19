@@ -48,6 +48,8 @@ export 'screens/agro_about_screen.dart';
 export 'screens/agro_privacy_screen.dart';
 export 'screens/agro_settings_screen.dart';
 export 'screens/login_screen.dart';
+export 'screens/terms_of_use_screen.dart';
+export 'screens/privacy_policy_screen.dart';
 
 // Screens (Property Management)
 export 'screens/property_list_screen.dart';

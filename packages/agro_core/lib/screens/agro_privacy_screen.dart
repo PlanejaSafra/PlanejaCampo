@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../l10n/generated/app_localizations.dart';
 import '../privacy/agro_privacy_store.dart';
+import 'privacy_policy_screen.dart';
+import 'terms_of_use_screen.dart';
 
 /// Privacy and consents management screen.
 /// Allows users to view terms summary and manage consent preferences.
@@ -82,6 +84,44 @@ class _AgroPrivacyScreenState extends State<AgroPrivacyScreen> {
                   Text(
                     l10n.privacyTermsSummary,
                     style: theme.textTheme.bodyMedium,
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => const TermsOfUseScreen(),
+                              ),
+                            );
+                          },
+                          icon: const Icon(Icons.article_outlined, size: 18),
+                          label: const Text('Termos de Uso'),
+                          style: OutlinedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => const PrivacyPolicyScreen(),
+                              ),
+                            );
+                          },
+                          icon: const Icon(Icons.privacy_tip_outlined, size: 18),
+                          label: const Text('Privacidade'),
+                          style: OutlinedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

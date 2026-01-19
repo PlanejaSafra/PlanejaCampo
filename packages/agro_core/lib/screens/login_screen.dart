@@ -1,7 +1,8 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
-import '../screens/agro_privacy_screen.dart';
+import '../screens/privacy_policy_screen.dart';
+import '../screens/terms_of_use_screen.dart';
 import '../services/auth_service.dart';
 
 /// Login screen with Google Sign-In (official button design).
@@ -96,10 +97,18 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  void _showPrivacyScreen() {
+  void _showTermsOfUse() {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => const AgroPrivacyScreen(),
+        builder: (context) => const TermsOfUseScreen(),
+      ),
+    );
+  }
+
+  void _showPrivacyPolicy() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const PrivacyPolicyScreen(),
       ),
     );
   }
@@ -207,7 +216,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   icon: const Icon(Icons.person_outline),
                   label: const Text('Continuar sem login'),
                   style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 32),
@@ -237,7 +249,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           fontWeight: FontWeight.w500,
                         ),
                         recognizer: TapGestureRecognizer()
-                          ..onTap = _showPrivacyScreen,
+                          ..onTap = _showTermsOfUse,
                       ),
                       const TextSpan(text: ' e '),
                       TextSpan(
@@ -248,7 +260,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           fontWeight: FontWeight.w500,
                         ),
                         recognizer: TapGestureRecognizer()
-                          ..onTap = _showPrivacyScreen,
+                          ..onTap = _showPrivacyPolicy,
                       ),
                     ],
                   ),
@@ -322,71 +334,117 @@ class _GoogleSignInButton extends StatelessWidget {
     const googleBlue = Color(0xFF4285F4);
     const googleWhite = Color(0xFFFFFFFF);
     const googleDarkGrey = Color(0xFF757575);
+    const googleBorderGrey = Color(0xFFDADADA);
 
     final backgroundColor = isDarkMode ? googleBlue : googleWhite;
     final textColor = isDarkMode ? googleWhite : googleDarkGrey;
-    final borderColor = isDarkMode ? Colors.transparent : Color(0xFFDADADA);
 
-    return SizedBox(
-      height: 50,
-      child: ElevatedButton(
-        onPressed: onPressed,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: backgroundColor,
-          foregroundColor: textColor,
-          elevation: isDarkMode ? 0 : 1,
-          shadowColor: Colors.black.withValues(alpha: 0.25),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(4),
-            side: BorderSide(color: borderColor, width: 1),
-          ),
-          padding: EdgeInsets.zero,
+    return ElevatedButton.icon(
+      onPressed: onPressed,
+      icon: _GoogleLogo(isDarkMode: isDarkMode),
+      label: const Text('Entrar com o Google'),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: backgroundColor,
+        foregroundColor: textColor,
+        elevation: isDarkMode ? 0 : 2,
+        shadowColor: Colors.black.withValues(alpha: 0.25),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+          side: isDarkMode
+              ? BorderSide.none
+              : const BorderSide(color: googleBorderGrey, width: 1),
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Google Logo
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: googleWhite,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(3),
-                  bottomLeft: Radius.circular(3),
-                ),
-              ),
-              child: Image.network(
-                'https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg',
-                width: 18,
-                height: 18,
-                errorBuilder: (context, error, stackTrace) {
-                  // Fallback icon if image fails to load
-                  return const Icon(
-                    Icons.login,
-                    size: 18,
-                    color: Colors.grey,
-                  );
-                },
-              ),
-            ),
-            const SizedBox(width: 12),
-            // Button Text
-            Expanded(
-              child: Text(
-                'Entrar com o Google',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: textColor,
-                  letterSpacing: 0.25,
-                ),
-              ),
-            ),
-            const SizedBox(width: 48), // Balance the logo padding
-          ],
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        textStyle: const TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+          letterSpacing: 0.15,
+          fontFamily: 'Roboto',
         ),
       ),
     );
   }
+}
+
+/// Google "G" logo rendered using CustomPaint (always works, no network needed)
+class _GoogleLogo extends StatelessWidget {
+  final bool isDarkMode;
+
+  const _GoogleLogo({required this.isDarkMode});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 24,
+      height: 24,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(2),
+      ),
+      padding: const EdgeInsets.all(3),
+      child: CustomPaint(
+        painter: _GoogleLogoPainter(),
+      ),
+    );
+  }
+}
+
+/// Paints the Google "G" logo with official colors
+class _GoogleLogoPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = size.width * 0.48;
+
+    // Google Official Colors
+    final bluePaint = Paint()
+      ..color = const Color(0xFF4285F4)
+      ..style = PaintingStyle.fill;
+
+    final redPaint = Paint()
+      ..color = const Color(0xFFEA4335)
+      ..style = PaintingStyle.fill;
+
+    final yellowPaint = Paint()
+      ..color = const Color(0xFFFBBC05)
+      ..style = PaintingStyle.fill;
+
+    final greenPaint = Paint()
+      ..color = const Color(0xFF34A853)
+      ..style = PaintingStyle.fill;
+
+    // Draw simplified Google "G"
+    final rect = Rect.fromCircle(center: center, radius: radius);
+
+    // Blue arc (top right)
+    canvas.drawArc(rect, -1.57, 1.57, true, bluePaint);
+
+    // Red arc (top left)
+    canvas.drawArc(rect, -1.57, -1.57, true, redPaint);
+
+    // Yellow arc (bottom left)
+    canvas.drawArc(rect, 1.57, 1.57, true, yellowPaint);
+
+    // Green arc (bottom right)
+    canvas.drawArc(rect, 0, 1.57, true, greenPaint);
+
+    // White center (makes it a "G" instead of full circle)
+    final centerCirclePaint = Paint()
+      ..color = Colors.white
+      ..style = PaintingStyle.fill;
+
+    canvas.drawCircle(center, radius * 0.5, centerCirclePaint);
+
+    // Blue horizontal bar (completes the "G")
+    final barRect = Rect.fromLTWH(
+      center.dx,
+      center.dy - radius * 0.2,
+      radius * 1.05,
+      radius * 0.4,
+    );
+    canvas.drawRect(barRect, bluePaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
