@@ -5,7 +5,7 @@ part 'property.g.dart';
 /// Model representing a farm/property where agricultural activities take place.
 /// Properties are shared across all PlanejaSafra apps (PlanejaChuva, PlanejaBorracha, etc.)
 /// and associated with a userId for multi-device sync.
-@HiveType(typeId: 10)
+@HiveType(typeId: 13)
 class Property extends HiveObject {
   /// Unique identifier (timestamp-based)
   @HiveField(0)
