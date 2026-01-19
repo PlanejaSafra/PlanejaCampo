@@ -24,15 +24,15 @@ class _ConsentScreenState extends State<ConsentScreen> {
   bool _sharePartners = false;
   bool _adsPersonalization = false;
 
-  /// Tracks if user manually touched any checkbox (for smart button behavior)
-  bool _userTouchedAnyCheckbox = false;
+  /// Check if any consent is selected
+  bool get _hasAnyConsent => _aggregateMetrics || _sharePartners || _adsPersonalization;
 
   /// Smart "Chameleon Button":
-  /// - If user didn't touch anything: "Accept ALL and Continue" (accepts everything)
-  /// - If user touched checkboxes: "Confirm My Selection" (respects user choices)
+  /// - If NO checkboxes are marked: "Accept ALL and Continue" (accepts everything)
+  /// - If ANY checkbox is marked: "Confirm My Selection" (respects user choices)
   Future<void> _handlePrimaryButton() async {
-    if (!_userTouchedAnyCheckbox) {
-      // Scenario A: User clicked without touching checkboxes → Accept ALL
+    if (!_hasAnyConsent) {
+      // Scenario A: No checkboxes marked → Accept ALL
       await AgroPrivacyStore.acceptAllConsents();
     } else {
       // Scenario B: User made manual selections → Respect them
@@ -53,10 +53,10 @@ class _ConsentScreenState extends State<ConsentScreen> {
     widget.onCompleted?.call();
   }
 
-  /// Returns dynamic button text based on user interaction
+  /// Returns dynamic button text based on user selection
   String _getPrimaryButtonText(BuildContext context) {
     final l10n = AgroLocalizations.of(context)!;
-    if (!_userTouchedAnyCheckbox) {
+    if (!_hasAnyConsent) {
       return l10n.acceptAllButton;
     } else {
       return l10n.confirmSelectionButton;
@@ -110,7 +110,6 @@ class _ConsentScreenState extends State<ConsentScreen> {
                         value: _aggregateMetrics,
                         onChanged: (v) => setState(() {
                           _aggregateMetrics = v ?? false;
-                          _userTouchedAnyCheckbox = true;
                         }),
                       ),
                       const SizedBox(height: 8),
@@ -120,7 +119,6 @@ class _ConsentScreenState extends State<ConsentScreen> {
                         value: _sharePartners,
                         onChanged: (v) => setState(() {
                           _sharePartners = v ?? false;
-                          _userTouchedAnyCheckbox = true;
                         }),
                       ),
                       const SizedBox(height: 8),
@@ -130,7 +128,6 @@ class _ConsentScreenState extends State<ConsentScreen> {
                         value: _adsPersonalization,
                         onChanged: (v) => setState(() {
                           _adsPersonalization = v ?? false;
-                          _userTouchedAnyCheckbox = true;
                         }),
                       ),
                     ],
