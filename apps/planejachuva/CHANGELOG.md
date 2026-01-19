@@ -2,6 +2,128 @@
 
 ---
 
+## Phase 18.0: Google Sign-In (Official Button + Branding Compliance)
+
+### Status: [DONE]
+**Date Completed**: 2026-01-18
+**Priority**: 🟢 ENHANCEMENT
+**Objective**: Implement Google Sign-In with official branding, following Google's guidelines.
+
+### Google Sign-In Branding Guidelines
+
+**MANDATORY compliance with**: https://developers.google.com/identity/branding-guidelines
+
+**Rules followed**:
+- ✅ Official Google Sign-In button (using `sign_in_button` package)
+- ✅ Correct text: "Entrar com o Google" (not "Login com Google" or variations)
+- ✅ Official Google logo (colored, not monochrome)
+- ✅ No custom buttons with copied Google logo
+- ✅ Proper button spacing and dimensions
+
+**Consequences of non-compliance**:
+- Violation of Google Sign-In Terms of Use
+- Google can revoke app's access to Sign-In API
+- Rejection from Google Play Store
+
+### Implementation Summary
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 18.0.1 | Add sign_in_button dependency to agro_core | ✅ DONE |
+| 18.0.2 | Create reusable LoginScreen in agro_core | ✅ DONE |
+| 18.0.3 | Add clickable Terms of Use and Privacy Policy links | ✅ DONE |
+| 18.0.4 | Create AuthGate widget for authentication routing | ✅ DONE |
+| 18.0.5 | Update main.dart with authentication flow | ✅ DONE |
+| 18.0.6 | Implement anonymous user upgrade to Google account | ✅ DONE |
+
+### Files Modified
+
+| File | Action | Description |
+|------|--------|-------------|
+| `packages/agro_core/lib/screens/login_screen.dart` | CREATE | Reusable login screen with official Google button (309 lines) |
+| `packages/agro_core/lib/agro_core.dart` | MODIFY | Export LoginScreen |
+| `packages/agro_core/pubspec.yaml` | MODIFY | Add sign_in_button: ^3.2.0 dependency |
+| `apps/planejachuva/lib/main.dart` | MODIFY | Add AuthGate widget, refactor authentication flow |
+
+### Key Features
+
+**LoginScreen (Reusable Component)**:
+- Parameterized per app: appName, appDescription, appIcon
+- Official Google Sign-In button (Buttons.googleDark)
+- Anonymous Sign-In option ("Continuar sem login")
+- Clickable Terms of Use and Privacy Policy links
+- Benefits section (sync, backup, security)
+- Error handling with user-friendly messages
+- Loading states and disabled button states
+
+**AuthGate Widget**:
+- Checks if user is authenticated on app start
+- Shows LoginScreen if not authenticated
+- Shows main app if authenticated
+- Initializes user data after successful login
+- Loading screen while checking auth status
+
+**Authentication Flow**:
+1. App starts → AuthGate checks `AuthService.currentUser`
+2. If null → Show LoginScreen with Google button + Anonymous option
+3. User chooses Google Sign-In → `AuthService.signInWithGoogle()`
+4. After successful login → `_initializeUserData()` runs migration + cloud sync
+5. AuthGate rebuilds → Shows `AgroOnboardingGate` → Main app
+
+**Data Preservation**:
+- Anonymous users can upgrade to Google account
+- Local data (Hive) is preserved during upgrade
+- `AuthService.linkAnonymousToGoogle()` method available
+- Migration runs after login to associate data with new user
+
+### Usage Example (Other Apps)
+
+```dart
+// In other PlanejaSafra apps (PlanejaBorracha, PlanejaDiesel, etc)
+home: AuthGate(
+  // ... existing params ...
+)
+
+// LoginScreen will show with app-specific branding
+LoginScreen(
+  onLoginSuccess: _handleLoginSuccess,
+  appName: 'Planeja Borracha',  // Different per app
+  appDescription: 'Controle sua produção de látex',  // Different per app
+  appIcon: Icons.agriculture,  // Different per app
+)
+```
+
+### Technical Notes
+
+**Google Sign-In Package**:
+- Uses `google_sign_in: ^6.2.2` (already in agro_core)
+- Uses `sign_in_button: ^3.2.0` (new dependency)
+- `Buttons.googleDark` provides official button design
+
+**AuthService Methods**:
+- `signInWithGoogle()` - Google Sign-In flow
+- `signInAnonymous()` - Anonymous auth
+- `signOut()` - Sign out (works for both)
+- `linkAnonymousToGoogle()` - Upgrade anonymous to Google
+- `currentUser` - Get current user (static getter)
+- `isSignedIn` - Check if user is signed in (static getter)
+
+**Error Handling**:
+- Network errors: "Erro de conexão. Verifique sua internet."
+- Canceled: "Login cancelado."
+- Generic: "Erro ao fazer login. Tente novamente."
+
+### Next Steps (Phase 19.0 - Optional)
+
+**Enhanced Google Sign-In Features**:
+- Remember last signed-in user (auto sign-in)
+- Account switcher (multiple Google accounts)
+- Sign out option in settings
+- Delete account option (GDPR compliance)
+- Link anonymous account from settings screen
+
+---
+
 ## Phase 16.0: Property Management Integration
 
 ### Status: [DONE]
