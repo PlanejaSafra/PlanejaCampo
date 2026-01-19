@@ -234,17 +234,24 @@ class _ConsentTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Card(
       child: CheckboxListTile(
         title: Text(
           title,
-          style: Theme.of(context).textTheme.titleSmall,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            fontSize: 13,
+            fontWeight: FontWeight.w500,
+          ),
         ),
         subtitle: Padding(
-          padding: const EdgeInsets.only(top: 4.0),
+          padding: const EdgeInsets.only(top: 2.0),
           child: Text(
             subtitle,
-            style: Theme.of(context).textTheme.bodySmall,
+            style: theme.textTheme.bodySmall?.copyWith(
+              fontSize: 11,
+            ),
           ),
         ),
         value: value,
@@ -252,7 +259,7 @@ class _ConsentTile extends StatelessWidget {
         controlAffinity: ListTileControlAffinity.leading,
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 12,
-          vertical: 8,
+          vertical: 6,
         ),
       ),
     );

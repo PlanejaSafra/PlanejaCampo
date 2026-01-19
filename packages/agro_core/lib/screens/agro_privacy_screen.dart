@@ -254,12 +254,32 @@ class _ConsentSwitch extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Card(
       child: SwitchListTile(
-        title: Text(title),
-        subtitle: Text(subtitle),
+        title: Text(
+          title,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            fontSize: 13,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        subtitle: Padding(
+          padding: const EdgeInsets.only(top: 2.0),
+          child: Text(
+            subtitle,
+            style: theme.textTheme.bodySmall?.copyWith(
+              fontSize: 11,
+            ),
+          ),
+        ),
         value: value,
         onChanged: onChanged,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 12,
+          vertical: 6,
+        ),
       ),
     );
   }
