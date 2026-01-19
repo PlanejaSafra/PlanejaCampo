@@ -116,13 +116,13 @@ abstract class AgroLocalizations {
   /// No description provided for @acceptAllButton.
   ///
   /// In en, this message translates to:
-  /// **'Accept ALL and Continue'**
+  /// **'ACCEPT ALL AND CONTINUE'**
   String get acceptAllButton;
 
   /// No description provided for @confirmSelectionButton.
   ///
   /// In en, this message translates to:
-  /// **'Confirm My Selection'**
+  /// **'CONFIRM AND CONTINUE'**
   String get confirmSelectionButton;
 
   /// No description provided for @declineLabel.
