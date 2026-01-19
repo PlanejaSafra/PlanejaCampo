@@ -1,4 +1,5 @@
 import 'package:agro_core/agro_core.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -38,21 +39,35 @@ class _WeatherCardState extends State<WeatherCard> {
   }
 
   Future<void> _loadForecast() async {
-    // Check if property has location configured
-    if (widget.latitude == null || widget.longitude == null) {
-      setState(() {
-        _hasError = true;
-        _errorMessage = 'Configure a localização da propriedade';
-      });
-      return;
-    }
+    double? lat = widget.latitude;
+    double? lng = widget.longitude;
 
     setState(() {
       _isLoading = true;
       _hasError = false;
+      _errorMessage = null;
     });
 
     try {
+      // Fallback to device location if property location is missing
+      if (lat == null || lng == null) {
+        try {
+          final position = await _determinePosition();
+          lat = position.latitude;
+          lng = position.longitude;
+        } catch (e) {
+          if (mounted) {
+            setState(() {
+              _isLoading = false;
+              _hasError = true;
+              _errorMessage =
+                  'Configure a localização da propriedade ou permita o acesso ao GPS.';
+            });
+          }
+          return;
+        }
+      }
+
       await _weatherService.init();
 
       // Try to get from cache first
@@ -62,24 +77,67 @@ class _WeatherCardState extends State<WeatherCard> {
 
       // Fetch fresh forecast (will use cache if still valid)
       final forecasts = await _weatherService.getForecast(
-        latitude: widget.latitude!,
-        longitude: widget.longitude!,
+        latitude: lat!,
+        longitude: lng!,
         propertyId: widget.propertyId,
       );
 
-      if (forecasts.isNotEmpty) {
+      if (forecasts.isNotEmpty && mounted) {
         setState(() {
           _todayForecast = forecasts.first;
           _isLoading = false;
         });
       }
     } catch (e) {
-      setState(() {
-        _isLoading = false;
-        _hasError = true;
-        _errorMessage = 'Erro ao carregar previsão';
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _hasError = true;
+          _errorMessage = 'Erro ao carregar previsão';
+        });
+      }
     }
+  }
+
+  /// Determine the current position of the device.
+  ///
+  /// When the location services are not enabled or permissions
+  /// are denied the `Future` will return an error.
+  Future<Position> _determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    // Test if location services are enabled.
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      // Location services are not enabled don't continue
+      // accessing the position and request users of the
+      // App to enable the location services.
+      throw Exception('Serviço de localização desativado.');
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        // Permissions are denied, next time you could try
+        // requesting permissions again (this is also where
+        // Android's shouldShowRequestPermissionRationale
+        // returned true. According to Android guidelines
+        // your App should show an explanatory UI now.
+        throw Exception('Permissão de localização negada.');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      // Permissions are denied forever, handle appropriately.
+      throw Exception(
+          'Permissões de localização permanentemente negadas. Habilite nas configurações.');
+    }
+
+    // When we reach here, permissions are granted and we can
+    // continue accessing the position of the device.
+    return await Geolocator.getCurrentPosition();
   }
 
   Future<void> _refreshForecast() async {

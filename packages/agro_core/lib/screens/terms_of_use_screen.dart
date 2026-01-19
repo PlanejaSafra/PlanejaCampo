@@ -29,13 +29,11 @@ class TermsOfUseScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 24),
-
           _buildSection(
             context,
             '1. Aceitação dos Termos',
             'Ao utilizar os aplicativos da família PlanejaSafra (incluindo PlanejaChuva, PlanejaBorracha, PlanejaDiesel e outros), você concorda com estes Termos de Uso. Se você não concorda com alguma parte destes termos, não deve utilizar nossos serviços.',
           ),
-
           _buildSection(
             context,
             '2. Descrição do Serviço',
@@ -46,7 +44,6 @@ class TermsOfUseScreen extends StatelessWidget {
                 '• Backup e sincronização de dados na nuvem (opcional)\n'
                 '• Compartilhamento de dados agregados para pesquisa (opcional)',
           ),
-
           _buildSection(
             context,
             '3. Conta de Usuário',
@@ -55,7 +52,6 @@ class TermsOfUseScreen extends StatelessWidget {
                 '• Com login Google: permite sincronização entre dispositivos e backup na nuvem\n\n'
                 'Você é responsável por manter a confidencialidade de sua conta e por todas as atividades que ocorram sob sua conta.',
           ),
-
           _buildSection(
             context,
             '4. Propriedade de Dados',
@@ -65,7 +61,6 @@ class TermsOfUseScreen extends StatelessWidget {
                 '• Utilizamos dados agregados e anonimizados apenas se você consentir\n'
                 '• Permitimos que você exporte ou delete seus dados a qualquer momento',
           ),
-
           _buildSection(
             context,
             '5. Uso Aceitável',
@@ -76,7 +71,6 @@ class TermsOfUseScreen extends StatelessWidget {
                 '• Sobrecarregar ou danificar a infraestrutura do serviço\n'
                 '• Fazer engenharia reversa ou tentar extrair código-fonte',
           ),
-
           _buildSection(
             context,
             '6. Limitação de Responsabilidade',
@@ -86,7 +80,6 @@ class TermsOfUseScreen extends StatelessWidget {
                 '• Adequação para fins específicos\n\n'
                 'Não somos responsáveis por perdas ou danos decorrentes do uso dos aplicativos, incluindo perda de dados ou lucros cessantes.',
           ),
-
           _buildSection(
             context,
             '7. Modificações do Serviço',
@@ -96,29 +89,29 @@ class TermsOfUseScreen extends StatelessWidget {
                 '• Suspender ou encerrar contas que violem os termos\n\n'
                 'Notificaremos sobre mudanças significativas através do aplicativo.',
           ),
-
           _buildSection(
             context,
             '8. Propriedade Intelectual',
             'Todo o conteúdo, design, código e funcionalidades dos aplicativos PlanejaSafra são protegidos por direitos autorais e outras leis de propriedade intelectual. Você não pode copiar, modificar ou distribuir nosso software sem autorização.',
           ),
-
           _buildSection(
             context,
             '9. Lei Aplicável',
             'Estes termos são regidos pelas leis do Brasil. Quaisquer disputas serão resolvidas nos tribunais competentes do Brasil.',
           ),
-
           _buildSection(
             context,
-            '10. Contato',
-            'Para questões sobre estes Termos de Use, entre em contato através do menu Configurações > Sobre no aplicativo.',
+            '10. Coleta de Localização',
+            'O aplicativo pode coletar sua localização aproximada ou precisa (GPS) para funcionalidades específicas, como previsão do tempo e estatísticas regionais. Ao utilizar esses recursos, você autoriza a coleta e uso desses dados. Você pode revogar o acesso à localização nas configurações do seu dispositivo a qualquer momento.',
           ),
-
+          _buildSection(
+            context,
+            '11. Contato',
+            'Para questões sobre estes Termos de Uso, entre em contato através do menu Configurações > Sobre no aplicativo.',
+          ),
           const SizedBox(height: 24),
           const Divider(),
           const SizedBox(height: 16),
-
           Center(
             child: Text(
               '© 2026 PlanejaSafra. Todos os direitos reservados.',
