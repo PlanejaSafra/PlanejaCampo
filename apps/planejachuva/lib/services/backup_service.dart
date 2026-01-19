@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:agro_core/agro_core.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -40,6 +41,7 @@ class BackupService {
                 'milimetros': r.milimetros,
                 'observacao': r.observacao,
                 'criadoEm': r.criadoEm.toIso8601String(),
+                'propertyId': r.propertyId,
               })
           .toList(),
     };
@@ -71,13 +73,23 @@ class BackupService {
       }
 
       final records = data['records'] as List;
+
+      // Get default property for old backups without propertyId
+      final propertyService = PropertyService();
+      final defaultProperty = propertyService.getDefaultProperty();
+      final defaultPropertyId = defaultProperty?.id ?? '';
+
       return records.map((r) {
+        // Use propertyId from backup if available, otherwise use default
+        final propertyId = r['propertyId'] as String? ?? defaultPropertyId;
+
         return RegistroChuva(
           id: r['id'] as int,
           data: DateTime.parse(r['data'] as String),
           milimetros: (r['milimetros'] as num).toDouble(),
           observacao: r['observacao'] as String?,
           criadoEm: DateTime.parse(r['criadoEm'] as String),
+          propertyId: propertyId,
         );
       }).toList();
     } catch (e) {
