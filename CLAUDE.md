@@ -46,8 +46,18 @@ PlanejaSafra\
 
 ## 6) l10n mandatory (pt-BR + en)
 
-* No hardcoded text in screens
-* Strings via l10n: pt_BR + en
+* **ZERO hardcoded strings** in any Dart file (screens, widgets, services, dialogs, snackbars, etc.)
+* ALL user-visible text MUST use l10n: `AgroLocalizations.of(context)!.stringKey`
+* Strings go in ARB files: `packages/agro_core/lib/l10n/arb/app_pt.arb` and `app_en.arb`
+* After adding/modifying ARB files, run: `flutter gen-l10n` in agro_core
+* Examples of what MUST be localized:
+  * Dialog titles and messages
+  * Button labels
+  * Snackbar messages
+  * Error messages
+  * Placeholder/hint texts
+  * Weather descriptions
+  * Any text the user sees
 
 ## 7) Hive always with build_runner
 

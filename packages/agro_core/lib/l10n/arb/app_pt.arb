@@ -316,5 +316,47 @@
   "migrationProgressTalhoes": "Transferindo talhões...",
   "migrationProgressRecords": "Transferindo registros...",
   "migrationSuccess": "Migração concluída com sucesso!",
-  "migrationError": "Erro durante migração. Seus dados originais foram preservados."
+  "migrationError": "Erro durante migração. Seus dados originais foram preservados.",
+
+  "weatherClearSky": "Céu limpo",
+  "weatherPartlyCloudy": "Parcialmente nublado",
+  "weatherFog": "Neblina",
+  "weatherLightRain": "Chuva fraca",
+  "weatherShowers": "Pancadas de chuva",
+  "weatherThunderstorm": "Tempestade",
+  "weatherCloudy": "Nublado",
+  "weatherForecastFor": "Previsão para: {propertyName}",
+  "@weatherForecastFor": {
+    "placeholders": {
+      "propertyName": {
+        "type": "String"
+      }
+    }
+  },
+  "weatherNow": "Tempo Agora",
+  "weatherSeeDetails": "Ver Detalhes",
+  "weatherLocationRequired": "Localização Necessária",
+  "weatherLocationRequiredDesc": "Toque aqui se estiver na propriedade para ativar a previsão.",
+  "weatherConsentRequired": "Consentimento Necessário",
+  "weatherConsentRequiredDesc": "Toque para autorizar o uso de localização e ver a previsão.",
+  "weatherActivateForecast": "Ativar Previsão do Tempo",
+  "weatherActivateForecastMessage": "Para mostrar a previsão correta, precisamos da localização desta propriedade.\n\nVocê está na propriedade agora?",
+  "weatherNotHere": "Não, estou longe",
+  "weatherYesHere": "Sim, estou aqui",
+  "weatherSetLocation": "Definir Localização",
+  "weatherSetLocationMessage": "Sem problemas. Você prefere definir as coordenadas manualmente agora ou deixar para depois?",
+  "weatherLater": "Depois",
+  "weatherSetManually": "Definir Manualmente",
+  "weatherErrorServiceDisabled": "Serviço de localização desativado.",
+  "weatherErrorPermissionDenied": "Permissão de localização negada.",
+  "weatherErrorPermissionDeniedForever": "Permissão negada permanentemente. Habilite nas configurações.",
+  "weatherLocationUpdated": "Localização atualizada! Carregando previsão...",
+  "weatherErrorGettingLocation": "Erro ao obter localização: {error}",
+  "@weatherErrorGettingLocation": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }

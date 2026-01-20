@@ -76,14 +76,14 @@ class _WeatherCardState extends State<WeatherCard> {
     return Icons.cloud;
   }
 
-  String _getWeatherDescription(int code) {
-    if (code == 0) return 'Céu limpo';
-    if (code >= 1 && code <= 3) return 'Parcialmente nublado';
-    if (code >= 45 && code <= 48) return 'Neblina';
-    if (code >= 51 && code <= 67) return 'Chuva fraca';
-    if (code >= 80 && code <= 82) return 'Pancadas de chuva';
-    if (code >= 95 && code <= 99) return 'Tempestade';
-    return 'Nublado';
+  String _getWeatherDescription(int code, AgroLocalizations l10n) {
+    if (code == 0) return l10n.weatherClearSky;
+    if (code >= 1 && code <= 3) return l10n.weatherPartlyCloudy;
+    if (code >= 45 && code <= 48) return l10n.weatherFog;
+    if (code >= 51 && code <= 67) return l10n.weatherLightRain;
+    if (code >= 80 && code <= 82) return l10n.weatherShowers;
+    if (code >= 95 && code <= 99) return l10n.weatherThunderstorm;
+    return l10n.weatherCloudy;
   }
 
   @override
@@ -99,12 +99,13 @@ class _WeatherCardState extends State<WeatherCard> {
 
   Widget _buildContent(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AgroLocalizations.of(context)!;
 
     // Check consent first - if revoked, show consent required state
     if (!AgroPrivacyStore.canUseLocation &&
         widget.latitude != 0.0 &&
         widget.longitude != 0.0) {
-      return _buildConsentRequiredState(theme);
+      return _buildConsentRequiredState(theme, l10n);
     }
 
     if (_isLoading) {
@@ -122,7 +123,7 @@ class _WeatherCardState extends State<WeatherCard> {
 
     // Check for effectively "null" location (0,0 is in the ocean, used as default)
     if (widget.latitude == 0.0 && widget.longitude == 0.0) {
-      return _buildNoLocationState(theme);
+      return _buildNoLocationState(theme, l10n);
     }
 
     // Extract wind data (if available) - safe fallback
@@ -190,7 +191,7 @@ class _WeatherCardState extends State<WeatherCard> {
                               size: 14, color: theme.colorScheme.primary),
                           const SizedBox(width: 4),
                           Text(
-                            'Previsão para: ${snapshot.data}',
+                            l10n.weatherForecastFor(snapshot.data!),
                             style: theme.textTheme.labelSmall?.copyWith(
                               color: theme.colorScheme.primary,
                               fontWeight: FontWeight.bold,
@@ -291,7 +292,7 @@ class _WeatherCardState extends State<WeatherCard> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Tempo Agora',
+                        l10n.weatherNow,
                         style: theme.textTheme.labelMedium?.copyWith(
                           color: theme.colorScheme.onSurfaceVariant,
                         ),
@@ -357,7 +358,7 @@ class _WeatherCardState extends State<WeatherCard> {
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Text(
-                          _getWeatherDescription(code),
+                          _getWeatherDescription(code, l10n),
                           style: theme.textTheme.bodyMedium?.copyWith(
                             fontWeight: FontWeight.w500,
                           ),
@@ -369,10 +370,13 @@ class _WeatherCardState extends State<WeatherCard> {
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text(
-                              'Ver Detalhes',
-                              style: theme.textTheme.labelSmall?.copyWith(
-                                color: theme.colorScheme.primary,
+                            Flexible(
+                              child: Text(
+                                l10n.weatherSeeDetails,
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  color: theme.colorScheme.primary,
+                                ),
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
                             Icon(Icons.chevron_right,
@@ -391,7 +395,7 @@ class _WeatherCardState extends State<WeatherCard> {
     );
   }
 
-  Widget _buildNoLocationState(ThemeData theme) {
+  Widget _buildNoLocationState(ThemeData theme, AgroLocalizations l10n) {
     return Card(
       elevation: 1,
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -417,14 +421,14 @@ class _WeatherCardState extends State<WeatherCard> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Localização Necessária',
+                      l10n.weatherLocationRequired,
                       style: theme.textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Toque aqui se estiver na propriedade para ativar a previsão.',
+                      l10n.weatherLocationRequiredDesc,
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
@@ -454,7 +458,7 @@ class _WeatherCardState extends State<WeatherCard> {
   }
 
   /// CORE-35.3: State shown when user has location but revoked consent.
-  Widget _buildConsentRequiredState(ThemeData theme) {
+  Widget _buildConsentRequiredState(ThemeData theme, AgroLocalizations l10n) {
     return Card(
       elevation: 1,
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -481,14 +485,14 @@ class _WeatherCardState extends State<WeatherCard> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Consentimento Necessário',
+                      l10n.weatherConsentRequired,
                       style: theme.textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Toque para autorizar o uso de localização e ver a previsão.',
+                      l10n.weatherConsentRequiredDesc,
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
@@ -532,22 +536,21 @@ class _WeatherCardState extends State<WeatherCard> {
   }
 
   Future<void> _askAreYouHere() async {
+    final l10n = AgroLocalizations.of(context)!;
+
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Ativar Previsão do Tempo'),
-        content: const Text(
-          'Para mostrar a previsão correta, precisamos da localização desta propriedade.\n\n'
-          'Você está na propriedade agora?',
-        ),
+        title: Text(l10n.weatherActivateForecast),
+        content: Text(l10n.weatherActivateForecastMessage),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Não, estou longe'),
+            child: Text(l10n.weatherNotHere),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Sim, estou aqui'),
+            child: Text(l10n.weatherYesHere),
           ),
         ],
       ),
@@ -562,18 +565,16 @@ class _WeatherCardState extends State<WeatherCard> {
       final manualConfig = await showDialog<bool>(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Text('Definir Localização'),
-          content: const Text(
-            'Sem problemas. Você prefere definir as coordenadas manualmente agora ou deixar para depois?',
-          ),
+          title: Text(l10n.weatherSetLocation),
+          content: Text(l10n.weatherSetLocationMessage),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: const Text('Depois'),
+              child: Text(l10n.weatherLater),
             ),
             FilledButton(
               onPressed: () => Navigator.pop(context, true),
-              child: const Text('Definir Manualmente'),
+              child: Text(l10n.weatherSetManually),
             ),
           ],
         ),
@@ -602,26 +603,27 @@ class _WeatherCardState extends State<WeatherCard> {
   Future<void> _captureAndSaveLocation() async {
     if (widget.propertyId == null) return;
 
+    final l10n = AgroLocalizations.of(context)!;
+
     setState(() => _isLoading = true);
 
     try {
       // 1. Check Permissions
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
-        throw Exception('Serviço de localização desativado.');
+        throw Exception(l10n.weatherErrorServiceDisabled);
       }
 
       LocationPermission permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
-          throw Exception('Permissão de localização negada.');
+          throw Exception(l10n.weatherErrorPermissionDenied);
         }
       }
 
       if (permission == LocationPermission.deniedForever) {
-        throw Exception(
-            'Permissão negada permanentemente. Habilite nas configurações.');
+        throw Exception(l10n.weatherErrorPermissionDeniedForever);
       }
 
       // 2. Get Location
@@ -639,8 +641,8 @@ class _WeatherCardState extends State<WeatherCard> {
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Localização atualizada! Carregando previsão...'),
+            SnackBar(
+              content: Text(l10n.weatherLocationUpdated),
               backgroundColor: Colors.green,
             ),
           );
@@ -652,7 +654,7 @@ class _WeatherCardState extends State<WeatherCard> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Erro ao obter localização: $e'),
+            content: Text(l10n.weatherErrorGettingLocation(e.toString())),
             backgroundColor: Colors.red,
           ),
         );

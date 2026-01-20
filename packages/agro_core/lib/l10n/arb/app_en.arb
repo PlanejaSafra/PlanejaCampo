@@ -316,5 +316,47 @@
   "migrationProgressTalhoes": "Transferring field plots...",
   "migrationProgressRecords": "Transferring records...",
   "migrationSuccess": "Migration completed successfully!",
-  "migrationError": "Error during migration. Your original data has been preserved."
+  "migrationError": "Error during migration. Your original data has been preserved.",
+
+  "weatherClearSky": "Clear sky",
+  "weatherPartlyCloudy": "Partly cloudy",
+  "weatherFog": "Fog",
+  "weatherLightRain": "Light rain",
+  "weatherShowers": "Rain showers",
+  "weatherThunderstorm": "Thunderstorm",
+  "weatherCloudy": "Cloudy",
+  "weatherForecastFor": "Forecast for: {propertyName}",
+  "@weatherForecastFor": {
+    "placeholders": {
+      "propertyName": {
+        "type": "String"
+      }
+    }
+  },
+  "weatherNow": "Weather Now",
+  "weatherSeeDetails": "See Details",
+  "weatherLocationRequired": "Location Required",
+  "weatherLocationRequiredDesc": "Tap here if you're at the property to enable the forecast.",
+  "weatherConsentRequired": "Consent Required",
+  "weatherConsentRequiredDesc": "Tap to authorize location usage and see the forecast.",
+  "weatherActivateForecast": "Activate Weather Forecast",
+  "weatherActivateForecastMessage": "To show the correct forecast, we need this property's location.\n\nAre you at the property now?",
+  "weatherNotHere": "No, I'm far away",
+  "weatherYesHere": "Yes, I'm here",
+  "weatherSetLocation": "Set Location",
+  "weatherSetLocationMessage": "No problem. Would you prefer to set the coordinates manually now or later?",
+  "weatherLater": "Later",
+  "weatherSetManually": "Set Manually",
+  "weatherErrorServiceDisabled": "Location service disabled.",
+  "weatherErrorPermissionDenied": "Location permission denied.",
+  "weatherErrorPermissionDeniedForever": "Permission permanently denied. Enable in settings.",
+  "weatherLocationUpdated": "Location updated! Loading forecast...",
+  "weatherErrorGettingLocation": "Error getting location: {error}",
+  "@weatherErrorGettingLocation": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }

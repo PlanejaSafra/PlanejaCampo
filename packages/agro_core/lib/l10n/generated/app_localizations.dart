@@ -1456,6 +1456,168 @@ abstract class AgroLocalizations {
   /// In en, this message translates to:
   /// **'Error during migration. Your original data has been preserved.'**
   String get migrationError;
+
+  /// No description provided for @weatherClearSky.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear sky'**
+  String get weatherClearSky;
+
+  /// No description provided for @weatherPartlyCloudy.
+  ///
+  /// In en, this message translates to:
+  /// **'Partly cloudy'**
+  String get weatherPartlyCloudy;
+
+  /// No description provided for @weatherFog.
+  ///
+  /// In en, this message translates to:
+  /// **'Fog'**
+  String get weatherFog;
+
+  /// No description provided for @weatherLightRain.
+  ///
+  /// In en, this message translates to:
+  /// **'Light rain'**
+  String get weatherLightRain;
+
+  /// No description provided for @weatherShowers.
+  ///
+  /// In en, this message translates to:
+  /// **'Rain showers'**
+  String get weatherShowers;
+
+  /// No description provided for @weatherThunderstorm.
+  ///
+  /// In en, this message translates to:
+  /// **'Thunderstorm'**
+  String get weatherThunderstorm;
+
+  /// No description provided for @weatherCloudy.
+  ///
+  /// In en, this message translates to:
+  /// **'Cloudy'**
+  String get weatherCloudy;
+
+  /// No description provided for @weatherForecastFor.
+  ///
+  /// In en, this message translates to:
+  /// **'Forecast for: {propertyName}'**
+  String weatherForecastFor(String propertyName);
+
+  /// No description provided for @weatherNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Weather Now'**
+  String get weatherNow;
+
+  /// No description provided for @weatherSeeDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'See Details'**
+  String get weatherSeeDetails;
+
+  /// No description provided for @weatherLocationRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Location Required'**
+  String get weatherLocationRequired;
+
+  /// No description provided for @weatherLocationRequiredDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap here if you\'re at the property to enable the forecast.'**
+  String get weatherLocationRequiredDesc;
+
+  /// No description provided for @weatherConsentRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Consent Required'**
+  String get weatherConsentRequired;
+
+  /// No description provided for @weatherConsentRequiredDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to authorize location usage and see the forecast.'**
+  String get weatherConsentRequiredDesc;
+
+  /// No description provided for @weatherActivateForecast.
+  ///
+  /// In en, this message translates to:
+  /// **'Activate Weather Forecast'**
+  String get weatherActivateForecast;
+
+  /// No description provided for @weatherActivateForecastMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'To show the correct forecast, we need this property\'s location.\n\nAre you at the property now?'**
+  String get weatherActivateForecastMessage;
+
+  /// No description provided for @weatherNotHere.
+  ///
+  /// In en, this message translates to:
+  /// **'No, I\'m far away'**
+  String get weatherNotHere;
+
+  /// No description provided for @weatherYesHere.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes, I\'m here'**
+  String get weatherYesHere;
+
+  /// No description provided for @weatherSetLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Set Location'**
+  String get weatherSetLocation;
+
+  /// No description provided for @weatherSetLocationMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'No problem. Would you prefer to set the coordinates manually now or later?'**
+  String get weatherSetLocationMessage;
+
+  /// No description provided for @weatherLater.
+  ///
+  /// In en, this message translates to:
+  /// **'Later'**
+  String get weatherLater;
+
+  /// No description provided for @weatherSetManually.
+  ///
+  /// In en, this message translates to:
+  /// **'Set Manually'**
+  String get weatherSetManually;
+
+  /// No description provided for @weatherErrorServiceDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Location service disabled.'**
+  String get weatherErrorServiceDisabled;
+
+  /// No description provided for @weatherErrorPermissionDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Location permission denied.'**
+  String get weatherErrorPermissionDenied;
+
+  /// No description provided for @weatherErrorPermissionDeniedForever.
+  ///
+  /// In en, this message translates to:
+  /// **'Permission permanently denied. Enable in settings.'**
+  String get weatherErrorPermissionDeniedForever;
+
+  /// No description provided for @weatherLocationUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Location updated! Loading forecast...'**
+  String get weatherLocationUpdated;
+
+  /// No description provided for @weatherErrorGettingLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Error getting location: {error}'**
+  String weatherErrorGettingLocation(String error);
 }
 
 class _AgroLocalizationsDelegate extends LocalizationsDelegate<AgroLocalizations> {

@@ -704,4 +704,89 @@ class AgroLocalizationsPt extends AgroLocalizations {
 
   @override
   String get migrationError => 'Erro durante migração. Seus dados originais foram preservados.';
+
+  @override
+  String get weatherClearSky => 'Céu limpo';
+
+  @override
+  String get weatherPartlyCloudy => 'Parcialmente nublado';
+
+  @override
+  String get weatherFog => 'Neblina';
+
+  @override
+  String get weatherLightRain => 'Chuva fraca';
+
+  @override
+  String get weatherShowers => 'Pancadas de chuva';
+
+  @override
+  String get weatherThunderstorm => 'Tempestade';
+
+  @override
+  String get weatherCloudy => 'Nublado';
+
+  @override
+  String weatherForecastFor(String propertyName) {
+    return 'Previsão para: $propertyName';
+  }
+
+  @override
+  String get weatherNow => 'Tempo Agora';
+
+  @override
+  String get weatherSeeDetails => 'Ver Detalhes';
+
+  @override
+  String get weatherLocationRequired => 'Localização Necessária';
+
+  @override
+  String get weatherLocationRequiredDesc => 'Toque aqui se estiver na propriedade para ativar a previsão.';
+
+  @override
+  String get weatherConsentRequired => 'Consentimento Necessário';
+
+  @override
+  String get weatherConsentRequiredDesc => 'Toque para autorizar o uso de localização e ver a previsão.';
+
+  @override
+  String get weatherActivateForecast => 'Ativar Previsão do Tempo';
+
+  @override
+  String get weatherActivateForecastMessage => 'Para mostrar a previsão correta, precisamos da localização desta propriedade.\n\nVocê está na propriedade agora?';
+
+  @override
+  String get weatherNotHere => 'Não, estou longe';
+
+  @override
+  String get weatherYesHere => 'Sim, estou aqui';
+
+  @override
+  String get weatherSetLocation => 'Definir Localização';
+
+  @override
+  String get weatherSetLocationMessage => 'Sem problemas. Você prefere definir as coordenadas manualmente agora ou deixar para depois?';
+
+  @override
+  String get weatherLater => 'Depois';
+
+  @override
+  String get weatherSetManually => 'Definir Manualmente';
+
+  @override
+  String get weatherErrorServiceDisabled => 'Serviço de localização desativado.';
+
+  @override
+  String get weatherErrorPermissionDenied => 'Permissão de localização negada.';
+
+  @override
+  String get weatherErrorPermissionDeniedForever => 'Permissão negada permanentemente. Habilite nas configurações.';
+
+  @override
+  String get weatherLocationUpdated => 'Localização atualizada! Carregando previsão...';
+
+  @override
+  String weatherErrorGettingLocation(String error) {
+    return 'Erro ao obter localização: $error';
+  }
 }
