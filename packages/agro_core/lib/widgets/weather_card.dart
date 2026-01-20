@@ -7,6 +7,7 @@ import '../privacy/agro_privacy_store.dart';
 import '../privacy/consent_screen.dart';
 import '../screens/property_form_screen.dart';
 import '../screens/weather_detail_screen.dart';
+import '../l10n/generated/app_localizations.dart';
 
 class WeatherCard extends StatefulWidget {
   final double latitude;
@@ -150,6 +151,7 @@ class _WeatherCardState extends State<WeatherCard> {
                 builder: (context) => WeatherDetailScreen(
                   weatherData: _weatherData!,
                   propertyName: propName,
+                  propertyId: widget.propertyId,
                 ),
               ),
             );
@@ -198,6 +200,81 @@ class _WeatherCardState extends State<WeatherCard> {
                     );
                   },
                 ),
+
+              // CORE-39: Weather Alerts
+              ...() {
+                if (widget.propertyId == null || _weatherData == null) {
+                  return [const SizedBox.shrink()];
+                }
+
+                final forecasts = WeatherService()
+                    .parseForecastsFromMap(_weatherData!, widget.propertyId!);
+                final alerts = WeatherService().analyzeForecasts(forecasts);
+                final now = DateTime.now();
+                final today = DateTime(now.year, now.month, now.day);
+
+                // Show alerts for today and tomorrow only in the card
+                final activeAlerts = alerts.where((a) {
+                  final diff = a.date.difference(today).inDays;
+                  return diff >= 0 && diff <= 1;
+                }).toList();
+
+                if (activeAlerts.isEmpty) return [const SizedBox.shrink()];
+
+                final alert =
+                    activeAlerts.first; // Highest severity is sorted first
+                final l10n = AgroLocalizations.of(context)!;
+
+                String title;
+                switch (alert.titleKey) {
+                  case 'alertFrostTitle':
+                    title = l10n.alertFrostTitle;
+                    break;
+                  case 'alertHeatWaveTitle':
+                    title = l10n.alertHeatWaveTitle;
+                    break;
+                  case 'alertStormTitle':
+                    title = l10n.alertStormTitle;
+                    break;
+                  case 'alertDroughtTitle':
+                    title = l10n.alertDroughtTitle;
+                    break;
+                  case 'alertHighWindTitle':
+                    title = l10n.alertHighWindTitle;
+                    break;
+                  default:
+                    title = alert.titleKey;
+                }
+
+                return [
+                  Container(
+                    margin: const EdgeInsets.only(bottom: 12),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: alert.color.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(8),
+                      border:
+                          Border.all(color: alert.color.withValues(alpha: 0.3)),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(alert.icon, color: alert.color, size: 20),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            title,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: alert.color,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                ];
+              }(),
 
               Row(
                 children: [

@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../services/weather_service.dart'; // Ensure this import exists or use appropriate model imports
-import '../widgets/weather_card.dart'; // Likely not needed if we duplicate icon logic or move it to a helper, but let's see.
+import '../services/weather_service.dart';
+import '../models/weather_alert.dart';
+import '../l10n/generated/app_localizations.dart';
 
 class WeatherDetailScreen extends StatelessWidget {
   final Map<String, dynamic> weatherData;
   final String? propertyName;
+  final String? propertyId;
 
   const WeatherDetailScreen({
     super.key,
     required this.weatherData,
     this.propertyName,
+    this.propertyId,
   });
 
   @override
@@ -18,9 +21,18 @@ class WeatherDetailScreen extends StatelessWidget {
     final theme = Theme.of(context);
 
     // Extract data
+    // Extract data
     final current = weatherData['current'];
     final daily = weatherData['daily'];
     final hourly = weatherData['hourly'];
+
+    // CORE-39: Weather Alerts
+    List<WeatherAlert> alerts = [];
+    if (propertyId != null) {
+      final forecasts =
+          WeatherService().parseForecastsFromMap(weatherData, propertyId!);
+      alerts = WeatherService().analyzeForecasts(forecasts);
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -45,6 +57,12 @@ class WeatherDetailScreen extends StatelessWidget {
           SliverToBoxAdapter(
             child: _buildCurrentHeader(context, current, daily),
           ),
+
+          // CORE-39: Alerts Section
+          if (alerts.isNotEmpty)
+            SliverToBoxAdapter(
+              child: _buildAlertsSection(context, alerts),
+            ),
 
           // 2. Hourly Header
           SliverToBoxAdapter(
@@ -377,5 +395,108 @@ class WeatherDetailScreen extends StatelessWidget {
     if (code >= 80 && code <= 82) return 'Pancadas de chuva';
     if (code >= 95 && code <= 99) return 'Tempestade';
     return 'Nublado';
+  }
+
+  Widget _buildAlertsSection(BuildContext context, List<WeatherAlert> alerts) {
+    final l10n = AgroLocalizations.of(context)!;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+          child: Text(
+            l10n.alertsSectionTitle,
+            style: Theme.of(context)
+                .textTheme
+                .titleMedium
+                ?.copyWith(fontWeight: FontWeight.bold),
+          ),
+        ),
+        SizedBox(
+          height: 130,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            itemCount: alerts.length,
+            itemBuilder: (context, index) {
+              final alert = alerts[index];
+
+              String title, message;
+              switch (alert.titleKey) {
+                case 'alertFrostTitle':
+                  title = l10n.alertFrostTitle;
+                  message = l10n.alertFrostMessage;
+                  break;
+                case 'alertHeatWaveTitle':
+                  title = l10n.alertHeatWaveTitle;
+                  message = l10n.alertHeatWaveMessage;
+                  break;
+                case 'alertStormTitle':
+                  title = l10n.alertStormTitle;
+                  message = l10n.alertStormMessage;
+                  break;
+                case 'alertDroughtTitle':
+                  title = l10n.alertDroughtTitle;
+                  message = l10n.alertDroughtMessage;
+                  break;
+                case 'alertHighWindTitle':
+                  title = l10n.alertHighWindTitle;
+                  message = l10n.alertHighWindMessage;
+                  break;
+                default:
+                  title = alert.titleKey;
+                  message = alert.messageKey;
+              }
+
+              final dateStr =
+                  DateFormat('E, d MMM', 'pt_BR').format(alert.date);
+
+              return Container(
+                width: 260,
+                margin: const EdgeInsets.only(right: 12),
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: alert.color.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: alert.color.withValues(alpha: 0.3)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(alert.icon, color: alert.color, size: 20),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(title,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: alert.color,
+                                  fontSize: 14),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Text(dateStr,
+                        style: TextStyle(
+                            color: Colors.grey[700],
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 4),
+                    Text(message,
+                        style: TextStyle(color: Colors.grey[800], fontSize: 12),
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis),
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
   }
 }

@@ -641,4 +641,37 @@ class AgroLocalizationsEn extends AgroLocalizations {
 
   @override
   String get revokeAllMessage => 'This will remove all your consents and end your session. Your local data will be kept.';
+
+  @override
+  String get alertFrostTitle => 'Frost Risk';
+
+  @override
+  String get alertFrostMessage => 'Temperatures below 3°C. Protect sensitive crops.';
+
+  @override
+  String get alertHeatWaveTitle => 'Heat Wave';
+
+  @override
+  String get alertHeatWaveMessage => 'Temperatures above 35°C. Monitor hydration and heat stress.';
+
+  @override
+  String get alertStormTitle => 'Storm Alert';
+
+  @override
+  String get alertStormMessage => 'Heavy rain or strong winds forecast.';
+
+  @override
+  String get alertDroughtTitle => 'Drought Alert';
+
+  @override
+  String get alertDroughtMessage => 'No significant rain forecast for the next 7 days.';
+
+  @override
+  String get alertHighWindTitle => 'High Winds';
+
+  @override
+  String get alertHighWindMessage => 'Wind gusts above 45km/h expected.';
+
+  @override
+  String get alertsSectionTitle => 'Weather Alerts';
 }

@@ -641,4 +641,37 @@ class AgroLocalizationsPt extends AgroLocalizations {
 
   @override
   String get revokeAllMessage => 'Isso removerá todos os seus consentimentos e encerrará a sessão. Seus dados locais serão mantidos.';
+
+  @override
+  String get alertFrostTitle => 'Risco de Geada';
+
+  @override
+  String get alertFrostMessage => 'Temperaturas abaixo de 3°C. Proteja culturas sensíveis.';
+
+  @override
+  String get alertHeatWaveTitle => 'Onda de Calor';
+
+  @override
+  String get alertHeatWaveMessage => 'Temperaturas acima de 35°C. Monitore hidratação e estresse térmico.';
+
+  @override
+  String get alertStormTitle => 'Alerta de Tempestade';
+
+  @override
+  String get alertStormMessage => 'Previsão de chuva forte ou ventos intensos.';
+
+  @override
+  String get alertDroughtTitle => 'Alerta de Estiagem';
+
+  @override
+  String get alertDroughtMessage => 'Sem previsão significativa de chuva para os próximos 7 dias.';
+
+  @override
+  String get alertHighWindTitle => 'Ventos Fortes';
+
+  @override
+  String get alertHighWindMessage => 'Rajadas de vento acima de 45km/h previstas.';
+
+  @override
+  String get alertsSectionTitle => 'Alertas Meteorológicos';
 }

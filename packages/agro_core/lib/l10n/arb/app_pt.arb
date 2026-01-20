@@ -294,5 +294,16 @@
 
   "revokeAllButton": "Revogar Tudo e Sair",
   "revokeAllTitle": "Revogar todos os consentimentos?",
-  "revokeAllMessage": "Isso removerá todos os seus consentimentos e encerrará a sessão. Seus dados locais serão mantidos."
+  "revokeAllMessage": "Isso removerá todos os seus consentimentos e encerrará a sessão. Seus dados locais serão mantidos.",
+  "alertFrostTitle": "Risco de Geada",
+  "alertFrostMessage": "Temperaturas abaixo de 3°C. Proteja culturas sensíveis.",
+  "alertHeatWaveTitle": "Onda de Calor",
+  "alertHeatWaveMessage": "Temperaturas acima de 35°C. Monitore hidratação e estresse térmico.",
+  "alertStormTitle": "Alerta de Tempestade",
+  "alertStormMessage": "Previsão de chuva forte ou ventos intensos.",
+  "alertDroughtTitle": "Alerta de Estiagem",
+  "alertDroughtMessage": "Sem previsão significativa de chuva para os próximos 7 dias.",
+  "alertHighWindTitle": "Ventos Fortes",
+  "alertHighWindMessage": "Rajadas de vento acima de 45km/h previstas.",
+  "alertsSectionTitle": "Alertas Meteorológicos"
 }

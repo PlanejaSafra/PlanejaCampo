@@ -1330,6 +1330,72 @@ abstract class AgroLocalizations {
   /// In en, this message translates to:
   /// **'This will remove all your consents and end your session. Your local data will be kept.'**
   String get revokeAllMessage;
+
+  /// No description provided for @alertFrostTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Frost Risk'**
+  String get alertFrostTitle;
+
+  /// No description provided for @alertFrostMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Temperatures below 3°C. Protect sensitive crops.'**
+  String get alertFrostMessage;
+
+  /// No description provided for @alertHeatWaveTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Heat Wave'**
+  String get alertHeatWaveTitle;
+
+  /// No description provided for @alertHeatWaveMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Temperatures above 35°C. Monitor hydration and heat stress.'**
+  String get alertHeatWaveMessage;
+
+  /// No description provided for @alertStormTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Storm Alert'**
+  String get alertStormTitle;
+
+  /// No description provided for @alertStormMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Heavy rain or strong winds forecast.'**
+  String get alertStormMessage;
+
+  /// No description provided for @alertDroughtTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Drought Alert'**
+  String get alertDroughtTitle;
+
+  /// No description provided for @alertDroughtMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'No significant rain forecast for the next 7 days.'**
+  String get alertDroughtMessage;
+
+  /// No description provided for @alertHighWindTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'High Winds'**
+  String get alertHighWindTitle;
+
+  /// No description provided for @alertHighWindMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Wind gusts above 45km/h expected.'**
+  String get alertHighWindMessage;
+
+  /// No description provided for @alertsSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Weather Alerts'**
+  String get alertsSectionTitle;
 }
 
 class _AgroLocalizationsDelegate extends LocalizationsDelegate<AgroLocalizations> {

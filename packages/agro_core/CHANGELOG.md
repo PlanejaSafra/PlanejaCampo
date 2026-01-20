@@ -2,6 +2,36 @@
 
 ---
 
+## Phase CORE-39: Weather Alerts & Critical Conditions
+
+### Status: [DONE]
+**Date Completed**: 2026-01-20
+**Priority**: 🔴 CRITICAL (Risk Management)
+**Objective**: Proactively notify users of critical weather conditions (Frost, Drought, Heat Wave, Storms) based on forecast analysis.
+
+### Implementation Summary
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 39.1 | Define `WeatherAlert` model (Enums, Severity, Class) | ✅ DONE |
+| 39.2 | Implement `WeatherService.analyzeForecasts` logic | ✅ DONE |
+| 39.3 | Add localization strings for alerts | ✅ DONE |
+| 39.4 | Update `WeatherCard` to show active alert badges | ✅ DONE |
+| 39.5 | Update `WeatherDetailScreen` to list detailed alerts | ✅ DONE |
+
+### Files Modified
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/models/weather_alert.dart` | CREATE | Model definition for alerts |
+| `lib/services/weather_service.dart` | MODIFY | Logic to generate alerts from forecast |
+| `lib/widgets/weather_card.dart` | MODIFY | UI: Alert badge/banner |
+| `lib/screens/weather_detail_screen.dart` | MODIFY | UI: Detailed alert list |
+| `lib/l10n/arb/app_pt.arb` | MODIFY | Alert strings |
+| `lib/l10n/arb/app_en.arb` | MODIFY | Alert strings |
+
+---
+
 ## Phase CORE-38: Weather Enhancements (Wind & UI)
 
 ### Status: [DOING]

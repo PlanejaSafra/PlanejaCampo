@@ -294,5 +294,16 @@
 
   "revokeAllButton": "Revoke All and Sign Out",
   "revokeAllTitle": "Revoke all consents?",
-  "revokeAllMessage": "This will remove all your consents and end your session. Your local data will be kept."
+  "revokeAllMessage": "This will remove all your consents and end your session. Your local data will be kept.",
+  "alertFrostTitle": "Frost Risk",
+  "alertFrostMessage": "Temperatures below 3°C. Protect sensitive crops.",
+  "alertHeatWaveTitle": "Heat Wave",
+  "alertHeatWaveMessage": "Temperatures above 35°C. Monitor hydration and heat stress.",
+  "alertStormTitle": "Storm Alert",
+  "alertStormMessage": "Heavy rain or strong winds forecast.",
+  "alertDroughtTitle": "Drought Alert",
+  "alertDroughtMessage": "No significant rain forecast for the next 7 days.",
+  "alertHighWindTitle": "High Winds",
+  "alertHighWindMessage": "Wind gusts above 45km/h expected.",
+  "alertsSectionTitle": "Weather Alerts"
 }

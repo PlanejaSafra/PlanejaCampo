@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 import '../models/weather_forecast.dart';
+import '../models/weather_alert.dart';
 
 /// Service to fetch and cache weather data from Open-Meteo.
 class WeatherService {
@@ -59,6 +60,36 @@ class WeatherService {
 
     return refreshForecast(
         latitude: latitude, longitude: longitude, propertyId: propertyId);
+  }
+
+  /// Parse raw API response map into `List<WeatherForecast>`
+  List<WeatherForecast> parseForecastsFromMap(
+      Map<String, dynamic> data, String propertyId) {
+    final daily = data['daily'];
+    if (daily == null) return [];
+
+    final forecasts = <WeatherForecast>[];
+    final dates = daily['time'] as List;
+    final maxTemps = daily['temperature_2m_max'] as List;
+    final minTemps = daily['temperature_2m_min'] as List;
+    final precipitations = daily['precipitation_sum'] as List;
+    final weatherCodes = daily['weather_code'] as List;
+    final windSpeeds = daily['wind_speed_10m_max'] as List;
+    final windDirections = daily['wind_direction_10m_dominant'] as List;
+
+    for (var i = 0; i < dates.length; i++) {
+      forecasts.add(WeatherForecast.fromApi(
+        date: DateTime.parse(dates[i]),
+        precipitationMm: (precipitations[i] as num).toDouble(),
+        temperatureMax: (maxTemps[i] as num).toDouble(),
+        temperatureMin: (minTemps[i] as num).toDouble(),
+        weatherCode: (weatherCodes[i] as num).toInt(),
+        propertyId: propertyId,
+        windSpeed: (windSpeeds[i] as num).toDouble(),
+        windDirection: (windDirections[i] as num).toInt(),
+      ));
+    }
+    return forecasts;
   }
 
   /// Force fetch from API
@@ -194,7 +225,98 @@ class WeatherService {
     } catch (e) {
       // ignore
     }
-
     return null;
+  }
+
+  /// Analyze forecasts to identify critical weather conditions
+  List<WeatherAlert> analyzeForecasts(List<WeatherForecast> forecasts) {
+    final alerts = <WeatherAlert>[];
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+
+    // 1. Drought Check (Look ahead 7 days)
+    // We need at least 5 days of data to call it a "forecast drought"
+    if (forecasts.length >= 5) {
+      double totalPrecip = 0;
+      for (var f in forecasts) {
+        if (f.date.isAfter(today.subtract(const Duration(days: 1)))) {
+          totalPrecip += f.precipitationMm;
+        }
+      }
+      // If total rain < 2mm for the whole forecast period
+      if (totalPrecip < 2.0) {
+        alerts.add(WeatherAlert(
+          type: WeatherAlertType.drought,
+          severity: AlertSeverity.medium,
+          date: today, // Applies generally
+          titleKey: 'alertDroughtTitle',
+          messageKey: 'alertDroughtMessage',
+        ));
+      }
+    }
+
+    // 2. Daily Checks
+    for (var f in forecasts) {
+      // Only check future or today
+      if (f.date.isBefore(today)) continue;
+
+      // Frost Risk (Min Temp < 3°C)
+      if (f.temperatureMin < 3.0) {
+        alerts.add(WeatherAlert(
+          type: WeatherAlertType.frost,
+          severity:
+              f.temperatureMin < 0 ? AlertSeverity.high : AlertSeverity.medium,
+          date: f.date,
+          titleKey: 'alertFrostTitle',
+          messageKey: 'alertFrostMessage',
+        ));
+      }
+
+      // Heat Wave (Max Temp > 35°C)
+      if (f.temperatureMax > 35.0) {
+        alerts.add(WeatherAlert(
+          type: WeatherAlertType.heatWave,
+          severity:
+              f.temperatureMax > 40 ? AlertSeverity.high : AlertSeverity.medium,
+          date: f.date,
+          titleKey: 'alertHeatWaveTitle',
+          messageKey: 'alertHeatWaveMessage',
+        ));
+      }
+
+      // Storm Alert
+      // High precip (> 50mm) OR (Strong Wind > 60km/h AND (Rain or Thunder code))
+      bool heavyRain = f.precipitationMm > 50.0;
+      bool strongWindStorm = f.windSpeed > 60.0 &&
+          (f.weatherCode >= 51 || f.weatherCode >= 95); // Rain or Thunder
+
+      if (heavyRain || strongWindStorm) {
+        alerts.add(WeatherAlert(
+          type: WeatherAlertType.storm,
+          severity: AlertSeverity.high,
+          date: f.date,
+          titleKey: 'alertStormTitle',
+          messageKey: 'alertStormMessage',
+        ));
+      } else if (f.windSpeed > 45.0) {
+        // High Wind (if not a storm)
+        alerts.add(WeatherAlert(
+          type: WeatherAlertType.highWind,
+          severity: AlertSeverity.medium,
+          date: f.date,
+          titleKey: 'alertHighWindTitle',
+          messageKey: 'alertHighWindMessage',
+        ));
+      }
+    }
+
+    // Sort by date then severity
+    alerts.sort((a, b) {
+      int dateComp = a.date.compareTo(b.date);
+      if (dateComp != 0) return dateComp;
+      return b.severity.index.compareTo(a.severity.index); // High first
+    });
+
+    return alerts;
   }
 }
