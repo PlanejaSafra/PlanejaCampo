@@ -2,6 +2,39 @@
 
 ---
 
+## Phase 28: Advanced Location Setup (Manual Fallback)
+### Status: [DONE]
+**Date Completed**: 2026-01-19
+**Priority**: 🟡 IMPORTANTE
+**Objective**: Allow users to set property location even when they are not physically at the property.
+
+### Solution
+- **Workflow**: If the user indicates they are "Not at the property" during the quick setup loop, the app offers a "Manual Entry" option.
+- **Integration**: Redirects to the existing `PropertyFormScreen`, where advanced users can input coordinates manually (e.g., copied from Google Maps).
+
+### Files Modified
+- `packages/agro_core/lib/widgets/weather_card.dart`
+
+---
+
+## Phase 27: Quick Location Setup & Refined UX
+### Status: [DONE]
+**Date Completed**: 2026-01-19
+**Priority**: 🟢 ENHANCEMENT
+**Objective**: Streamline the "First Run" experience by allowing location setup directly from the Weather Card and decluttering the main screen.
+
+### Solution
+- **Interactive Weather Card**: Tapping the "Location Required" card triggers a setup flow.
+- **Privacy First**: The flow checks for "Location Consents" first. If missing, redirects user to Consent Screen.
+- **Contextual Selectors**: `TalhaoSelector` is now hidden from the main screen (user feedback) and auto-hides itself in forms if the list is empty.
+
+### Files Modified
+- `packages/agro_core/lib/widgets/weather_card.dart`
+- `apps/planejachuva/lib/screens/lista_chuvas_screen.dart`
+- `packages/agro_core/lib/widgets/talhao_selector.dart`
+
+---
+
 ## Phase 22.0: Weather Forecast (Offline-First)
 ### Status: [DONE]
 **Date Completed**: 2026-01-19

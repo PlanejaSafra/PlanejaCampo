@@ -5,6 +5,7 @@ import '../services/property_service.dart';
 import '../services/weather_service.dart';
 import '../privacy/agro_privacy_store.dart';
 import '../privacy/consent_screen.dart';
+import '../screens/property_form_screen.dart';
 // WeatherService is used in _fetchWeather (state), but not in widget definition file?
 // No, the State IS in the same file. WeatherService IS used.
 // "packages\agro_core\lib\widgets\weather_card.dart:4:8 - unused_import" <- That likely refers to a duplicate or unneeded one.
@@ -235,8 +236,6 @@ class _WeatherCardState extends State<WeatherCard> {
   }
 
   Future<void> _showUpdateLocationDialog() async {
-    final l10n = AgroLocalizations.of(context)!;
-
     // 1. Check if "Aggregate Metrics" (which includes Location) is consented
     if (!AgroPrivacyStore.consentAggregateMetrics) {
       final shouldReview = await showDialog<bool>(
@@ -307,14 +306,45 @@ class _WeatherCardState extends State<WeatherCard> {
     if (confirmed == true) {
       await _captureAndSaveLocation();
     } else if (confirmed == false) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-                'Sem problema! Você pode configurar a localização manualmente no menu "Propriedades" quando souber as coordenadas.'),
-            duration: Duration(seconds: 5),
+      // User is not at the property. Offer manual configuration.
+      if (!mounted) return;
+
+      final manualConfig = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Definir Localização'),
+          content: const Text(
+            'Sem problemas. Você prefere definir as coordenadas manualmente agora ou deixar para depois?',
           ),
-        );
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Depois'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Definir Manualmente'),
+            ),
+          ],
+        ),
+      );
+
+      if (manualConfig == true && mounted && widget.propertyId != null) {
+        final propertyService = PropertyService();
+        final property = propertyService.getPropertyById(widget.propertyId!);
+
+        if (property != null) {
+          await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => PropertyFormScreen(property: property),
+            ),
+          );
+          // Refresh callback to update calling screen (e.g. reload default property)
+          widget.onLocationUpdated?.call();
+          // Also refresh this widget
+          _fetchWeather();
+        }
       }
     }
   }
