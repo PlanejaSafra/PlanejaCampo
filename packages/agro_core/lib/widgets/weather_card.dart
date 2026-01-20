@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import '../l10n/generated/app_localizations.dart';
 import '../services/property_service.dart';
 import '../services/weather_service.dart';
 import '../privacy/agro_privacy_store.dart';
