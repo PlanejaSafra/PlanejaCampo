@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import '../l10n/generated/app_localizations.dart';
-import '../models/property.dart';
 import '../services/property_service.dart';
-// import '../services/weather_service.dart'; // WeatherService is used in _fetchWeather (state), but not in widget definition file?
+import '../services/weather_service.dart';
+import '../privacy/agro_privacy_store.dart';
+import '../privacy/consent_screen.dart';
+// WeatherService is used in _fetchWeather (state), but not in widget definition file?
 // No, the State IS in the same file. WeatherService IS used.
 // "packages\agro_core\lib\widgets\weather_card.dart:4:8 - unused_import" <- That likely refers to a duplicate or unneeded one.
 // The file I viewed earlier had `import '../services/weather_service.dart';` at line 2.
@@ -234,6 +236,53 @@ class _WeatherCardState extends State<WeatherCard> {
 
   Future<void> _showUpdateLocationDialog() async {
     final l10n = AgroLocalizations.of(context)!;
+
+    // 1. Check if "Aggregate Metrics" (which includes Location) is consented
+    if (!AgroPrivacyStore.consentAggregateMetrics) {
+      final shouldReview = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Permissão Necessária'),
+          content: const Text(
+            'Para ativar a previsão do tempo automática, você precisa aceitar os Termos de Coleta de Métricas e Localização.\n\nDeseja revisar os termos agora?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Cancelar'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Revisar Termos'),
+            ),
+          ],
+        ),
+      );
+
+      if (shouldReview == true && mounted) {
+        // Navigate to ConsentScreen
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ConsentScreen(
+              onCompleted: () => Navigator.pop(context),
+            ),
+          ),
+        );
+
+        // Upon return, check again. If accepted, proceed automatically.
+        if (AgroPrivacyStore.consentAggregateMetrics && mounted) {
+          _askAreYouHere();
+        }
+      }
+      return;
+    }
+
+    // 2. If already consented, go straight to "Are you here?"
+    await _askAreYouHere();
+  }
+
+  Future<void> _askAreYouHere() async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
