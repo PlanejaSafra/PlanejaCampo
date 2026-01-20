@@ -13,6 +13,8 @@ export 'utils/locale_extension.dart';
 export 'widgets/custom_card.dart';
 export 'widgets/primary_button.dart';
 export 'widgets/talhao_selector.dart';
+export 'widgets/weather_card.dart';
+export 'services/weather_service.dart';
 
 // L10n
 export 'l10n/generated/app_localizations.dart';

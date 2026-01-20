@@ -25,6 +25,7 @@ dependencies:
   sign_in_button: ^3.2.0
   flutter_svg: ^2.2.0
   uuid: ^4.5.1
+  http: ^1.6.0
 
 dev_dependencies:
   flutter_test:

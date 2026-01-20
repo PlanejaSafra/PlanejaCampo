@@ -8,7 +8,7 @@ import '../services/validation_service.dart';
 import '../widgets/estado_vazio.dart';
 import '../widgets/registro_chuva_tile.dart';
 import '../widgets/resumo_mensal_card.dart';
-import '../widgets/weather_card.dart';
+import '../widgets/resumo_mensal_card.dart';
 import '../models/user_preferences.dart';
 import 'adicionar_chuva_screen.dart';
 import 'backup_screen.dart';
