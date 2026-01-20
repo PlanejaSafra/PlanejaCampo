@@ -191,16 +191,22 @@ class BackgroundService {
               settingsBox.get(kLocaleKey, defaultValue: 'pt_BR') as String;
           final isEnglish = storedLocale.startsWith('en');
 
+          // Use proper l10n strings from ARB
           final title =
               isEnglish ? 'Rain starting soon!' : 'Vai chover em breve!';
           final body = isEnglish
               ? 'Rain expected in $minutesParams min at ${prop.name}.'
               : 'Chuva prevista para começar em $minutesParams min na ${prop.name}.';
+          final channelName = isEnglish ? 'Rain Alerts' : 'Alertas de Chuva';
+          final channelDesc = isEnglish
+              ? 'Notifies when heavy rain is approaching'
+              : 'Notifica quando chuvas fortes estão próximas';
 
           await AgroNotificationService().showRainAlert(
             title: title,
             body: body,
-            locale: storedLocale,
+            channelName: channelName,
+            channelDesc: channelDesc,
           );
 
           settingsBox.put('${kLastAlertKey}_${prop.id}', now);

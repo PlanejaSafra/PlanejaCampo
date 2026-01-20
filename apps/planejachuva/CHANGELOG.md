@@ -1,7 +1,81 @@
 # CHANGELOG - planeja_chuva
 
-> **Note**: Core infrastructure phases (33-37) are documented in `packages/agro_core/CHANGELOG.md`.
+> **Note**: Core infrastructure phases (33-37, 46, 51-53) are documented in `packages/agro_core/CHANGELOG.md`.
 > This file contains only app-specific changes for PlanejaChuva.
+
+---
+
+## Phase CHUVA-53: Comparative Charts Integration
+### Status: [DONE]
+**Date Completed**: 2026-01-20
+**Priority**: 🟢 ENHANCEMENT
+**Objective**: Integrate year-over-year rainfall comparison charts into statistics screen.
+**Cross-Reference**: CORE-53
+
+### Implementation Summary
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 53.1 | Create `ComparativeStatsHelper` | ✅ DONE |
+| 53.2 | Create `ComparacaoAnualChart` widget | ✅ DONE |
+| 53.3 | Update `EstatisticasScreen` with TabBarView | ✅ DONE |
+| 53.4 | Add l10n strings for tabs and chart | ✅ DONE |
+
+### Files Modified
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/services/comparative_stats_helper.dart` | CREATE | Aggregates monthly data by year |
+| `lib/widgets/comparacao_anual_chart.dart` | CREATE | fl_chart bar chart for year comparison |
+| `lib/screens/estatisticas_screen.dart` | MODIFY | Added 3-tab layout (Overview/Bars/Compare) |
+
+---
+
+## Phase CHUVA-52: Social Sharing
+### Status: [DONE]
+**Date Completed**: 2026-01-20
+**Priority**: 🟢 ENHANCEMENT
+**Objective**: Enable sharing of rainfall data as branded images on social networks.
+**Cross-Reference**: CORE-52
+
+### Implementation Summary
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 52.1 | Create `RainCardWidget` for image capture | ✅ DONE |
+| 52.2 | Implement `ShareService` with screenshot logic | ✅ DONE |
+| 52.3 | Add Share button to `RegistroChuvasTile` | ✅ DONE |
+| 52.4 | Add Share button to `EditarChuvaScreen` | ✅ DONE |
+| 52.5 | Add l10n strings for sharing | ✅ DONE |
+
+### Files Modified
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/widgets/rain_card_widget.dart` | CREATE | Branded card for image export (350x350) |
+| `lib/services/share_service.dart` | CREATE | Captures widget as PNG and shares via share_plus |
+| `lib/widgets/registro_chuva_tile.dart` | MODIFY | Added share icon |
+| `lib/screens/editar_chuva_screen.dart` | MODIFY | Added share action in AppBar |
+
+---
+
+## Phase CHUVA-51: Native Home Widgets Integration
+### Status: [DONE]
+**Date Completed**: 2026-01-20
+**Priority**: 🟢 ENHANCEMENT
+**Objective**: Integrate with agro_core HomeWidgetService and update widget on data changes.
+**Cross-Reference**: CORE-51
+
+### Implementation Summary
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 51.1 | Create Android widget layout XML | ✅ DONE |
+| 51.2 | Create `RainWidgetProvider.kt` | ✅ DONE |
+| 51.3 | Update `ChuvaService` to sync widget | ✅ DONE |
+| 51.4 | Pass locale to widget for l10n | ✅ DONE |
+
+### Files Modified
+| File | Action | Description |
+|------|--------|-------------|
+| `android/app/src/main/res/layout/widget_layout.xml` | CREATE | Native widget layout |
+| `android/app/src/main/kotlin/.../RainWidgetProvider.kt` | CREATE | Widget provider for Android |
+| `lib/services/chuva_service.dart` | MODIFY | Auto-update widget on data changes with locale |
 
 ---
 

@@ -479,6 +479,34 @@ class AgroLocalizationsEn extends AgroLocalizations {
   String get chuvaComparacaoMesAbaixo => 'Below previous month';
 
   @override
+  String get chuvaStatsTabOverview => 'Overview';
+
+  @override
+  String get chuvaStatsTabBars => 'Bars';
+
+  @override
+  String get chuvaStatsTabCompare => 'Compare';
+
+  @override
+  String get chuvaChartComparativeTitle => 'Year Comparison';
+
+  @override
+  String chuvaShareMessage(String propertyName) {
+    return 'Rainfall recorded at $propertyName! 🌧️ #PlanejaCampo';
+  }
+
+  @override
+  String get chuvaShareError => 'Error sharing';
+
+  @override
+  String get chuvaWidgetNoData => 'No recent data';
+
+  @override
+  String chuvaWidgetUpdatedAt(String time) {
+    return 'Updated at $time';
+  }
+
+  @override
   String get talhaoTitle => 'Field Plots';
 
   @override
@@ -948,6 +976,17 @@ class AgroLocalizationsEn extends AgroLocalizations {
   }
 
   @override
+  String notificationRainBodyWithProperty(int minutes, String propertyName) {
+    return 'Rain expected in $minutes min at $propertyName.';
+  }
+
+  @override
+  String get notificationChannelName => 'Rain Alerts';
+
+  @override
+  String get notificationChannelDesc => 'Notifies when heavy rain is approaching';
+
+  @override
   String get notificationPermissionRequired => 'Notification permission required';
 
   @override
@@ -963,6 +1002,9 @@ class AgroLocalizationsEn extends AgroLocalizations {
   String get heatmapLegendHeavy => 'Heavy';
 
   @override
+  String get heatmapNoData => 'Insufficient data for this region';
+
+  @override
   String get heatmapFilter1h => '1h';
 
   @override
@@ -973,4 +1015,19 @@ class AgroLocalizationsEn extends AgroLocalizations {
 
   @override
   String get drawerHeatmap => 'Rain Map';
+
+  @override
+  String get cancelButton => 'Cancel';
+
+  @override
+  String get deleteButton => 'Delete';
+
+  @override
+  String get deleteCloudDataTitle => 'Delete cloud data?';
+
+  @override
+  String get deleteCloudDataMessage => 'This will remove your synced data from the cloud. Local data on your device will be kept. You can sync again in the future if you wish.';
+
+  @override
+  String get deleteCloudDataSuccess => 'Cloud data deleted successfully';
 }

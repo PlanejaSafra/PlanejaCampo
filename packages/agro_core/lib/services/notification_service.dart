@@ -46,16 +46,11 @@ class AgroNotificationService {
   Future<void> showRainAlert({
     required String title,
     required String body,
-    String locale = 'pt_BR',
+    required String channelName,
+    required String channelDesc,
   }) async {
     // Ensure initialized (might be called from background isolate where _instance is fresh)
     if (!_initialized) await init();
-
-    final isEnglish = locale.startsWith('en');
-    final channelName = isEnglish ? 'Rain Alerts' : 'Alertas de Chuva';
-    final channelDesc = isEnglish
-        ? 'Notifies when heavy rain is approaching'
-        : 'Notifica quando chuvas fortes estão próximas';
 
     final AndroidNotificationDetails androidNotificationDetails =
         AndroidNotificationDetails(

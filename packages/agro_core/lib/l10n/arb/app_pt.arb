@@ -202,6 +202,28 @@
   "chuvaNenhumRegistroBackup": "Nenhum registro para exportar",
   "chuvaComparacaoMesAcima": "Acima do mês anterior",
   "chuvaComparacaoMesAbaixo": "Abaixo do mês anterior",
+  "chuvaStatsTabOverview": "Resumo",
+  "chuvaStatsTabBars": "Barras",
+  "chuvaStatsTabCompare": "Comparar",
+  "chuvaChartComparativeTitle": "Comparativo de Safras",
+  "chuvaShareMessage": "Chuva registrada em {propertyName}! 🌧️ #PlanejaCampo",
+  "@chuvaShareMessage": {
+    "placeholders": {
+      "propertyName": {
+        "type": "String"
+      }
+    }
+  },
+  "chuvaShareError": "Erro ao compartilhar",
+  "chuvaWidgetNoData": "Sem dados recentes",
+  "chuvaWidgetUpdatedAt": "Atualizado às {time}",
+  "@chuvaWidgetUpdatedAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
 
   "talhaoTitle": "Talhões",
   "talhaoAdd": "Adicionar Talhão",
@@ -441,13 +463,33 @@
   "settingsRainAlertsDesc": "Receba avisos antes de chover",
   "notificationRainTitle": "Vai chover em breve!",
   "notificationRainBody": "Chuva prevista para começar em {minutes} min.",
+  "notificationRainBodyWithProperty": "Chuva prevista para começar em {minutes} min na {propertyName}.",
+  "@notificationRainBodyWithProperty": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      },
+      "propertyName": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationChannelName": "Alertas de Chuva",
+  "notificationChannelDesc": "Notifica quando chuvas fortes estão próximas",
   "notificationPermissionRequired": "Permissão de notificação necessária",
   "heatmapTitle": "Mapa de Calor",
   "heatmapLegendLight": "Leve",
   "heatmapLegendModerate": "Moderada",
   "heatmapLegendHeavy": "Intensa",
+  "heatmapNoData": "Sem dados suficientes para esta região",
   "heatmapFilter1h": "1h",
   "heatmapFilter24h": "24h",
   "heatmapFilter7d": "7d",
-  "drawerHeatmap": "Mapa de Chuvas"
+  "drawerHeatmap": "Mapa de Chuvas",
+
+  "cancelButton": "Cancelar",
+  "deleteButton": "Excluir",
+  "deleteCloudDataTitle": "Excluir dados da nuvem?",
+  "deleteCloudDataMessage": "Esta ação irá remover seus dados sincronizados na nuvem. Os dados locais no seu dispositivo serão mantidos. Você poderá sincronizar novamente no futuro se desejar.",
+  "deleteCloudDataSuccess": "Dados da nuvem excluídos com sucesso"
 }

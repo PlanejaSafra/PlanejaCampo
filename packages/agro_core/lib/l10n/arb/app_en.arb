@@ -202,6 +202,28 @@
   "chuvaNenhumRegistroBackup": "No records to export",
   "chuvaComparacaoMesAcima": "Above previous month",
   "chuvaComparacaoMesAbaixo": "Below previous month",
+  "chuvaStatsTabOverview": "Overview",
+  "chuvaStatsTabBars": "Bars",
+  "chuvaStatsTabCompare": "Compare",
+  "chuvaChartComparativeTitle": "Year Comparison",
+  "chuvaShareMessage": "Rainfall recorded at {propertyName}! 🌧️ #PlanejaCampo",
+  "@chuvaShareMessage": {
+    "placeholders": {
+      "propertyName": {
+        "type": "String"
+      }
+    }
+  },
+  "chuvaShareError": "Error sharing",
+  "chuvaWidgetNoData": "No recent data",
+  "chuvaWidgetUpdatedAt": "Updated at {time}",
+  "@chuvaWidgetUpdatedAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
 
   "talhaoTitle": "Field Plots",
   "talhaoAdd": "Add Field Plot",
@@ -441,13 +463,33 @@
   "settingsRainAlertsDesc": "Get notified before it rains",
   "notificationRainTitle": "Rain starting soon!",
   "notificationRainBody": "Rain expected to start in {minutes} min.",
+  "notificationRainBodyWithProperty": "Rain expected in {minutes} min at {propertyName}.",
+  "@notificationRainBodyWithProperty": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      },
+      "propertyName": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationChannelName": "Rain Alerts",
+  "notificationChannelDesc": "Notifies when heavy rain is approaching",
   "notificationPermissionRequired": "Notification permission required",
   "heatmapTitle": "Rain Heatmap",
   "heatmapLegendLight": "Light",
   "heatmapLegendModerate": "Moderate",
   "heatmapLegendHeavy": "Heavy",
+  "heatmapNoData": "Insufficient data for this region",
   "heatmapFilter1h": "1h",
   "heatmapFilter24h": "24h",
   "heatmapFilter7d": "7d",
-  "drawerHeatmap": "Rain Map"
+  "drawerHeatmap": "Rain Map",
+
+  "cancelButton": "Cancel",
+  "deleteButton": "Delete",
+  "deleteCloudDataTitle": "Delete cloud data?",
+  "deleteCloudDataMessage": "This will remove your synced data from the cloud. Local data on your device will be kept. You can sync again in the future if you wish.",
+  "deleteCloudDataSuccess": "Cloud data deleted successfully"
 }

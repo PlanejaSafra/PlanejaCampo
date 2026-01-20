@@ -479,6 +479,34 @@ class AgroLocalizationsPt extends AgroLocalizations {
   String get chuvaComparacaoMesAbaixo => 'Abaixo do mês anterior';
 
   @override
+  String get chuvaStatsTabOverview => 'Resumo';
+
+  @override
+  String get chuvaStatsTabBars => 'Barras';
+
+  @override
+  String get chuvaStatsTabCompare => 'Comparar';
+
+  @override
+  String get chuvaChartComparativeTitle => 'Comparativo de Safras';
+
+  @override
+  String chuvaShareMessage(String propertyName) {
+    return 'Chuva registrada em $propertyName! 🌧️ #PlanejaCampo';
+  }
+
+  @override
+  String get chuvaShareError => 'Erro ao compartilhar';
+
+  @override
+  String get chuvaWidgetNoData => 'Sem dados recentes';
+
+  @override
+  String chuvaWidgetUpdatedAt(String time) {
+    return 'Atualizado às $time';
+  }
+
+  @override
   String get talhaoTitle => 'Talhões';
 
   @override
@@ -948,6 +976,17 @@ class AgroLocalizationsPt extends AgroLocalizations {
   }
 
   @override
+  String notificationRainBodyWithProperty(int minutes, String propertyName) {
+    return 'Chuva prevista para começar em $minutes min na $propertyName.';
+  }
+
+  @override
+  String get notificationChannelName => 'Alertas de Chuva';
+
+  @override
+  String get notificationChannelDesc => 'Notifica quando chuvas fortes estão próximas';
+
+  @override
   String get notificationPermissionRequired => 'Permissão de notificação necessária';
 
   @override
@@ -963,6 +1002,9 @@ class AgroLocalizationsPt extends AgroLocalizations {
   String get heatmapLegendHeavy => 'Intensa';
 
   @override
+  String get heatmapNoData => 'Sem dados suficientes para esta região';
+
+  @override
   String get heatmapFilter1h => '1h';
 
   @override
@@ -973,4 +1015,19 @@ class AgroLocalizationsPt extends AgroLocalizations {
 
   @override
   String get drawerHeatmap => 'Mapa de Chuvas';
+
+  @override
+  String get cancelButton => 'Cancelar';
+
+  @override
+  String get deleteButton => 'Excluir';
+
+  @override
+  String get deleteCloudDataTitle => 'Excluir dados da nuvem?';
+
+  @override
+  String get deleteCloudDataMessage => 'Esta ação irá remover seus dados sincronizados na nuvem. Os dados locais no seu dispositivo serão mantidos. Você poderá sincronizar novamente no futuro se desejar.';
+
+  @override
+  String get deleteCloudDataSuccess => 'Dados da nuvem excluídos com sucesso';
 }

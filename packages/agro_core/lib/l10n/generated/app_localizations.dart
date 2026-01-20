@@ -1019,6 +1019,54 @@ abstract class AgroLocalizations {
   /// **'Below previous month'**
   String get chuvaComparacaoMesAbaixo;
 
+  /// No description provided for @chuvaStatsTabOverview.
+  ///
+  /// In en, this message translates to:
+  /// **'Overview'**
+  String get chuvaStatsTabOverview;
+
+  /// No description provided for @chuvaStatsTabBars.
+  ///
+  /// In en, this message translates to:
+  /// **'Bars'**
+  String get chuvaStatsTabBars;
+
+  /// No description provided for @chuvaStatsTabCompare.
+  ///
+  /// In en, this message translates to:
+  /// **'Compare'**
+  String get chuvaStatsTabCompare;
+
+  /// No description provided for @chuvaChartComparativeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Year Comparison'**
+  String get chuvaChartComparativeTitle;
+
+  /// No description provided for @chuvaShareMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Rainfall recorded at {propertyName}! 🌧️ #PlanejaCampo'**
+  String chuvaShareMessage(String propertyName);
+
+  /// No description provided for @chuvaShareError.
+  ///
+  /// In en, this message translates to:
+  /// **'Error sharing'**
+  String get chuvaShareError;
+
+  /// No description provided for @chuvaWidgetNoData.
+  ///
+  /// In en, this message translates to:
+  /// **'No recent data'**
+  String get chuvaWidgetNoData;
+
+  /// No description provided for @chuvaWidgetUpdatedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Updated at {time}'**
+  String chuvaWidgetUpdatedAt(String time);
+
   /// No description provided for @talhaoTitle.
   ///
   /// In en, this message translates to:
@@ -1913,6 +1961,24 @@ abstract class AgroLocalizations {
   /// **'Rain expected to start in {minutes} min.'**
   String notificationRainBody(Object minutes);
 
+  /// No description provided for @notificationRainBodyWithProperty.
+  ///
+  /// In en, this message translates to:
+  /// **'Rain expected in {minutes} min at {propertyName}.'**
+  String notificationRainBodyWithProperty(int minutes, String propertyName);
+
+  /// No description provided for @notificationChannelName.
+  ///
+  /// In en, this message translates to:
+  /// **'Rain Alerts'**
+  String get notificationChannelName;
+
+  /// No description provided for @notificationChannelDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifies when heavy rain is approaching'**
+  String get notificationChannelDesc;
+
   /// No description provided for @notificationPermissionRequired.
   ///
   /// In en, this message translates to:
@@ -1943,6 +2009,12 @@ abstract class AgroLocalizations {
   /// **'Heavy'**
   String get heatmapLegendHeavy;
 
+  /// No description provided for @heatmapNoData.
+  ///
+  /// In en, this message translates to:
+  /// **'Insufficient data for this region'**
+  String get heatmapNoData;
+
   /// No description provided for @heatmapFilter1h.
   ///
   /// In en, this message translates to:
@@ -1966,6 +2038,36 @@ abstract class AgroLocalizations {
   /// In en, this message translates to:
   /// **'Rain Map'**
   String get drawerHeatmap;
+
+  /// No description provided for @cancelButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancelButton;
+
+  /// No description provided for @deleteButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get deleteButton;
+
+  /// No description provided for @deleteCloudDataTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete cloud data?'**
+  String get deleteCloudDataTitle;
+
+  /// No description provided for @deleteCloudDataMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This will remove your synced data from the cloud. Local data on your device will be kept. You can sync again in the future if you wish.'**
+  String get deleteCloudDataMessage;
+
+  /// No description provided for @deleteCloudDataSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Cloud data deleted successfully'**
+  String get deleteCloudDataSuccess;
 }
 
 class _AgroLocalizationsDelegate extends LocalizationsDelegate<AgroLocalizations> {

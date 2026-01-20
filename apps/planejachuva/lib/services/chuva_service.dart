@@ -1,3 +1,4 @@
+import 'package:agro_core/agro_core.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../models/registro_chuva.dart';
 
@@ -35,16 +36,19 @@ class ChuvaService {
   /// Adds a new record to the box.
   Future<void> adicionar(RegistroChuva registro) async {
     await _box.put(registro.id.toString(), registro);
+    await _updateWidget();
   }
 
   /// Updates an existing record.
   Future<void> atualizar(RegistroChuva registro) async {
     await _box.put(registro.id.toString(), registro);
+    await _updateWidget();
   }
 
   /// Deletes a record by its ID.
   Future<void> excluir(int id) async {
     await _box.delete(id.toString());
+    await _updateWidget();
   }
 
   /// Calculates the total rainfall for a specific month.
@@ -191,5 +195,35 @@ class ChuvaService {
     // It's better to inject dependency or do this in the Screen.
     // BUT the requirement was "notifyRainLogged" in service.
     // Let's implement it here as a helper that loads prefs.
+  }
+
+  /// Updates the Home Widget with the latest data.
+  Future<void> _updateWidget() async {
+    try {
+      final todos = listarTodos(); // Sorted by date desc
+
+      // Get locale from Hive for widget
+      final settingsBox = await Hive.openBox('settings');
+      final locale =
+          settingsBox.get('app_locale', defaultValue: 'pt_BR') as String;
+
+      if (todos.isNotEmpty) {
+        final latest = todos.first;
+        await HomeWidgetService.updateWidgetData(
+          lastRainDate: latest.data,
+          lastRainMm: latest.milimetros,
+          locale: locale,
+        );
+      } else {
+        await HomeWidgetService.updateWidgetData(
+          lastRainDate: null,
+          lastRainMm: null,
+          locale: locale,
+        );
+      }
+    } catch (e) {
+      // Ignore widget update errors to not block app flow
+      print('Error updating widget: $e');
+    }
   }
 }

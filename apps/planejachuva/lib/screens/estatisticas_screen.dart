@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../models/registro_chuva.dart';
 import '../services/chuva_service.dart';
 import '../widgets/comparacao_anual_card.dart';
+import '../widgets/comparacao_anual_chart.dart';
 import '../widgets/visualizacao_barras.dart';
 
 /// Screen displaying rainfall statistics.
@@ -191,15 +192,15 @@ class _EstatisticasScreenState extends State<EstatisticasScreen>
           controller: _tabController,
           tabs: [
             Tab(
-              text: locale.startsWith('pt') ? 'Resumo' : 'Overview',
+              text: l10n.chuvaStatsTabOverview,
               icon: const Icon(Icons.dashboard),
             ),
             Tab(
-              text: locale.startsWith('pt') ? 'Barras' : 'Bars',
+              text: l10n.chuvaStatsTabBars,
               icon: const Icon(Icons.bar_chart),
             ),
             Tab(
-              text: locale.startsWith('pt') ? 'Comparar' : 'Compare',
+              text: l10n.chuvaStatsTabCompare,
               icon: const Icon(Icons.compare),
             ),
           ],
@@ -385,6 +386,11 @@ class _EstatisticasScreenState extends State<EstatisticasScreen>
       child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          ComparacaoAnualChart(
+            monthlyData: _monthlyData,
+            locale: locale,
+          ),
+          const SizedBox(height: 16),
           ComparacaoAnualCard(
             monthlyData: _monthlyData,
             locale: locale,
