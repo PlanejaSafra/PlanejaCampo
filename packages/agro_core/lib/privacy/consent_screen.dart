@@ -316,13 +316,15 @@ class _ConsentTile extends StatelessWidget {
             fontWeight: FontWeight.w500,
           ),
         ),
-        subtitle: Padding(
-          padding: const EdgeInsets.only(top: 4.0),
-          child: Text(
-            subtitle,
-            style: theme.textTheme.bodySmall,
-          ),
-        ),
+        subtitle: subtitle.isEmpty
+            ? null
+            : Padding(
+                padding: const EdgeInsets.only(top: 4.0),
+                child: Text(
+                  subtitle,
+                  style: theme.textTheme.bodySmall,
+                ),
+              ),
         value: value,
         onChanged: onChanged,
         controlAffinity: ListTileControlAffinity.leading,

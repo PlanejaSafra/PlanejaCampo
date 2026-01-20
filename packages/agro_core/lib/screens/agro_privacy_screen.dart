@@ -1,8 +1,11 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import '../l10n/generated/app_localizations.dart';
 import '../privacy/agro_privacy_store.dart';
+import '../services/data_deletion_service.dart';
+import '../services/data_export_service.dart';
 import 'privacy_policy_screen.dart';
 import 'terms_of_use_screen.dart';
 
@@ -124,8 +127,255 @@ class _AgroPrivacyScreenState extends State<AgroPrivacyScreen> {
     );
   }
 
+  // ===================== LGPD FEATURES =====================
+
+  /// Show export data bottom sheet (CORE-37)
+  void _showExportSheet() {
+    final l10n = AgroLocalizations.of(context)!;
+
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                l10n.exportDataTitle,
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                l10n.exportDataDescription,
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              const SizedBox(height: 24),
+              ListTile(
+                leading: const Icon(Icons.code),
+                title: Text(l10n.exportDataJson),
+                subtitle: const Text('Formato completo com todos os metadados'),
+                onTap: () async {
+                  Navigator.pop(context);
+                  await _handleExport(asCsv: false);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.table_chart),
+                title: Text(l10n.exportDataCsv),
+                subtitle: const Text('Compatível com Excel e Google Sheets'),
+                onTap: () async {
+                  Navigator.pop(context);
+                  await _handleExport(asCsv: true);
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _handleExport({required bool asCsv}) async {
+    final l10n = AgroLocalizations.of(context)!;
+    final scaffold = ScaffoldMessenger.of(context);
+
+    try {
+      await DataExportService.instance.shareExport(asCsv: asCsv);
+      scaffold.showSnackBar(
+        SnackBar(content: Text(l10n.exportDataSuccess)),
+      );
+    } catch (e) {
+      scaffold.showSnackBar(
+        SnackBar(
+          content: Text('${l10n.exportDataError}: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  /// Show delete data confirmation dialog (CORE-36)
+  void _showDeleteDialog() {
+    final l10n = AgroLocalizations.of(context)!;
+    bool confirmed = false;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: Row(
+            children: [
+              Icon(Icons.warning_amber_rounded, color: Colors.red[700]),
+              const SizedBox(width: 8),
+              Expanded(child: Text(l10n.deleteDataTitle)),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                l10n.deleteDataWarning,
+                style: TextStyle(color: Colors.red[700]),
+              ),
+              const SizedBox(height: 16),
+              CheckboxListTile(
+                value: confirmed,
+                onChanged: (value) {
+                  setDialogState(() => confirmed = value ?? false);
+                },
+                title: Text(
+                  l10n.deleteDataConfirmCheckbox,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                controlAffinity: ListTileControlAffinity.leading,
+                contentPadding: EdgeInsets.zero,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(l10n.deleteDataCancel),
+            ),
+            ElevatedButton(
+              onPressed: confirmed
+                  ? () async {
+                      Navigator.pop(context);
+                      await _handleDeleteData();
+                    }
+                  : null,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                foregroundColor: Colors.white,
+              ),
+              child: Text(l10n.deleteDataConfirm),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _handleDeleteData() async {
+    final l10n = AgroLocalizations.of(context)!;
+    final navigator = Navigator.of(context);
+    final scaffold = ScaffoldMessenger.of(context);
+
+    // Show loading indicator
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const AlertDialog(
+        content: Row(
+          children: [
+            CircularProgressIndicator(),
+            SizedBox(width: 24),
+            Text('Excluindo dados...'),
+          ],
+        ),
+      ),
+    );
+
+    try {
+      final success = await DataDeletionService.instance.deleteAllUserData();
+
+      if (!mounted) return;
+      navigator.pop(); // Close loading dialog
+
+      if (success) {
+        scaffold.showSnackBar(
+          SnackBar(
+            content: Text(l10n.deleteDataSuccess),
+            backgroundColor: Colors.green,
+          ),
+        );
+        // Navigate to initial route (login)
+        navigator.pushNamedAndRemoveUntil('/', (route) => false);
+      } else {
+        scaffold.showSnackBar(
+          SnackBar(
+            content: Text(l10n.deleteDataError),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } on FirebaseAuthException catch (e) {
+      if (!mounted) return;
+      navigator.pop(); // Close loading dialog
+
+      if (e.code == 'requires-recent-login') {
+        scaffold.showSnackBar(
+          SnackBar(
+            content: Text(l10n.deleteDataReauthRequired),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      } else {
+        scaffold.showSnackBar(
+          SnackBar(
+            content: Text('${l10n.deleteDataError}: ${e.message}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      navigator.pop(); // Close loading dialog
+
+      scaffold.showSnackBar(
+        SnackBar(
+          content: Text('${l10n.deleteDataError}: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  /// Revoke all consents and sign out (CORE-35)
+  Future<void> _revokeAllAndSignOut() async {
+    final l10n = AgroLocalizations.of(context)!;
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.revokeAllTitle),
+        content: Text(l10n.revokeAllMessage),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(l10n.deleteDataCancel),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.orange,
+              foregroundColor: Colors.white,
+            ),
+            child: Text(l10n.revokeAllButton),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true && mounted) {
+      await AgroPrivacyStore.rejectAllConsents();
+      await FirebaseAuth.instance.signOut();
+
+      if (mounted) {
+        Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+      }
+    }
+  }
+
+  // ===========================================================
+
   /// Check if any consent is selected
-  bool get _hasAnyConsent => _shareAggregated || _receiveMetrics || _personalizedAds;
+  bool get _hasAnyConsent =>
+      _shareAggregated || _receiveMetrics || _personalizedAds;
 
   /// Returns dynamic button text based on user selection
   String _getPrimaryButtonText(BuildContext context) {
@@ -167,7 +417,8 @@ class _AgroPrivacyScreenState extends State<AgroPrivacyScreen> {
                     Text(
                       l10n.privacyConsentsDescription,
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                        color:
+                            theme.colorScheme.onSurface.withValues(alpha: 0.7),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -200,6 +451,73 @@ class _AgroPrivacyScreenState extends State<AgroPrivacyScreen> {
                         setState(() => _personalizedAds = value);
                         _saveConsent('consent_ads_personalization', value);
                       },
+                    ),
+
+                    // LGPD Data Rights Section
+                    const SizedBox(height: 32),
+                    const Divider(),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Seus Direitos (LGPD)',
+                      style: theme.textTheme.titleMedium,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Exerça seus direitos de portabilidade e eliminação de dados.',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color:
+                            theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    // Export data button
+                    Card(
+                      child: ListTile(
+                        leading: const Icon(Icons.download_outlined),
+                        title: Text(l10n.exportDataButton),
+                        subtitle:
+                            const Text('JSON ou CSV para uso em outros apps'),
+                        trailing: const Icon(Icons.chevron_right),
+                        onTap: _showExportSheet,
+                      ),
+                    ),
+                    // Delete data button
+                    Card(
+                      color: Colors.red[50],
+                      child: ListTile(
+                        leading: Icon(Icons.delete_forever_outlined,
+                            color: Colors.red[700]),
+                        title: Text(
+                          l10n.deleteDataButton,
+                          style: TextStyle(color: Colors.red[700]),
+                        ),
+                        subtitle: Text(
+                          'Remove dados do dispositivo e servidores',
+                          style: TextStyle(color: Colors.red[400]),
+                        ),
+                        trailing:
+                            Icon(Icons.chevron_right, color: Colors.red[700]),
+                        onTap: _showDeleteDialog,
+                      ),
+                    ),
+                    // Revoke all and sign out
+                    const SizedBox(height: 8),
+                    Card(
+                      color: Colors.orange[50],
+                      child: ListTile(
+                        leading: Icon(Icons.logout, color: Colors.orange[700]),
+                        title: Text(
+                          l10n.revokeAllButton,
+                          style: TextStyle(color: Colors.orange[700]),
+                        ),
+                        subtitle: Text(
+                          'Revoga consentimentos e encerra sessão',
+                          style: TextStyle(color: Colors.orange[400]),
+                        ),
+                        trailing: Icon(Icons.chevron_right,
+                            color: Colors.orange[700]),
+                        onTap: _revokeAllAndSignOut,
+                      ),
                     ),
                   ],
                 ),
@@ -245,8 +563,7 @@ class _AgroPrivacyScreenState extends State<AgroPrivacyScreen> {
                       decoration: TextDecoration.underline,
                       fontWeight: FontWeight.w500,
                     ),
-                    recognizer: TapGestureRecognizer()
-                      ..onTap = _showTermsOfUse,
+                    recognizer: TapGestureRecognizer()..onTap = _showTermsOfUse,
                   ),
                   const TextSpan(text: ' e '),
                   TextSpan(
@@ -296,13 +613,15 @@ class _ConsentSwitch extends StatelessWidget {
             fontWeight: FontWeight.w500,
           ),
         ),
-        subtitle: Padding(
-          padding: const EdgeInsets.only(top: 4.0),
-          child: Text(
-            subtitle,
-            style: theme.textTheme.bodySmall,
-          ),
-        ),
+        subtitle: subtitle.isEmpty
+            ? null
+            : Padding(
+                padding: const EdgeInsets.only(top: 4.0),
+                child: Text(
+                  subtitle,
+                  style: theme.textTheme.bodySmall,
+                ),
+              ),
         value: value,
         onChanged: onChanged,
         contentPadding: const EdgeInsets.symmetric(

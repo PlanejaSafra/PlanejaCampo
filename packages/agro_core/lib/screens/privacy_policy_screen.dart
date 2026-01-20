@@ -116,10 +116,24 @@ class PrivacyPolicyScreen extends StatelessWidget {
           _buildSection(
             context,
             '7. Consentimentos Opcionais',
-            'Solicitamos seu consentimento separado para:\n\n'
-                '• **Compartilhar dados agregados:** Métricas regionais anônimas para pesquisa agrícola\n'
-                '• **Receber estatísticas regionais:** Comparar seus dados com médias da região\n'
-                '• **Anúncios personalizados:** Exibir publicidade relevante\n\n'
+            'Solicitamos seu consentimento separado para três finalidades:\n\n'
+                '**7.1. Dados e Localização**\n'
+                'Ao aceitar, você autoriza o uso dos seus registros (chuvas, preços, etc.) e localização para:\n'
+                '• Gerar inteligência de mercado e relatórios comerciais\n'
+                '• Licenciamento de dados agregados para terceiros\n'
+                '• Análises preditivas para o setor agrícola\n'
+                '• Previsão do tempo personalizada para sua propriedade\n'
+                'Seus dados podem ser comercializados de forma agregada ou individual (sem nome/CPF) para empresas de qualquer setor.\n\n'
+                '**7.2. Ofertas e Promoções**\n'
+                'Ao aceitar, você pode receber comunicações de parceiros comerciais via:\n'
+                '• Notificações push, email, SMS ou WhatsApp\n'
+                '• Banners e conteúdo patrocinado no app\n'
+                'Os parceiros NÃO são curados pela PlanejaCampo e podem incluir qualquer setor (agro, finanças, varejo, entretenimento, etc.).\n\n'
+                '**7.3. Anúncios Personalizados**\n'
+                'Ao aceitar, seus dados de perfil e comportamento de uso são compartilhados com redes de anúncios (Google Ads, Meta, etc.) para:\n'
+                '• Exibir anúncios personalizados dentro e fora do app\n'
+                '• Criar audiências personalizadas (custom/lookalike audiences)\n'
+                '• Rastrear conversões e eficácia de campanhas\n\n'
                 'Você pode alterar esses consentimentos a qualquer momento em Configurações > Privacidade.',
           ),
 

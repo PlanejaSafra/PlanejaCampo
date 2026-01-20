@@ -200,62 +200,44 @@ abstract class AgroLocalizations {
   /// No description provided for @consentIntro.
   ///
   /// In en, this message translates to:
-  /// **'You can use the app in private mode (offline), or enable extra features based on community data.\n\nSelect what you authorize:'**
+  /// **'Authorize the use of data and optional features:'**
   String get consentIntro;
 
   /// No description provided for @consentOption1Title.
   ///
   /// In en, this message translates to:
-  /// **'Data Usage and Market Intelligence'**
+  /// **'Data and Location'**
   String get consentOption1Title;
 
   /// No description provided for @consentOption1Desc.
   ///
   /// In en, this message translates to:
-  /// **'I authorize the use of my records and location (GPS) to generate market intelligence, commercial reports, predictive analytics, and data licensing to third parties. This may include marketing, selling, or sharing with partners in any sector (agribusiness, finance, retail, digital entertainment, etc.).'**
+  /// **''**
   String get consentOption1Desc;
-
-  /// No description provided for @consentOption1LearnMore.
-  ///
-  /// In en, this message translates to:
-  /// **'📊 WHAT DOES THIS MEAN?\n\nYour rainfall, price, and other data can be:\n\n• Sold or licensed to companies (insurers, consultancies, traders)\n• Used to create commercial reports and market analyses\n• Shared with partners in ANY sector (not just agribusiness)\n• Analyzed individually (not just in aggregated form)\n\n✅ USAGE EXAMPLES:\n• Insurance company buys rainfall history to calculate climate risks\n• Agricultural consultancy pays for regional price data\n• Trading platform accesses your information for commodity analysis\n• Technology company uses your records to train AI models\n\n⚠️ IMPORTANT: By accepting, you authorize the COMMERCIALIZATION of your data. This may generate revenue for PlanejaCampo, but you will not receive direct payment.\n\n🔒 PRIVACY: Your data may include approximate location (region) but never name or ID number.\n\n❌ HOW TO REVOKE: Settings → Privacy → Uncheck this option'**
-  String get consentOption1LearnMore;
 
   /// No description provided for @consentOption2Title.
   ///
   /// In en, this message translates to:
-  /// **'Receive Offers and Opportunities'**
+  /// **'Offers and Promotions'**
   String get consentOption2Title;
 
   /// No description provided for @consentOption2Desc.
   ///
   /// In en, this message translates to:
-  /// **'I agree to receive commercial offers, promotions, sponsored content, and opportunities from partners in any sector (agribusiness, finance, digital entertainment, retail, etc.) via app notifications, email, SMS, or WhatsApp. I understand that partners are not selected or curated by PlanejaCampo.'**
+  /// **''**
   String get consentOption2Desc;
-
-  /// No description provided for @consentOption2LearnMore.
-  ///
-  /// In en, this message translates to:
-  /// **'📢 WHAT WILL YOU RECEIVE?\n\nBy accepting, you may receive messages from ANY type of commercial partner:\n\n• 🌾 Agribusiness: Fertilizers, seeds, machinery, agrochemicals\n• 💰 Finance: Rural credit, consortia, investments, legal settlements\n• 🎮 Entertainment: Games, online betting, streaming, social networks\n• 🛒 Retail: Stores, e-commerce, marketplaces\n• 📱 Technology: Apps, digital services, gadgets\n• 👕 Miscellaneous: Clothing, accessories, travel, etc.\n\n📬 COMMUNICATION CHANNELS:\n• Push notifications in the app\n• Email\n• SMS\n• WhatsApp\n• Banners and sponsored content within the app\n\n⚠️ IMPORTANT:\n• Partners are NOT selected or curated by PlanejaCampo\n• You may receive offers from controversial sectors (gambling, betting, etc.)\n• Ad platforms (Google, Meta, etc.) control the advertisements\n• PlanejaCampo is not responsible for the quality or legality of offers\n\n✅ HOW IT WORKS:\n• Partners pay to display offers to you\n• The more data you share, the more relevant the offers\n• You can opt-out at any time\n\n❌ HOW TO STOP RECEIVING: Settings → Privacy → Uncheck this option'**
-  String get consentOption2LearnMore;
 
   /// No description provided for @consentOption3Title.
   ///
   /// In en, this message translates to:
-  /// **'Personalized Advertising'**
+  /// **'Personalized Ads'**
   String get consentOption3Title;
 
   /// No description provided for @consentOption3Desc.
   ///
   /// In en, this message translates to:
-  /// **'I authorize the use of my profile data, usage behavior, and preferences to display personalized ads via third-party ad networks (Google Ads, Meta, etc.). I understand that my data may be shared with these networks for ad targeting and creation of custom audiences (lookalike audiences).'**
+  /// **''**
   String get consentOption3Desc;
-
-  /// No description provided for @consentOption3LearnMore.
-  ///
-  /// In en, this message translates to:
-  /// **'🎯 HOW DOES PERSONALIZED ADVERTISING WORK?\n\nBy accepting, you authorize:\n\n1️⃣ DATA COLLECTION:\n• Which pages you visit in the app\n• How much time you spend on each screen\n• Which features you use most\n• Your demographic profile (estimated age, region, interests)\n\n2️⃣ SHARING WITH AD NETWORKS:\n• Google Ads (AdMob, AdSense)\n• Meta (Facebook Ads, Instagram Ads)\n• Other digital advertising platforms\n\n3️⃣ WHAT AD NETWORKS DO WITH YOUR DATA:\n• Create a behavioral profile of you\n• Add you to \"custom audiences\"\n• Create \"lookalike audiences\" based on your profile\n• Track your conversions (if you click ads and buy products)\n\n🔍 PRACTICAL EXAMPLES:\n• You record rainfall → Receive ads for drought-resistant seeds\n• You use the app frequently → Receive premium version offers\n• Your profile is used to find other similar users\n• Your actions are tracked to measure campaign effectiveness\n\n⚠️ CONSEQUENCES:\n• Ads you see ANYWHERE (not just in the app) may be influenced\n• Your information may be cross-referenced with data from other sources (social media, browsing history)\n• Companies can create \"shadow profiles\" based on your behavior\n\n💰 WHY THIS EXISTS:\n• Personalized ads pay MUCH MORE than generic ads\n• This allows the app to be free and generate revenue\n• Without this, the app would need to be paid or have poor, invasive ads\n\n✅ BENEFIT TO YOU:\n• More relevant ads (less spam of things you don\'t want)\n• Quality free app\n• Personalized offers based on your profile\n\n❌ HOW TO DISABLE: Settings → Privacy → Uncheck this option\n\n⚠️ NOTE: Even when disabled, you will still see ads, but they will be generic (not personalized).'**
-  String get consentOption3LearnMore;
 
   /// No description provided for @consentSmallNoteUnderDecline.
   ///
@@ -482,37 +464,37 @@ abstract class AgroLocalizations {
   /// No description provided for @consentShareAggregated.
   ///
   /// In en, this message translates to:
-  /// **'Share aggregated data'**
+  /// **'Data and Location'**
   String get consentShareAggregated;
 
   /// No description provided for @consentShareAggregatedDesc.
   ///
   /// In en, this message translates to:
-  /// **'Allow your records to be used anonymously for regional statistics.'**
+  /// **''**
   String get consentShareAggregatedDesc;
 
   /// No description provided for @consentReceiveRegionalMetrics.
   ///
   /// In en, this message translates to:
-  /// **'Receive regional metrics'**
+  /// **'Offers and Promotions'**
   String get consentReceiveRegionalMetrics;
 
   /// No description provided for @consentReceiveRegionalMetricsDesc.
   ///
   /// In en, this message translates to:
-  /// **'Get insights based on aggregated community data.'**
+  /// **''**
   String get consentReceiveRegionalMetricsDesc;
 
   /// No description provided for @consentPersonalizedAds.
   ///
   /// In en, this message translates to:
-  /// **'Personalized ads'**
+  /// **'Personalized Ads'**
   String get consentPersonalizedAds;
 
   /// No description provided for @consentPersonalizedAdsDesc.
   ///
   /// In en, this message translates to:
-  /// **'See more relevant ads based on your usage.'**
+  /// **''**
   String get consentPersonalizedAdsDesc;
 
   /// No description provided for @privacySaved.
@@ -1234,6 +1216,120 @@ abstract class AgroLocalizations {
   /// In en, this message translates to:
   /// **'No field plot selected'**
   String get talhaoNoSelection;
+
+  /// No description provided for @deleteDataButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete my data'**
+  String get deleteDataButton;
+
+  /// No description provided for @deleteDataTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete all data?'**
+  String get deleteDataTitle;
+
+  /// No description provided for @deleteDataWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'This action is IRREVERSIBLE. All your rainfall records, properties, and settings will be permanently deleted from your device and our servers.'**
+  String get deleteDataWarning;
+
+  /// No description provided for @deleteDataConfirmCheckbox.
+  ///
+  /// In en, this message translates to:
+  /// **'I understand I will lose all my records'**
+  String get deleteDataConfirmCheckbox;
+
+  /// No description provided for @deleteDataCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get deleteDataCancel;
+
+  /// No description provided for @deleteDataConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Permanently'**
+  String get deleteDataConfirm;
+
+  /// No description provided for @deleteDataSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Your data has been deleted successfully.'**
+  String get deleteDataSuccess;
+
+  /// No description provided for @deleteDataError.
+  ///
+  /// In en, this message translates to:
+  /// **'Error deleting data. Please try again.'**
+  String get deleteDataError;
+
+  /// No description provided for @deleteDataReauthRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'For security, please sign in again before deleting.'**
+  String get deleteDataReauthRequired;
+
+  /// No description provided for @exportDataButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Export my data'**
+  String get exportDataButton;
+
+  /// No description provided for @exportDataTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Export data'**
+  String get exportDataTitle;
+
+  /// No description provided for @exportDataDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Download a copy of your data in a standard format to use in other services.'**
+  String get exportDataDescription;
+
+  /// No description provided for @exportDataJson.
+  ///
+  /// In en, this message translates to:
+  /// **'JSON (complete)'**
+  String get exportDataJson;
+
+  /// No description provided for @exportDataCsv.
+  ///
+  /// In en, this message translates to:
+  /// **'CSV (Excel/Spreadsheets)'**
+  String get exportDataCsv;
+
+  /// No description provided for @exportDataSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Data exported successfully!'**
+  String get exportDataSuccess;
+
+  /// No description provided for @exportDataError.
+  ///
+  /// In en, this message translates to:
+  /// **'Error exporting data.'**
+  String get exportDataError;
+
+  /// No description provided for @revokeAllButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Revoke All and Sign Out'**
+  String get revokeAllButton;
+
+  /// No description provided for @revokeAllTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Revoke all consents?'**
+  String get revokeAllTitle;
+
+  /// No description provided for @revokeAllMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This will remove all your consents and end your session. Your local data will be kept.'**
+  String get revokeAllMessage;
 }
 
 class _AgroLocalizationsDelegate extends LocalizationsDelegate<AgroLocalizations> {

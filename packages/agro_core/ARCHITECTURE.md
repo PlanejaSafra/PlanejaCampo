@@ -83,3 +83,12 @@ Sistema de backup centralizado.
 *   **`CloudBackupService`**: Serviço Singleton que orquestra o backup.
 *   **`BackupProvider`**: Interface que cada App deve implementar para fornecer seus dados específicos (ex: `ChuvaBackupProvider`).
 *   **Fluxo**: Gera um JSON unificado contendo dados do `agro_core` (Propriedades/Talhões) + dados dos Apps e envia para `users/{uid}/backup.json` no Firebase Storage.
+
+### 12. LGPD Compliance (`lib/services/data_deletion_service.dart`, `data_export_service.dart`)
+
+Implementa direitos do titular de dados conforme LGPD.
+
+*   **`DataDeletionService`**: Serviço para exclusão total de dados (Art. 18 VI). Deleta Firestore, Firebase Auth e boxes Hive locais.
+*   **`DataExportService`**: Serviço para portabilidade de dados (Art. 18 V). Exporta em JSON (completo) ou CSV (planilhas) e integra com Share Sheet nativo.
+*   **UI em `AgroPrivacyScreen`**: Seção "Seus Direitos (LGPD)" com botões para exportar, excluir dados e revogar consentimentos.
+

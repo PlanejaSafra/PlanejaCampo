@@ -58,34 +58,25 @@ class AgroLocalizationsPt extends AgroLocalizations {
   String get consentTitle => 'Recursos e compartilhamento (opcional)';
 
   @override
-  String get consentIntro => 'Você pode usar o app em modo privado (offline), ou ativar recursos extras baseados em dados da comunidade.\n\nMarque o que você autoriza:';
+  String get consentIntro => 'Autorize o uso de dados e recursos opcionais:';
 
   @override
-  String get consentOption1Title => 'Uso de Dados e Inteligência de Mercado';
+  String get consentOption1Title => 'Dados e Localização';
 
   @override
-  String get consentOption1Desc => 'Autorizo o uso dos meus registros e localização (GPS) para gerar inteligência de mercado, relatórios comerciais, análises preditivas e licenciamento de dados para terceiros. Isso pode incluir comercialização, venda ou compartilhamento com parceiros em qualquer setor (agronegócio, finanças, varejo, entretenimento digital, etc.).';
+  String get consentOption1Desc => '';
 
   @override
-  String get consentOption1LearnMore => '📊 O QUE ISSO SIGNIFICA?\n\nSeus dados de chuva, preços e outras informações podem ser:\n\n• Vendidos ou licenciados para empresas (seguradoras, consultorias, traders)\n• Usados para criar relatórios comerciais e análises de mercado\n• Compartilhados com parceiros em QUALQUER setor (não apenas agronegócio)\n• Analisados individualmente (não apenas de forma agregada)\n\n✅ EXEMPLOS DE USO:\n• Seguradora compra histórico de chuvas para calcular riscos climáticos\n• Consultoria agrícola paga por dados de preços regionais\n• Plataforma de trading acessa suas informações para análise de commodities\n• Empresa de tecnologia usa seus registros para treinar modelos de IA\n\n⚠️ IMPORTANTE: Ao aceitar, você autoriza a COMERCIALIZAÇÃO dos seus dados. Isso pode gerar receita para a PlanejaCampo, mas você não receberá pagamento direto.\n\n🔒 PRIVACIDADE: Seus dados podem incluir localização aproximada (região) mas nunca nome ou CPF.\n\n❌ COMO REVOGAR: Configurações → Privacidade → Desmarcar esta opção';
+  String get consentOption2Title => 'Ofertas e Promoções';
 
   @override
-  String get consentOption2Title => 'Receber Ofertas e Oportunidades';
+  String get consentOption2Desc => '';
 
   @override
-  String get consentOption2Desc => 'Aceito receber ofertas comerciais, promoções, conteúdo patrocinado e oportunidades de parceiros em qualquer setor (agronegócio, financeiro, entretenimento digital, varejo, etc.) via notificações no app, email, SMS ou WhatsApp. Compreendo que os parceiros não são selecionados ou curados pela PlanejaCampo.';
+  String get consentOption3Title => 'Anúncios Personalizados';
 
   @override
-  String get consentOption2LearnMore => '📢 O QUE VOCÊ VAI RECEBER?\n\nAo aceitar, você pode receber mensagens de QUALQUER tipo de parceiro comercial:\n\n• 🌾 Agronegócio: Fertilizantes, sementes, maquinário, agroquímicos\n• 💰 Finanças: Crédito rural, consórcios, investimentos, precatórios\n• 🎮 Entretenimento: Jogos, apostas online, streaming, redes sociais\n• 🛒 Varejo: Lojas, e-commerce, marketplaces\n• 📱 Tecnologia: Apps, serviços digitais, gadgets\n• 👕 Diversos: Roupas, acessórios, viagens, etc.\n\n📬 CANAIS DE COMUNICAÇÃO:\n• Notificações push no app\n• E-mail\n• SMS\n• WhatsApp\n• Banners e conteúdo patrocinado dentro do app\n\n⚠️ IMPORTANTE:\n• Os parceiros NÃO são selecionados ou curados pela PlanejaCampo\n• Você pode receber ofertas de setores polêmicos (jogos de azar, apostas, etc.)\n• Quem controla os anúncios é a plataforma de ads (Google, Meta, etc.)\n• A PlanejaCampo não se responsabiliza pela qualidade ou legalidade das ofertas\n\n✅ COMO FUNCIONA:\n• Parceiros pagam para exibir ofertas para você\n• Quanto mais dados você compartilhar, mais relevantes serão as ofertas\n• Você pode optar por sair (opt-out) a qualquer momento\n\n❌ COMO PARAR DE RECEBER: Configurações → Privacidade → Desmarcar esta opção';
-
-  @override
-  String get consentOption3Title => 'Publicidade Personalizada';
-
-  @override
-  String get consentOption3Desc => 'Autorizo o uso de dados do meu perfil, comportamento de uso e preferências para exibir anúncios personalizados via redes de anúncios terceiras (Google Ads, Meta, etc.). Compreendo que meus dados podem ser compartilhados com essas redes para segmentação publicitária e geração de audiências personalizadas (lookalike audiences).';
-
-  @override
-  String get consentOption3LearnMore => '🎯 COMO FUNCIONA A PUBLICIDADE PERSONALIZADA?\n\nAo aceitar, você autoriza:\n\n1️⃣ COLETA DE DADOS:\n• Que páginas você visita no app\n• Quanto tempo passa em cada tela\n• Quais funcionalidades você mais usa\n• Seu perfil demográfico (idade estimada, região, interesses)\n\n2️⃣ COMPARTILHAMENTO COM REDES DE ANÚNCIOS:\n• Google Ads (AdMob, AdSense)\n• Meta (Facebook Ads, Instagram Ads)\n• Outras plataformas de publicidade digital\n\n3️⃣ O QUE AS REDES FAZEM COM SEUS DADOS:\n• Criam um perfil comportamental seu\n• Te adicionam a \"audiências personalizadas\" (custom audiences)\n• Criam \"audiências semelhantes\" (lookalike) com base no seu perfil\n• Rastreiam suas conversões (se você clica em anúncios e compra produtos)\n\n🔍 EXEMPLOS PRÁTICOS:\n• Você registra chuvas → Recebe anúncios de sementes resistentes à seca\n• Você usa muito o app → Recebe ofertas de versão premium\n• Seu perfil é usado para encontrar outros usuários parecidos com você\n• Suas ações são rastreadas para medir eficácia de campanhas publicitárias\n\n⚠️ CONSEQUÊNCIAS:\n• Anúncios que você vê EM QUALQUER LUGAR (não só no app) podem ser influenciados\n• Suas informações podem ser cruzadas com dados de outras fontes (redes sociais, histórico de navegação)\n• Empresas podem criar \"shadow profiles\" (perfis invisíveis) baseados no seu comportamento\n\n💰 POR QUE ISSO EXISTE:\n• Anúncios personalizados pagam MUITO MAIS do que anúncios genéricos\n• Isso permite que o app seja gratuito e gere receita\n• Sem isso, o app precisaria ser pago ou ter anúncios ruins e invasivos\n\n✅ BENEFÍCIO PARA VOCÊ:\n• Anúncios mais relevantes (menos spam de coisas que você não quer)\n• App gratuito de qualidade\n• Ofertas personalizadas baseadas no seu perfil\n\n❌ COMO DESATIVAR: Configurações → Privacidade → Desmarcar esta opção\n\n⚠️ NOTA: Mesmo desativando, você ainda verá anúncios, mas serão genéricos (não personalizados).';
+  String get consentOption3Desc => '';
 
   @override
   String get consentSmallNoteUnderDecline => 'Sem aceitar, você pode usar o app normalmente no modo privado (funções básicas offline).';
@@ -199,22 +190,22 @@ class AgroLocalizationsPt extends AgroLocalizations {
   String get privacyConsentsDescription => 'Gerencie como seus dados podem ser usados. Todas as opções são opcionais.';
 
   @override
-  String get consentShareAggregated => 'Compartilhar dados agregados';
+  String get consentShareAggregated => 'Dados e Localização';
 
   @override
-  String get consentShareAggregatedDesc => 'Permitir que seus registros sejam usados anonimamente para estatísticas regionais.';
+  String get consentShareAggregatedDesc => '';
 
   @override
-  String get consentReceiveRegionalMetrics => 'Receber métricas regionais';
+  String get consentReceiveRegionalMetrics => 'Ofertas e Promoções';
 
   @override
-  String get consentReceiveRegionalMetricsDesc => 'Receber insights baseados em dados agregados da comunidade.';
+  String get consentReceiveRegionalMetricsDesc => '';
 
   @override
-  String get consentPersonalizedAds => 'Anúncios personalizados';
+  String get consentPersonalizedAds => 'Anúncios Personalizados';
 
   @override
-  String get consentPersonalizedAdsDesc => 'Ver anúncios mais relevantes com base no seu uso.';
+  String get consentPersonalizedAdsDesc => '';
 
   @override
   String get privacySaved => 'Preferências salvas';
@@ -593,4 +584,61 @@ class AgroLocalizationsPt extends AgroLocalizations {
 
   @override
   String get talhaoNoSelection => 'Nenhum talhão selecionado';
+
+  @override
+  String get deleteDataButton => 'Excluir meus dados';
+
+  @override
+  String get deleteDataTitle => 'Excluir todos os dados?';
+
+  @override
+  String get deleteDataWarning => 'Esta ação é IRREVERSÍVEL. Todos os seus registros de chuva, propriedades e configurações serão permanentemente excluídos do seu dispositivo e dos nossos servidores.';
+
+  @override
+  String get deleteDataConfirmCheckbox => 'Entendo que perderei todos os meus registros';
+
+  @override
+  String get deleteDataCancel => 'Cancelar';
+
+  @override
+  String get deleteDataConfirm => 'Excluir Permanentemente';
+
+  @override
+  String get deleteDataSuccess => 'Seus dados foram excluídos com sucesso.';
+
+  @override
+  String get deleteDataError => 'Erro ao excluir dados. Tente novamente.';
+
+  @override
+  String get deleteDataReauthRequired => 'Por segurança, faça login novamente antes de excluir.';
+
+  @override
+  String get exportDataButton => 'Exportar meus dados';
+
+  @override
+  String get exportDataTitle => 'Exportar dados';
+
+  @override
+  String get exportDataDescription => 'Baixe uma cópia dos seus dados em formato padrão para usar em outros serviços.';
+
+  @override
+  String get exportDataJson => 'JSON (completo)';
+
+  @override
+  String get exportDataCsv => 'CSV (Excel/Planilhas)';
+
+  @override
+  String get exportDataSuccess => 'Dados exportados com sucesso!';
+
+  @override
+  String get exportDataError => 'Erro ao exportar dados.';
+
+  @override
+  String get revokeAllButton => 'Revogar Tudo e Sair';
+
+  @override
+  String get revokeAllTitle => 'Revogar todos os consentimentos?';
+
+  @override
+  String get revokeAllMessage => 'Isso removerá todos os seus consentimentos e encerrará a sessão. Seus dados locais serão mantidos.';
 }

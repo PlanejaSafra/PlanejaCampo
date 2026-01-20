@@ -281,41 +281,19 @@ class _WeatherCardState extends State<WeatherCard> {
   Future<void> _showUpdateLocationDialog() async {
     // 1. Check if "Aggregate Metrics" (which includes Location) is consented
     if (!AgroPrivacyStore.consentAggregateMetrics) {
-      final shouldReview = await showDialog<bool>(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Permissão Necessária'),
-          content: const Text(
-            'Para ativar a previsão do tempo automática, você precisa aceitar os Termos de Coleta de Métricas e Localização.\n\nDeseja revisar os termos agora?',
+      // Go directly to ConsentScreen (no intermediate dialog)
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ConsentScreen(
+            onCompleted: () => Navigator.pop(context),
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context, false),
-              child: const Text('Cancelar'),
-            ),
-            FilledButton(
-              onPressed: () => Navigator.pop(context, true),
-              child: const Text('Revisar Termos'),
-            ),
-          ],
         ),
       );
 
-      if (shouldReview == true && mounted) {
-        // Navigate to ConsentScreen
-        await Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ConsentScreen(
-              onCompleted: () => Navigator.pop(context),
-            ),
-          ),
-        );
-
-        // Upon return, check again. If accepted, proceed automatically.
-        if (AgroPrivacyStore.consentAggregateMetrics && mounted) {
-          _askAreYouHere();
-        }
+      // Upon return, check again. If accepted, proceed automatically.
+      if (AgroPrivacyStore.consentAggregateMetrics && mounted) {
+        _askAreYouHere();
       }
       return;
     }

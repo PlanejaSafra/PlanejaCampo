@@ -21,7 +21,7 @@ Biblioteca central de componentes, serviços e modelos reutilizáveis para a su�
 *   **Autenticação Centralizada**: Telas de Login com suporte a Google Sign-In e Login Anônimo, incluindo migração de contas.
 *   **Gestão de Propriedades e Talhões**: Modelos e Serviços (CRUD) para gerenciar a estrutura básica do produtor rural (via Hive).
 *   **Backup na Nuvem**: Sistema unificado de backup e restauração via Firebase Storage.
-*   **Privacidade e LGPD**: Fluxo de consentimento, termos de uso e política de privacidade.
+*   **Privacidade e LGPD**: Fluxo de consentimento, termos de uso, política de privacidade, **portabilidade de dados (Art. 18 V)** e **exclusão de dados (Art. 18 VI)**.
 *   **Componentes UI**: Drawer de navegação, Cards, Botões, Seletores e Gráficos padronizados.
 *   **Internacionalização (i18n)**: Suporte nativo a múltiplos idiomas (PT-BR, EN).
 *   **Integrações**: Previsão do tempo (Open-Meteo), Seleção de Localização (OpenStreetMap).

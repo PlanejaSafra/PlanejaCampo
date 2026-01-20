@@ -67,12 +67,57 @@ PlanejaSafra\
 
 ## 10) CHANGELOG.md (mandatory in each project)
 
-Each project (`packages/agro_core` and each app in `apps/*`) must have a `CHANGELOG.md` following this pattern:
+Each project (`packages/agro_core` and each app in `apps/*`) must have its own `CHANGELOG.md`.
+
+### Monorepo CHANGELOG Structure
+
+```
+PlanejaSafra/
+├── packages/
+│   └── agro_core/
+│       └── CHANGELOG.md    ← Core changes (services, widgets, privacy, l10n)
+│
+└── apps/
+    ├── planejachuva/
+    │   └── CHANGELOG.md    ← App-specific changes (rainfall screens, reports)
+    │
+    ├── planeja_diesel/
+    │   └── CHANGELOG.md    ← App-specific changes (fuel screens, consumption)
+    │
+    └── ...
+```
+
+### What Goes Where
+
+| CHANGELOG | Content |
+|-----------|---------|
+| `agro_core` | Services, widgets, privacy screens, l10n strings, shared models, core infrastructure |
+| `apps/<app>` | App-specific screens, logic, providers, main.dart integrations |
+
+### Phase Naming Convention
+
+Each project uses a **prefix** to identify phases:
+
+| Project | Prefix | Example |
+|---------|--------|---------|
+| `agro_core` | `CORE-` | `CORE-33`, `CORE-36` |
+| `planejachuva` | `CHUVA-` | `CHUVA-32`, `CHUVA-19` |
+| `planeja_diesel` | `DIESEL-` | `DIESEL-01` |
+| `planeja_borracha` | `BORRACHA-` | `BORRACHA-01` |
+| `planeja_vaca` | `VACA-` | `VACA-01` |
+
+### Cross-Reference Example
+
+When a feature spans both core and app:
+
+**Phase CORE-33 (Cloud Backup)**:
+- `agro_core/CHANGELOG.md`: CloudBackupService, BackupProvider interface, UI in AgroSettingsScreen
+- `planejachuva/CHANGELOG.md`: CHUVA-33 - ChuvaBackupProvider implementation, registration in main.dart
 
 ### Phase Structure
 
 ```markdown
-## Phase X.Y: Phase Name
+## Phase PREFIX-X.Y: Phase Name
 
 ### Status: [TODO] | [DOING] | [DONE]
 **Date Completed**: YYYY-MM-DD (when DONE)
@@ -99,3 +144,4 @@ Each project (`packages/agro_core` and each app in `apps/*`) must have a `CHANGE
 * **No empty phases**: Only create phase when starting work
 * **Granularity**: Sub-phases (X.Y.1, X.Y.2) for large tasks
 * **Files modified**: Always list with action (CREATE/MODIFY/DELETE)
+* **Cross-reference**: When a phase affects multiple projects, document in both CHANGELOGs with cross-reference

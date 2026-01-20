@@ -1,19 +1,11 @@
 # CHANGELOG - planeja_chuva
 
+> **Note**: Core infrastructure phases (33-37) are documented in `packages/agro_core/CHANGELOG.md`.
+> This file contains only app-specific changes for PlanejaChuva.
+
 ---
----
 
-## Phase 34: Data Migration & UI Polish
-### Status: [PLANNED]
-**Priority**: 🟡 IMPORTANTE
-**Objective**: Fix anonymous -> Google migration (link credentials) and declutter UI.
-
-## Phase 33: Cloud Backup & Core Refactoring
-### Status: [PLANNED]
-**Priority**: 🟢 ENHANCEMENT
-**Objective**: Implement "One-Click Cloud Backup" logic in `agro_core` using Firebase Storage.
-
-## Phase 32: Detailed Weather Forecast
+## Phase CHUVA-32: Detailed Weather Forecast
 ### Status: [DONE]
 **Date Completed**: 2026-01-20
 **Priority**: 🟢 ENHANCEMENT
@@ -32,7 +24,7 @@
 
 ---
 
-## Phase 31: Native Map Picker (WhatsApp Style)
+## Phase CHUVA-31: Native Map Picker (WhatsApp Style)
 ### Status: [DONE]
 **Date Completed**: 2026-01-19
 **Priority**: 🟢 ENHANCEMENT
@@ -50,7 +42,7 @@
 
 ---
 
-## Phase 30: UI Refinements & Bug Fixes
+## Phase CHUVA-30: UI Refinements & Bug Fixes
 ### Status: [DONE]
 **Date Completed**: 2026-01-19
 **Priority**: 🔴 BUGFIX
@@ -66,7 +58,7 @@
 - `apps/planejachuva/android/app/src/main/AndroidManifest.xml`
 - `packages/agro_core/lib/screens/property_form_screen.dart`
 
-## Phase 28: Advanced Location Setup (Manual Fallback)
+## Phase CHUVA-28: Advanced Location Setup (Manual Fallback)
 ### Status: [DONE]
 **Date Completed**: 2026-01-19
 **Priority**: 🟡 IMPORTANTE
@@ -81,7 +73,7 @@
 
 ---
 
-## Phase 27: Quick Location Setup & Refined UX
+## Phase CHUVA-27: Quick Location Setup & Refined UX
 ### Status: [DONE]
 **Date Completed**: 2026-01-19
 **Priority**: 🟢 ENHANCEMENT
@@ -99,7 +91,7 @@
 
 ---
 
-## Phase 22.0: Weather Forecast (Offline-First)
+## Phase CHUVA-22.0: Weather Forecast (Offline-First)
 ### Status: [DONE]
 **Date Completed**: 2026-01-19
 **Priority**: 🟢 ENHANCEMENT
@@ -133,7 +125,7 @@
 
 ---
 
-## Phase 21.0: Intelligent Refinements
+## Phase CHUVA-21.0: Intelligent Refinements
 ### Status: [DONE]
 **Date Completed**: 2026-01-19
 **Priority**: 🟡 IMPORTANTE
@@ -167,7 +159,7 @@
 
 ---
 
-## Phase 20.0: Location Consent & Auto-Save
+## Phase CHUVA-20.0: Location Consent & Auto-Save
 ### Status: [DONE]
 **Date Completed**: 2026-01-19
 **Priority**: 🔴 CRITICAL
@@ -202,7 +194,7 @@
 
 ---
 
-## Phase 19.0: Talhões (Field Plots/Subdivisions)
+## Phase CHUVA-19.0: Talhões (Field Plots/Subdivisions)
 
 ### Status: [DONE]
 **Date Completed**: 2026-01-19
@@ -489,7 +481,7 @@ class RegistroChuva extends HiveObject {
 
 ---
 
-## Phase 18.0: Google Sign-In (Official Button + Branding Compliance)
+## Phase CHUVA-18.0: Google Sign-In (Official Button + Branding Compliance)
 
 ### Status: [DONE]
 **Date Completed**: 2026-01-18
@@ -611,7 +603,7 @@ LoginScreen(
 
 ---
 
-## Phase 16.0: Property Management Integration
+## Phase CHUVA-16.0: Property Management Integration
 
 ### Status: [DONE]
 **Date Completed**: 2026-01-18
@@ -743,7 +735,7 @@ LoginScreen(
 
 ## ⚠️ RISCOS TÉCNICOS E CONSIDERAÇÕES
 
-### Phase 15.0 (Firestore) - Impacto no APK
+### Phase CHUVA-15.0 (Firestore) - Impacto no APK
 
 **Problema**: Adicionar `cloud_firestore` aumenta significativamente o tamanho do APK (+8-15MB) e tempo de build.
 
@@ -752,7 +744,7 @@ LoginScreen(
 - ✅ Lazy loading - só carregar Firestore se usuário ativar opt-in
 - ✅ Considerar alternativas mais leves (HTTP + backend simples)
 
-### Phase 15.0 (Cloud Functions) - Custos e Complexidade
+### Phase CHUVA-15.0 (Cloud Functions) - Custos e Complexidade
 
 **Problema**: Cloud Functions exigem:
 - JavaScript/TypeScript (sair do ecossistema Dart)
@@ -794,7 +786,7 @@ LoginScreen(
 3. WorkManager Schedule (12h) - INCERTO (30-50% chance)
 ```
 
-### Phase 9.0 (Alto Contraste) - Simplificação
+### Phase CHUVA-9.0 (Alto Contraste) - Simplificação
 
 **Revisão da Abordagem**:
 - ❌ **Não criar**: Tema totalmente novo (duplicação)
@@ -807,7 +799,7 @@ LoginScreen(
 // Usar verde escuro (#2E7D32) com texto branco
 ```
 
-### Phase 15.0 (GeoHash) - Precisão vs Privacidade
+### Phase CHUVA-15.0 (GeoHash) - Precisão vs Privacidade
 
 **Implementação Recomendada**:
 - ✅ Usar biblioteca `dart_geohash` (nativa Flutter)
@@ -821,7 +813,7 @@ LoginScreen(
 // Retorna área de ~25km²
 ```
 
-### Phase 10.0 (Validação) - Outliers e Mediana
+### Phase CHUVA-10.0 (Validação) - Outliers e Mediana
 
 **Problema**: Usuário malicioso/erro de digitação registra 5000mm de chuva.
 
@@ -908,7 +900,7 @@ final mean = calculateMean(values); // = 1009mm (distorcido)
 
 ---
 
-## Phase 15.5: Identidade Anônima e Auditoria de Consentimentos
+## Phase CHUVA-15.5: Identidade Anônima e Auditoria de Consentimentos
 
 ### Status: [DONE]
 **Date Completed**: 2026-01-18
@@ -1264,7 +1256,7 @@ flutter pub deps | grep firebase_core
 
 ---
 
-## Phase 15.0: Estatísticas Regionais (Firestore + Crowdsourcing)
+## Phase CHUVA-15.0: Estatísticas Regionais (Firestore + Crowdsourcing)
 
 ### Status: [DONE]
 **Date Completed**: 2026-01-18
@@ -1582,7 +1574,7 @@ int _calculateAreaSize(int precision) {
 
 ---
 
-## Phase 14.0: Previsão do Tempo (Open-Meteo + Cache)
+## Phase CHUVA-14.0: Previsão do Tempo (Open-Meteo + Cache)
 
 ### Status: [DONE]
 **Date Completed**: 2026-01-18
@@ -1676,7 +1668,7 @@ int _calculateAreaSize(int precision) {
 
 ---
 
-## Phase 13.0: Visualizações Simples de Tendências
+## Phase CHUVA-13.0: Visualizações Simples de Tendências
 
 ### Status: [DONE]
 **Date Completed**: 2026-01-18
@@ -1724,7 +1716,7 @@ Produtor precisa ver "está chovendo mais ou menos que o normal?" de forma visua
 
 ---
 
-## Phase 12.0: Exportação Avançada (PDF/CSV)
+## Phase CHUVA-12.0: Exportação Avançada (PDF/CSV)
 
 ### Status: [DONE]
 **Date Completed**: 2026-01-18
@@ -1768,7 +1760,7 @@ Produtor pode precisar levar dados para banco (financiamento), seguradora (sinis
 
 ---
 
-## Phase 11.0: Notificações Locais (Lembretes)
+## Phase CHUVA-11.0: Notificações Locais (Lembretes)
 **Date Completed**: 2026-01-18
 
 ### Status: [DONE]
@@ -1803,7 +1795,7 @@ Produtor pode esquecer de registrar no dia. Lembrete às 18h aumenta adesão.
 
 ---
 
-## Phase 10.0: Validação Inteligente e Alertas
+## Phase CHUVA-10.0: Validação Inteligente e Alertas
 **Date Completed**: 2026-01-18
 
 ### Status: [DONE]
@@ -1840,7 +1832,7 @@ Produtor pode digitar 100mm em vez de 10mm (erro de zero). App deve alertar quan
 
 ---
 
-## Phase 9.0: Melhorias de UX e Acessibilidade
+## Phase CHUVA-9.0: Melhorias de UX e Acessibilidade
 
 ### Status: [DONE]
 **Date Completed**: 2026-01-18
@@ -1872,7 +1864,7 @@ Produtor pode digitar 100mm em vez de 10mm (erro de zero). App deve alertar quan
 
 ---
 
-## Phase 8.0: Persistência de Preferências do Usuário
+## Phase CHUVA-8.0: Persistência de Preferências do Usuário
 
 ### Status: [DONE]
 **Date Completed**: 2026-01-18
@@ -1913,7 +1905,7 @@ Atualmente, a escolha de idioma não persiste (Phase 7.0 foi implementada sem pe
 
 ---
 
-## Phase 7.0: Seleção Manual de Idioma
+## Phase CHUVA-7.0: Seleção Manual de Idioma
 
 ### Status: [DONE]
 **Date Completed**: 2026-01-17
@@ -1944,7 +1936,7 @@ Language choice is NOT persisted - app always starts in Auto mode (follows syste
 
 ---
 
-## Phase 7.1: Padronização de Labels Android (Monorepo-Wide)
+## Phase CHUVA-7.1: Padronização de Labels Android (Monorepo-Wide)
 
 ### Status: [DONE]
 **Date Completed**: 2026-01-18
@@ -2001,7 +1993,7 @@ Criar arquivos `strings.xml` para cada app em `android/app/src/main/res/values/`
 
 ---
 
-## Phase 6.2: Configuração de Ambientes (Flavors)
+## Phase CHUVA-6.2: Configuração de Ambientes (Flavors)
 
 ### Status: [DONE]
 **Date Completed**: 2026-01-17
@@ -2027,7 +2019,7 @@ Criar arquivos `strings.xml` para cada app em `android/app/src/main/res/values/`
 
 ---
 
-## Phase 6.1: Configuração Google Services
+## Phase CHUVA-6.1: Configuração Google Services
 
 ### Status: [DONE]
 **Date Completed**: 2026-01-17
@@ -2052,7 +2044,7 @@ Criar arquivos `strings.xml` para cada app em `android/app/src/main/res/values/`
 
 ---
 
-## Phase 6.0: Backup e Compartilhamento
+## Phase CHUVA-6.0: Backup e Compartilhamento
 
 ### Status: [DONE]
 **Date Completed**: 2026-01-17
@@ -2081,7 +2073,7 @@ Criar arquivos `strings.xml` para cada app em `android/app/src/main/res/values/`
 
 ---
 
-## Phase 5.0: Resumos e Estatísticas Simples
+## Phase CHUVA-5.0: Resumos e Estatísticas Simples
 
 ### Status: [DONE]
 **Date Completed**: 2026-01-17
@@ -2108,7 +2100,7 @@ Criar arquivos `strings.xml` para cada app em `android/app/src/main/res/values/`
 
 ---
 
-## Phase 4.0: Edição e Exclusão de Registros
+## Phase CHUVA-4.0: Edição e Exclusão de Registros
 
 ### Status: [DONE]
 **Date Completed**: 2026-01-17
@@ -2133,7 +2125,7 @@ Criar arquivos `strings.xml` para cada app em `android/app/src/main/res/values/`
 
 ---
 
-## Phase 3.0: Registro de Nova Chuva
+## Phase CHUVA-3.0: Registro de Nova Chuva
 
 ### Status: [DONE]
 **Date Completed**: 2026-01-17
@@ -2161,7 +2153,7 @@ Criar arquivos `strings.xml` para cada app em `android/app/src/main/res/values/`
 
 ---
 
-## Phase 2.5: Lista de Registros de Chuva
+## Phase CHUVA-2.5: Lista de Registros de Chuva
 
 ### Status: [DONE]
 **Date Completed**: 2026-01-17
@@ -2189,7 +2181,7 @@ Criar arquivos `strings.xml` para cada app em `android/app/src/main/res/values/`
 
 ---
 
-## Phase 2.4: Modelo de Dados e Persistência
+## Phase CHUVA-2.4: Modelo de Dados e Persistência
 
 ### Status: [DONE]
 **Date Completed**: 2026-01-17
@@ -2226,7 +2218,7 @@ Criar arquivos `strings.xml` para cada app em `android/app/src/main/res/values/`
 
 ---
 
-## Phase 2.3: Localização (l10n) do App
+## Phase CHUVA-2.3: Localização (l10n) do App
 
 ### Status: [DONE]
 **Date Completed**: 2026-01-17
@@ -2253,7 +2245,7 @@ All l10n strings are centralized in agro_core following the DRY principle. The a
 
 ---
 
-## Phase 2.0: Standard Menu Integration
+## Phase CHUVA-2.0: Standard Menu Integration
 
 ### Status: [DONE]
 **Date Completed**: 2026-01-17
@@ -2277,7 +2269,7 @@ All l10n strings are centralized in agro_core following the DRY principle. The a
 
 ---
 
-## Phase 1.0: Privacy Onboarding Integration
+## Phase CHUVA-1.0: Privacy Onboarding Integration
 
 ### Status: [DONE]
 **Date Completed**: 2026-01-17

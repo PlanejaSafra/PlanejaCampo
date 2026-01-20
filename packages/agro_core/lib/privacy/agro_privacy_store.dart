@@ -39,8 +39,8 @@ class AgroPrivacyStore {
 
   /// Check if onboarding flow has been completed.
   static bool isOnboardingCompleted() {
-    return _safeBox.get(AgroPrivacyKeys.onboardingCompleted, defaultValue: false)
-        as bool;
+    return _safeBox.get(AgroPrivacyKeys.onboardingCompleted,
+        defaultValue: false) as bool;
   }
 
   /// Set onboarding as completed.
@@ -71,6 +71,22 @@ class AgroPrivacyStore {
       defaultValue: false,
     ) as bool;
   }
+
+  // ========== CORE-35: Getters Granulares ==========
+
+  /// Check if app can collect analytics (requires aggregateMetrics consent).
+  static bool get canCollectAnalytics => consentAggregateMetrics;
+
+  /// Check if app can use location for weather/stats (requires aggregateMetrics consent).
+  static bool get canUseLocation => consentAggregateMetrics;
+
+  /// Check if app can show personalized ads (requires adsPersonalization consent).
+  static bool get canShowPersonalizedAds => consentAdsPersonalization;
+
+  /// Check if app can share data with partners (requires sharePartners consent).
+  static bool get canShareWithPartners => consentSharePartners;
+
+  // =================================================
 
   /// Accept all consents and save timestamp.
   static Future<void> acceptAllConsents() async {
