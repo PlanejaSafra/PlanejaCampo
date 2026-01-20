@@ -17,7 +17,8 @@ class NotificationService {
   static Future<void> init() async {
     tz.initializeTimeZones();
 
-    const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const androidSettings =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
     const iosSettings = DarwinInitializationSettings(
       requestAlertPermission: true,
       requestBadgePermission: true,
@@ -55,6 +56,7 @@ class NotificationService {
   static Future<void> scheduleDailyReminder({
     required String time, // Format: "HH:mm" (e.g., "18:00")
     required String locale,
+    DateTime? startDate, // Optional start date (default: today)
   }) async {
     // Cancel existing reminder first
     await cancelDailyReminder();
@@ -66,25 +68,37 @@ class NotificationService {
 
     // Create scheduled time
     final now = DateTime.now();
+    final baseDate = startDate ?? now;
+
     var scheduledDate = DateTime(
-      now.year,
-      now.month,
-      now.day,
+      baseDate.year,
+      baseDate.month,
+      baseDate.day,
       hour,
       minute,
     );
 
-    // If the time has already passed today, schedule for tomorrow
-    if (scheduledDate.isBefore(now)) {
+    // If the time has already passed today (only if startDate wasn't explicitly set to future),
+    // schedule for tomorrow
+    if (startDate == null && scheduledDate.isBefore(now)) {
       scheduledDate = scheduledDate.add(const Duration(days: 1));
+    }
+
+    // Ensure we don't schedule in the past if a specific date was requested
+    if (startDate != null && scheduledDate.isBefore(now)) {
+      // If logic requires rescheduling for tomorrow, add a day.
+      // However, 'rescheduleForTomorrow' usually passes tomorrow's date.
+      // So this check is just a safeguard.
+      if (scheduledDate.isBefore(now)) {
+        scheduledDate = scheduledDate.add(const Duration(days: 1));
+      }
     }
 
     final scheduledTz = tz.TZDateTime.from(scheduledDate, tz.local);
 
     // Notification text
-    final title = locale.startsWith('pt')
-        ? '🌧️ Planeja Chuva'
-        : '🌧️ Planeja Chuva';
+    final title =
+        locale.startsWith('pt') ? '🌧️ Planeja Chuva' : '🌧️ Planeja Chuva';
     final body = locale.startsWith('pt')
         ? 'Já registrou a chuva de hoje?'
         : 'Did you log today\'s rainfall?';
@@ -117,6 +131,24 @@ class NotificationService {
   /// Cancel daily reminder.
   static Future<void> cancelDailyReminder() async {
     await _notifications.cancel(dailyReminderNotificationId);
+  }
+
+  /// Reschedule reminder for tomorrow (Smart Skip).
+  /// Used when user logs rain today, so we don't bug them later today.
+  static Future<void> rescheduleForTomorrow(UserPreferences prefs) async {
+    if (!prefs.reminderEnabled || prefs.reminderTime == null) return;
+
+    // Calculate tomorrow
+    final now = DateTime.now();
+    final tomorrow = now.add(const Duration(days: 1));
+
+    final locale = prefs.locale ?? 'pt_BR';
+
+    await scheduleDailyReminder(
+      time: prefs.reminderTime!,
+      locale: locale,
+      startDate: tomorrow,
+    );
   }
 
   /// Check if user has already logged rainfall today.

@@ -130,15 +130,36 @@ class _PlanejaChuvaAppState extends State<PlanejaChuvaApp> {
     });
   }
 
-  void _changeThemeMode(ThemeMode newThemeMode) async {
-    // Save to Hive
-    widget.initialPreferences.themeMode = _themeModeToString(newThemeMode);
-    await widget.initialPreferences.saveToBox();
-
-    // Update UI
     setState(() {
       _themeMode = newThemeMode;
     });
+  }
+
+  void _changeReminder(bool enabled, TimeOfDay? time) async {
+    // Save to Hive
+    widget.initialPreferences.reminderEnabled = enabled;
+    if (time != null) {
+      final hour = time.hour.toString().padLeft(2, '0');
+      final minute = time.minute.toString().padLeft(2, '0');
+      widget.initialPreferences.reminderTime = '$hour:$minute';
+    }
+    await widget.initialPreferences.saveToBox();
+
+    // Update NotificationService
+    if (enabled && time != null) {
+      final hour = time.hour.toString().padLeft(2, '0');
+      final minute = time.minute.toString().padLeft(2, '0');
+      final locale = widget.initialPreferences.locale ?? 'pt_BR';
+      await NotificationService.scheduleDailyReminder(
+        time: '$hour:$minute',
+        locale: locale,
+      );
+    } else {
+      await NotificationService.cancelDailyReminder();
+    }
+
+    // Update UI (force rebuild)
+    setState(() {});
   }
 
   String? _localeToString(Locale? locale) {
@@ -183,7 +204,10 @@ class _PlanejaChuvaAppState extends State<PlanejaChuvaApp> {
         onChangeThemeMode: _changeThemeMode,
         currentLocale: _selectedLocale,
         currentThemeMode: _themeMode,
+        currentLocale: _selectedLocale,
+        currentThemeMode: _themeMode,
         preferences: widget.initialPreferences,
+        onReminderChanged: _changeReminder,
       ),
     );
   }
@@ -196,6 +220,7 @@ class AuthGate extends StatefulWidget {
   final Locale? currentLocale;
   final ThemeMode currentThemeMode;
   final UserPreferences preferences;
+  final void Function(bool, TimeOfDay?) onReminderChanged;
 
   const AuthGate({
     super.key,
@@ -204,6 +229,7 @@ class AuthGate extends StatefulWidget {
     required this.currentLocale,
     required this.currentThemeMode,
     required this.preferences,
+    required this.onReminderChanged,
   });
 
   @override
@@ -303,7 +329,12 @@ class _AuthGateState extends State<AuthGate> {
         onChangeThemeMode: widget.onChangeThemeMode,
         currentLocale: widget.currentLocale,
         currentThemeMode: widget.currentThemeMode,
+        currentLocale: widget.currentLocale,
+        currentThemeMode: widget.currentThemeMode,
+        currentLocale: widget.currentLocale,
+        currentThemeMode: widget.currentThemeMode,
         preferences: widget.preferences,
+        onReminderChanged: widget.onReminderChanged,
       ),
     );
   }

@@ -4,7 +4,9 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 import '../models/registro_chuva.dart';
+import '../models/user_preferences.dart';
 import '../services/chuva_service.dart';
+import '../services/notification_service.dart';
 import '../services/validation_service.dart';
 
 /// Screen for adding a new rainfall record.
@@ -24,7 +26,7 @@ class _AdicionarChuvaScreenState extends State<AdicionarChuvaScreen> {
   DateTime _dataSelecionada = DateTime.now();
   bool _salvando = false;
   Property? _propriedadeSelecionada;
-  String? _talhaoSelecionado;  // null = whole property
+  String? _talhaoSelecionado; // null = whole property
   final _talhaoService = TalhaoService();
 
   @override
@@ -159,10 +161,20 @@ class _AdicionarChuvaScreenState extends State<AdicionarChuvaScreen> {
             ? null
             : _observacaoController.text,
         propertyId: _propriedadeSelecionada!.id,
-        talhaoId: _talhaoSelecionado,  // null = whole property
+        talhaoId: _talhaoSelecionado, // null = whole property
       );
 
       await ChuvaService().adicionar(registro);
+
+      // Smart Skip: If rain is logged for TODAY, reschedule reminder for tomorrow
+      // Only do this if the logged date is today
+      final now = DateTime.now();
+      if (_dataSelecionada.year == now.year &&
+          _dataSelecionada.month == now.month &&
+          _dataSelecionada.day == now.day) {
+        final prefs = await UserPreferences.load();
+        await NotificationService.rescheduleForTomorrow(prefs);
+      }
 
       if (mounted) {
         // Haptic feedback for tactile confirmation

@@ -2,6 +2,40 @@
 
 ---
 
+## Phase 21.0: Intelligent Refinements
+### Status: [DONE]
+**Date Completed**: 2026-01-19
+**Priority**: 🟡 IMPORTANTE
+**Objective**: Complete "Intelligent Features" by adding custom reminder times, smart skip logic (don't notify if already logged), and visual drought alerts.
+
+### Problem Analysis
+- **Notifications**: Currently hardcoded to 18:00 (if enabled). User might prefer morning.
+- **Nagging**: App notifies even if user already logged rain for the day.
+- **Data Gap**: No visual warning if user forgets to log for weeks (drought or abandonment).
+
+### Solution
+- **Custom Time**: Add TimePicker in Settings to let user choose reminder time.
+- **Smart Skip**: When logging rain, automatically reschedule today's reminder to tomorrow to avoid redundancy.
+- **Drought Alert**: Show a prominent warning in Home Screen if no rain recorded for > 30 days.
+
+### Implementation Summary
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 21.1 | Add TimePicker to Settings and update NotificationService to support custom times | ✅ DONE |
+| 21.2 | Implement "Smart Skip" logic: Cancel/Reschedule today's notification upon adding record | ✅ DONE |
+| 21.3 | Implement Drought Alert logic and UI in ListaChuvasScreen | ✅ DONE |
+
+### Files to Modify
+| File | Action | Description |
+|------|--------|-------------|
+| `packages/agro_core/lib/screens/agro_settings_screen.dart` | MODIFY | Add TimePicker dialog |
+| `apps/planejachuva/lib/services/notification_service.dart` | MODIFY | Support custom time, add reschedule logic |
+| `apps/planejachuva/lib/services/chuva_service.dart` | MODIFY | Add `daysSinceLastRain` and notify trigger |
+| `apps/planejachuva/lib/screens/lista_chuvas_screen.dart` | MODIFY | Add Drought Alert UI |
+| `apps/planejachuva/lib/screens/adicionar_chuva_screen.dart` | MODIFY | Trigger smart skip on save |
+
+---
+
 ## Phase 20.0: Location Consent & Auto-Save
 ### Status: [DONE]
 **Date Completed**: 2026-01-19

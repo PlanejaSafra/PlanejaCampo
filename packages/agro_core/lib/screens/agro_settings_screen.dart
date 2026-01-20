@@ -34,6 +34,15 @@ class AgroSettingsScreen extends StatelessWidget {
   /// Whether cloud sync is currently enabled.
   final bool cloudSyncEnabled;
 
+  /// Callback to toggle notifications and set time.
+  final void Function(bool enabled, TimeOfDay? time)? onReminderChanged;
+
+  /// Whether daily reminder is enabled.
+  final bool reminderEnabled;
+
+  /// Time for the daily reminder.
+  final TimeOfDay? reminderTime;
+
   const AgroSettingsScreen({
     super.key,
     this.onNavigateToAbout,
@@ -46,6 +55,9 @@ class AgroSettingsScreen extends StatelessWidget {
     this.onDeleteCloudData,
     this.onToggleCloudSync,
     this.cloudSyncEnabled = true,
+    this.onReminderChanged,
+    this.reminderEnabled = false,
+    this.reminderTime,
   });
 
   String _getLanguageLabel(BuildContext context, Locale? locale) {
@@ -119,7 +131,7 @@ class AgroSettingsScreen extends StatelessWidget {
       builder: (context) => AlertDialog(
         title: const Text('Tema / Theme'),
         content: Column(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: MainAxisSize.AxisSize.min,
           children: [
             RadioListTile<ThemeMode>(
               title: const Text('Automático / Auto'),
@@ -157,6 +169,31 @@ class AgroSettingsScreen extends StatelessWidget {
     );
   }
 
+  Future<void> _showTimePicker(BuildContext context) async {
+    final initialTime = reminderTime ?? const TimeOfDay(hour: 18, minute: 0);
+    final selectedTime = await showTimePicker(
+      context: context,
+      initialTime: initialTime,
+      builder: (BuildContext context, Widget? child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+          child: child!,
+        );
+      },
+    );
+
+    if (selectedTime != null) {
+      onReminderChanged?.call(true, selectedTime);
+    }
+  }
+
+  String _formatTime(TimeOfDay? time) {
+    if (time == null) return '--:--';
+    final hour = time.hour.toString().padLeft(2, '0');
+    final minute = time.minute.toString().padLeft(2, '0');
+    return '$hour:$minute';
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AgroLocalizations.of(context)!;
@@ -188,6 +225,47 @@ class AgroSettingsScreen extends StatelessWidget {
                 ? () => _showThemeDialog(context)
                 : null,
           ),
+          const Divider(),
+          // Notifications Section
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+            child: Text(
+              'Notificações / Notifications',
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+            ),
+          ),
+          SwitchListTile(
+            secondary: const Icon(Icons.notifications_active_outlined),
+            title: const Text('Lembrete Diário / Daily Reminder'),
+            subtitle: Text(
+              reminderEnabled
+                  ? 'Diariamente às ${_formatTime(reminderTime)} / Daily at ${_formatTime(reminderTime)}'
+                  : 'Desativado / Disabled',
+            ),
+            value: reminderEnabled,
+            onChanged: (value) {
+              if (value) {
+                // If enabling, show time picker if no time set, or just enable
+                // UX decision: Just enable with default/last time, let user click to edit
+                final time =
+                    reminderTime ?? const TimeOfDay(hour: 18, minute: 0);
+                onReminderChanged?.call(true, time);
+              } else {
+                onReminderChanged?.call(false, null);
+              }
+            },
+          ),
+          if (reminderEnabled)
+            ListTile(
+              leading: const SizedBox(width: 24), // Indent
+              title: const Text('Horário / Time'),
+              subtitle: Text(_formatTime(reminderTime)),
+              trailing: const Icon(Icons.edit),
+              onTap: () => _showTimePicker(context),
+            ),
+
           const Divider(),
           // Privacy & Data section header
           Padding(
