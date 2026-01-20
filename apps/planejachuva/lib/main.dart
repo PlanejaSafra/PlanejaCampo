@@ -1,6 +1,7 @@
 import 'package:agro_core/agro_core.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/foundation.dart' show kIsWeb, defaultTargetPlatform, TargetPlatform;
+import 'package:flutter/foundation.dart'
+    show kIsWeb, defaultTargetPlatform, TargetPlatform;
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -130,6 +131,12 @@ class _PlanejaChuvaAppState extends State<PlanejaChuvaApp> {
     });
   }
 
+  void _changeThemeMode(ThemeMode newThemeMode) async {
+    // Save to Hive
+    widget.initialPreferences.themeMode = _themeModeToString(newThemeMode);
+    await widget.initialPreferences.saveToBox();
+
+    // Update UI
     setState(() {
       _themeMode = newThemeMode;
     });
@@ -202,8 +209,6 @@ class _PlanejaChuvaAppState extends State<PlanejaChuvaApp> {
       home: AuthGate(
         onChangeLocale: _changeLocale,
         onChangeThemeMode: _changeThemeMode,
-        currentLocale: _selectedLocale,
-        currentThemeMode: _themeMode,
         currentLocale: _selectedLocale,
         currentThemeMode: _themeMode,
         preferences: widget.initialPreferences,
@@ -327,10 +332,6 @@ class _AuthGateState extends State<AuthGate> {
       home: ListaChuvasScreen(
         onChangeLocale: widget.onChangeLocale,
         onChangeThemeMode: widget.onChangeThemeMode,
-        currentLocale: widget.currentLocale,
-        currentThemeMode: widget.currentThemeMode,
-        currentLocale: widget.currentLocale,
-        currentThemeMode: widget.currentThemeMode,
         currentLocale: widget.currentLocale,
         currentThemeMode: widget.currentThemeMode,
         preferences: widget.preferences,

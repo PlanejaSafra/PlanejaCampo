@@ -37,6 +37,9 @@ class ListaChuvasScreen extends StatefulWidget {
   /// User preferences for reminder settings.
   final UserPreferences preferences;
 
+  /// Callback when reminder settings change.
+  final void Function(bool, TimeOfDay?)? onReminderChanged;
+
   const ListaChuvasScreen({
     super.key,
     this.version = '1.0.0',
@@ -45,6 +48,7 @@ class ListaChuvasScreen extends StatefulWidget {
     this.onChangeThemeMode,
     this.currentThemeMode = ThemeMode.system,
     required this.preferences,
+    this.onReminderChanged,
   });
 
   @override
@@ -143,7 +147,9 @@ class _ListaChuvasScreenState extends State<ListaChuvasScreen> {
               currentLocale: widget.currentLocale,
               onChangeThemeMode: widget.onChangeThemeMode,
               currentThemeMode: widget.currentThemeMode,
+              currentThemeMode: widget.currentThemeMode,
               preferences: widget.preferences,
+              onReminderChanged: widget.onReminderChanged,
               onNavigateToAbout: () {
                 Navigator.push(
                   context,

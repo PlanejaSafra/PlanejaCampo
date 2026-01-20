@@ -131,7 +131,7 @@ class AgroSettingsScreen extends StatelessWidget {
       builder: (context) => AlertDialog(
         title: const Text('Tema / Theme'),
         content: Column(
-          mainAxisSize: MainAxisSize.AxisSize.min,
+          mainAxisSize: MainAxisSize.min,
           children: [
             RadioListTile<ThemeMode>(
               title: const Text('Automático / Auto'),
