@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import '../l10n/generated/app_localizations.dart';
 import '../models/property.dart';
 import '../services/property_service.dart';
+import '../services/talhao_service.dart';
 import 'property_form_screen.dart';
+import 'talhao_list_screen.dart';
 
 /// Screen to list and manage user's properties (farms/rural properties).
 /// Allows creating, editing, deleting, and setting default property.
@@ -179,10 +181,18 @@ class _PropertyListScreenState extends State<PropertyListScreen> {
               title: const Text('Gerenciar Talhões'),
               onTap: () {
                 Navigator.pop(context);
-                Navigator.pushNamed(
+                Navigator.pop(context);
+                Navigator.push(
                   context,
-                  '/talhoes',
-                  arguments: property.id,
+                  MaterialPageRoute(
+                    builder: (context) => TalhaoListScreen(
+                      property: property,
+                      talhaoService:
+                          TalhaoService(), // Instantiate fresh service
+                      userId: property.userId,
+                      // getRecordCount: ... optional, skip for now or pass if available
+                    ),
+                  ),
                 );
               },
             ),

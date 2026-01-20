@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../l10n/generated/app_localizations.dart';
 import '../models/property.dart';
@@ -35,6 +37,69 @@ class _PropertyFormScreenState extends State<PropertyFormScreen> {
       _latController.text = widget.property!.latitude?.toString() ?? '';
       _lngController.text = widget.property!.longitude?.toString() ?? '';
       _isDefault = widget.property!.isDefault;
+    }
+  }
+
+  Future<void> _getCurrentLocation() async {
+    setState(() => _isLoading = true);
+    try {
+      // Check permission
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          throw 'Permissão de localização negada';
+        }
+      }
+
+      if (permission == LocationPermission.deniedForever) {
+        throw 'Permissão de localização negada permanentemente. Habilite nas configurações.';
+      }
+
+      final position = await Geolocator.getCurrentPosition();
+      setState(() {
+        _latController.text = position.latitude.toString();
+        _lngController.text = position.longitude.toString();
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() => _isLoading = false);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erro ao obter GPS: $e'),
+            backgroundColor: Colors.red[700],
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _openGoogleMaps() async {
+    final lat = double.tryParse(_latController.text);
+    final lng = double.tryParse(_lngController.text);
+
+    final Uri url;
+    if (lat != null && lng != null) {
+      // Open at specific location
+      url = Uri.parse(
+          'https://www.google.com/maps/search/?api=1&query=$lat,$lng');
+    } else {
+      // Search by name logic or just open maps
+      // If name is typed, search 'name property'
+      final query =
+          _nameController.text.isNotEmpty ? _nameController.text : 'Brasil';
+      url = Uri.parse('https://www.google.com/maps/search/?api=1&query=$query');
+    }
+
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    } else {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Não foi possível abrir o mapa.')),
+        );
+      }
     }
   }
 
@@ -170,7 +235,8 @@ class _PropertyFormScreenState extends State<PropertyFormScreen> {
                 border: const OutlineInputBorder(),
                 suffixText: 'ha',
               ),
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              keyboardType:
+                  const TextInputType.numberWithOptions(decimal: true),
               inputFormatters: [
                 FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
               ],
@@ -202,6 +268,28 @@ class _PropertyFormScreenState extends State<PropertyFormScreen> {
             ),
             const SizedBox(height: 12),
 
+            // Location Buttons
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: _getCurrentLocation,
+                    icon: const Icon(Icons.my_location),
+                    label: const Text('Usar GPS Atual'),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: _openGoogleMaps,
+                    icon: const Icon(Icons.map),
+                    label: const Text('Abrir Mapa'),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+
             // Latitude field
             TextFormField(
               controller: _latController,
@@ -210,6 +298,8 @@ class _PropertyFormScreenState extends State<PropertyFormScreen> {
                 hintText: 'Ex: -23.5505',
                 prefixIcon: const Icon(Icons.location_on),
                 border: const OutlineInputBorder(),
+                filled: true,
+                fillColor: Colors.grey[50],
               ),
               keyboardType: const TextInputType.numberWithOptions(
                 decimal: true,
@@ -229,6 +319,8 @@ class _PropertyFormScreenState extends State<PropertyFormScreen> {
                 hintText: 'Ex: -46.6333',
                 prefixIcon: const Icon(Icons.location_on),
                 border: const OutlineInputBorder(),
+                filled: true,
+                fillColor: Colors.grey[50],
               ),
               keyboardType: const TextInputType.numberWithOptions(
                 decimal: true,
