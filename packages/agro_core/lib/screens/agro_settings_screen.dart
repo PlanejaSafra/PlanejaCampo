@@ -604,20 +604,6 @@ class _AgroSettingsScreenState extends State<AgroSettingsScreen> {
                   ),
                 ),
               ),
-              ListTile(
-                leading: const Icon(Icons.landscape),
-                title: Text(l10n.settingsPropertiesAndTalhoes),
-                subtitle: Text(l10n.settingsPropertiesAndTalhoesDesc),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () {
-                  if (widget.onNavigateToProperties != null) {
-                    widget.onNavigateToProperties!();
-                  } else {
-                    Navigator.pushNamed(context, '/properties');
-                  }
-                },
-              ),
-
               // Cloud sync toggle
               SwitchListTile(
                 secondary: const Icon(Icons.cloud_sync),
