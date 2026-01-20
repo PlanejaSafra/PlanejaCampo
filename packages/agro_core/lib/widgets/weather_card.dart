@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../services/property_service.dart';
-import '../services/weather_service.dart';
+import '../utils/location_helper.dart';
+import '../widgets/minutely_forecast_widget.dart';
+import '../models/instant_weather_forecast.dart';
 import '../privacy/agro_privacy_store.dart';
-import '../privacy/consent_screen.dart';
-import '../screens/property_form_screen.dart';
 import '../screens/weather_detail_screen.dart';
 import '../l10n/generated/app_localizations.dart';
+import '../services/weather_service.dart';
 
 class WeatherCard extends StatefulWidget {
   final double latitude;
@@ -332,8 +332,27 @@ class _WeatherCardState extends State<WeatherCard> {
                 ],
               ),
 
-              // Second Row: Wind + See Details
               const SizedBox(height: 8),
+
+              // CORE-43: Minutely Forecast (Nowcasting)
+              Builder(
+                builder: (context) {
+                  if (_weatherData == null) return const SizedBox.shrink();
+                  final instantSummary =
+                      WeatherService().parseInstantForecast(_weatherData!);
+                  if (instantSummary == null || !instantSummary.willRainSoon) {
+                    return const SizedBox.shrink();
+                  }
+                  return Column(
+                    children: [
+                      MinutelyForecastWidget(summary: instantSummary),
+                      const SizedBox(height: 8),
+                    ],
+                  );
+                },
+              ),
+
+              // Second Row: Wind + See Details
               Row(
                 children: [
                   // Wind Info (CORE-38)
@@ -505,154 +524,15 @@ class _WeatherCardState extends State<WeatherCard> {
   }
 
   Future<void> _showUpdateLocationDialog() async {
-    // 1. Check if "Aggregate Metrics" (which includes Location) is consented
-    if (!AgroPrivacyStore.consentAggregateMetrics) {
-      // Go directly to ConsentScreen (no intermediate dialog)
-      await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ConsentScreen(
-            onCompleted: () => Navigator.pop(context),
-          ),
-        ),
-      );
-
-      // Upon return, check again. If accepted, proceed automatically.
-      if (AgroPrivacyStore.consentAggregateMetrics && mounted) {
-        _askAreYouHere();
-      }
-      return;
-    }
-
-    // 2. If already consented, go straight to "Are you here?"
-    await _askAreYouHere();
-  }
-
-  Future<void> _askAreYouHere() async {
-    final l10n = AgroLocalizations.of(context)!;
-
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.weatherActivateForecast),
-        content: Text(l10n.weatherActivateForecastMessage),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(l10n.weatherNotHere),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: Text(l10n.weatherYesHere),
-          ),
-        ],
-      ),
-    );
-
-    if (confirmed == true) {
-      await _captureAndSaveLocation();
-    } else if (confirmed == false) {
-      // User is not at the property. Offer manual configuration.
-      if (!mounted) return;
-
-      final manualConfig = await showDialog<bool>(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text(l10n.weatherSetLocation),
-          content: Text(l10n.weatherSetLocationMessage),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context, false),
-              child: Text(l10n.weatherLater),
-            ),
-            FilledButton(
-              onPressed: () => Navigator.pop(context, true),
-              child: Text(l10n.weatherSetManually),
-            ),
-          ],
-        ),
-      );
-
-      if (manualConfig == true && mounted && widget.propertyId != null) {
-        final propertyService = PropertyService();
-        final property = propertyService.getPropertyById(widget.propertyId!);
-
-        if (property != null) {
-          await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => PropertyFormScreen(property: property),
-            ),
-          );
-          // Refresh callback to update calling screen (e.g. reload default property)
-          widget.onLocationUpdated?.call();
-          // Also refresh this widget
-          _fetchWeather();
-        }
-      }
-    }
-  }
-
-  Future<void> _captureAndSaveLocation() async {
     if (widget.propertyId == null) return;
 
-    final l10n = AgroLocalizations.of(context)!;
-
-    setState(() => _isLoading = true);
-
-    try {
-      // 1. Check Permissions
-      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) {
-        throw Exception(l10n.weatherErrorServiceDisabled);
-      }
-
-      LocationPermission permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied) {
-          throw Exception(l10n.weatherErrorPermissionDenied);
-        }
-      }
-
-      if (permission == LocationPermission.deniedForever) {
-        throw Exception(l10n.weatherErrorPermissionDeniedForever);
-      }
-
-      // 2. Get Location
-      // Use LocationSettings for time limit (if needed, though getCurrentPosition defaults are usually fine)
-      // For basic usage and to avoid deprecation warning:
-      final position = await Geolocator.getCurrentPosition();
-
-      // 3. Update Property
-      final propertyService = PropertyService();
-      final property = propertyService.getPropertyById(widget.propertyId!);
-
-      if (property != null) {
-        property.updateLocation(position.latitude, position.longitude);
-        await propertyService.updateProperty(property);
-
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(l10n.weatherLocationUpdated),
-              backgroundColor: Colors.green,
-            ),
-          );
-          // 4. Notify Parent to Refresh
-          widget.onLocationUpdated?.call();
-        }
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.weatherErrorGettingLocation(e.toString())),
-            backgroundColor: Colors.red,
-          ),
-        );
-        setState(() => _isLoading = false);
-      }
-    }
+    await LocationHelper.checkAndUpdateLocation(
+      context: context,
+      propertyId: widget.propertyId!,
+      onLocationUpdated: () {
+        widget.onLocationUpdated?.call();
+        _fetchWeather();
+      },
+    );
   }
 }

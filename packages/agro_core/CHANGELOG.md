@@ -2,6 +2,89 @@
 
 ---
 
+## Phase CORE-45: Property Location UX Polish
+
+### Status: [DONE]
+**Date Completed**: 2026-01-20
+**Priority**: 🟡 UX POLISH
+**Objective**: Improve the location setup flow for properties, ensuring seamless integration with onboarding and intuitive editing.
+
+### Implementation Summary
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 45.1 | Extract location logic to `LocationHelper` | ✅ DONE |
+| 45.2 | Trigger "Are you here?" prompt after "Accept All" in Onboarding | ✅ DONE |
+| 45.3 | Make Property Name in `WeatherDetailScreen` clickable to edit location | ✅ DONE |
+| 45.4 | Refactor `WeatherCard` location handling | ✅ DONE |
+
+### Files Modified
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/utils/location_helper.dart` | CREATE | Centralized location logic |
+| `lib/widgets/weather_card.dart` | MODIFY | Use LocationHelper, remove dup logic |
+| `lib/privacy/consent_screen.dart` | MODIFY | Trigger location check after consent |
+| `lib/screens/weather_detail_screen.dart` | MODIFY | Clickable AppBar property name |
+
+---
+
+## Phase CORE-43: Advanced Weather - Nowcasting
+
+### Status: [DONE]
+**Date Completed**: 2026-01-20
+**Priority**: 🟢 ENHANCEMENT
+**Objective**: Provide immediate "minutely" rain forecasts (Nowcasting) for the next hour.
+
+### Implementation Summary
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 43.1 | Update `WeatherForecast` model for minutely data | ✅ DONE |
+| 43.2 | Update `WeatherService` to fetch `minutely_15` API | ✅ DONE |
+| 43.3 | Create `MinutelyForecastWidget` UI | ✅ DONE |
+| 43.4 | Integrate Nowcasting into `WeatherCard` | ✅ DONE |
+
+### Files Modified
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/models/instant_weather_forecast.dart` | CREATE | Model for minutely data |
+| `lib/services/weather_service.dart` | MODIFY | Fetch & parse minutely_15 |
+| `lib/widgets/weather_card.dart` | MODIFY | Display MinutelyForecastWidget |
+| `lib/widgets/minutely_forecast_widget.dart` | CREATE | Visual chart/summary for rain |
+| `lib/l10n/arb/app_pt.arb` | MODIFY | Add nowcasting strings |
+| `lib/l10n/arb/app_en.arb` | MODIFY | Add nowcasting strings |
+
+---
+
+## Phase CORE-42: Google Maps Integration
+
+### Status: [DONE]
+**Date Completed**: 2026-01-20
+**Priority**: 🟢 ENHANCEMENT
+**Objective**: Replace OpenStreetMap with Google Maps for a premium, hybrid satellite view experience.
+
+### Implementation Summary
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 42.1 | Add `google_maps_flutter`, remove `flutter_map` | ✅ DONE |
+| 42.2 | Implement `LocationPickerScreen` with Google Maps | ✅ DONE |
+| 42.3 | Configure Hybrid Map Type (Satellite + Labels) | ✅ DONE |
+| 42.4 | Direct Navigation from WeatherCard to Map | ✅ DONE |
+
+### Files Modified
+
+| File | Action | Description |
+|------|--------|-------------|
+| `pubspec.yaml` | MODIFY | Switch map dependencies |
+| `lib/screens/location_picker_screen.dart` | MODIFY | Full rewrite for Google Maps |
+| `lib/widgets/weather_card.dart` | MODIFY | Update nav flow and imports |
+| `android/app/src/main/AndroidManifest.xml` | MODIFY | Add API Key metadata placeholder |
+
+---
+
 ## Phase CORE-41: Cloud Backup UX Improvements
 
 ### Status: [DONE]

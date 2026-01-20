@@ -4,6 +4,7 @@ import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 import '../models/weather_forecast.dart';
 import '../models/weather_alert.dart';
+import '../models/instant_weather_forecast.dart';
 
 /// Service to fetch and cache weather data from Open-Meteo.
 class WeatherService {
@@ -101,8 +102,9 @@ class WeatherService {
     await init();
     try {
       debugPrint('WeatherService: Fetching from API for $propertyId...');
+      // Added minutely_15=precipitation
       final url = Uri.parse(
-          '$_baseUrl?latitude=$latitude&longitude=$longitude&current=temperature_2m,relative_humidity_2m,precipitation,weather_code,wind_speed_10m,wind_direction_10m&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,weather_code,wind_speed_10m_max,wind_direction_10m_dominant&hourly=temperature_2m,precipitation_probability,weather_code,wind_speed_10m,wind_direction_10m&timezone=auto&forecast_days=7');
+          '$_baseUrl?latitude=$latitude&longitude=$longitude&current=temperature_2m,relative_humidity_2m,precipitation,weather_code,wind_speed_10m,wind_direction_10m&minutely_15=precipitation&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,weather_code,wind_speed_10m_max,wind_direction_10m_dominant&hourly=temperature_2m,precipitation_probability,weather_code,wind_speed_10m,wind_direction_10m&timezone=auto&forecast_days=7');
 
       final response = await http.get(url).timeout(const Duration(seconds: 10));
 
@@ -228,6 +230,27 @@ class WeatherService {
     return null;
   }
 
+  /// Extract instant forecast (Nowcasting) from raw data
+  InstantForecastSummary? parseInstantForecast(Map<String, dynamic>? data) {
+    if (data == null) return null;
+
+    final minutely = data['minutely_15'];
+    if (minutely == null) return null;
+
+    final times = minutely['time'] as List;
+    final precips = minutely['precipitation'] as List;
+
+    final points = <InstantWeatherForecast>[];
+    for (var i = 0; i < times.length; i++) {
+      points.add(InstantWeatherForecast.fromApi(
+        times[i] as String,
+        precips[i] as num,
+      ));
+    }
+
+    return InstantForecastSummary(points: points);
+  }
+
   /// Analyze forecasts to identify critical weather conditions
   List<WeatherAlert> analyzeForecasts(List<WeatherForecast> forecasts) {
     final alerts = <WeatherAlert>[];
@@ -288,7 +311,8 @@ class WeatherService {
       if (f.weatherCode == 96 || f.weatherCode == 99) {
         alerts.add(WeatherAlert(
           type: WeatherAlertType.hail,
-          severity: f.weatherCode == 99 ? AlertSeverity.high : AlertSeverity.medium,
+          severity:
+              f.weatherCode == 99 ? AlertSeverity.high : AlertSeverity.medium,
           date: f.date,
           titleKey: 'alertHailTitle',
           messageKey: 'alertHailMessage',
@@ -302,7 +326,9 @@ class WeatherService {
           (f.weatherCode >= 51 || f.weatherCode >= 95); // Rain or Thunder
 
       // Don't add storm if already added hail (codes 96, 99 are also thunderstorms)
-      if ((heavyRain || strongWindStorm) && f.weatherCode != 96 && f.weatherCode != 99) {
+      if ((heavyRain || strongWindStorm) &&
+          f.weatherCode != 96 &&
+          f.weatherCode != 99) {
         alerts.add(WeatherAlert(
           type: WeatherAlertType.storm,
           severity: AlertSeverity.high,
@@ -310,7 +336,9 @@ class WeatherService {
           titleKey: 'alertStormTitle',
           messageKey: 'alertStormMessage',
         ));
-      } else if (f.windSpeed > 45.0 && f.weatherCode != 96 && f.weatherCode != 99) {
+      } else if (f.windSpeed > 45.0 &&
+          f.weatherCode != 96 &&
+          f.weatherCode != 99) {
         // High Wind (if not a storm or hail)
         alerts.add(WeatherAlert(
           type: WeatherAlertType.highWind,

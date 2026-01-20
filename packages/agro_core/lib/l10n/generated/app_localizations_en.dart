@@ -914,4 +914,22 @@ class AgroLocalizationsEn extends AgroLocalizations {
 
   @override
   String get settingsDeleteCloudDataDesc => 'Keeps local data';
+
+  @override
+  String get rainNoRainNextHour => 'No rain in the next hour';
+
+  @override
+  String get rainRainingNow => 'Raining now';
+
+  @override
+  String get rainStartingIn15 => 'Rain starting in ~15 min';
+
+  @override
+  String get rainStartingIn30 => 'Rain starting in ~30 min';
+
+  @override
+  String get rainStartingIn45 => 'Rain starting in ~45 min';
+
+  @override
+  String get rainNextHour => 'Rain in the next hour';
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../utils/location_helper.dart';
 import 'package:intl/intl.dart';
 import '../services/weather_service.dart';
 import '../models/weather_alert.dart';
@@ -41,11 +42,39 @@ class WeatherDetailScreen extends StatelessWidget {
           children: [
             const Text('Previsão do Tempo'),
             if (propertyName != null)
-              Text(
-                '📍 $propertyName',
-                style: theme.textTheme.labelMedium?.copyWith(
-                  color: theme.colorScheme.onSurface,
-                  fontWeight: FontWeight.w400,
+              InkWell(
+                onTap: propertyId == null
+                    ? null
+                    : () {
+                        LocationHelper.checkAndUpdateLocation(
+                          context: context,
+                          propertyId: propertyId!,
+                          onLocationUpdated: () {
+                            // Force reload?
+                            // WeatherService implicitly fetches on next build if we invalidate
+                            // But since this is a StatelessWidget, we can't setState.
+                            // However, if location updates, the user likely navigates back?
+                            // Or we provide visual feedback.
+                          },
+                        );
+                      },
+                child: Row(
+                  // Row to make tap area better and add an icon hint
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      '📍 $propertyName',
+                      style: theme.textTheme.labelMedium?.copyWith(
+                        color: theme.colorScheme.onSurface,
+                        fontWeight: FontWeight.w400,
+                        decoration:
+                            TextDecoration.underline, // Hint it is clickable
+                      ),
+                    ),
+                    Icon(Icons.edit,
+                        size: 12,
+                        color: theme.colorScheme.onSurface.withOpacity(0.5)),
+                  ],
                 ),
               ),
           ],

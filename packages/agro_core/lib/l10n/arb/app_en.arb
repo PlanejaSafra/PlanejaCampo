@@ -429,5 +429,12 @@
   "settingsExportMyData": "Export My Data",
   "settingsExportMyDataDesc": "LGPD/GDPR - Data portability",
   "settingsDeleteCloudData": "Delete Cloud Data",
-  "settingsDeleteCloudDataDesc": "Keeps local data"
+  "settingsDeleteCloudDataDesc": "Keeps local data",
+
+  "rainNoRainNextHour": "No rain in the next hour",
+  "rainRainingNow": "Raining now",
+  "rainStartingIn15": "Rain starting in ~15 min",
+  "rainStartingIn30": "Rain starting in ~30 min",
+  "rainStartingIn45": "Rain starting in ~45 min",
+  "rainNextHour": "Rain in the next hour"
 }

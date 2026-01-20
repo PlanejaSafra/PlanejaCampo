@@ -1,5 +1,6 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/gestures.dart';
+import '../utils/location_helper.dart';
 import 'package:geolocator/geolocator.dart';
 
 import '../l10n/generated/app_localizations.dart';
@@ -42,22 +43,12 @@ class _ConsentScreenState extends State<ConsentScreen> {
     setState(() => _isProcessing = true);
 
     try {
-      // Logic for "Accept All" OR if "Aggregate Metrics (Option 1)" is manually selected
-      // Option 1 includes location consent
-      bool shouldRequestLocation = !_hasAnyConsent || _aggregateMetrics;
-
-      if (shouldRequestLocation) {
-        await _requestAndSaveLocation(l10n);
-      } else {
-        // If we skipped location (e.g. user unchecked Option 1), we still need a default property
-        await PropertyService().ensureDefaultProperty(l10n: l10n);
-      }
-
+      // 1. Save Consents FIRST
       if (!_hasAnyConsent) {
         // Scenario A: No checkboxes marked → Accept ALL
         await AgroPrivacyStore.acceptAllConsents();
       } else {
-        // Scenario B: User made manual selections → Respect them
+        // Scenario B: User made manual selections
         await AgroPrivacyStore.setConsent(
           AgroPrivacyKeys.consentAggregateMetrics,
           _aggregateMetrics,
@@ -71,6 +62,22 @@ class _ConsentScreenState extends State<ConsentScreen> {
           _adsPersonalization,
         );
       }
+
+      // 2. Ensure Property Exists
+      final property =
+          await PropertyService().ensureDefaultProperty(l10n: l10n);
+
+      // 3. Trigger Location Prompt (if consented)
+      // We check the store directly since we just saved it.
+      if (AgroPrivacyStore.consentAggregateMetrics) {
+        if (mounted) {
+          await LocationHelper.checkAndUpdateLocation(
+            context: context,
+            propertyId: property.id,
+          );
+        }
+      }
+
       await AgroPrivacyStore.setOnboardingCompleted(true);
       widget.onCompleted?.call();
     } finally {
@@ -80,40 +87,7 @@ class _ConsentScreenState extends State<ConsentScreen> {
     }
   }
 
-  /// Requests location permission and updates default property if granted
-  Future<void> _requestAndSaveLocation(AgroLocalizations l10n) async {
-    try {
-      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) return;
-
-      LocationPermission permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied) return;
-      }
-
-      if (permission == LocationPermission.deniedForever) return;
-
-      // Permission granted, get location
-      final position = await Geolocator.getCurrentPosition(
-        timeLimit: const Duration(seconds: 5),
-      );
-
-      // Save to default property
-      final propertyService = PropertyService();
-      // Ensure default property exists (creates one if needed)
-      final property = await propertyService.ensureDefaultProperty(l10n: l10n);
-
-      // Update coordinates
-      property.latitude = position.latitude;
-      property.longitude = position.longitude;
-
-      await propertyService.updateProperty(property);
-    } catch (e) {
-      // Silently fail - location is optional enhancement, shouldn't block onboarding
-      debugPrint('Error auto-saving location: $e');
-    }
-  }
+  // _requestAndSaveLocation removed as it is replaced by LocationHelper
 
   /// Returns dynamic button text based on user selection
   String _getPrimaryButtonText(BuildContext context) {

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong2/latlong.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 
 import '../l10n/generated/app_localizations.dart';
@@ -20,21 +19,27 @@ class LocationPickerScreen extends StatefulWidget {
 }
 
 class _LocationPickerScreenState extends State<LocationPickerScreen> {
-  late MapController _mapController;
-  late LatLng _currentCenter;
+  GoogleMapController? _mapController;
+  late CameraPosition _currentCameraPosition;
   bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _mapController = MapController();
 
     // Set initial position
     if (widget.initialLat != null && widget.initialLng != null) {
-      _currentCenter = LatLng(widget.initialLat!, widget.initialLng!);
+      _currentCameraPosition = CameraPosition(
+        target: LatLng(widget.initialLat!, widget.initialLng!),
+        zoom: 16,
+      );
       _isLoading = false;
     } else {
-      _currentCenter = const LatLng(-15.793889, -47.882778); // Brasilia default
+      // Default to Brasilia
+      _currentCameraPosition = const CameraPosition(
+        target: LatLng(-15.793889, -47.882778),
+        zoom: 12,
+      );
       _getCurrentLocation();
     }
   }
@@ -58,8 +63,16 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
       final position = await Geolocator.getCurrentPosition();
       if (mounted) {
         setState(() {
-          _currentCenter = LatLng(position.latitude, position.longitude);
-          _mapController.move(_currentCenter, 15);
+          _currentCameraPosition = CameraPosition(
+            target: LatLng(position.latitude, position.longitude),
+            zoom: 18, // Closer zoom for current location
+          );
+
+          if (_mapController != null) {
+            _mapController!.animateCamera(
+              CameraUpdate.newCameraPosition(_currentCameraPosition),
+            );
+          }
           _isLoading = false;
         });
       }
@@ -71,12 +84,12 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // We don't have direct access to l10n here easily unless passed or context available?
-    // context IS available in build.
     final l10n = AgroLocalizations.of(context);
-    // If l10n fails (packaging issues), use fallback
     final title = l10n?.propertyLocation ?? 'Selecionar Localização';
     final confirm = l10n?.chuvaBotaoSalvar ?? 'Confirmar';
+
+    // Google Maps needs explicit padding/margin for "Google" logo if obscured.
+    // But since we just have buttons at the bottom, it's fine.
 
     return Scaffold(
       appBar: AppBar(
@@ -84,23 +97,19 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
       ),
       body: Stack(
         children: [
-          FlutterMap(
-            mapController: _mapController,
-            options: MapOptions(
-              initialCenter: _currentCenter,
-              initialZoom: 15,
-              onPositionChanged: (position, hasGesture) {
-                if (position.center != null) {
-                  _currentCenter = position.center!;
-                }
-              },
-            ),
-            children: [
-              TileLayer(
-                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                userAgentPackageName: 'br.com.planejacampo.agro_core',
-              ),
-            ],
+          GoogleMap(
+            initialCameraPosition: _currentCameraPosition,
+            mapType: MapType.hybrid, // Satellite + Labels (Premium feel)
+            myLocationEnabled: true,
+            myLocationButtonEnabled: false, // Using custom button
+            zoomControlsEnabled: false,
+            onMapCreated: (controller) => _mapController = controller,
+            onCameraMove: (position) {
+              _currentCameraPosition = position;
+            },
+            onTap: (latLng) {
+              // Optional: Move camera to tap if desired, but dragging is standard
+            },
           ),
 
           // Center Pin (Fixed)
@@ -128,7 +137,8 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
             bottom: 32,
             child: FilledButton(
               onPressed: () {
-                Navigator.pop(context, _currentCenter);
+                // Return selected target
+                Navigator.pop(context, _currentCameraPosition.target);
               },
               style: FilledButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),

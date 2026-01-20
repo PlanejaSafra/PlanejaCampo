@@ -1852,6 +1852,42 @@ abstract class AgroLocalizations {
   /// In en, this message translates to:
   /// **'Keeps local data'**
   String get settingsDeleteCloudDataDesc;
+
+  /// No description provided for @rainNoRainNextHour.
+  ///
+  /// In en, this message translates to:
+  /// **'No rain in the next hour'**
+  String get rainNoRainNextHour;
+
+  /// No description provided for @rainRainingNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Raining now'**
+  String get rainRainingNow;
+
+  /// No description provided for @rainStartingIn15.
+  ///
+  /// In en, this message translates to:
+  /// **'Rain starting in ~15 min'**
+  String get rainStartingIn15;
+
+  /// No description provided for @rainStartingIn30.
+  ///
+  /// In en, this message translates to:
+  /// **'Rain starting in ~30 min'**
+  String get rainStartingIn30;
+
+  /// No description provided for @rainStartingIn45.
+  ///
+  /// In en, this message translates to:
+  /// **'Rain starting in ~45 min'**
+  String get rainStartingIn45;
+
+  /// No description provided for @rainNextHour.
+  ///
+  /// In en, this message translates to:
+  /// **'Rain in the next hour'**
+  String get rainNextHour;
 }
 
 class _AgroLocalizationsDelegate extends LocalizationsDelegate<AgroLocalizations> {
