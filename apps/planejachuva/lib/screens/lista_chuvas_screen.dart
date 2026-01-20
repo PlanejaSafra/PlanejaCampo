@@ -60,17 +60,17 @@ class _ListaChuvasScreenState extends State<ListaChuvasScreen> {
   double _totalMesAnterior = 0;
   Property? _defaultProperty;
   String? _selectedTalhaoId;
-  final _talhaoService = TalhaoService();
+  late PropertyService _propertyService;
 
   @override
   void initState() {
     super.initState();
+    _propertyService = PropertyService();
     _carregarPropriedadePadrao().then((_) => _carregarDados());
   }
 
   Future<void> _carregarPropriedadePadrao() async {
-    final propertyService = PropertyService();
-    final property = await propertyService.getDefaultProperty();
+    final property = _propertyService.getDefaultProperty();
     if (mounted) {
       setState(() {
         _defaultProperty = property;

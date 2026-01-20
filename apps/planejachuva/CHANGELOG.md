@@ -1,6 +1,41 @@
 # CHANGELOG - planeja_chuva
 
 ---
+---
+
+## Phase 31: Native Map Picker (WhatsApp Style)
+### Status: [DONE]
+**Date Completed**: 2026-01-19
+**Priority**: 🟢 ENHANCEMENT
+**Objective**: Provide a professional, integrated map experience for selecting location without requiring external apps or complex Google API keys.
+
+### Solution
+- **Native Picker**: Implemented `LocationPickerScreen` using `flutter_map` (OpenStreetMap).
+- **Embedded Experience**: User sees a map with a fixed center pin and drags the map to position the target (similar to WhatsApp/Uber).
+- **No API Key**: Uses OpenStreetMap tiles, reducing configuration complexity and cost.
+
+### Files Modified
+- `packages/agro_core/pubspec.yaml` (Added `flutter_map`, `latlong2`)
+- `packages/agro_core/lib/screens/location_picker_screen.dart` (New screen)
+- `packages/agro_core/lib/screens/property_form_screen.dart` (Integration)
+
+---
+
+## Phase 30: UI Refinements & Bug Fixes
+### Status: [DONE]
+**Date Completed**: 2026-01-19
+**Priority**: 🔴 BUGFIX
+**Objective**: Fix map launching on Android 11+, prevent manual lat/long errors, and update project dependencies.
+
+### Solution
+- **Android 11+ Fix**: Added `<queries>` to `AndroidManifest.xml` to allow `url_launcher` to detect map apps.
+- **GPS Permissions**: Added `ACCESS_FINE_LOCATION` to fix GPS crashes.
+- **Read-Only Fields**: Latitude/Longitude inputs are now read-only to ensure data integrity (must use GPS or Map).
+- **Dependencies**: Performed `flutter pub upgrade` across the project.
+
+### Files Modified
+- `apps/planejachuva/android/app/src/main/AndroidManifest.xml`
+- `packages/agro_core/lib/screens/property_form_screen.dart`
 
 ## Phase 28: Advanced Location Setup (Manual Fallback)
 ### Status: [DONE]

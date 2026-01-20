@@ -219,6 +219,7 @@ O `agro_core` fornece um sistema completo de gerenciamento de propriedades/fazen
 * **Auto-Creation:** Propriedade padrão ("Minha Propriedade") criada automaticamente
 * **PropertyHelper:** Singleton com cache para lookups otimizados de nomes
 * **UI Completa:** Telas de listagem e formulário já prontas no core
+* **Native Map Picker:** Seletor de localização offline usando OpenStreetMap (estilo WhatsApp)
 
 ### Como usar nos apps:
 

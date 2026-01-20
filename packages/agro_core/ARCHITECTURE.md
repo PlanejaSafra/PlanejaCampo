@@ -55,3 +55,5 @@ Gerenciamento de internacionalização (i18n).
 
 *   **`AgroLocalizations`**: Classe gerada automaticamente (via `flutter_gen`) que fornece acesso às strings traduzidas (pt-BR e en).
 *   **Arquivos ARB**: `lib/l10n/arb/app_pt.arb` e `app_en.arb` contêm os dicionários de tradução.
+### 8. Location & Maps
+- **`LocationPickerScreen` (`lib/screens/location_picker_screen.dart`)**: Tela de seleção de localização estilo "WhatsApp/Uber" usando OpenStreetMap (`flutter_map`).

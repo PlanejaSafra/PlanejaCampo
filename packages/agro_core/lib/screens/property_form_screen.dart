@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:latlong2/latlong.dart';
+
+import 'location_picker_screen.dart';
 
 import '../l10n/generated/app_localizations.dart';
 import '../models/property.dart';
@@ -75,31 +77,25 @@ class _PropertyFormScreenState extends State<PropertyFormScreen> {
     }
   }
 
-  Future<void> _openGoogleMaps() async {
+  Future<void> _openMapPicker() async {
     final lat = double.tryParse(_latController.text);
     final lng = double.tryParse(_lngController.text);
 
-    final Uri url;
-    if (lat != null && lng != null) {
-      // Open at specific location
-      url = Uri.parse(
-          'https://www.google.com/maps/search/?api=1&query=$lat,$lng');
-    } else {
-      // Search by name logic or just open maps
-      // If name is typed, search 'name property'
-      final query =
-          _nameController.text.isNotEmpty ? _nameController.text : 'Brasil';
-      url = Uri.parse('https://www.google.com/maps/search/?api=1&query=$query');
-    }
+    final result = await Navigator.push<LatLng>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => LocationPickerScreen(
+          initialLat: lat,
+          initialLng: lng,
+        ),
+      ),
+    );
 
-    if (await canLaunchUrl(url)) {
-      await launchUrl(url, mode: LaunchMode.externalApplication);
-    } else {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Não foi possível abrir o mapa.')),
-        );
-      }
+    if (result != null && mounted) {
+      setState(() {
+        _latController.text = result.latitude.toString();
+        _lngController.text = result.longitude.toString();
+      });
     }
   }
 
@@ -281,9 +277,9 @@ class _PropertyFormScreenState extends State<PropertyFormScreen> {
                 const SizedBox(width: 8),
                 Expanded(
                   child: OutlinedButton.icon(
-                    onPressed: _openGoogleMaps,
+                    onPressed: _openMapPicker,
                     icon: const Icon(Icons.map),
-                    label: const Text('Abrir Mapa'),
+                    label: const Text('Selecionar no Mapa'),
                   ),
                 ),
               ],
@@ -293,42 +289,26 @@ class _PropertyFormScreenState extends State<PropertyFormScreen> {
             // Latitude field
             TextFormField(
               controller: _latController,
+              readOnly: true,
               decoration: InputDecoration(
                 labelText: 'Latitude',
                 hintText: 'Ex: -23.5505',
                 prefixIcon: const Icon(Icons.location_on),
                 border: const OutlineInputBorder(),
-                filled: true,
-                fillColor: Colors.grey[50],
               ),
-              keyboardType: const TextInputType.numberWithOptions(
-                decimal: true,
-                signed: true,
-              ),
-              inputFormatters: [
-                FilteringTextInputFormatter.allow(RegExp(r'^-?\d+\.?\d{0,6}')),
-              ],
             ),
             const SizedBox(height: 12),
 
             // Longitude field
             TextFormField(
               controller: _lngController,
+              readOnly: true,
               decoration: InputDecoration(
                 labelText: 'Longitude',
                 hintText: 'Ex: -46.6333',
                 prefixIcon: const Icon(Icons.location_on),
                 border: const OutlineInputBorder(),
-                filled: true,
-                fillColor: Colors.grey[50],
               ),
-              keyboardType: const TextInputType.numberWithOptions(
-                decimal: true,
-                signed: true,
-              ),
-              inputFormatters: [
-                FilteringTextInputFormatter.allow(RegExp(r'^-?\d+\.?\d{0,6}')),
-              ],
             ),
             const SizedBox(height: 16),
 
