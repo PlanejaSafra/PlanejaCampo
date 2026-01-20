@@ -10,6 +10,11 @@ class TalhaoService {
   static const String _boxName = 'talhoes';
   Box<Talhao>? _box;
 
+  // Singleton pattern
+  static final TalhaoService _instance = TalhaoService._internal();
+  factory TalhaoService() => _instance;
+  TalhaoService._internal();
+
   /// Initialize Hive box for talhões
   Future<void> init() async {
     if (!Hive.isBoxOpen(_boxName)) {
@@ -66,7 +71,8 @@ class TalhaoService {
         .where((t) => t.nome.trim().toLowerCase() == nome.trim().toLowerCase())
         .toList();
     if (existingWithSameName.isNotEmpty) {
-      throw ArgumentError('Já existe um talhão com este nome nesta propriedade');
+      throw ArgumentError(
+          'Já existe um talhão com este nome nesta propriedade');
     }
 
     // Validate total area doesn't exceed property area
@@ -126,11 +132,12 @@ class TalhaoService {
       // Check for duplicate names (excluding current talhão)
       final existingWithSameName = listByProperty(talhao.propertyId)
           .where((t) =>
-            t.id != id &&
-            t.nome.trim().toLowerCase() == nome.trim().toLowerCase())
+              t.id != id &&
+              t.nome.trim().toLowerCase() == nome.trim().toLowerCase())
           .toList();
       if (existingWithSameName.isNotEmpty) {
-        throw ArgumentError('Já existe um talhão com este nome nesta propriedade');
+        throw ArgumentError(
+            'Já existe um talhão com este nome nesta propriedade');
       }
     }
 
@@ -182,24 +189,19 @@ class TalhaoService {
 
   /// List all talhões for a specific property
   List<Talhao> listByProperty(String propertyId) {
-    return _getBox.values
-        .where((t) => t.propertyId == propertyId)
-        .toList()
+    return _getBox.values.where((t) => t.propertyId == propertyId).toList()
       ..sort((a, b) => a.nome.compareTo(b.nome));
   }
 
   /// List all talhões for a specific user
   List<Talhao> listByUser(String userId) {
-    return _getBox.values
-        .where((t) => t.userId == userId)
-        .toList()
+    return _getBox.values.where((t) => t.userId == userId).toList()
       ..sort((a, b) => a.nome.compareTo(b.nome));
   }
 
   /// Get total area of all talhões in a property
   double getTotalAreaByProperty(String propertyId) {
-    return listByProperty(propertyId)
-        .fold(0.0, (sum, t) => sum + t.area);
+    return listByProperty(propertyId).fold(0.0, (sum, t) => sum + t.area);
   }
 
   /// Get count of talhões in a property
@@ -228,8 +230,8 @@ class TalhaoService {
   List<Talhao> getByCultura(String propertyId, String cultura) {
     return listByProperty(propertyId)
         .where((t) =>
-          t.cultura != null &&
-          t.cultura!.trim().toLowerCase() == cultura.trim().toLowerCase())
+            t.cultura != null &&
+            t.cultura!.trim().toLowerCase() == cultura.trim().toLowerCase())
         .toList();
   }
 
