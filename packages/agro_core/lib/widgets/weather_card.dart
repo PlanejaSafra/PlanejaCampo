@@ -136,11 +136,16 @@ class _WeatherCardState extends State<WeatherCard> {
                 ),
               ],
             ),
-            const Spacer(),
-            Text(
-              _getWeatherDescription(code),
-              style: theme.textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w500,
+            const SizedBox(width: 16),
+            Expanded(
+              child: Text(
+                _getWeatherDescription(code),
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
+                textAlign: TextAlign.end,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 2,
               ),
             ),
           ],
