@@ -73,25 +73,16 @@ class _TalhaoSelectorState extends State<TalhaoSelector> {
     final theme = Theme.of(context);
 
     if (_isLoading) {
-      return Card(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Row(
-            children: [
-              const SizedBox(
-                width: 20,
-                height: 20,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              ),
-              const SizedBox(width: 12),
-              Text(
-                l10n.talhaoSelectOptional,
-                style: theme.textTheme.titleMedium,
-              ),
-            ],
-          ),
-        ),
-      );
+      return const SizedBox
+          .shrink(); // Hide loading state too? Or keep it? User said "só mostra se tiver". Loading implies we don't know yet.
+      // Better to keep loading hidden or minimal.
+      // Let's hide it for now, or just return empty.
+    }
+
+    // If no talhões exist and we can't create new ones, the only option is "Whole Property".
+    // This makes the selector redundant.
+    if (_talhoes.isEmpty && widget.onCreateNew == null) {
+      return const SizedBox.shrink();
     }
 
     return Card(
@@ -211,7 +202,8 @@ class _TalhaoSelectorState extends State<TalhaoSelector> {
                   ? (value) {
                       if (value == '__create_new__') {
                         widget.onCreateNew?.call();
-                      } else if (value != '__divider__' && value != '__divider2__') {
+                      } else if (value != '__divider__' &&
+                          value != '__divider2__') {
                         widget.onChanged(value);
                       }
                     }

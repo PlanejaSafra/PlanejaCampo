@@ -368,32 +368,6 @@ class _ListaChuvasScreenState extends State<ListaChuvasScreen> {
         onRefresh: () async => _carregarDados(),
         child: CustomScrollView(
           slivers: [
-            // Talhão Selector: Only show if we have data to filter
-            if (_defaultProperty != null && _registros.isNotEmpty)
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: TalhaoSelector(
-                    propertyId: _defaultProperty!.id,
-                    selectedTalhaoId: _selectedTalhaoId,
-                    talhaoService: _talhaoService,
-                    onChanged: (id) {
-                      setState(() {
-                        _selectedTalhaoId = id;
-                        _carregarDados();
-                      });
-                    },
-                    // Allow creating new talhão from list screen
-                    onCreateNew: () async {
-                      await Navigator.pushNamed(context, '/talhoes',
-                          arguments: _defaultProperty!.id);
-                      // Refresh logic handled by lifecycle mostly, but good to reload selector
-                      setState(() {});
-                    },
-                  ),
-                ),
-              ),
             // Drought warning (if applicable)
             ..._buildDroughtWarning(),
             // Weather forecast card
@@ -403,6 +377,10 @@ class _ListaChuvasScreenState extends State<ListaChuvasScreen> {
                   propertyId: _defaultProperty!.id,
                   latitude: _defaultProperty!.latitude ?? 0.0,
                   longitude: _defaultProperty!.longitude ?? 0.0,
+                  onLocationUpdated: () {
+                    // Reload default property to get new coordinates and refresh UI
+                    _carregarPropriedadePadrao().then((_) => _carregarDados());
+                  },
                 ),
               ),
             // Monthly summary card (only if not empty OR if we want to show 0s?

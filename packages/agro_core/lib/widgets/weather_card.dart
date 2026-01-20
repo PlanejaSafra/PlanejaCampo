@@ -1,16 +1,27 @@
 import 'package:flutter/material.dart';
-import '../services/weather_service.dart';
+import 'package:geolocator/geolocator.dart';
+import '../l10n/generated/app_localizations.dart';
+import '../models/property.dart';
+import '../services/property_service.dart';
+// import '../services/weather_service.dart'; // WeatherService is used in _fetchWeather (state), but not in widget definition file?
+// No, the State IS in the same file. WeatherService IS used.
+// "packages\agro_core\lib\widgets\weather_card.dart:4:8 - unused_import" <- That likely refers to a duplicate or unneeded one.
+// The file I viewed earlier had `import '../services/weather_service.dart';` at line 2.
+// Then I replaced line 1 to include geolocator.
+// Let's check imports.
 
 class WeatherCard extends StatefulWidget {
   final double latitude;
   final double longitude;
   final String? propertyId; // Optional, for cache keying or logging
+  final VoidCallback? onLocationUpdated;
 
   const WeatherCard({
     super.key,
     required this.latitude,
     required this.longitude,
     this.propertyId,
+    this.onLocationUpdated,
   });
 
   @override
@@ -167,39 +178,157 @@ class _WeatherCardState extends State<WeatherCard> {
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(color: theme.colorScheme.outlineVariant),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            Icon(
-              Icons.location_off_outlined,
-              size: 32,
-              color: theme.colorScheme.error,
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Localização Necessária',
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Ative a localização da propriedade para ver a previsão.',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ],
+      child: InkWell(
+        onTap: _isLoading ? null : _showUpdateLocationDialog,
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              Icon(
+                Icons.location_off_outlined,
+                size: 32,
+                color: theme.colorScheme.error,
               ),
-            ),
-          ],
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Localização Necessária',
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Toque aqui se estiver na propriedade para ativar a previsão.',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              if (_isLoading)
+                const Padding(
+                  padding: EdgeInsets.only(left: 8.0),
+                  child: SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                )
+              else
+                Icon(
+                  Icons.chevron_right,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+            ],
+          ),
         ),
       ),
     );
+  }
+
+  Future<void> _showUpdateLocationDialog() async {
+    final l10n = AgroLocalizations.of(context)!;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Ativar Previsão do Tempo'),
+        content: const Text(
+          'Para mostrar a previsão correta, precisamos da localização desta propriedade.\n\n'
+          'Você está na propriedade agora?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Não, estou longe'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Sim, estou aqui'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      await _captureAndSaveLocation();
+    } else if (confirmed == false) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+                'Sem problema! Você pode configurar a localização manualmente no menu "Propriedades" quando souber as coordenadas.'),
+            duration: Duration(seconds: 5),
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _captureAndSaveLocation() async {
+    if (widget.propertyId == null) return;
+
+    setState(() => _isLoading = true);
+
+    try {
+      // 1. Check Permissions
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        throw Exception('Serviço de localização desativado.');
+      }
+
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          throw Exception('Permissão de localização negada.');
+        }
+      }
+
+      if (permission == LocationPermission.deniedForever) {
+        throw Exception(
+            'Permissão negada permanentemente. Habilite nas configurações.');
+      }
+
+      // 2. Get Location
+      // Use LocationSettings for time limit (if needed, though getCurrentPosition defaults are usually fine)
+      // For basic usage and to avoid deprecation warning:
+      final position = await Geolocator.getCurrentPosition();
+
+      // 3. Update Property
+      final propertyService = PropertyService();
+      final property = propertyService.getPropertyById(widget.propertyId!);
+
+      if (property != null) {
+        property.updateLocation(position.latitude, position.longitude);
+        await propertyService.updateProperty(property);
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Localização atualizada! Carregando previsão...'),
+              backgroundColor: Colors.green,
+            ),
+          );
+          // 4. Notify Parent to Refresh
+          widget.onLocationUpdated?.call();
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erro ao obter localização: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        setState(() => _isLoading = false);
+      }
+    }
   }
 }
