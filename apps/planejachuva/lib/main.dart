@@ -10,13 +10,12 @@ import 'firebase_options.dart';
 import 'models/registro_chuva.dart';
 import 'models/sync_queue_item.dart';
 import 'models/user_preferences.dart';
-import 'models/weather_forecast.dart';
+
 import 'screens/lista_chuvas_screen.dart';
 import 'services/chuva_service.dart';
 import 'services/migration_service.dart';
 import 'services/notification_service.dart';
 import 'services/sync_service.dart';
-import 'services/weather_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

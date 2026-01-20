@@ -164,12 +164,26 @@ class _PropertyListScreenState extends State<PropertyListScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            // Edit Property
             ListTile(
               leading: const Icon(Icons.edit),
               title: Text(l10n.propertyEdit),
               onTap: () {
                 Navigator.pop(context);
                 _navigateToForm(property: property);
+              },
+            ),
+            // Manage Talhões (NEW)
+            ListTile(
+              leading: const Icon(Icons.grid_view),
+              title: const Text('Gerenciar Talhões'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(
+                  context,
+                  '/talhoes',
+                  arguments: property.id,
+                );
               },
             ),
             if (!property.isDefault)
@@ -267,8 +281,14 @@ class _PropertyListScreenState extends State<PropertyListScreen> {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: InkWell(
-        onTap: () => _showPropertyOptions(property),
-        onLongPress: () => _navigateToForm(property: property),
+        // UX Change: Tap now goes directly to Talhões (drill down)
+        onTap: () {
+          Navigator.pushNamed(
+            context,
+            '/talhoes',
+            arguments: property.id,
+          );
+        },
         borderRadius: BorderRadius.circular(12),
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -335,43 +355,40 @@ class _PropertyListScreenState extends State<PropertyListScreen> {
                       ],
                     ),
                     const SizedBox(height: 4),
-                    if (property.totalArea != null) ...[
-                      Text(
-                        '${property.totalArea!.toStringAsFixed(1)} ha',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey[600],
+                    Text(
+                      property.totalArea != null
+                          ? '${property.totalArea!.toStringAsFixed(1)} ha'
+                          : 'Área não definida',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    // Call to Action for Talhões
+                    Row(
+                      children: [
+                        Icon(Icons.grid_view,
+                            size: 14, color: theme.colorScheme.primary),
+                        const SizedBox(width: 4),
+                        Text(
+                          'Gerenciar Talhões',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: theme.colorScheme.primary,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                    ],
-                    if (property.hasLocation) ...[
-                      const SizedBox(height: 2),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.location_on,
-                            size: 14,
-                            color: Colors.grey[500],
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            '${property.latitude!.toStringAsFixed(4)}, ${property.longitude!.toStringAsFixed(4)}',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey[500],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
+                      ],
+                    ),
                   ],
                 ),
               ),
 
-              // Arrow icon
-              Icon(
-                Icons.chevron_right,
-                color: Colors.grey[400],
+              // Actions Menu (Edit, Delete, etc)
+              IconButton(
+                icon: const Icon(Icons.more_vert),
+                onPressed: () => _showPropertyOptions(property),
               ),
             ],
           ),

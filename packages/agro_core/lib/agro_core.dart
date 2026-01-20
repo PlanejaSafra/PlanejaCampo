@@ -15,6 +15,7 @@ export 'widgets/primary_button.dart';
 export 'widgets/talhao_selector.dart';
 export 'widgets/weather_card.dart';
 export 'services/weather_service.dart';
+export 'models/weather_forecast.dart';
 
 // L10n
 export 'l10n/generated/app_localizations.dart';

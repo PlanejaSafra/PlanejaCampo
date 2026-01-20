@@ -20,7 +20,6 @@ class WeatherCard extends StatefulWidget {
 class _WeatherCardState extends State<WeatherCard> {
   Map<String, dynamic>? _weatherData;
   bool _isLoading = true;
-  String? _error;
 
   @override
   void initState() {
@@ -32,13 +31,13 @@ class _WeatherCardState extends State<WeatherCard> {
     if (!mounted) return;
     setState(() {
       _isLoading = true;
-      _error = null;
     });
 
     try {
       final data = await WeatherService().getCurrentWeather(
         widget.latitude,
         widget.longitude,
+        propertyId: widget.propertyId,
       );
 
       if (mounted) {
@@ -50,7 +49,6 @@ class _WeatherCardState extends State<WeatherCard> {
     } catch (e) {
       if (mounted) {
         setState(() {
-          _error = 'Erro ao carregar';
           _isLoading = false;
         });
       }

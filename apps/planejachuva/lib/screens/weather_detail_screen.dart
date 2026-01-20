@@ -2,9 +2,6 @@ import 'package:agro_core/agro_core.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../models/weather_forecast.dart';
-import '../services/weather_service.dart';
-
 /// Screen showing 5-day weather forecast with detailed information.
 class WeatherDetailScreen extends StatefulWidget {
   final String propertyId;
@@ -219,7 +216,8 @@ class _WeatherDetailScreenState extends State<WeatherDetailScreen> {
                     child: Text(
                       _getCacheInfo(),
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                        color:
+                            theme.colorScheme.onSurface.withValues(alpha: 0.6),
                       ),
                     ),
                   ),
@@ -325,7 +323,8 @@ class _WeatherDetailScreenState extends State<WeatherDetailScreen> {
                       Text(
                         'Precipitação',
                         style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                          color: theme.colorScheme.onSurface
+                              .withValues(alpha: 0.6),
                         ),
                       ),
                       Text(
@@ -364,7 +363,8 @@ class _WeatherDetailScreenState extends State<WeatherDetailScreen> {
                       Text(
                         'Temperatura',
                         style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                          color: theme.colorScheme.onSurface
+                              .withValues(alpha: 0.6),
                         ),
                       ),
                       Text(

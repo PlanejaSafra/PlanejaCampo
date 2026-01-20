@@ -8,7 +8,6 @@ import '../services/validation_service.dart';
 import '../widgets/estado_vazio.dart';
 import '../widgets/registro_chuva_tile.dart';
 import '../widgets/resumo_mensal_card.dart';
-import '../widgets/resumo_mensal_card.dart';
 import '../models/user_preferences.dart';
 import 'adicionar_chuva_screen.dart';
 import 'backup_screen.dart';
@@ -404,8 +403,8 @@ class _ListaChuvasScreenState extends State<ListaChuvasScreen> {
                     SliverToBoxAdapter(
                       child: WeatherCard(
                         propertyId: _defaultProperty!.id,
-                        latitude: _defaultProperty!.latitude,
-                        longitude: _defaultProperty!.longitude,
+                        latitude: _defaultProperty!.latitude ?? 0.0,
+                        longitude: _defaultProperty!.longitude ?? 0.0,
                       ),
                     ),
                   // Monthly summary card

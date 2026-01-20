@@ -2,6 +2,40 @@
 
 ---
 
+## Phase 22.0: Weather Forecast (Offline-First)
+### Status: [DONE]
+**Date Completed**: 2026-01-19
+**Priority**: 🟢 ENHANCEMENT
+**Objective**: Integrate weather forecast (Open-Meteo) into the home screen to aid planting/harvesting decisions.
+
+### Problem Analysis
+- **Decision Support**: Farmers need to know if it will rain soon to plan fieldwork.
+- **Context Switching**: Currently they leave the app to check weather sites.
+- **Connectivity**: Internet is spotty in the field.
+
+### Solution
+- **Source**: Open-Meteo API (Free, no key, accurate for coordinates).
+- **Cache Strategy**: "Stale-while-revalidate" or 6-hour TTL.
+- **UI**: Simple card on Home Screen showing Current Temp + Rain Probability.
+- **Fallback**: If offline and no cache, hide card or show "Sem conexão to update".
+
+### Implementation Summary
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 22.1 | Add `http` dependency and create `WeatherService` (with cache) | ✅ DONE |
+| 22.2 | Implement `WeatherCard` widget with iconic representation | ✅ DONE |
+| 22.3 | Integrate into `ListaChuvasScreen` (below Drought Alert) | ✅ DONE |
+
+### Files to Modify
+| File | Action | Description |
+|------|--------|-------------|
+| `pubspec.yaml` (agro_core) | MODIFY | Add `http` |
+| `packages/agro_core/lib/services/weather_service.dart` | CREATE | Fetch & Cache logic |
+| `packages/agro_core/lib/widgets/weather_card.dart` | CREATE | UI Component |
+| `apps/planejachuva/lib/screens/lista_chuvas_screen.dart` | MODIFY | Add widget to layout |
+
+---
+
 ## Phase 21.0: Intelligent Refinements
 ### Status: [DONE]
 **Date Completed**: 2026-01-19
