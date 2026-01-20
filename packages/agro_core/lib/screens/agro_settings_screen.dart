@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../l10n/generated/app_localizations.dart';
+import '../services/auth_service.dart';
 import '../services/cloud_backup_service.dart';
 
 /// Settings screen with language, theme, privacy, backup, and about options.
@@ -48,6 +49,15 @@ class AgroSettingsScreen extends StatefulWidget {
   /// App specific route handler for properties management
   final VoidCallback? onNavigateToProperties;
 
+  /// Callback to sign in with Google (for cloud backup)
+  final VoidCallback? onSignInWithGoogle;
+
+  /// Callback to export local backup file
+  final VoidCallback? onExportLocalBackup;
+
+  /// Callback to import local backup file
+  final VoidCallback? onImportLocalBackup;
+
   const AgroSettingsScreen({
     super.key,
     this.onNavigateToAbout,
@@ -64,6 +74,9 @@ class AgroSettingsScreen extends StatefulWidget {
     this.reminderEnabled = false,
     this.reminderTime,
     this.onNavigateToProperties,
+    this.onSignInWithGoogle,
+    this.onExportLocalBackup,
+    this.onImportLocalBackup,
   });
 
   @override
@@ -80,7 +93,19 @@ class _AgroSettingsScreenState extends State<AgroSettingsScreen> {
     _loadLastBackupInfo();
   }
 
+  bool get _isLoggedIn {
+    final user = AuthService.currentUser;
+    return user != null && !user.isAnonymous;
+  }
+
+  bool get _isAnonymous {
+    final user = AuthService.currentUser;
+    return user != null && user.isAnonymous;
+  }
+
   Future<void> _loadLastBackupInfo() async {
+    if (!_isLoggedIn) return;
+
     final metadata = await CloudBackupService.instance.getLastBackupMetadata();
     if (metadata != null && metadata.updated != null && mounted) {
       setState(() {
@@ -90,20 +115,26 @@ class _AgroSettingsScreenState extends State<AgroSettingsScreen> {
   }
 
   Future<void> _handleBackup() async {
+    final l10n = AgroLocalizations.of(context)!;
+
+    if (!_isLoggedIn) {
+      // Prompt to sign in
+      widget.onSignInWithGoogle?.call();
+      return;
+    }
+
     setState(() => _isBackingUp = true);
     final scaffold = ScaffoldMessenger.of(context);
-    final l10n =
-        AgroLocalizations.of(context); // Assuming keys exist or using fallback
 
     try {
       await CloudBackupService.instance.backupAll();
       await _loadLastBackupInfo();
       scaffold.showSnackBar(
-        const SnackBar(content: Text('Backup realizado com sucesso!')),
+        SnackBar(content: Text(l10n.backupCloudSuccess)),
       );
     } catch (e) {
       scaffold.showSnackBar(
-        SnackBar(content: Text('Erro no backup: $e')),
+        SnackBar(content: Text(l10n.backupCloudError(e.toString()))),
       );
     } finally {
       if (mounted) setState(() => _isBackingUp = false);
@@ -111,17 +142,24 @@ class _AgroSettingsScreenState extends State<AgroSettingsScreen> {
   }
 
   Future<void> _handleRestore() async {
+    final l10n = AgroLocalizations.of(context)!;
+
+    if (!_isLoggedIn) {
+      widget.onSignInWithGoogle?.call();
+      return;
+    }
+
     setState(() => _isBackingUp = true);
     final scaffold = ScaffoldMessenger.of(context);
 
     try {
       await CloudBackupService.instance.restoreAll();
       scaffold.showSnackBar(
-        const SnackBar(content: Text('Dados restaurados com sucesso!')),
+        SnackBar(content: Text(l10n.backupCloudRestoreSuccess)),
       );
     } catch (e) {
       scaffold.showSnackBar(
-        SnackBar(content: Text('Erro na restauração: $e')),
+        SnackBar(content: Text(l10n.backupCloudRestoreError(e.toString()))),
       );
     } finally {
       if (mounted) setState(() => _isBackingUp = false);
@@ -137,13 +175,14 @@ class _AgroSettingsScreenState extends State<AgroSettingsScreen> {
   }
 
   String _getThemeModeLabel(BuildContext context, ThemeMode mode) {
+    final l10n = AgroLocalizations.of(context)!;
     switch (mode) {
       case ThemeMode.light:
-        return 'Claro / Light';
+        return l10n.settingsThemeLight;
       case ThemeMode.dark:
-        return 'Escuro / Dark';
+        return l10n.settingsThemeDark;
       case ThemeMode.system:
-        return 'Automático / Auto';
+        return l10n.settingsThemeAuto;
     }
   }
 
@@ -194,16 +233,18 @@ class _AgroSettingsScreenState extends State<AgroSettingsScreen> {
   }
 
   Future<void> _showThemeDialog(BuildContext context) async {
+    final l10n = AgroLocalizations.of(context)!;
+
     await showDialog<ThemeMode>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Tema / Theme'),
+        title: Text(l10n.settingsTheme),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             RadioListTile<ThemeMode>(
-              title: const Text('Automático / Auto'),
-              subtitle: const Text('Segue o sistema / Follows system'),
+              title: Text(l10n.settingsThemeAuto),
+              subtitle: Text(l10n.settingsThemeFollowsSystem),
               value: ThemeMode.system,
               groupValue: widget.currentThemeMode,
               onChanged: (value) {
@@ -212,7 +253,7 @@ class _AgroSettingsScreenState extends State<AgroSettingsScreen> {
               },
             ),
             RadioListTile<ThemeMode>(
-              title: const Text('Claro / Light'),
+              title: Text(l10n.settingsThemeLight),
               subtitle: const Text('☀️'),
               value: ThemeMode.light,
               groupValue: widget.currentThemeMode,
@@ -222,7 +263,7 @@ class _AgroSettingsScreenState extends State<AgroSettingsScreen> {
               },
             ),
             RadioListTile<ThemeMode>(
-              title: const Text('Escuro / Dark'),
+              title: Text(l10n.settingsThemeDark),
               subtitle: const Text('🌙'),
               value: ThemeMode.dark,
               groupValue: widget.currentThemeMode,
@@ -288,10 +329,11 @@ class _AgroSettingsScreenState extends State<AgroSettingsScreen> {
                     : null,
               ),
               const Divider(),
+
               // Theme option
               ListTile(
                 leading: const Icon(Icons.brightness_6),
-                title: const Text('Tema / Theme'),
+                title: Text(l10n.settingsTheme),
                 subtitle:
                     Text(_getThemeModeLabel(context, widget.currentThemeMode)),
                 trailing: const Icon(Icons.chevron_right),
@@ -300,11 +342,12 @@ class _AgroSettingsScreenState extends State<AgroSettingsScreen> {
                     : null,
               ),
               const Divider(),
+
               // Notifications Section
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
                 child: Text(
-                  'Notificações / Notifications',
+                  l10n.settingsNotifications,
                   style: theme.textTheme.titleSmall?.copyWith(
                     color: theme.colorScheme.primary,
                   ),
@@ -312,11 +355,12 @@ class _AgroSettingsScreenState extends State<AgroSettingsScreen> {
               ),
               SwitchListTile(
                 secondary: const Icon(Icons.notifications_active_outlined),
-                title: const Text('Lembrete Diário / Daily Reminder'),
+                title: Text(l10n.settingsDailyReminder),
                 subtitle: Text(
                   widget.reminderEnabled
-                      ? 'Diariamente às ${_formatTime(widget.reminderTime)} / Daily at ${_formatTime(widget.reminderTime)}'
-                      : 'Desativado / Disabled',
+                      ? l10n.settingsReminderDailyAt(
+                          _formatTime(widget.reminderTime))
+                      : l10n.settingsReminderDisabled,
                 ),
                 value: widget.reminderEnabled,
                 onChanged: (value) {
@@ -331,8 +375,8 @@ class _AgroSettingsScreenState extends State<AgroSettingsScreen> {
               ),
               if (widget.reminderEnabled)
                 ListTile(
-                  leading: const SizedBox(width: 24), // Indent
-                  title: const Text('Horário / Time'),
+                  leading: const SizedBox(width: 24),
+                  title: Text(l10n.settingsReminderTime),
                   subtitle: Text(_formatTime(widget.reminderTime)),
                   trailing: const Icon(Icons.edit),
                   onTap: () => _showTimePicker(context),
@@ -340,32 +384,173 @@ class _AgroSettingsScreenState extends State<AgroSettingsScreen> {
 
               const Divider(),
 
-              // Cloud Backup Section
+              // =============================================
+              // CLOUD BACKUP SECTION (Prominent)
+              // =============================================
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                child: Row(
+                  children: [
+                    Icon(Icons.cloud, color: theme.colorScheme.primary),
+                    const SizedBox(width: 8),
+                    Text(
+                      l10n.backupCloudSection,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        color: theme.colorScheme.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              // Cloud Backup Card
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: Card(
+                  elevation: 2,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    side: BorderSide(
+                      color: theme.colorScheme.primary.withValues(alpha: 0.3),
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Description
+                        Text(
+                          l10n.backupCloudDescription,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+
+                        // Not logged in state
+                        if (!_isLoggedIn) ...[
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.surfaceContainerHighest,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.info_outline,
+                                  color: theme.colorScheme.primary,
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Text(
+                                    _isAnonymous
+                                        ? l10n.backupCloudAnonymousWarning
+                                        : l10n.backupCloudSignInRequired,
+                                    style: theme.textTheme.bodySmall,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          SizedBox(
+                            width: double.infinity,
+                            child: FilledButton.icon(
+                              onPressed: widget.onSignInWithGoogle,
+                              icon: const Icon(Icons.login),
+                              label: Text(l10n.backupCloudSignInButton),
+                            ),
+                          ),
+                        ],
+
+                        // Logged in state
+                        if (_isLoggedIn) ...[
+                          // Last backup info
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.primaryContainer
+                                  .withValues(alpha: 0.3),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.schedule,
+                                  size: 20,
+                                  color: theme.colorScheme.primary,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  _lastBackupDate != null
+                                      ? l10n.backupCloudLastBackup(
+                                          _lastBackupDate!)
+                                      : l10n.backupCloudNeverDone,
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: theme.colorScheme.primary,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+
+                          // Backup and Restore buttons
+                          Row(
+                            children: [
+                              Expanded(
+                                child: FilledButton.icon(
+                                  onPressed: _isBackingUp ? null : _handleBackup,
+                                  icon: const Icon(Icons.cloud_upload),
+                                  label: Text(l10n.backupCloudNow),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: OutlinedButton.icon(
+                                  onPressed:
+                                      _isBackingUp ? null : _handleRestore,
+                                  icon: const Icon(Icons.cloud_download),
+                                  label: Text(l10n.backupCloudRestore),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+
+              // =============================================
+              // LOCAL BACKUP SECTION (Smaller)
+              // =============================================
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
                 child: Text(
-                  'Backup em Nuvem / Cloud Backup',
+                  l10n.backupLocalSection,
                   style: theme.textTheme.titleSmall?.copyWith(
-                    color: theme.colorScheme.primary,
+                    color: theme.colorScheme.onSurfaceVariant,
                   ),
                 ),
               ),
               ListTile(
-                leading: const Icon(Icons.cloud_upload_outlined),
-                title: const Text('Fazer Backup Agora'),
-                subtitle: Text(_lastBackupDate != null
-                    ? 'Último: $_lastBackupDate'
-                    : 'Nunca realizado'),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: _handleBackup,
+                dense: true,
+                leading: const Icon(Icons.save_alt, size: 20),
+                title: Text(l10n.backupLocalExport),
+                subtitle: Text(l10n.backupLocalExportDesc),
+                onTap: widget.onExportLocalBackup,
               ),
               ListTile(
-                leading: const Icon(Icons.cloud_download_outlined),
-                title: const Text('Restaurar Backup'),
-                subtitle: const Text('Substitui dados locais'),
-                trailing: const Icon(Icons.warning_amber_rounded,
-                    color: Colors.orange),
-                onTap: _handleRestore,
+                dense: true,
+                leading: const Icon(Icons.file_upload_outlined, size: 20),
+                title: Text(l10n.backupLocalImport),
+                subtitle: Text(l10n.backupLocalImportDesc),
+                onTap: widget.onImportLocalBackup,
               ),
 
               const Divider(),
@@ -374,7 +559,7 @@ class _AgroSettingsScreenState extends State<AgroSettingsScreen> {
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
                 child: Text(
-                  'Privacidade e Dados / Privacy & Data',
+                  l10n.settingsPrivacyData,
                   style: theme.textTheme.titleSmall?.copyWith(
                     color: theme.colorScheme.primary,
                   ),
@@ -383,12 +568,14 @@ class _AgroSettingsScreenState extends State<AgroSettingsScreen> {
               // Manage consents
               ListTile(
                 leading: const Icon(Icons.shield_outlined),
-                title: const Text('Gerenciar Consentimentos / Manage Consents'),
+                title: Text(l10n.settingsManageConsents),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: widget.onNavigateToPrivacy,
               ),
+
               const Divider(),
-              // Property & Talhão management (Phase 19)
+
+              // Property & Talhão management
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
                 child: Text(
@@ -411,34 +598,37 @@ class _AgroSettingsScreenState extends State<AgroSettingsScreen> {
                   }
                 },
               ),
-              // Cloud sync toggle (Existing preference)
+
+              // Cloud sync toggle
               SwitchListTile(
                 secondary: const Icon(Icons.cloud_sync),
-                title: const Text('Sincronizar Preferências / Sync Prefs'),
-                subtitle: const Text(
-                  'Tema e configurações básicas',
-                ),
+                title: Text(l10n.settingsSyncPrefs),
+                subtitle: Text(l10n.settingsSyncPrefsDesc),
                 value: widget.cloudSyncEnabled,
                 onChanged: widget.onToggleCloudSync,
               ),
+
               // Export data (LGPD)
               ListTile(
                 leading: const Icon(Icons.download_outlined),
-                title: const Text('Exportar Meus Dados / Export My Data'),
-                subtitle: const Text('LGPD/GDPR - Portabilidade'),
+                title: Text(l10n.settingsExportMyData),
+                subtitle: Text(l10n.settingsExportMyDataDesc),
                 onTap: widget.onExportData,
               ),
+
               // Delete cloud data
               ListTile(
                 leading: Icon(Icons.delete_outline, color: Colors.red[700]),
                 title: Text(
-                  'Deletar Dados da Nuvem / Delete Cloud Data',
+                  l10n.settingsDeleteCloudData,
                   style: TextStyle(color: Colors.red[700]),
                 ),
-                subtitle: const Text('Mantém dados locais / Keeps local data'),
+                subtitle: Text(l10n.settingsDeleteCloudDataDesc),
                 onTap: widget.onDeleteCloudData,
               ),
+
               const Divider(),
+
               // About the app
               ListTile(
                 leading: const Icon(Icons.info_outline),
@@ -446,8 +636,12 @@ class _AgroSettingsScreenState extends State<AgroSettingsScreen> {
                 trailing: const Icon(Icons.chevron_right),
                 onTap: widget.onNavigateToAbout,
               ),
+
+              const SizedBox(height: 24),
             ],
           ),
+
+          // Loading overlay
           if (_isBackingUp)
             Container(
               color: Colors.black54,

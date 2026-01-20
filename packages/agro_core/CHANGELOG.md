@@ -2,6 +2,33 @@
 
 ---
 
+## Phase CORE-41: Cloud Backup UX Improvements
+
+### Status: [DONE]
+**Date Completed**: 2026-01-20
+**Priority**: 🔵 FIX
+**Objective**: Improve Cloud Backup UX - show login prompt when not authenticated, internationalize all strings, separate cloud and local backup.
+
+### Implementation Summary
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 41.1 | Add l10n strings for backup, theme, notifications | ✅ DONE |
+| 41.2 | Check auth status in AgroSettingsScreen | ✅ DONE |
+| 41.3 | Show "Sign in with Google" prompt if not logged in | ✅ DONE |
+| 41.4 | Separate Cloud Backup (prominent) and Local Backup (smaller) | ✅ DONE |
+| 41.5 | Add callbacks: onSignInWithGoogle, onExportLocalBackup, onImportLocalBackup | ✅ DONE |
+
+### Files Modified
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/l10n/arb/app_pt.arb` | MODIFY | Add ~25 backup/settings strings |
+| `lib/l10n/arb/app_en.arb` | MODIFY | Add ~25 backup/settings strings |
+| `lib/screens/agro_settings_screen.dart` | MODIFY | Complete rewrite with auth check, l10n, separated backup sections |
+
+---
+
 ## Phase CORE-40: Hail Detection Alert
 
 ### Status: [DONE]

@@ -360,5 +360,74 @@
         "type": "String"
       }
     }
-  }
+  },
+
+  "settingsTheme": "Theme",
+  "settingsThemeAuto": "Auto",
+  "settingsThemeLight": "Light",
+  "settingsThemeDark": "Dark",
+  "settingsThemeFollowsSystem": "Follows system",
+  "settingsNotifications": "Notifications",
+  "settingsDailyReminder": "Daily Reminder",
+  "settingsReminderDailyAt": "Daily at {time}",
+  "@settingsReminderDailyAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsReminderDisabled": "Disabled",
+  "settingsReminderTime": "Time",
+
+  "backupCloudSection": "Cloud Backup",
+  "backupCloudDescription": "Securely sync your data with your Google account",
+  "backupCloudNow": "Backup Now",
+  "backupCloudLastBackup": "Last backup: {date}",
+  "@backupCloudLastBackup": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "backupCloudNeverDone": "No backup yet",
+  "backupCloudRestore": "Restore from Cloud",
+  "backupCloudRestoreDesc": "Replaces local data with backup",
+  "backupCloudSuccess": "Backup completed successfully!",
+  "backupCloudRestoreSuccess": "Data restored successfully!",
+  "backupCloudError": "Backup error: {error}",
+  "@backupCloudError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "backupCloudRestoreError": "Restore error: {error}",
+  "@backupCloudRestoreError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "backupCloudSignInRequired": "Sign in with Google to use cloud backup",
+  "backupCloudSignInButton": "Sign in with Google",
+  "backupCloudAnonymousWarning": "Create a Google account to save your data to the cloud",
+
+  "backupLocalSection": "Local Backup",
+  "backupLocalExport": "Export to File",
+  "backupLocalExportDesc": "Save data to your device",
+  "backupLocalImport": "Import from File",
+  "backupLocalImportDesc": "Restore from a local file",
+
+  "settingsPrivacyData": "Privacy & Data",
+  "settingsManageConsents": "Manage Consents",
+  "settingsSyncPrefs": "Sync Preferences",
+  "settingsSyncPrefsDesc": "Theme and basic settings",
+  "settingsExportMyData": "Export My Data",
+  "settingsExportMyDataDesc": "LGPD/GDPR - Data portability",
+  "settingsDeleteCloudData": "Delete Cloud Data",
+  "settingsDeleteCloudDataDesc": "Keeps local data"
 }

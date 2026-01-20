@@ -795,4 +795,123 @@ class AgroLocalizationsEn extends AgroLocalizations {
   String weatherErrorGettingLocation(String error) {
     return 'Error getting location: $error';
   }
+
+  @override
+  String get settingsTheme => 'Theme';
+
+  @override
+  String get settingsThemeAuto => 'Auto';
+
+  @override
+  String get settingsThemeLight => 'Light';
+
+  @override
+  String get settingsThemeDark => 'Dark';
+
+  @override
+  String get settingsThemeFollowsSystem => 'Follows system';
+
+  @override
+  String get settingsNotifications => 'Notifications';
+
+  @override
+  String get settingsDailyReminder => 'Daily Reminder';
+
+  @override
+  String settingsReminderDailyAt(String time) {
+    return 'Daily at $time';
+  }
+
+  @override
+  String get settingsReminderDisabled => 'Disabled';
+
+  @override
+  String get settingsReminderTime => 'Time';
+
+  @override
+  String get backupCloudSection => 'Cloud Backup';
+
+  @override
+  String get backupCloudDescription => 'Securely sync your data with your Google account';
+
+  @override
+  String get backupCloudNow => 'Backup Now';
+
+  @override
+  String backupCloudLastBackup(String date) {
+    return 'Last backup: $date';
+  }
+
+  @override
+  String get backupCloudNeverDone => 'No backup yet';
+
+  @override
+  String get backupCloudRestore => 'Restore from Cloud';
+
+  @override
+  String get backupCloudRestoreDesc => 'Replaces local data with backup';
+
+  @override
+  String get backupCloudSuccess => 'Backup completed successfully!';
+
+  @override
+  String get backupCloudRestoreSuccess => 'Data restored successfully!';
+
+  @override
+  String backupCloudError(String error) {
+    return 'Backup error: $error';
+  }
+
+  @override
+  String backupCloudRestoreError(String error) {
+    return 'Restore error: $error';
+  }
+
+  @override
+  String get backupCloudSignInRequired => 'Sign in with Google to use cloud backup';
+
+  @override
+  String get backupCloudSignInButton => 'Sign in with Google';
+
+  @override
+  String get backupCloudAnonymousWarning => 'Create a Google account to save your data to the cloud';
+
+  @override
+  String get backupLocalSection => 'Local Backup';
+
+  @override
+  String get backupLocalExport => 'Export to File';
+
+  @override
+  String get backupLocalExportDesc => 'Save data to your device';
+
+  @override
+  String get backupLocalImport => 'Import from File';
+
+  @override
+  String get backupLocalImportDesc => 'Restore from a local file';
+
+  @override
+  String get settingsPrivacyData => 'Privacy & Data';
+
+  @override
+  String get settingsManageConsents => 'Manage Consents';
+
+  @override
+  String get settingsSyncPrefs => 'Sync Preferences';
+
+  @override
+  String get settingsSyncPrefsDesc => 'Theme and basic settings';
+
+  @override
+  String get settingsExportMyData => 'Export My Data';
+
+  @override
+  String get settingsExportMyDataDesc => 'LGPD/GDPR - Data portability';
+
+  @override
+  String get settingsDeleteCloudData => 'Delete Cloud Data';
+
+  @override
+  String get settingsDeleteCloudDataDesc => 'Keeps local data';
 }

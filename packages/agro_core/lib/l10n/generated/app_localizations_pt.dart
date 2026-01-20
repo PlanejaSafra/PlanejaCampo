@@ -795,4 +795,123 @@ class AgroLocalizationsPt extends AgroLocalizations {
   String weatherErrorGettingLocation(String error) {
     return 'Erro ao obter localização: $error';
   }
+
+  @override
+  String get settingsTheme => 'Tema';
+
+  @override
+  String get settingsThemeAuto => 'Automático';
+
+  @override
+  String get settingsThemeLight => 'Claro';
+
+  @override
+  String get settingsThemeDark => 'Escuro';
+
+  @override
+  String get settingsThemeFollowsSystem => 'Segue o sistema';
+
+  @override
+  String get settingsNotifications => 'Notificações';
+
+  @override
+  String get settingsDailyReminder => 'Lembrete Diário';
+
+  @override
+  String settingsReminderDailyAt(String time) {
+    return 'Diariamente às $time';
+  }
+
+  @override
+  String get settingsReminderDisabled => 'Desativado';
+
+  @override
+  String get settingsReminderTime => 'Horário';
+
+  @override
+  String get backupCloudSection => 'Backup na Nuvem';
+
+  @override
+  String get backupCloudDescription => 'Sincronize seus dados de forma segura com sua conta Google';
+
+  @override
+  String get backupCloudNow => 'Fazer Backup Agora';
+
+  @override
+  String backupCloudLastBackup(String date) {
+    return 'Último backup: $date';
+  }
+
+  @override
+  String get backupCloudNeverDone => 'Nenhum backup realizado';
+
+  @override
+  String get backupCloudRestore => 'Restaurar da Nuvem';
+
+  @override
+  String get backupCloudRestoreDesc => 'Substitui dados locais pelo backup';
+
+  @override
+  String get backupCloudSuccess => 'Backup realizado com sucesso!';
+
+  @override
+  String get backupCloudRestoreSuccess => 'Dados restaurados com sucesso!';
+
+  @override
+  String backupCloudError(String error) {
+    return 'Erro no backup: $error';
+  }
+
+  @override
+  String backupCloudRestoreError(String error) {
+    return 'Erro na restauração: $error';
+  }
+
+  @override
+  String get backupCloudSignInRequired => 'Entre com Google para usar o backup na nuvem';
+
+  @override
+  String get backupCloudSignInButton => 'Entrar com Google';
+
+  @override
+  String get backupCloudAnonymousWarning => 'Crie uma conta Google para salvar seus dados na nuvem';
+
+  @override
+  String get backupLocalSection => 'Backup Local';
+
+  @override
+  String get backupLocalExport => 'Exportar para Arquivo';
+
+  @override
+  String get backupLocalExportDesc => 'Salva dados no seu dispositivo';
+
+  @override
+  String get backupLocalImport => 'Importar de Arquivo';
+
+  @override
+  String get backupLocalImportDesc => 'Restaura de um arquivo local';
+
+  @override
+  String get settingsPrivacyData => 'Privacidade e Dados';
+
+  @override
+  String get settingsManageConsents => 'Gerenciar Consentimentos';
+
+  @override
+  String get settingsSyncPrefs => 'Sincronizar Preferências';
+
+  @override
+  String get settingsSyncPrefsDesc => 'Tema e configurações básicas';
+
+  @override
+  String get settingsExportMyData => 'Exportar Meus Dados';
+
+  @override
+  String get settingsExportMyDataDesc => 'LGPD/GDPR - Portabilidade';
+
+  @override
+  String get settingsDeleteCloudData => 'Deletar Dados da Nuvem';
+
+  @override
+  String get settingsDeleteCloudDataDesc => 'Mantém dados locais';
 }

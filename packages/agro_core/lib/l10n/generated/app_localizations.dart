@@ -1630,6 +1630,228 @@ abstract class AgroLocalizations {
   /// In en, this message translates to:
   /// **'Error getting location: {error}'**
   String weatherErrorGettingLocation(String error);
+
+  /// No description provided for @settingsTheme.
+  ///
+  /// In en, this message translates to:
+  /// **'Theme'**
+  String get settingsTheme;
+
+  /// No description provided for @settingsThemeAuto.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto'**
+  String get settingsThemeAuto;
+
+  /// No description provided for @settingsThemeLight.
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get settingsThemeLight;
+
+  /// No description provided for @settingsThemeDark.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark'**
+  String get settingsThemeDark;
+
+  /// No description provided for @settingsThemeFollowsSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'Follows system'**
+  String get settingsThemeFollowsSystem;
+
+  /// No description provided for @settingsNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get settingsNotifications;
+
+  /// No description provided for @settingsDailyReminder.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily Reminder'**
+  String get settingsDailyReminder;
+
+  /// No description provided for @settingsReminderDailyAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily at {time}'**
+  String settingsReminderDailyAt(String time);
+
+  /// No description provided for @settingsReminderDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Disabled'**
+  String get settingsReminderDisabled;
+
+  /// No description provided for @settingsReminderTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Time'**
+  String get settingsReminderTime;
+
+  /// No description provided for @backupCloudSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Cloud Backup'**
+  String get backupCloudSection;
+
+  /// No description provided for @backupCloudDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Securely sync your data with your Google account'**
+  String get backupCloudDescription;
+
+  /// No description provided for @backupCloudNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup Now'**
+  String get backupCloudNow;
+
+  /// No description provided for @backupCloudLastBackup.
+  ///
+  /// In en, this message translates to:
+  /// **'Last backup: {date}'**
+  String backupCloudLastBackup(String date);
+
+  /// No description provided for @backupCloudNeverDone.
+  ///
+  /// In en, this message translates to:
+  /// **'No backup yet'**
+  String get backupCloudNeverDone;
+
+  /// No description provided for @backupCloudRestore.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore from Cloud'**
+  String get backupCloudRestore;
+
+  /// No description provided for @backupCloudRestoreDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Replaces local data with backup'**
+  String get backupCloudRestoreDesc;
+
+  /// No description provided for @backupCloudSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup completed successfully!'**
+  String get backupCloudSuccess;
+
+  /// No description provided for @backupCloudRestoreSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Data restored successfully!'**
+  String get backupCloudRestoreSuccess;
+
+  /// No description provided for @backupCloudError.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup error: {error}'**
+  String backupCloudError(String error);
+
+  /// No description provided for @backupCloudRestoreError.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore error: {error}'**
+  String backupCloudRestoreError(String error);
+
+  /// No description provided for @backupCloudSignInRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in with Google to use cloud backup'**
+  String get backupCloudSignInRequired;
+
+  /// No description provided for @backupCloudSignInButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in with Google'**
+  String get backupCloudSignInButton;
+
+  /// No description provided for @backupCloudAnonymousWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a Google account to save your data to the cloud'**
+  String get backupCloudAnonymousWarning;
+
+  /// No description provided for @backupLocalSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Local Backup'**
+  String get backupLocalSection;
+
+  /// No description provided for @backupLocalExport.
+  ///
+  /// In en, this message translates to:
+  /// **'Export to File'**
+  String get backupLocalExport;
+
+  /// No description provided for @backupLocalExportDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Save data to your device'**
+  String get backupLocalExportDesc;
+
+  /// No description provided for @backupLocalImport.
+  ///
+  /// In en, this message translates to:
+  /// **'Import from File'**
+  String get backupLocalImport;
+
+  /// No description provided for @backupLocalImportDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore from a local file'**
+  String get backupLocalImportDesc;
+
+  /// No description provided for @settingsPrivacyData.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy & Data'**
+  String get settingsPrivacyData;
+
+  /// No description provided for @settingsManageConsents.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Consents'**
+  String get settingsManageConsents;
+
+  /// No description provided for @settingsSyncPrefs.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync Preferences'**
+  String get settingsSyncPrefs;
+
+  /// No description provided for @settingsSyncPrefsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Theme and basic settings'**
+  String get settingsSyncPrefsDesc;
+
+  /// No description provided for @settingsExportMyData.
+  ///
+  /// In en, this message translates to:
+  /// **'Export My Data'**
+  String get settingsExportMyData;
+
+  /// No description provided for @settingsExportMyDataDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'LGPD/GDPR - Data portability'**
+  String get settingsExportMyDataDesc;
+
+  /// No description provided for @settingsDeleteCloudData.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Cloud Data'**
+  String get settingsDeleteCloudData;
+
+  /// No description provided for @settingsDeleteCloudDataDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Keeps local data'**
+  String get settingsDeleteCloudDataDesc;
 }
 
 class _AgroLocalizationsDelegate extends LocalizationsDelegate<AgroLocalizations> {

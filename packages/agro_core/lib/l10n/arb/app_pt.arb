@@ -360,5 +360,74 @@
         "type": "String"
       }
     }
-  }
+  },
+
+  "settingsTheme": "Tema",
+  "settingsThemeAuto": "Automático",
+  "settingsThemeLight": "Claro",
+  "settingsThemeDark": "Escuro",
+  "settingsThemeFollowsSystem": "Segue o sistema",
+  "settingsNotifications": "Notificações",
+  "settingsDailyReminder": "Lembrete Diário",
+  "settingsReminderDailyAt": "Diariamente às {time}",
+  "@settingsReminderDailyAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsReminderDisabled": "Desativado",
+  "settingsReminderTime": "Horário",
+
+  "backupCloudSection": "Backup na Nuvem",
+  "backupCloudDescription": "Sincronize seus dados de forma segura com sua conta Google",
+  "backupCloudNow": "Fazer Backup Agora",
+  "backupCloudLastBackup": "Último backup: {date}",
+  "@backupCloudLastBackup": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "backupCloudNeverDone": "Nenhum backup realizado",
+  "backupCloudRestore": "Restaurar da Nuvem",
+  "backupCloudRestoreDesc": "Substitui dados locais pelo backup",
+  "backupCloudSuccess": "Backup realizado com sucesso!",
+  "backupCloudRestoreSuccess": "Dados restaurados com sucesso!",
+  "backupCloudError": "Erro no backup: {error}",
+  "@backupCloudError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "backupCloudRestoreError": "Erro na restauração: {error}",
+  "@backupCloudRestoreError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "backupCloudSignInRequired": "Entre com Google para usar o backup na nuvem",
+  "backupCloudSignInButton": "Entrar com Google",
+  "backupCloudAnonymousWarning": "Crie uma conta Google para salvar seus dados na nuvem",
+
+  "backupLocalSection": "Backup Local",
+  "backupLocalExport": "Exportar para Arquivo",
+  "backupLocalExportDesc": "Salva dados no seu dispositivo",
+  "backupLocalImport": "Importar de Arquivo",
+  "backupLocalImportDesc": "Restaura de um arquivo local",
+
+  "settingsPrivacyData": "Privacidade e Dados",
+  "settingsManageConsents": "Gerenciar Consentimentos",
+  "settingsSyncPrefs": "Sincronizar Preferências",
+  "settingsSyncPrefsDesc": "Tema e configurações básicas",
+  "settingsExportMyData": "Exportar Meus Dados",
+  "settingsExportMyDataDesc": "LGPD/GDPR - Portabilidade",
+  "settingsDeleteCloudData": "Deletar Dados da Nuvem",
+  "settingsDeleteCloudDataDesc": "Mantém dados locais"
 }
