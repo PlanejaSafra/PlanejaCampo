@@ -230,7 +230,7 @@ class RegistroChuvasTile extends StatelessWidget {
                               await ShareService().shareRainRecord(
                                 context,
                                 registro: registro,
-                                propertyName: property.nome,
+                                propertyName: property.name,
                               );
                             }
                           },

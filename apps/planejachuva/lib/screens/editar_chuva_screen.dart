@@ -207,7 +207,7 @@ class _EditarChuvaScreenState extends State<EditarChuvaScreen> {
                 await ShareService().shareRainRecord(
                   context,
                   registro: widget.registro,
-                  propertyName: property.nome,
+                  propertyName: property.name,
                 );
               }
             },
