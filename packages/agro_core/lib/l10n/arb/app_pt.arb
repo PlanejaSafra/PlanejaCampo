@@ -305,6 +305,8 @@
   "alertDroughtMessage": "Sem previsão significativa de chuva para os próximos 7 dias.",
   "alertHighWindTitle": "Ventos Fortes",
   "alertHighWindMessage": "Rajadas de vento acima de 45km/h previstas.",
+  "alertHailTitle": "Alerta de Granizo",
+  "alertHailMessage": "Tempestade com granizo prevista. Proteja veículos e estruturas.",
   "alertsSectionTitle": "Alertas Meteorológicos",
 
   "migrationTitle": "Conta já existe",

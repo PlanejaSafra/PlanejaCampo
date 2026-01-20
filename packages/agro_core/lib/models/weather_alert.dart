@@ -6,6 +6,7 @@ enum WeatherAlertType {
   storm, // Tempestade (High precip or wind)
   drought, // Estiagem (No rain for 7 days)
   highWind, // Ventos Fortes (> 45km/h)
+  hail, // Granizo (WMO codes 96, 99)
 }
 
 enum AlertSeverity {
@@ -41,6 +42,8 @@ class WeatherAlert {
         return Colors.orange;
       case WeatherAlertType.highWind:
         return Colors.teal;
+      case WeatherAlertType.hail:
+        return Colors.indigo;
     }
   }
 
@@ -56,6 +59,8 @@ class WeatherAlert {
         return Icons.warning; // water_off might be missing in this SDK version
       case WeatherAlertType.highWind:
         return Icons.air;
+      case WeatherAlertType.hail:
+        return Icons.grain; // Represents hail/ice pellets
     }
   }
 }

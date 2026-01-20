@@ -284,13 +284,25 @@ class WeatherService {
         ));
       }
 
+      // Hail Alert (WMO codes 96 and 99 - thunderstorm with hail)
+      if (f.weatherCode == 96 || f.weatherCode == 99) {
+        alerts.add(WeatherAlert(
+          type: WeatherAlertType.hail,
+          severity: f.weatherCode == 99 ? AlertSeverity.high : AlertSeverity.medium,
+          date: f.date,
+          titleKey: 'alertHailTitle',
+          messageKey: 'alertHailMessage',
+        ));
+      }
+
       // Storm Alert
       // High precip (> 50mm) OR (Strong Wind > 60km/h AND (Rain or Thunder code))
       bool heavyRain = f.precipitationMm > 50.0;
       bool strongWindStorm = f.windSpeed > 60.0 &&
           (f.weatherCode >= 51 || f.weatherCode >= 95); // Rain or Thunder
 
-      if (heavyRain || strongWindStorm) {
+      // Don't add storm if already added hail (codes 96, 99 are also thunderstorms)
+      if ((heavyRain || strongWindStorm) && f.weatherCode != 96 && f.weatherCode != 99) {
         alerts.add(WeatherAlert(
           type: WeatherAlertType.storm,
           severity: AlertSeverity.high,
@@ -298,8 +310,8 @@ class WeatherService {
           titleKey: 'alertStormTitle',
           messageKey: 'alertStormMessage',
         ));
-      } else if (f.windSpeed > 45.0) {
-        // High Wind (if not a storm)
+      } else if (f.windSpeed > 45.0 && f.weatherCode != 96 && f.weatherCode != 99) {
+        // High Wind (if not a storm or hail)
         alerts.add(WeatherAlert(
           type: WeatherAlertType.highWind,
           severity: AlertSeverity.medium,

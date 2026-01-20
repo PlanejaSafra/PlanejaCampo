@@ -1391,6 +1391,18 @@ abstract class AgroLocalizations {
   /// **'Wind gusts above 45km/h expected.'**
   String get alertHighWindMessage;
 
+  /// No description provided for @alertHailTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Hail Alert'**
+  String get alertHailTitle;
+
+  /// No description provided for @alertHailMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Thunderstorm with hail forecast. Protect vehicles and structures.'**
+  String get alertHailMessage;
+
   /// No description provided for @alertsSectionTitle.
   ///
   /// In en, this message translates to:

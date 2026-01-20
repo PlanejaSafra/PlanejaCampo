@@ -2,6 +2,35 @@
 
 ---
 
+## Phase CORE-40: Hail Detection Alert
+
+### Status: [DONE]
+**Date Completed**: 2026-01-20
+**Priority**: 🟢 ENHANCEMENT
+**Objective**: Add specific hail detection using WMO weather codes 96 and 99.
+
+### Implementation Summary
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 40.1 | Add `hail` type to WeatherAlertType enum | ✅ DONE |
+| 40.2 | Add hail detection in analyzeForecasts() | ✅ DONE |
+| 40.3 | Add l10n strings for hail alert | ✅ DONE |
+| 40.4 | Update WeatherCard/DetailScreen to display hail alert | ✅ DONE |
+
+### Files Modified
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/models/weather_alert.dart` | MODIFY | Add hail enum value, color (indigo), icon (grain) |
+| `lib/services/weather_service.dart` | MODIFY | Detect codes 96 (medium), 99 (high severity) |
+| `lib/l10n/arb/app_pt.arb` | MODIFY | Add alertHailTitle/Message |
+| `lib/l10n/arb/app_en.arb` | MODIFY | Add alertHailTitle/Message |
+| `lib/widgets/weather_card.dart` | MODIFY | Handle hail alert display |
+| `lib/screens/weather_detail_screen.dart` | MODIFY | Handle hail alert in alerts list |
+
+---
+
 ## Phase CORE-33: Cloud Backup Integration
 
 ### Status: [DONE]

@@ -444,6 +444,10 @@ class WeatherDetailScreen extends StatelessWidget {
                   title = l10n.alertHighWindTitle;
                   message = l10n.alertHighWindMessage;
                   break;
+                case 'alertHailTitle':
+                  title = l10n.alertHailTitle;
+                  message = l10n.alertHailMessage;
+                  break;
                 default:
                   title = alert.titleKey;
                   message = alert.messageKey;

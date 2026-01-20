@@ -305,6 +305,8 @@
   "alertDroughtMessage": "No significant rain forecast for the next 7 days.",
   "alertHighWindTitle": "High Winds",
   "alertHighWindMessage": "Wind gusts above 45km/h expected.",
+  "alertHailTitle": "Hail Alert",
+  "alertHailMessage": "Thunderstorm with hail forecast. Protect vehicles and structures.",
   "alertsSectionTitle": "Weather Alerts",
 
   "migrationTitle": "Account already exists",

@@ -673,6 +673,12 @@ class AgroLocalizationsEn extends AgroLocalizations {
   String get alertHighWindMessage => 'Wind gusts above 45km/h expected.';
 
   @override
+  String get alertHailTitle => 'Hail Alert';
+
+  @override
+  String get alertHailMessage => 'Thunderstorm with hail forecast. Protect vehicles and structures.';
+
+  @override
   String get alertsSectionTitle => 'Weather Alerts';
 
   @override

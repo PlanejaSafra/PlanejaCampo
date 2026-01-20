@@ -673,6 +673,12 @@ class AgroLocalizationsPt extends AgroLocalizations {
   String get alertHighWindMessage => 'Rajadas de vento acima de 45km/h previstas.';
 
   @override
+  String get alertHailTitle => 'Alerta de Granizo';
+
+  @override
+  String get alertHailMessage => 'Tempestade com granizo prevista. Proteja veículos e estruturas.';
+
+  @override
   String get alertsSectionTitle => 'Alertas Meteorológicos';
 
   @override

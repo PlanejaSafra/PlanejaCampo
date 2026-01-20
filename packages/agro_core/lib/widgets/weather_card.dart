@@ -251,6 +251,9 @@ class _WeatherCardState extends State<WeatherCard> {
                   case 'alertHighWindTitle':
                     title = l10n.alertHighWindTitle;
                     break;
+                  case 'alertHailTitle':
+                    title = l10n.alertHailTitle;
+                    break;
                   default:
                     title = alert.titleKey;
                 }
