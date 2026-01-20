@@ -19,6 +19,7 @@ export 'services/notification_service.dart';
 export 'services/background_service.dart';
 export 'services/heatmap_service.dart';
 export 'models/weather_forecast.dart';
+export 'services/home_widget_service.dart';
 
 // L10n
 export 'l10n/generated/app_localizations.dart';

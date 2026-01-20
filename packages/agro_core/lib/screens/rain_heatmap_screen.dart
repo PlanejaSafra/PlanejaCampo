@@ -77,6 +77,15 @@ class _RainHeatmapScreenState extends State<RainHeatmapScreen> {
         _circles.addAll(newCircles);
         _isLoading = false;
       });
+
+      if (points.isEmpty) {
+        final l10n = AgroLocalizations.of(context)!;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l10n.heatmapNoData),
+          ),
+        );
+      }
     }
   }
 

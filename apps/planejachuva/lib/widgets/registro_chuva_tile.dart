@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../models/registro_chuva.dart';
+import '../services/share_service.dart';
 
 /// Tile widget for displaying a single rainfall record.
 class RegistroChuvasTile extends StatelessWidget {
@@ -155,7 +156,8 @@ class RegistroChuvasTile extends StatelessWidget {
                             // Only show if property has more than one talhão
                             final talhaoCount = TalhaoService()
                                 .countByProperty(talhao.propertyId);
-                            if (talhaoCount <= 1) return const SizedBox.shrink();
+                            if (talhaoCount <= 1)
+                              return const SizedBox.shrink();
 
                             return Padding(
                               padding: const EdgeInsets.only(top: 2),
@@ -208,12 +210,42 @@ class RegistroChuvasTile extends StatelessWidget {
                         color: _getIntensityColor(context),
                       ),
                     ),
-                    Text(
-                      l10n.chuvaMm,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color:
-                            theme.colorScheme.onSurface.withValues(alpha: 0.6),
-                      ),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          l10n.chuvaMm,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onSurface
+                                .withValues(alpha: 0.6),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        // Share Button
+                        InkWell(
+                          onTap: () async {
+                            final property = await PropertyService()
+                                .getById(registro.propertyId);
+                            if (context.mounted && property != null) {
+                              await ShareService().shareRainRecord(
+                                context,
+                                registro: registro,
+                                propertyName: property.nome,
+                              );
+                            }
+                          },
+                          borderRadius: BorderRadius.circular(20),
+                          child: Padding(
+                            padding: const EdgeInsets.all(4),
+                            child: Icon(
+                              Icons.share_outlined,
+                              size: 16,
+                              color: theme.colorScheme.primary
+                                  .withValues(alpha: 0.7),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),

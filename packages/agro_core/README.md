@@ -24,7 +24,9 @@ Biblioteca central de componentes, serviços e modelos reutilizáveis para a su�
 *   **Privacidade e LGPD**: Fluxo de consentimento, termos de uso, política de privacidade, **portabilidade de dados (Art. 18 V)** e **exclusão de dados (Art. 18 VI)**.
 *   **Componentes UI**: Drawer de navegação, Cards, Botões, Seletores e Gráficos padronizados.
 *   **Internacionalização (i18n)**: Suporte nativo a múltiplos idiomas (PT-BR, EN).
-*   **Integrações**: Previsão do tempo (Open-Meteo), Seleção de Localização (OpenStreetMap).
+*   **Integrações**: Previsão do tempo (Open-Meteo), Seleção de Localização (Google Maps).
+*   **Notificações Inteligentes**: Alertas de chuva em background (minutely forecast).
+*   **Mapa Colaborativo**: Visualização de chuva em tempo real via mapa de calor.
 
 ## Instalação
 

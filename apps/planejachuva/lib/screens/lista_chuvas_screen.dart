@@ -10,7 +10,6 @@ import '../widgets/registro_chuva_tile.dart';
 import '../widgets/resumo_mensal_card.dart';
 import '../models/user_preferences.dart';
 import 'adicionar_chuva_screen.dart';
-import 'backup_screen.dart';
 import 'configuracoes_screen.dart';
 import 'editar_chuva_screen.dart';
 import 'estatisticas_screen.dart';
@@ -217,11 +216,22 @@ class _ListaChuvasScreenState extends State<ListaChuvasScreen> {
           );
         }
         break;
-      case 'backup':
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const BackupScreen()),
-        ).then((_) => _carregarDados());
+      case AgroRouteKeys.heatmap:
+        if (_defaultProperty != null) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => const RainHeatmapScreen(),
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content:
+                  Text('Configure uma propriedade com localização primeiro'),
+            ),
+          );
+        }
         break;
     }
   }
@@ -385,9 +395,9 @@ class _ListaChuvasScreenState extends State<ListaChuvasScreen> {
             title: 'Estatísticas Regionais',
           ),
           AgroDrawerItem(
-            key: 'backup',
-            icon: Icons.backup,
-            title: l10n.chuvaBackup,
+            key: AgroRouteKeys.heatmap,
+            icon: Icons.map_outlined,
+            title: l10n.drawerHeatmap,
           ),
         ],
       ),

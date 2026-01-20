@@ -9,6 +9,7 @@ import '../screens/terms_of_use_screen.dart';
 import '../services/property_service.dart';
 import 'agro_privacy_keys.dart';
 import 'agro_privacy_store.dart';
+import '../services/notification_service.dart';
 
 /// Screen 2: Optional consents.
 /// User can accept all, decline all, or skip - all options lead to the app.
@@ -77,6 +78,11 @@ class _ConsentScreenState extends State<ConsentScreen> {
           );
         }
       }
+
+      // 4. Request Notification Permissions (Core feature for rain alerts)
+      // We ask here so the user is set up for alerts from the start.
+      await AgroNotificationService().init();
+      await AgroNotificationService().requestPermissions();
 
       await AgroPrivacyStore.setOnboardingCompleted(true);
       widget.onCompleted?.call();

@@ -5,7 +5,7 @@ Internalize CLAUDE.md, README.md, ARCHITECTURE.md e CHANGELOG.md do planejachuva
 
 Analise as fases 350+ do CHANGELOG  e verifique se estão corretamente e totalmente implementadas, e aponte gaps, falhas e possíveis não implementações.
 
-Crie uma fase para isso.
+Crie fase para isso.
 Atualize o CHANGELOG com esta fase e todas as etapas, de forma detalhada.
 Implemente todas as estapas, sem placeholders, sem placebos, sem abreviações ou simplificações, sem hardcodeds, e sem deixar GAPS.
 Sempre reanalise o CHANGELOG e o ARCHITECTURE para entender exatamente como o sistema está, o que já tem, o que pode ser melhorado.

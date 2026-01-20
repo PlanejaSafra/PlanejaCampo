@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 
 import '../models/registro_chuva.dart';
 import '../services/chuva_service.dart';
+import '../services/share_service.dart';
 
 /// Screen for editing an existing rainfall record.
 class EditarChuvaScreen extends StatefulWidget {
@@ -196,6 +197,21 @@ class _EditarChuvaScreenState extends State<EditarChuvaScreen> {
       appBar: AppBar(
         title: Text(l10n.chuvaEditarTitle),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.share),
+            tooltip: 'Compartilhar',
+            onPressed: () async {
+              final property =
+                  await PropertyService().getById(widget.registro.propertyId);
+              if (property != null && context.mounted) {
+                await ShareService().shareRainRecord(
+                  context,
+                  registro: widget.registro,
+                  propertyName: property.nome,
+                );
+              }
+            },
+          ),
           IconButton(
             icon: Icon(
               Icons.delete,

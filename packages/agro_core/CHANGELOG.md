@@ -2,6 +2,79 @@
 
 ---
 
+## Phase CORE-53: Comparative Charts (Safra x Safra)
+### Status: [DONE]
+**Date Completed**: 2026-01-20
+**Priority**: 🟢 ENHANCEMENT
+**Objective**: Enable year-over-year rainfall comparison to support seasonal analysis and decision making.
+
+### Implementation Summary
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 53.1 | Create `ComparativeStatsHelper` logic | ✅ DONE |
+| 53.2 | Update `EstatisticasScreen` to use TabBarView | ✅ DONE |
+| 53.3 | Implement `ComparacaoAnualChart` using `fl_chart` | ✅ DONE |
+| 53.4 | Add localized strings | ✅ DONE |
+
+### Files Modified
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/widgets/comparacao_anual_chart.dart` | CREATE | Bar chart widget using fl_chart |
+| `lib/services/comparative_stats_helper.dart` | CREATE | Logic to aggregate monthly data |
+| `lib/screens/estatisticas_screen.dart` | MODIFY | Added Comparison tab |
+| `lib/l10n/arb/app_pt.arb` | MODIFY | Added chart strings |
+
+---
+
+## Phase CORE-52: Social Sharing (Rain Card)
+### Status: [DONE]
+**Date Completed**: 2026-01-20
+**Priority**: 🟢 ENHANCEMENT
+**Objective**: Boost user engagement and brand awareness by enabling sharing of rainfall data on social networks.
+
+### Implementation Summary
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 52.1 | Create `RainCardWidget` (UI for capture) | ✅ DONE |
+| 52.2 | Implement `ShareService` with screenshot logic | ✅ DONE |
+| 52.3 | Add Share button to `RegistroChuvasTile` | ✅ DONE |
+| 52.4 | Add Share button to `EditarChuvaScreen` | ✅ DONE |
+
+### Files Modified
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/widgets/rain_card_widget.dart` | CREATE | Invisible widget for image generation |
+| `lib/services/share_service.dart` | CREATE | Captures widget and shares via share_plus |
+| `lib/widgets/registro_chuva_tile.dart` | MODIFY | Added share icon |
+| `lib/screens/editar_chuva_screen.dart` | MODIFY | Added share action in AppBar |
+
+---
+
+## Phase CORE-51: Native Home Widgets
+### Status: [DONE]
+**Date Completed**: 2026-01-20
+**Priority**: 🟢 ENHANCEMENT
+**Objective**: Provide quick access to critical information directly from the Android Home Screen.
+
+### Implementation Summary
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 51.1 | Add `home_widget` dependency | ✅ DONE |
+| 51.2 | Implement `HomeWidgetService` in `agro_core` | ✅ DONE |
+| 51.3 | Create Android Layout (`widget_layout.xml`) | ✅ DONE |
+| 51.4 | Implement `RainWidgetProvider.kt` | ✅ DONE |
+| 51.5 | Update `ChuvaService` to sync data | ✅ DONE |
+
+### Files Modified
+| File | Action | Description |
+|------|--------|-------------|
+| `android/app/src/main/res/layout/widget_layout.xml` | CREATE | Native XML layout |
+| `android/app/src/main/java/.../RainWidgetProvider.kt` | CREATE | Kotlin Widget Provider |
+| `packages/agro_core/lib/services/home_widget_service.dart` | CREATE | Dart service for data sync |
+| `lib/services/chuva_service.dart` | MODIFY | Auto-update widget on data changes |
+
+---
+
 ## Phase CORE-46: Rain Alerts Notification (Background)
 
 ### Status: [DONE]
@@ -20,6 +93,7 @@
 | 46.5 | Add permissions (POST_NOTIFICATIONS, WAKE_LOCK) in consuming apps | ✅ DONE |
 | 46.6 | Logic: Check rain every 15 min & Debounce alerts | ✅ DONE |
 | 46.7 | Fix null safety: skip properties without location | ✅ DONE |
+| 46.8 | **UX**: Request Notification Permission in `ConsentScreen` (Onboarding) | ✅ DONE |
 
 ### Files Modified
 
@@ -28,6 +102,7 @@
 | `lib/services/notification_service.dart` | CREATE | AgroNotificationService (Local) |
 | `lib/services/background_service.dart` | CREATE | Background logic (Hive/Weather check) |
 | `lib/screens/agro_settings_screen.dart` | MODIFY | Add Rain Alerts toggle |
+| `lib/privacy/consent_screen.dart` | MODIFY | Request permissions after consent |
 | `lib/l10n/arb/app_pt.arb` | MODIFY | Add Alert strings |
 | `pubspec.yaml` | MODIFY | Add workmanager dependency |
 
@@ -54,17 +129,18 @@ Apps using this feature must add to their `AndroidManifest.xml`:
 | Sub-Phase | Description | Status |
 |-----------|-------------|--------|
 | 44.1 | Research heatmap plugins (flutter_heatmap incompatible) | ✅ DONE |
-| 44.2 | Implement `HeatmapService` (Mock data) | ✅ DONE |
+| 44.2 | Implement `HeatmapService` (Mock logic removed for release) | ✅ DONE |
 | 44.3 | Implement `RainHeatmapScreen` (Circles overlay) | ✅ DONE |
 | 44.4 | Add L10n strings and export screen | ✅ DONE |
 | 44.5 | Add drawer route key (`heatmap`) | ✅ DONE |
 | 44.6 | Fix null safety: check property.hasLocation | ✅ DONE |
+| 44.7 | **UX**: Show "No data" SnackBar if empty | ✅ DONE |
 
 ### Files Modified
 
 | File | Action | Description |
 |------|--------|-------------|
-| `lib/services/heatmap_service.dart` | CREATE | Mock community rain data |
+| `lib/services/heatmap_service.dart` | CREATE | Community rain data service |
 | `lib/screens/rain_heatmap_screen.dart` | CREATE | Map with Circle overlays |
 | `lib/menu/agro_drawer_item.dart` | MODIFY | Add heatmap route key |
 | `lib/l10n/arb/app_pt.arb` | MODIFY | Add Heatmap strings |

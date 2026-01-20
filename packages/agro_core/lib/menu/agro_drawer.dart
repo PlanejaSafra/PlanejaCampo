@@ -5,7 +5,7 @@ import 'agro_drawer_item.dart';
 
 /// Reusable drawer widget for all PlanejaSafra apps.
 ///
-/// Provides standard menu items (Home, Settings, Privacy, About)
+/// Provides standard menu items (Home, Properties, Settings, About)
 /// and allows apps to add custom items via [extraItems].
 class AgroDrawer extends StatelessWidget {
   /// App name displayed in the drawer header.
@@ -15,8 +15,11 @@ class AgroDrawer extends StatelessWidget {
   final String? versionText;
 
   /// Additional menu items specific to the app.
-  /// These are rendered before "About".
+  /// These are rendered before Settings.
   final List<AgroDrawerItem> extraItems;
+
+  /// Additional menu items rendered after Settings (before Privacy/About).
+  final List<AgroDrawerItem> afterSettingsItems;
 
   /// Callback when a menu item is selected.
   /// Receives the route key (e.g., 'home', 'settings', 'privacy', 'about').
@@ -27,6 +30,7 @@ class AgroDrawer extends StatelessWidget {
     required this.appName,
     this.versionText,
     this.extraItems = const [],
+    this.afterSettingsItems = const [],
     required this.onNavigate,
   });
 
@@ -107,16 +111,18 @@ class AgroDrawer extends StatelessWidget {
               onNavigate(AgroRouteKeys.settings);
             },
           ),
+
+          // Items after Settings (e.g., Backup)
+          ...afterSettingsItems.map((item) => _DrawerTile(
+                icon: item.icon,
+                title: item.title,
+                onTap: () {
+                  Navigator.pop(context);
+                  onNavigate(item.key);
+                },
+              )),
+
           const Divider(),
-          // Privacy
-          _DrawerTile(
-            icon: Icons.privacy_tip,
-            title: l10n.drawerPrivacy,
-            onTap: () {
-              Navigator.pop(context);
-              onNavigate(AgroRouteKeys.privacy);
-            },
-          ),
           // About
           _DrawerTile(
             icon: Icons.info,

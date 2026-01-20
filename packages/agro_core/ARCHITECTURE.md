@@ -92,3 +92,16 @@ Implementa direitos do titular de dados conforme LGPD.
 *   **`DataExportService`**: Serviço para portabilidade de dados (Art. 18 V). Exporta em JSON (completo) ou CSV (planilhas) e integra com Share Sheet nativo.
 *   **UI em `AgroPrivacyScreen`**: Seção "Seus Direitos (LGPD)" com botões para exportar, excluir dados e revogar consentimentos.
 
+### 13. Notificações (`lib/services/notification_service.dart`, `background_service.dart`)
+
+Sistema de alertas locais e tarefas em segundo plano.
+
+*   **`AgroNotificationService`**: Gerencia canais e exibição de notificações locais.
+*   **`BackgroundService`**: Implementa tarefas periódicas (`workmanager`) para checar previsão do tempo e disparar alertas mesmo com app fechado.
+
+### 14. Mapa de Calor (`lib/services/heatmap_service.dart`)
+
+Visualização geoespacial de dados de chuva.
+
+*   **`HeatmapService`**: Serviço para buscar dados agregados da comunidade (atualmente via Cloud Functions ou mock).
+*   **`RainHeatmapScreen`**: Tela com Google Maps e overlays (`Circle`) para indicar intensidade de chuva.
