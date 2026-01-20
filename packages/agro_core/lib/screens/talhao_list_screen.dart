@@ -59,7 +59,7 @@ class _TalhaoListScreenState extends State<TalhaoListScreen> {
       ),
     );
 
-    if (result == true) {
+    if (result == true && mounted) {
       await _loadTalhoes();
     }
   }
@@ -236,7 +236,8 @@ class _TalhaoListScreenState extends State<TalhaoListScreen> {
   }
 
   Widget _buildSummary(ThemeData theme, AgroLocalizations l10n) {
-    final totalDividedArea = widget.talhaoService.getTotalAreaByProperty(widget.property.id);
+    final totalDividedArea =
+        widget.talhaoService.getTotalAreaByProperty(widget.property.id);
     final propertyArea = widget.property.totalArea!;
     final percentage = (totalDividedArea / propertyArea * 100).clamp(0, 100);
 
@@ -304,7 +305,8 @@ class _TalhaoListScreenState extends State<TalhaoListScreen> {
     );
   }
 
-  Widget _buildTalhaoCard(Talhao talhao, ThemeData theme, AgroLocalizations l10n) {
+  Widget _buildTalhaoCard(
+      Talhao talhao, ThemeData theme, AgroLocalizations l10n) {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: InkWell(
@@ -340,7 +342,8 @@ class _TalhaoListScreenState extends State<TalhaoListScreen> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        if (talhao.cultura != null && talhao.cultura!.isNotEmpty)
+                        if (talhao.cultura != null &&
+                            talhao.cultura!.isNotEmpty)
                           Row(
                             children: [
                               Icon(

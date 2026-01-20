@@ -2,6 +2,34 @@
 
 ---
 
+## Phase CORE-34: Data Migration & UI Polish
+
+### Status: [DONE]
+**Date Completed**: 2026-01-20
+**Priority**: 🟡 MEDIUM
+**Objective**: Ensure data integrity during updates and refine privacy management UI.
+
+### Implementation Summary
+*   **Data Migration**: Created `DataMigrationService` to initialize privacy keys with safe defaults (opt-out).
+*   **UI Polish**: Added icons to privacy switches and improved layout in `AgroPrivacyScreen`.
+*   **Version Tracking**: Added version indicator to privacy screen.
+
+---
+
+## Phase CORE-35: Privacy & Consent Updates
+
+### Status: [DONE]
+**Date Completed**: 2026-01-20
+**Priority**: 🔴 CRITICAL (LGPD)
+**Objective**: Granular consent management and "Revoke All" functionality.
+
+### Implementation Summary
+*   **Granular Getters**: Added specific getters in `AgroPrivacyStore` for Analytics, Location, Ads, and Partners.
+*   **Revoke All**: Implemented functionality to revoke all consents and sign out.
+*   **UI**: Updated `AgroPrivacyScreen` to reflect granular consents.
+
+---
+
 ## Phase CORE-39: Weather Alerts & Critical Conditions
 
 ### Status: [DONE]
@@ -34,8 +62,8 @@
 
 ## Phase CORE-38: Weather Enhancements (Wind & UI)
 
-### Status: [DOING]
-**Date Completed**: 
+### Status: [DONE]
+**Date Completed**: 2026-01-20
 **Priority**: 🟢 ENHANCEMENT
 **Objective**: Add wind speed/direction to weather forecast and improve UI to indicate property-specific data.
 

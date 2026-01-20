@@ -424,6 +424,7 @@ class _AgroPrivacyScreenState extends State<AgroPrivacyScreen> {
                     const SizedBox(height: 16),
                     // Share aggregated data
                     _ConsentSwitch(
+                      icon: Icons.analytics_outlined,
                       title: l10n.consentShareAggregated,
                       subtitle: l10n.consentShareAggregatedDesc,
                       value: _shareAggregated,
@@ -434,6 +435,7 @@ class _AgroPrivacyScreenState extends State<AgroPrivacyScreen> {
                     ),
                     // Receive regional metrics
                     _ConsentSwitch(
+                      icon: Icons.share_location_outlined,
                       title: l10n.consentReceiveRegionalMetrics,
                       subtitle: l10n.consentReceiveRegionalMetricsDesc,
                       value: _receiveMetrics,
@@ -444,6 +446,7 @@ class _AgroPrivacyScreenState extends State<AgroPrivacyScreen> {
                     ),
                     // Personalized ads
                     _ConsentSwitch(
+                      icon: Icons.campaign_outlined,
                       title: l10n.consentPersonalizedAds,
                       subtitle: l10n.consentPersonalizedAdsDesc,
                       value: _personalizedAds,
@@ -584,17 +587,29 @@ class _AgroPrivacyScreenState extends State<AgroPrivacyScreen> {
           ],
         ),
       ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.only(bottom: 16.0),
+        child: Text(
+          'v1.0.0', // Could be dynamic
+          textAlign: TextAlign.center,
+          style: theme.textTheme.labelSmall?.copyWith(
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
+          ),
+        ),
+      ),
     );
   }
 }
 
 class _ConsentSwitch extends StatelessWidget {
+  final IconData? icon;
   final String title;
   final String subtitle;
   final bool value;
   final ValueChanged<bool> onChanged;
 
   const _ConsentSwitch({
+    this.icon,
     required this.title,
     required this.subtitle,
     required this.value,
@@ -606,11 +621,21 @@ class _ConsentSwitch extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Card(
+      elevation: 0,
+      color: theme.colorScheme.surfaceContainerLow,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(
+          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+        ),
+      ),
       child: SwitchListTile(
+        secondary:
+            icon != null ? Icon(icon, color: theme.colorScheme.primary) : null,
         title: Text(
           title,
-          style: theme.textTheme.bodyMedium?.copyWith(
-            fontWeight: FontWeight.w500,
+          style: theme.textTheme.titleSmall?.copyWith(
+            fontWeight: FontWeight.w600,
           ),
         ),
         subtitle: subtitle.isEmpty
@@ -619,13 +644,15 @@ class _ConsentSwitch extends StatelessWidget {
                 padding: const EdgeInsets.only(top: 4.0),
                 child: Text(
                   subtitle,
-                  style: theme.textTheme.bodySmall,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
                 ),
               ),
         value: value,
         onChanged: onChanged,
         contentPadding: const EdgeInsets.symmetric(
-          horizontal: 12,
+          horizontal: 16,
           vertical: 8,
         ),
       ),

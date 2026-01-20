@@ -51,6 +51,7 @@ export 'services/cloud_backup_service.dart';
 // Services (LGPD Compliance)
 export 'services/data_deletion_service.dart';
 export 'services/data_export_service.dart';
+export 'services/data_migration_service.dart';
 
 // Menu
 export 'menu/agro_drawer.dart';

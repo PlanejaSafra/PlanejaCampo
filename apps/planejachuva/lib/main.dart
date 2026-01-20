@@ -52,6 +52,9 @@ Future<void> main() async {
   // Initialize privacy store
   await AgroPrivacyStore.init();
 
+  // Run data migrations (Ensure privacy defaults are set)
+  await DataMigrationService.instance.runMigrations();
+
   // Initialize cloud service
   await UserCloudService.instance.init();
   CloudBackupService.instance.registerProvider(ChuvaBackupProvider());
