@@ -436,5 +436,18 @@
   "rainStartingIn15": "Chuva começa em ~15 min",
   "rainStartingIn30": "Chuva começa em ~30 min",
   "rainStartingIn45": "Chuva começa em ~45 min",
-  "rainNextHour": "Chuva na próxima hora"
+  "rainNextHour": "Chuva na próxima hora",
+  "settingsRainAlerts": "Alertas de Chuva",
+  "settingsRainAlertsDesc": "Receba avisos antes de chover",
+  "notificationRainTitle": "Vai chover em breve!",
+  "notificationRainBody": "Chuva prevista para começar em {minutes} min.",
+  "notificationPermissionRequired": "Permissão de notificação necessária",
+  "heatmapTitle": "Mapa de Calor",
+  "heatmapLegendLight": "Leve",
+  "heatmapLegendModerate": "Moderada",
+  "heatmapLegendHeavy": "Intensa",
+  "heatmapFilter1h": "1h",
+  "heatmapFilter24h": "24h",
+  "heatmapFilter7d": "7d",
+  "drawerHeatmap": "Mapa de Chuvas"
 }

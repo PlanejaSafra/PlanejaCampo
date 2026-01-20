@@ -932,4 +932,45 @@ class AgroLocalizationsPt extends AgroLocalizations {
 
   @override
   String get rainNextHour => 'Chuva na próxima hora';
+
+  @override
+  String get settingsRainAlerts => 'Alertas de Chuva';
+
+  @override
+  String get settingsRainAlertsDesc => 'Receba avisos antes de chover';
+
+  @override
+  String get notificationRainTitle => 'Vai chover em breve!';
+
+  @override
+  String notificationRainBody(Object minutes) {
+    return 'Chuva prevista para começar em $minutes min.';
+  }
+
+  @override
+  String get notificationPermissionRequired => 'Permissão de notificação necessária';
+
+  @override
+  String get heatmapTitle => 'Mapa de Calor';
+
+  @override
+  String get heatmapLegendLight => 'Leve';
+
+  @override
+  String get heatmapLegendModerate => 'Moderada';
+
+  @override
+  String get heatmapLegendHeavy => 'Intensa';
+
+  @override
+  String get heatmapFilter1h => '1h';
+
+  @override
+  String get heatmapFilter24h => '24h';
+
+  @override
+  String get heatmapFilter7d => '7d';
+
+  @override
+  String get drawerHeatmap => 'Mapa de Chuvas';
 }

@@ -2,6 +2,76 @@
 
 ---
 
+## Phase CORE-46: Rain Alerts Notification (Background)
+
+### Status: [DONE]
+**Date Completed**: 2026-01-20
+**Priority**: 🟢 ENHANCEMENT
+**Objective**: Notify users about incoming rain (minutely forecast) even when the app is closed.
+
+### Implementation Summary
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 46.1 | Add `workmanager` & `flutter_local_notifications` | ✅ DONE |
+| 46.2 | Implement `AgroNotificationService` (Local Notifications) | ✅ DONE |
+| 46.3 | Implement `BackgroundService` (WorkManager Task) | ✅ DONE |
+| 46.4 | Integrate "Rain Alerts" toggle in Settings | ✅ DONE |
+| 46.5 | Add permissions (POST_NOTIFICATIONS, WAKE_LOCK) in consuming apps | ✅ DONE |
+| 46.6 | Logic: Check rain every 15 min & Debounce alerts | ✅ DONE |
+| 46.7 | Fix null safety: skip properties without location | ✅ DONE |
+
+### Files Modified
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/services/notification_service.dart` | CREATE | AgroNotificationService (Local) |
+| `lib/services/background_service.dart` | CREATE | Background logic (Hive/Weather check) |
+| `lib/screens/agro_settings_screen.dart` | MODIFY | Add Rain Alerts toggle |
+| `lib/l10n/arb/app_pt.arb` | MODIFY | Add Alert strings |
+| `pubspec.yaml` | MODIFY | Add workmanager dependency |
+
+### App Integration Required
+
+Apps using this feature must add to their `AndroidManifest.xml`:
+```xml
+<uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+<uses-permission android:name="android.permission.WAKE_LOCK"/>
+<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+```
+
+---
+
+## Phase CORE-44: Collaborative Rain Heatmap
+
+### Status: [DONE]
+**Date Completed**: 2026-01-20
+**Priority**: 🟢 ENHANCEMENT
+**Objective**: Display a visual heatmap of community-reported rain intensity on a Google Map.
+
+### Implementation Summary
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 44.1 | Research heatmap plugins (flutter_heatmap incompatible) | ✅ DONE |
+| 44.2 | Implement `HeatmapService` (Mock data) | ✅ DONE |
+| 44.3 | Implement `RainHeatmapScreen` (Circles overlay) | ✅ DONE |
+| 44.4 | Add L10n strings and export screen | ✅ DONE |
+| 44.5 | Add drawer route key (`heatmap`) | ✅ DONE |
+| 44.6 | Fix null safety: check property.hasLocation | ✅ DONE |
+
+### Files Modified
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/services/heatmap_service.dart` | CREATE | Mock community rain data |
+| `lib/screens/rain_heatmap_screen.dart` | CREATE | Map with Circle overlays |
+| `lib/menu/agro_drawer_item.dart` | MODIFY | Add heatmap route key |
+| `lib/l10n/arb/app_pt.arb` | MODIFY | Add Heatmap strings |
+| `lib/l10n/arb/app_en.arb` | MODIFY | Add Heatmap strings |
+
+---
+
 ## Phase CORE-45: Property Location UX Polish
 
 ### Status: [DONE]

@@ -33,12 +33,19 @@ class ConfiguracoesScreen extends StatefulWidget {
 class _ConfiguracoesScreenState extends State<ConfiguracoesScreen> {
   late bool _reminderEnabled;
   late String _reminderTime;
+  bool _rainAlertsEnabled = false;
 
   @override
   void initState() {
     super.initState();
     _reminderEnabled = widget.preferences.reminderEnabled;
     _reminderTime = widget.preferences.reminderTime ?? '18:00';
+    _loadRainAlerts();
+  }
+
+  Future<void> _loadRainAlerts() async {
+    final enabled = await BackgroundService().isRainAlertsEnabled();
+    if (mounted) setState(() => _rainAlertsEnabled = enabled);
   }
 
   Future<void> _handleReminderChange(bool enabled, TimeOfDay? time) async {
@@ -137,7 +144,19 @@ class _ConfiguracoesScreenState extends State<ConfiguracoesScreen> {
       // Reminders
       reminderEnabled: _reminderEnabled,
       reminderTime: timeOfDay,
+
       onReminderChanged: _handleReminderChange,
+
+      // Rain Alerts
+      rainAlertsEnabled: _rainAlertsEnabled,
+      onToggleRainAlerts: (value) async {
+        setState(() => _rainAlertsEnabled = value);
+        if (value) {
+          await BackgroundService().enableRainAlerts();
+        } else {
+          await BackgroundService().disableRainAlerts();
+        }
+      },
     );
   }
 }

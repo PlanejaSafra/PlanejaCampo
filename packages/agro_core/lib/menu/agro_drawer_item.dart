@@ -9,6 +9,7 @@ class AgroRouteKeys {
   static const String settings = 'settings';
   static const String privacy = 'privacy';
   static const String about = 'about';
+  static const String heatmap = 'heatmap';
 }
 
 /// Model for a drawer menu item.

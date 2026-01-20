@@ -1888,6 +1888,84 @@ abstract class AgroLocalizations {
   /// In en, this message translates to:
   /// **'Rain in the next hour'**
   String get rainNextHour;
+
+  /// No description provided for @settingsRainAlerts.
+  ///
+  /// In en, this message translates to:
+  /// **'Rain Alerts'**
+  String get settingsRainAlerts;
+
+  /// No description provided for @settingsRainAlertsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Get notified before it rains'**
+  String get settingsRainAlertsDesc;
+
+  /// No description provided for @notificationRainTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Rain starting soon!'**
+  String get notificationRainTitle;
+
+  /// No description provided for @notificationRainBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Rain expected to start in {minutes} min.'**
+  String notificationRainBody(Object minutes);
+
+  /// No description provided for @notificationPermissionRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Notification permission required'**
+  String get notificationPermissionRequired;
+
+  /// No description provided for @heatmapTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Rain Heatmap'**
+  String get heatmapTitle;
+
+  /// No description provided for @heatmapLegendLight.
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get heatmapLegendLight;
+
+  /// No description provided for @heatmapLegendModerate.
+  ///
+  /// In en, this message translates to:
+  /// **'Moderate'**
+  String get heatmapLegendModerate;
+
+  /// No description provided for @heatmapLegendHeavy.
+  ///
+  /// In en, this message translates to:
+  /// **'Heavy'**
+  String get heatmapLegendHeavy;
+
+  /// No description provided for @heatmapFilter1h.
+  ///
+  /// In en, this message translates to:
+  /// **'1h'**
+  String get heatmapFilter1h;
+
+  /// No description provided for @heatmapFilter24h.
+  ///
+  /// In en, this message translates to:
+  /// **'24h'**
+  String get heatmapFilter24h;
+
+  /// No description provided for @heatmapFilter7d.
+  ///
+  /// In en, this message translates to:
+  /// **'7d'**
+  String get heatmapFilter7d;
+
+  /// No description provided for @drawerHeatmap.
+  ///
+  /// In en, this message translates to:
+  /// **'Rain Map'**
+  String get drawerHeatmap;
 }
 
 class _AgroLocalizationsDelegate extends LocalizationsDelegate<AgroLocalizations> {

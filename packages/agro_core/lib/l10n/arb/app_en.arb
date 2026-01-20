@@ -436,5 +436,18 @@
   "rainStartingIn15": "Rain starting in ~15 min",
   "rainStartingIn30": "Rain starting in ~30 min",
   "rainStartingIn45": "Rain starting in ~45 min",
-  "rainNextHour": "Rain in the next hour"
+  "rainNextHour": "Rain in the next hour",
+  "settingsRainAlerts": "Rain Alerts",
+  "settingsRainAlertsDesc": "Get notified before it rains",
+  "notificationRainTitle": "Rain starting soon!",
+  "notificationRainBody": "Rain expected to start in {minutes} min.",
+  "notificationPermissionRequired": "Notification permission required",
+  "heatmapTitle": "Rain Heatmap",
+  "heatmapLegendLight": "Light",
+  "heatmapLegendModerate": "Moderate",
+  "heatmapLegendHeavy": "Heavy",
+  "heatmapFilter1h": "1h",
+  "heatmapFilter24h": "24h",
+  "heatmapFilter7d": "7d",
+  "drawerHeatmap": "Rain Map"
 }

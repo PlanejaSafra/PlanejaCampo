@@ -15,6 +15,9 @@ export 'widgets/primary_button.dart';
 export 'widgets/talhao_selector.dart';
 export 'widgets/weather_card.dart';
 export 'services/weather_service.dart';
+export 'services/notification_service.dart';
+export 'services/background_service.dart';
+export 'services/heatmap_service.dart';
 export 'models/weather_forecast.dart';
 
 // L10n
@@ -61,6 +64,7 @@ export 'menu/agro_drawer_item.dart';
 export 'screens/agro_about_screen.dart';
 export 'screens/agro_privacy_screen.dart';
 export 'screens/agro_settings_screen.dart';
+export 'screens/rain_heatmap_screen.dart';
 export 'screens/login_screen.dart';
 export 'screens/terms_of_use_screen.dart';
 export 'screens/privacy_policy_screen.dart';

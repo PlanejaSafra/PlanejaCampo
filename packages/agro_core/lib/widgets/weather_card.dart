@@ -3,7 +3,6 @@ import 'package:hive_flutter/hive_flutter.dart';
 import '../services/property_service.dart';
 import '../utils/location_helper.dart';
 import '../widgets/minutely_forecast_widget.dart';
-import '../models/instant_weather_forecast.dart';
 import '../privacy/agro_privacy_store.dart';
 import '../screens/weather_detail_screen.dart';
 import '../l10n/generated/app_localizations.dart';

@@ -58,6 +58,12 @@ class AgroSettingsScreen extends StatefulWidget {
   /// Callback to import local backup file
   final VoidCallback? onImportLocalBackup;
 
+  /// Callback to toggle rain alerts
+  final void Function(bool)? onToggleRainAlerts;
+
+  /// Whether rain alerts are enabled
+  final bool rainAlertsEnabled;
+
   const AgroSettingsScreen({
     super.key,
     this.onNavigateToAbout,
@@ -77,6 +83,8 @@ class AgroSettingsScreen extends StatefulWidget {
     this.onSignInWithGoogle,
     this.onExportLocalBackup,
     this.onImportLocalBackup,
+    this.onToggleRainAlerts,
+    this.rainAlertsEnabled = false,
   });
 
   @override
@@ -382,6 +390,15 @@ class _AgroSettingsScreenState extends State<AgroSettingsScreen> {
                   onTap: () => _showTimePicker(context),
                 ),
 
+              SwitchListTile(
+                secondary:
+                    const Icon(Icons.water_drop_outlined, color: Colors.blue),
+                title: Text(l10n.settingsRainAlerts),
+                subtitle: Text(l10n.settingsRainAlertsDesc),
+                value: widget.rainAlertsEnabled,
+                onChanged: widget.onToggleRainAlerts,
+              ),
+
               const Divider(),
 
               // =============================================
@@ -406,7 +423,8 @@ class _AgroSettingsScreenState extends State<AgroSettingsScreen> {
 
               // Cloud Backup Card
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: Card(
                   elevation: 2,
                   shape: RoundedRectangleBorder(
@@ -503,7 +521,8 @@ class _AgroSettingsScreenState extends State<AgroSettingsScreen> {
                             children: [
                               Expanded(
                                 child: FilledButton.icon(
-                                  onPressed: _isBackingUp ? null : _handleBackup,
+                                  onPressed:
+                                      _isBackingUp ? null : _handleBackup,
                                   icon: const Icon(Icons.cloud_upload),
                                   label: Text(l10n.backupCloudNow),
                                 ),

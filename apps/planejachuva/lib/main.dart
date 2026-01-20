@@ -81,6 +81,9 @@ Future<void> main() async {
   await NotificationService.init();
   await NotificationService.updateFromPreferences(prefs);
 
+  // Initialize background service (Rain Alerts)
+  await BackgroundService().initialize();
+
   runApp(PlanejaChuvaApp(initialPreferences: prefs));
 }
 
@@ -125,9 +128,13 @@ class _PlanejaChuvaAppState extends State<PlanejaChuvaApp> {
   }
 
   void _changeLocale(Locale? newLocale) async {
-    // Save to Hive
+    // Save to Hive (UserPreferences)
     widget.initialPreferences.locale = _localeToString(newLocale);
     await widget.initialPreferences.saveToBox();
+
+    // Also save to settings box for background service access
+    final settingsBox = await Hive.openBox('settings');
+    await settingsBox.put('app_locale', _localeToString(newLocale) ?? 'pt_BR');
 
     // Update UI
     setState(() {
