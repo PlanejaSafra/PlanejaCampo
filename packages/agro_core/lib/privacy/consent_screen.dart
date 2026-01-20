@@ -48,6 +48,9 @@ class _ConsentScreenState extends State<ConsentScreen> {
 
       if (shouldRequestLocation) {
         await _requestAndSaveLocation(l10n);
+      } else {
+        // If we skipped location (e.g. user unchecked Option 1), we still need a default property
+        await PropertyService().ensureDefaultProperty(l10n: l10n);
       }
 
       if (!_hasAnyConsent) {
@@ -123,6 +126,10 @@ class _ConsentScreenState extends State<ConsentScreen> {
   }
 
   Future<void> _declineAll() async {
+    // Ensure a default property exists (even without location) so the app is usable
+    final l10n = AgroLocalizations.of(context)!;
+    await PropertyService().ensureDefaultProperty(l10n: l10n);
+
     await AgroPrivacyStore.rejectAllConsents();
     await AgroPrivacyStore.setOnboardingCompleted(true);
     widget.onCompleted?.call();

@@ -366,63 +366,75 @@ class _ListaChuvasScreenState extends State<ListaChuvasScreen> {
       ),
       body: RefreshIndicator(
         onRefresh: () async => _carregarDados(),
-        child: _registros.isEmpty
-            ? const EstadoVazio()
-            : CustomScrollView(
-                slivers: [
-                  // Talhão Selector
-                  if (_defaultProperty != null)
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 8),
-                        child: TalhaoSelector(
-                          propertyId: _defaultProperty!.id,
-                          selectedTalhaoId: _selectedTalhaoId,
-                          talhaoService: _talhaoService,
-                          onChanged: (id) {
-                            setState(() {
-                              _selectedTalhaoId = id;
-                              _carregarDados();
-                            });
-                          },
-                          // Allow creating new talhão from list screen
-                          onCreateNew: () async {
-                            await Navigator.pushNamed(context, '/talhoes',
-                                arguments: _defaultProperty!.id);
-                            // Refresh logic handled by lifecycle mostly, but good to reload selector
-                            setState(() {});
-                          },
-                        ),
-                      ),
-                    ),
-                  // Drought warning (if applicable)
-                  ..._buildDroughtWarning(),
-                  // Weather forecast card
-                  if (_defaultProperty != null)
-                    SliverToBoxAdapter(
-                      child: WeatherCard(
-                        propertyId: _defaultProperty!.id,
-                        latitude: _defaultProperty!.latitude ?? 0.0,
-                        longitude: _defaultProperty!.longitude ?? 0.0,
-                      ),
-                    ),
-                  // Monthly summary card
-                  SliverToBoxAdapter(
-                    child: ResumoMensalCard(
-                      totalMesAtual: _totalMesAtual,
-                      totalMesAnterior: _totalMesAnterior,
-                      onTap: () => _navigateTo('estatisticas'),
-                    ),
+        child: CustomScrollView(
+          slivers: [
+            // Talhão Selector
+            if (_defaultProperty != null)
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: TalhaoSelector(
+                    propertyId: _defaultProperty!.id,
+                    selectedTalhaoId: _selectedTalhaoId,
+                    talhaoService: _talhaoService,
+                    onChanged: (id) {
+                      setState(() {
+                        _selectedTalhaoId = id;
+                        _carregarDados();
+                      });
+                    },
+                    // Allow creating new talhão from list screen
+                    onCreateNew: () async {
+                      await Navigator.pushNamed(context, '/talhoes',
+                          arguments: _defaultProperty!.id);
+                      // Refresh logic handled by lifecycle mostly, but good to reload selector
+                      setState(() {});
+                    },
                   ),
-                  // Records list with month separators
-                  ..._buildRecordsList(),
-                  // Bottom padding
-                  const SliverToBoxAdapter(
-                    child: SizedBox(height: 80),
-                  ),
-                ],
+                ),
               ),
+            // Drought warning (if applicable)
+            ..._buildDroughtWarning(),
+            // Weather forecast card
+            if (_defaultProperty != null)
+              SliverToBoxAdapter(
+                child: WeatherCard(
+                  propertyId: _defaultProperty!.id,
+                  latitude: _defaultProperty!.latitude ?? 0.0,
+                  longitude: _defaultProperty!.longitude ?? 0.0,
+                ),
+              ),
+            // Monthly summary card (only if not empty OR if we want to show 0s?
+            // Usually summary of 0 is fine, but empty state looks better if truly empty).
+            // Let's show summary card if we have data OR if we want to show "0mm this month".
+            // If empty list, maybe skip summary card and just show Empty State?
+            // User request implies "Weather Forecast" was missing.
+            // Let's keep Summary Card only if records exist, to match "Empty State" feel below headers.
+            if (_registros.isNotEmpty)
+              SliverToBoxAdapter(
+                child: ResumoMensalCard(
+                  totalMesAtual: _totalMesAtual,
+                  totalMesAnterior: _totalMesAnterior,
+                  onTap: () => _navigateTo('estatisticas'),
+                ),
+              ),
+
+            // Registers List OR Empty State
+            if (_registros.isEmpty)
+              const SliverFillRemaining(
+                hasScrollBody: false,
+                child: EstadoVazio(),
+              )
+            else
+              ..._buildRecordsList(),
+
+            // Bottom padding
+            const SliverToBoxAdapter(
+              child: SizedBox(height: 80),
+            ),
+          ],
+        ),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _adicionarChuva,
