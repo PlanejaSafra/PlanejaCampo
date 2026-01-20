@@ -147,7 +147,6 @@ class _ListaChuvasScreenState extends State<ListaChuvasScreen> {
               currentLocale: widget.currentLocale,
               onChangeThemeMode: widget.onChangeThemeMode,
               currentThemeMode: widget.currentThemeMode,
-              currentThemeMode: widget.currentThemeMode,
               preferences: widget.preferences,
               onReminderChanged: widget.onReminderChanged,
               onNavigateToAbout: () {
