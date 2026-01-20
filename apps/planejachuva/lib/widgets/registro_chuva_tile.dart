@@ -224,8 +224,8 @@ class RegistroChuvasTile extends StatelessWidget {
                         // Share Button
                         InkWell(
                           onTap: () async {
-                            final property = await PropertyService()
-                                .getById(registro.propertyId);
+                            final property = PropertyService()
+                                .getPropertyById(registro.propertyId);
                             if (context.mounted && property != null) {
                               await ShareService().shareRainRecord(
                                 context,

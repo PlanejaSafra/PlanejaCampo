@@ -202,7 +202,7 @@ class _EditarChuvaScreenState extends State<EditarChuvaScreen> {
             tooltip: 'Compartilhar',
             onPressed: () async {
               final property =
-                  await PropertyService().getById(widget.registro.propertyId);
+                  PropertyService().getPropertyById(widget.registro.propertyId);
               if (property != null && context.mounted) {
                 await ShareService().shareRainRecord(
                   context,
