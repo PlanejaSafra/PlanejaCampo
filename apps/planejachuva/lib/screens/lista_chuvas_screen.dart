@@ -368,8 +368,8 @@ class _ListaChuvasScreenState extends State<ListaChuvasScreen> {
         onRefresh: () async => _carregarDados(),
         child: CustomScrollView(
           slivers: [
-            // Talhão Selector
-            if (_defaultProperty != null)
+            // Talhão Selector: Only show if we have data to filter
+            if (_defaultProperty != null && _registros.isNotEmpty)
               SliverToBoxAdapter(
                 child: Padding(
                   padding:
