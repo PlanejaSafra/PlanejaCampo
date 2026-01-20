@@ -1,17 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import '../services/property_service.dart';
 import '../services/weather_service.dart';
 import '../privacy/agro_privacy_store.dart';
 import '../privacy/consent_screen.dart';
 import '../screens/property_form_screen.dart';
 import '../screens/weather_detail_screen.dart';
-// WeatherService is used in _fetchWeather (state), but not in widget definition file?
-// No, the State IS in the same file. WeatherService IS used.
-// "packages\agro_core\lib\widgets\weather_card.dart:4:8 - unused_import" <- That likely refers to a duplicate or unneeded one.
-// The file I viewed earlier had `import '../services/weather_service.dart';` at line 2.
-// Then I replaced line 1 to include geolocator.
-// Let's check imports.
 
 class WeatherCard extends StatefulWidget {
   final double latitude;
@@ -92,7 +87,24 @@ class _WeatherCardState extends State<WeatherCard> {
 
   @override
   Widget build(BuildContext context) {
+    // CORE-35.3: Reactive to consent changes
+    return ValueListenableBuilder<Box>(
+      valueListenable: AgroPrivacyStore.locationConsentListenable,
+      builder: (context, box, child) {
+        return _buildContent(context);
+      },
+    );
+  }
+
+  Widget _buildContent(BuildContext context) {
     final theme = Theme.of(context);
+
+    // Check consent first - if revoked, show consent required state
+    if (!AgroPrivacyStore.canUseLocation &&
+        widget.latitude != 0.0 &&
+        widget.longitude != 0.0) {
+      return _buildConsentRequiredState(theme);
+    }
 
     if (_isLoading) {
       return const SizedBox.shrink(); // Hide while loading initial state
@@ -111,6 +123,10 @@ class _WeatherCardState extends State<WeatherCard> {
     if (widget.latitude == 0.0 && widget.longitude == 0.0) {
       return _buildNoLocationState(theme);
     }
+
+    // Extract wind data (if available) - safe fallback
+    final windSpeed = current['wind_speed_10m'] as double?; // km/h
+    final windDirection = current['wind_direction_10m'] as int?; // degrees
 
     return Card(
       elevation: 2,
@@ -152,62 +168,143 @@ class _WeatherCardState extends State<WeatherCard> {
               ],
             ),
           ),
-          child: Row(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(
-                _getWeatherIcon(code),
-                size: 40,
-                color: theme.colorScheme.primary,
-              ),
-              const SizedBox(width: 16),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              // Property Label (CORE-38)
+              if (widget.propertyId != null)
+                FutureBuilder(
+                  future: Future.value(PropertyService()
+                      .getPropertyById(widget.propertyId!)
+                      ?.name),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) return const SizedBox.shrink();
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: Row(
+                        children: [
+                          Icon(Icons.location_on,
+                              size: 14, color: theme.colorScheme.primary),
+                          const SizedBox(width: 4),
+                          Text(
+                            'Previsão para: ${snapshot.data}',
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: theme.colorScheme.primary,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+
+              Row(
                 children: [
-                  Text(
-                    'Tempo Agora',
-                    style: theme.textTheme.labelMedium?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
+                  Icon(
+                    _getWeatherIcon(code),
+                    size: 40,
+                    color: theme.colorScheme.primary,
                   ),
-                  Text(
-                    '$temp°C',
-                    style: theme.textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: theme.colorScheme.onSurface,
+                  const SizedBox(width: 16),
+
+                  // Temp + Wind Column
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Tempo Agora',
+                        style: theme.textTheme.labelMedium?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.baseline,
+                        textBaseline: TextBaseline.alphabetic,
+                        children: [
+                          Text(
+                            '$temp°C',
+                            style: theme.textTheme.headlineMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: theme.colorScheme.onSurface,
+                            ),
+                          ),
+
+                          // Wind Info (CORE-38)
+                          if (windSpeed != null && windDirection != null) ...[
+                            const SizedBox(width: 12),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 6, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: theme.colorScheme.surface
+                                    .withValues(alpha: 0.5),
+                                borderRadius: BorderRadius.circular(4),
+                                border: Border.all(
+                                    color: theme.colorScheme.outlineVariant),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(Icons.air,
+                                      size: 12,
+                                      color:
+                                          theme.colorScheme.onSurfaceVariant),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    '${windSpeed.round()} km/h',
+                                    style: theme.textTheme.labelSmall?.copyWith(
+                                      color: theme.colorScheme.onSurfaceVariant,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 2),
+                                  Transform.rotate(
+                                    angle: (windDirection * 3.14159 / 180),
+                                    child: Icon(Icons.arrow_upward,
+                                        size: 10,
+                                        color:
+                                            theme.colorScheme.onSurfaceVariant),
+                                  ),
+                                ],
+                              ),
+                            )
+                          ],
+                        ],
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          _getWeatherDescription(code),
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w500,
+                          ),
+                          textAlign: TextAlign.end,
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                        ),
+                        const SizedBox(height: 4),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              'Ver Detalhes',
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: theme.colorScheme.primary,
+                              ),
+                            ),
+                            Icon(Icons.chevron_right,
+                                size: 16, color: theme.colorScheme.primary),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
                 ],
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      _getWeatherDescription(code),
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w500,
-                      ),
-                      textAlign: TextAlign.end,
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                    ),
-                    const SizedBox(height: 4),
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          'Ver Detalhes',
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: theme.colorScheme.primary,
-                          ),
-                        ),
-                        Icon(Icons.chevron_right,
-                            size: 16, color: theme.colorScheme.primary),
-                      ],
-                    ),
-                  ],
-                ),
               ),
             ],
           ),
@@ -271,6 +368,60 @@ class _WeatherCardState extends State<WeatherCard> {
                   Icons.chevron_right,
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// CORE-35.3: State shown when user has location but revoked consent.
+  Widget _buildConsentRequiredState(ThemeData theme) {
+    return Card(
+      elevation: 1,
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side:
+            BorderSide(color: theme.colorScheme.outline.withValues(alpha: 0.5)),
+      ),
+      child: InkWell(
+        onTap: _showUpdateLocationDialog,
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              Icon(
+                Icons.lock_outline,
+                size: 32,
+                color: theme.colorScheme.tertiary,
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Consentimento Necessário',
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Toque para autorizar o uso de localização e ver a previsão.',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.chevron_right,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
             ],
           ),
         ),

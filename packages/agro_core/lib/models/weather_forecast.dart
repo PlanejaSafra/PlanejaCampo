@@ -34,6 +34,14 @@ class WeatherForecast extends HiveObject {
   @HiveField(6)
   final String propertyId;
 
+  /// Wind speed in km/h
+  @HiveField(7)
+  final double windSpeed;
+
+  /// Wind direction in degrees (0 = North, 90 = East, etc.)
+  @HiveField(8)
+  final int windDirection;
+
   WeatherForecast({
     required this.date,
     required this.precipitationMm,
@@ -42,6 +50,8 @@ class WeatherForecast extends HiveObject {
     required this.weatherCode,
     required this.cachedAt,
     required this.propertyId,
+    this.windSpeed = 0.0,
+    this.windDirection = 0,
   });
 
   /// Factory constructor to create from Open-Meteo API response
@@ -52,6 +62,8 @@ class WeatherForecast extends HiveObject {
     required double temperatureMin,
     required int weatherCode,
     required String propertyId,
+    required double windSpeed,
+    required int windDirection,
   }) {
     return WeatherForecast(
       date: date,
@@ -61,6 +73,8 @@ class WeatherForecast extends HiveObject {
       weatherCode: weatherCode,
       cachedAt: DateTime.now(),
       propertyId: propertyId,
+      windSpeed: windSpeed,
+      windDirection: windDirection,
     );
   }
 
@@ -99,8 +113,15 @@ class WeatherForecast extends HiveObject {
     return '🌤️';
   }
 
+  /// Get cardinal direction label (N, NE, E, SE, S, SW, W, NW)
+  String getWindDirectionLabel() {
+    const directions = ['N', 'NE', 'L', 'SE', 'S', 'SO', 'O', 'NO'];
+    final index = ((windDirection + 22.5) % 360) ~/ 45;
+    return directions[index];
+  }
+
   @override
   String toString() {
-    return 'WeatherForecast(date: $date, precipitation: ${precipitationMm}mm, temp: $temperatureMin-$temperatureMax°C, code: $weatherCode)';
+    return 'WeatherForecast(date: $date, precip: ${precipitationMm}mm, temp: $temperatureMin-$temperatureMax°C, wind: ${windSpeed}km/h ${getWindDirectionLabel()})';
   }
 }

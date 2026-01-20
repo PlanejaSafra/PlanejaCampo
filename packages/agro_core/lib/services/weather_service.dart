@@ -71,7 +71,7 @@ class WeatherService {
     try {
       debugPrint('WeatherService: Fetching from API for $propertyId...');
       final url = Uri.parse(
-          '$_baseUrl?latitude=$latitude&longitude=$longitude&current=temperature_2m,relative_humidity_2m,precipitation,weather_code&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,weather_code&hourly=temperature_2m,precipitation_probability,weather_code&timezone=auto&forecast_days=7');
+          '$_baseUrl?latitude=$latitude&longitude=$longitude&current=temperature_2m,relative_humidity_2m,precipitation,weather_code,wind_speed_10m,wind_direction_10m&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,weather_code,wind_speed_10m_max,wind_direction_10m_dominant&hourly=temperature_2m,precipitation_probability,weather_code,wind_speed_10m,wind_direction_10m&timezone=auto&forecast_days=7');
 
       final response = await http.get(url).timeout(const Duration(seconds: 10));
 
@@ -96,6 +96,8 @@ class WeatherService {
         final minTemps = daily['temperature_2m_min'] as List;
         final precipitations = daily['precipitation_sum'] as List;
         final weatherCodes = daily['weather_code'] as List;
+        final windSpeeds = daily['wind_speed_10m_max'] as List;
+        final windDirections = daily['wind_direction_10m_dominant'] as List;
 
         for (var i = 0; i < dates.length; i++) {
           forecasts.add(WeatherForecast.fromApi(
@@ -105,6 +107,8 @@ class WeatherService {
             temperatureMin: (minTemps[i] as num).toDouble(),
             weatherCode: (weatherCodes[i] as num).toInt(),
             propertyId: propertyId,
+            windSpeed: (windSpeeds[i] as num).toDouble(),
+            windDirection: (windDirections[i] as num).toInt(),
           ));
         }
 

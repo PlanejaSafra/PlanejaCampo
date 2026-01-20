@@ -141,6 +141,9 @@ When a feature spans both core and app:
 
 * **Descending order**: Most recent phases (higher numbers) go at the TOP of the file
 * **Mandatory status**: TODO → DOING → DONE
+* **Mandatory status**: TODO → DOING → DONE
+* **Create Phase FIRST**: You MUST create the phase in `CHANGELOG.md` **before** writing any code.
+* **NO CODE in Changelog**: Never paste code snippets in `CHANGELOG.md`. Use descriptions only.
 * **No empty phases**: Only create phase when starting work
 * **Granularity**: Sub-phases (X.Y.1, X.Y.2) for large tasks
 * **Files modified**: Always list with action (CREATE/MODIFY/DELETE)

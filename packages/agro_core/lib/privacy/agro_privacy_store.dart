@@ -1,4 +1,5 @@
-import 'package:hive/hive.dart';
+import 'package:flutter/foundation.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 import '../models/consent_data.dart';
 import '../services/user_cloud_service.dart';
@@ -85,6 +86,21 @@ class AgroPrivacyStore {
 
   /// Check if app can share data with partners (requires sharePartners consent).
   static bool get canShareWithPartners => consentSharePartners;
+
+  /// Get a Listenable that notifies when location consent changes.
+  /// Use with ValueListenableBuilder to rebuild UI reactively.
+  static ValueListenable<Box> get locationConsentListenable {
+    return _safeBox.listenable(keys: [AgroPrivacyKeys.consentAggregateMetrics]);
+  }
+
+  /// Get a Listenable that notifies when any consent changes.
+  static ValueListenable<Box> get allConsentsListenable {
+    return _safeBox.listenable(keys: [
+      AgroPrivacyKeys.consentAggregateMetrics,
+      AgroPrivacyKeys.consentSharePartners,
+      AgroPrivacyKeys.consentAdsPersonalization,
+    ]);
+  }
 
   // =================================================
 

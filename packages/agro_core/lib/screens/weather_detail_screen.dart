@@ -102,6 +102,9 @@ class WeatherDetailScreen extends StatelessWidget {
     final code = current['weather_code'] as int;
     final max = daily['temperature_2m_max'][0]; // Today max
     final min = daily['temperature_2m_min'][0]; // Today min
+    // Wind (CORE-38)
+    final windSpeed = current['wind_speed_10m'] as double?; // km/h
+    final windDirection = current['wind_direction_10m'] as int?; // degrees
 
     return Container(
       margin: const EdgeInsets.all(16),
@@ -132,20 +135,47 @@ class WeatherDetailScreen extends StatelessWidget {
                   theme.colorScheme.onPrimaryContainer.withValues(alpha: 0.8),
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 24),
           Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              Icon(Icons.arrow_upward,
-                  size: 16, color: theme.colorScheme.onPrimaryContainer),
-              Text('$max°  ',
-                  style:
-                      TextStyle(color: theme.colorScheme.onPrimaryContainer)),
-              Icon(Icons.arrow_downward,
-                  size: 16, color: theme.colorScheme.onPrimaryContainer),
-              Text('$min°',
-                  style:
-                      TextStyle(color: theme.colorScheme.onPrimaryContainer)),
+              // Min/Max Temp
+              Row(
+                children: [
+                  Icon(Icons.arrow_upward,
+                      size: 16, color: theme.colorScheme.onPrimaryContainer),
+                  Text('$max°  ',
+                      style: TextStyle(
+                          color: theme.colorScheme.onPrimaryContainer)),
+                  Icon(Icons.arrow_downward,
+                      size: 16, color: theme.colorScheme.onPrimaryContainer),
+                  Text('$min°',
+                      style: TextStyle(
+                          color: theme.colorScheme.onPrimaryContainer)),
+                ],
+              ),
+              // Wind Info (CORE-38)
+              if (windSpeed != null && windDirection != null)
+                Row(
+                  children: [
+                    Icon(Icons.air,
+                        size: 16, color: theme.colorScheme.onPrimaryContainer),
+                    const SizedBox(width: 4),
+                    Text(
+                      '${windSpeed.round()} km/h',
+                      style: TextStyle(
+                          color: theme.colorScheme.onPrimaryContainer,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(width: 2),
+                    Transform.rotate(
+                      angle: (windDirection * 3.14159 / 180),
+                      child: Icon(Icons.arrow_upward,
+                          size: 14,
+                          color: theme.colorScheme.onPrimaryContainer),
+                    ),
+                  ],
+                ),
             ],
           ),
         ],
@@ -157,6 +187,9 @@ class WeatherDetailScreen extends StatelessWidget {
     final times = hourly['time'] as List;
     final temps = hourly['temperature_2m'] as List;
     final codes = hourly['weather_code'] as List;
+    final windSpeeds = hourly['wind_speed_10m'] as List?;
+    final windDirections = hourly['wind_direction_10m'] as List?;
+
     // Open-Meteo returns huge list (7 days hourly). We only want next 24h.
     // We need to find "now" index.
 
@@ -179,7 +212,7 @@ class WeatherDetailScreen extends StatelessWidget {
         (times.length - startIndex) > 24 ? 24 : (times.length - startIndex);
 
     return SizedBox(
-      height: 140, // Height for card
+      height: 160, // Increased height for wind info
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -189,6 +222,9 @@ class WeatherDetailScreen extends StatelessWidget {
           final time = DateTime.parse(times[index]);
           final temp = temps[index];
           final code = codes[index] as int;
+          final wSpeed = windSpeeds != null ? windSpeeds[index] as double : 0.0;
+          final wDir =
+              windDirections != null ? windDirections[index] as int : 0;
 
           return Card(
             elevation: 0,
@@ -212,13 +248,33 @@ class WeatherDetailScreen extends StatelessWidget {
                   ),
                   const Spacer(),
                   Icon(_getWeatherIcon(code), size: 32),
-                  const Spacer(),
+                  const SizedBox(height: 8),
                   Text(
                     '$temp°',
                     style: Theme.of(context)
                         .textTheme
                         .titleMedium
                         ?.copyWith(fontWeight: FontWeight.bold),
+                  ),
+                  const Spacer(),
+                  // Wind Info Hourly
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.air, size: 10, color: Colors.grey[600]),
+                      Text(
+                        ' ${(wSpeed).round()}',
+                        style: Theme.of(context)
+                            .textTheme
+                            .labelSmall
+                            ?.copyWith(fontSize: 10, color: Colors.grey[700]),
+                      ),
+                      Transform.rotate(
+                        angle: (wDir * 3.14159 / 180),
+                        child: Icon(Icons.arrow_upward,
+                            size: 10, color: Colors.grey[600]),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -236,6 +292,9 @@ class WeatherDetailScreen extends StatelessWidget {
     final code = daily['weather_code'][index] as int;
     // Some OpenMeteo versions use precipitation_sum, some precipitation_probability_max
     final rain = daily['precipitation_sum']?[index] ?? 0.0;
+    // Wind (CORE-38)
+    final wSpeed = daily['wind_speed_10m_max']?[index] as double? ?? 0.0;
+    final wDir = daily['wind_direction_10m_dominant']?[index] as int? ?? 0;
 
     final dateFormat = DateFormat('E, d MMM', 'pt_BR');
 
@@ -255,19 +314,42 @@ class WeatherDetailScreen extends StatelessWidget {
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
+      trailing: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          if (rain > 0)
-            Row(
-              children: [
-                Icon(Icons.water_drop, size: 14, color: Colors.blue[400]),
-                Text(' ${rain}mm  ',
-                    style: TextStyle(fontSize: 12, color: Colors.grey[700])),
-              ],
-            ),
-          Text('$max° / $min°',
-              style: const TextStyle(fontWeight: FontWeight.bold)),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (rain > 0)
+                Row(
+                  children: [
+                    Icon(Icons.water_drop, size: 14, color: Colors.blue[400]),
+                    Text('${rain}mm  ',
+                        style:
+                            TextStyle(fontSize: 12, color: Colors.grey[700])),
+                  ],
+                ),
+              Text('$max° / $min°',
+                  style: const TextStyle(fontWeight: FontWeight.bold)),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.air, size: 12, color: Colors.grey[600]),
+              Text(
+                ' ${wSpeed.round()} km/h ',
+                style: TextStyle(fontSize: 12, color: Colors.grey[700]),
+              ),
+              Transform.rotate(
+                angle: (wDir * 3.14159 / 180),
+                child:
+                    Icon(Icons.arrow_upward, size: 12, color: Colors.grey[600]),
+              ),
+            ],
+          )
         ],
       ),
     );
