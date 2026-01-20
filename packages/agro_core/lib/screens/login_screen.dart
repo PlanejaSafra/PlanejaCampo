@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -6,6 +7,7 @@ import '../privacy/agro_privacy_store.dart';
 import '../screens/privacy_policy_screen.dart';
 import '../screens/terms_of_use_screen.dart';
 import '../services/auth_service.dart';
+import '../services/property_service.dart';
 
 /// Login screen with Google Sign-In (official button design).
 /// Follows Google Sign-In Branding Guidelines:
@@ -42,10 +44,33 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     try {
+      final currentUser = AuthService.currentUser;
+
+      // 1. Check if we need to link (Migration: Anonymous -> Google)
+      if (currentUser != null && currentUser.isAnonymous) {
+        try {
+          final user = await AuthService.linkAnonymousToGoogle();
+          if (user != null && mounted) {
+            await AgroPrivacyStore.setAcceptedTerms(true);
+            widget.onLoginSuccess();
+          }
+          return; // Success
+        } on FirebaseAuthException catch (e) {
+          if (e.code == 'credential-already-in-use') {
+            // Conflict: Account already exists.
+            // We must sign into the existing account and MIGRATE local data.
+            await _handleMergeConflict(currentUser.uid);
+            return;
+          }
+          // Other errors: Rethrow to be caught below
+          rethrow;
+        }
+      }
+
+      // 2. Normal Sign In (No anonymous user or simple login)
       final user = await AuthService.signInWithGoogle();
 
       if (user != null && mounted) {
-        // Mark terms as accepted (user clicked button agreeing to terms)
         await AgroPrivacyStore.setAcceptedTerms(true);
         widget.onLoginSuccess();
       }
@@ -60,6 +85,32 @@ class _LoginScreenState extends State<LoginScreen> {
         setState(() {
           _isLoading = false;
         });
+      }
+    }
+  }
+
+  Future<void> _handleMergeConflict(String oldUserId) async {
+    // User has an existing Google account.
+    // 1. Sign in to that account (switches auth user)
+    // We catch errors here separately to provide better context
+    final user = await AuthService.signInWithGoogle();
+
+    if (user != null && mounted) {
+      // 2. Migrate/Transfer local data from Old UID to New UID
+      // This ensures the anonymous data (e.g. properties) is not "lost"
+      // but instead merged into the Google account.
+      try {
+        await PropertyService().transferData(oldUserId, user.uid);
+
+        await AgroPrivacyStore.setAcceptedTerms(true);
+        widget.onLoginSuccess();
+      } catch (e) {
+        // Migration failed? User is logged in, but data might be split.
+        // We log it and let them proceed, or show warning?
+        // Ideally we shouldn't block login if migration fails, but data integrity...
+        // For now, proceed.
+        debugPrint('Migration Error: $e');
+        widget.onLoginSuccess();
       }
     }
   }

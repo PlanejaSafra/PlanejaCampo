@@ -5,6 +5,7 @@ import '../services/weather_service.dart';
 import '../privacy/agro_privacy_store.dart';
 import '../privacy/consent_screen.dart';
 import '../screens/property_form_screen.dart';
+import '../screens/weather_detail_screen.dart';
 // WeatherService is used in _fetchWeather (state), but not in widget definition file?
 // No, the State IS in the same file. WeatherService IS used.
 // "packages\agro_core\lib\widgets\weather_card.dart:4:8 - unused_import" <- That likely refers to a duplicate or unneeded one.
@@ -115,58 +116,101 @@ class _WeatherCardState extends State<WeatherCard> {
       elevation: 2,
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              theme.colorScheme.primaryContainer.withValues(alpha: 0.5),
-              theme.colorScheme.surface,
-            ],
-          ),
-        ),
-        child: Row(
-          children: [
-            Icon(
-              _getWeatherIcon(code),
-              size: 40,
-              color: theme.colorScheme.primary,
-            ),
-            const SizedBox(width: 16),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Tempo Agora',
-                  style: theme.textTheme.labelMedium?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: () {
+          // Navigate to Detail Screen
+          if (_weatherData != null) {
+            String? propName;
+            if (widget.propertyId != null) {
+              final prop =
+                  PropertyService().getPropertyById(widget.propertyId!);
+              propName = prop?.name;
+            }
+
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => WeatherDetailScreen(
+                  weatherData: _weatherData!,
+                  propertyName: propName,
                 ),
-                Text(
-                  '$temp°C',
-                  style: theme.textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: theme.colorScheme.onSurface,
-                  ),
-                ),
+              ),
+            );
+          }
+        },
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                theme.colorScheme.primaryContainer.withValues(alpha: 0.5),
+                theme.colorScheme.surface,
               ],
             ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Text(
-                _getWeatherDescription(code),
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
-                textAlign: TextAlign.end,
-                overflow: TextOverflow.ellipsis,
-                maxLines: 2,
+          ),
+          child: Row(
+            children: [
+              Icon(
+                _getWeatherIcon(code),
+                size: 40,
+                color: theme.colorScheme.primary,
               ),
-            ),
-          ],
+              const SizedBox(width: 16),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Tempo Agora',
+                    style: theme.textTheme.labelMedium?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  Text(
+                    '$temp°C',
+                    style: theme.textTheme.headlineMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: theme.colorScheme.onSurface,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      _getWeatherDescription(code),
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w500,
+                      ),
+                      textAlign: TextAlign.end,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          'Ver Detalhes',
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: theme.colorScheme.primary,
+                          ),
+                        ),
+                        Icon(Icons.chevron_right,
+                            size: 16, color: theme.colorScheme.primary),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

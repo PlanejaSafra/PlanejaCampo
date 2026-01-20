@@ -45,6 +45,9 @@ export 'services/property_service.dart';
 export 'services/property_helper.dart';
 export 'services/talhao_service.dart';
 
+// Services (Backup)
+export 'services/cloud_backup_service.dart';
+
 // Menu
 export 'menu/agro_drawer.dart';
 export 'menu/agro_drawer_item.dart';

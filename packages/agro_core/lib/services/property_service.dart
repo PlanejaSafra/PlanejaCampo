@@ -30,9 +30,7 @@ class PropertyService {
   /// Get all properties for the current user, sorted by creation date (newest first)
   List<Property> getAllProperties() {
     if (_currentUserId == null) return [];
-    return _box.values
-        .where((p) => p.userId == _currentUserId)
-        .toList()
+    return _box.values.where((p) => p.userId == _currentUserId).toList()
       ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
   }
 
@@ -99,7 +97,8 @@ class PropertyService {
   /// The property object is already modified, just save it to Hive
   Future<void> updateProperty(Property property) async {
     if (property.userId != _currentUserId) {
-      throw Exception('Unauthorized: Cannot update property from another user.');
+      throw Exception(
+          'Unauthorized: Cannot update property from another user.');
     }
 
     property.updatedAt = DateTime.now();
@@ -157,7 +156,8 @@ class PropertyService {
     AgroLocalizations? l10n,
   }) async {
     if (_currentUserId == null) {
-      throw Exception('User not authenticated. Cannot ensure default property.');
+      throw Exception(
+          'User not authenticated. Cannot ensure default property.');
     }
 
     // Check if default already exists
@@ -196,5 +196,44 @@ class PropertyService {
         p.userId == _currentUserId &&
         p.id != excludeId &&
         p.name.trim().toLowerCase() == normalizedName);
+  }
+
+  /// Transfer all properties from one user to another (Data Migration)
+  /// Used when merging an anonymous account into a new Google account
+  Future<void> transferData(String oldUserId, String newUserId) async {
+    if (oldUserId == newUserId) return;
+
+    // Get all properties belonging to the old user
+    final oldProps = _box.values.where((p) => p.userId == oldUserId).toList();
+    if (oldProps.isEmpty) return;
+
+    // Check if new user already has a default property
+    final newProps = _box.values.where((p) => p.userId == newUserId).toList();
+    final hasNewDefault = newProps.any((p) => p.isDefault);
+
+    for (final prop in oldProps) {
+      // Update User ID
+      // We can't modify 'userId' directly because it's final in hive object?
+      // Check Property model. userId is final.
+      // We must create a copy or use reflection/modification (Hive supports field updates?)
+      // Since it's final in Dart model, we should technically create a new object.
+      // However, Hive objects are mutable if we just write them back.
+      // Let's create a new object to be safe and cleaner.
+
+      final updatedProp = Property(
+        id: prop.id,
+        userId: newUserId, // New User ID
+        name: prop.name,
+        totalArea: prop.totalArea,
+        latitude: prop.latitude,
+        longitude: prop.longitude,
+        isDefault:
+            hasNewDefault ? false : prop.isDefault, // Avoid multiple defaults
+        createdAt: prop.createdAt,
+        updatedAt: DateTime.now(),
+      );
+
+      await _box.put(prop.id, updatedProp);
+    }
   }
 }

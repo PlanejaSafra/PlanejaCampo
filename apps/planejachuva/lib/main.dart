@@ -13,6 +13,7 @@ import 'models/user_preferences.dart';
 
 import 'screens/lista_chuvas_screen.dart';
 import 'services/chuva_service.dart';
+import 'services/chuva_backup_provider.dart';
 import 'services/migration_service.dart';
 import 'services/notification_service.dart';
 import 'services/sync_service.dart';
@@ -53,6 +54,7 @@ Future<void> main() async {
 
   // Initialize cloud service
   await UserCloudService.instance.init();
+  CloudBackupService.instance.registerProvider(ChuvaBackupProvider());
 
   // Initialize property service (must be before chuva service for migration)
   await PropertyService().init();

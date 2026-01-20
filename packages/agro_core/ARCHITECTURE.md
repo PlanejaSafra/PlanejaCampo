@@ -55,5 +55,31 @@ Gerenciamento de internacionalização (i18n).
 
 *   **`AgroLocalizations`**: Classe gerada automaticamente (via `flutter_gen`) que fornece acesso às strings traduzidas (pt-BR e en).
 *   **Arquivos ARB**: `lib/l10n/arb/app_pt.arb` e `app_en.arb` contêm os dicionários de tradução.
-### 8. Location & Maps
-- **`LocationPickerScreen` (`lib/screens/location_picker_screen.dart`)**: Tela de seleção de localização estilo "WhatsApp/Uber" usando OpenStreetMap (`flutter_map`).
+### 8. Location & Maps (`lib/screens/location_picker_screen.dart`)
+
+Implementa seleção de localização geográfica.
+
+*   **`LocationPickerScreen`**: Tela de seleção de localização estilo "WhatsApp/Uber" usando OpenStreetMap (`flutter_map`).
+
+### 9. Autenticação (`lib/services/auth_service.dart`, `lib/screens/login_screen.dart`)
+
+Gerencia a identidade do usuário.
+
+*   **`AuthService`**: Wrapper para Firebase Auth. Implementa login Google, Anônimo e **Account Linking** (migração de anônimo para Google).
+*   **`LoginScreen`**: Tela de login padrão. Detecta conflitos de conta e aciona o fluxo de migração de dados se necessário.
+
+### 10. Gestão de Propriedades (`lib/services/property_service.dart`)
+
+Núcleo de dados do produtor rural.
+
+*   **`PropertyService`**: CRUD de Propriedades (Fazendas/Sítios) armazenado localmente via Hive. Suporta `transferData(oldUid, newUid)` para migração de contas.
+*   **`TalhaoService`**: CRUD de Talhões vinculados a propriedades. Valida unicidade de nomes e soma de áreas.
+*   **`AgroSelectPropertyScreen` / `AgroSelectTalhaoScreen`**: Telas de seleção para fluxos de cadastro.
+
+### 11. Cloud Backup (`lib/services/cloud_backup_service.dart`)
+
+Sistema de backup centralizado.
+
+*   **`CloudBackupService`**: Serviço Singleton que orquestra o backup.
+*   **`BackupProvider`**: Interface que cada App deve implementar para fornecer seus dados específicos (ex: `ChuvaBackupProvider`).
+*   **Fluxo**: Gera um JSON unificado contendo dados do `agro_core` (Propriedades/Talhões) + dados dos Apps e envia para `users/{uid}/backup.json` no Firebase Storage.

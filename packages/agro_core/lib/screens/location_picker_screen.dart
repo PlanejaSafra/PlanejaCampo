@@ -41,6 +41,20 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
 
   Future<void> _getCurrentLocation() async {
     try {
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          // Permission denied, do nothing or show snackbar if context available
+          return;
+        }
+      }
+
+      if (permission == LocationPermission.deniedForever) {
+        // Permission denied forever
+        return;
+      }
+
       final position = await Geolocator.getCurrentPosition();
       if (mounted) {
         setState(() {
@@ -51,7 +65,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
       }
     } catch (_) {
       // If fails, keeps default or previous
-      setState(() => _isLoading = false);
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 

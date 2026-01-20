@@ -3,6 +3,35 @@
 ---
 ---
 
+## Phase 34: Data Migration & UI Polish
+### Status: [PLANNED]
+**Priority**: 🟡 IMPORTANTE
+**Objective**: Fix anonymous -> Google migration (link credentials) and declutter UI.
+
+## Phase 33: Cloud Backup & Core Refactoring
+### Status: [PLANNED]
+**Priority**: 🟢 ENHANCEMENT
+**Objective**: Implement "One-Click Cloud Backup" logic in `agro_core` using Firebase Storage.
+
+## Phase 32: Detailed Weather Forecast
+### Status: [DONE]
+**Date Completed**: 2026-01-20
+**Priority**: 🟢 ENHANCEMENT
+**Objective**: Provide hourly (24h) and daily (7 days) weather forecast with context (Property Name).
+
+### Solution
+- **Hourly Forecast**: Check cache for hourly data; force refresh if missing.
+- **UI Details**: Added horizontal hourly list and vertical daily list.
+- **Context**: Display "📍 Property Name" in the Weather Detail screen title.
+- **Navigation**: Made Weather Card clickable.
+
+### Files Modified
+- `packages/agro_core/lib/widgets/weather_card.dart`
+- `packages/agro_core/lib/screens/weather_detail_screen.dart`
+- `packages/agro_core/lib/services/weather_service.dart`
+
+---
+
 ## Phase 31: Native Map Picker (WhatsApp Style)
 ### Status: [DONE]
 **Date Completed**: 2026-01-19

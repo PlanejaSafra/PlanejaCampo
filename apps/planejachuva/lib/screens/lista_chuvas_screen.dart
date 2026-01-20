@@ -330,10 +330,37 @@ class _ListaChuvasScreenState extends State<ListaChuvasScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AgroLocalizations.of(context)!;
+    final propService = PropertyService();
+    final talhaoService = TalhaoService();
+
+    // Determine conditional visibility
+    final propCount = propService.getPropertyCount();
+    final showPropertyName = propCount > 1 && _defaultProperty != null;
+
+    // Check talhão count for the current property
+    final talhaoCount = _defaultProperty != null
+        ? talhaoService.countByProperty(_defaultProperty!.id)
+        : 0;
+    final showTalhaoName = talhaoCount > 1;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.chuvaAppTitle),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(l10n.chuvaAppTitle),
+            if (showPropertyName)
+              Text(
+                _defaultProperty!.name,
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withValues(alpha: 0.7),
+                    ),
+              ),
+          ],
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.bar_chart),
@@ -462,6 +489,7 @@ class _ListaChuvasScreenState extends State<ListaChuvasScreen> {
                 registro: registro,
                 onTap: () => _editarChuva(registro),
                 onDelete: () => _excluirChuva(registro),
+                showTalhaoName: _shouldShowTalhaoName(),
               );
             },
             childCount: entry.value.length,
@@ -471,5 +499,11 @@ class _ListaChuvasScreenState extends State<ListaChuvasScreen> {
     }
 
     return slivers;
+  }
+
+  bool _shouldShowTalhaoName() {
+    if (_defaultProperty == null) return false;
+    final count = TalhaoService().countByProperty(_defaultProperty!.id);
+    return count > 1;
   }
 }

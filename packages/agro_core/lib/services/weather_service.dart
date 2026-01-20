@@ -71,7 +71,7 @@ class WeatherService {
     try {
       debugPrint('WeatherService: Fetching from API for $propertyId...');
       final url = Uri.parse(
-          '$_baseUrl?latitude=$latitude&longitude=$longitude&current=temperature_2m,relative_humidity_2m,precipitation,weather_code&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,weather_code&timezone=auto&forecast_days=7');
+          '$_baseUrl?latitude=$latitude&longitude=$longitude&current=temperature_2m,relative_humidity_2m,precipitation,weather_code&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,weather_code&hourly=temperature_2m,precipitation_probability,weather_code&timezone=auto&forecast_days=7');
 
       final response = await http.get(url).timeout(const Duration(seconds: 10));
 
@@ -163,7 +163,11 @@ class WeatherService {
       final age = DateTime.now().millisecondsSinceEpoch - timestamp;
 
       if (age < 60 * 60 * 1000) {
-        return data;
+        // Check if data structure is complete (has hourly)
+        if (data.containsKey('hourly')) {
+          return data;
+        }
+        // If missing hourly (old cache), fall through to refresh
       }
       // If stale, we might want to refresh?
       // Async refresh and return stale?

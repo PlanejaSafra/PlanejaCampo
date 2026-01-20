@@ -9,12 +9,14 @@ class RegistroChuvasTile extends StatelessWidget {
   final RegistroChuva registro;
   final VoidCallback? onTap;
   final VoidCallback? onDelete;
+  final bool showTalhaoName;
 
   const RegistroChuvasTile({
     super.key,
     required this.registro,
     this.onTap,
     this.onDelete,
+    this.showTalhaoName = true,
   });
 
   /// Returns an icon based on rainfall intensity.
@@ -142,7 +144,7 @@ class RegistroChuvasTile extends StatelessWidget {
                           fontWeight: FontWeight.w600,
                         ),
                       ),
-                      if (registro.talhaoId != null)
+                      if (showTalhaoName && registro.talhaoId != null)
                         FutureBuilder<String?>(
                           future: Future.value(TalhaoService()
                               .getById(registro.talhaoId!)

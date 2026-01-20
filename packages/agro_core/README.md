@@ -11,29 +11,31 @@ and the Flutter guide for
 [developing packages and plugins](https://flutter.dev/to/develop-packages).
 -->
 
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+# Agro Core
+
+Biblioteca central de componentes, serviços e modelos reutilizáveis para a suíte de aplicativos **Agro**. O objetivo deste pacote é garantir consistência visual, comportamental e de dados entre todos os apps (PlanejaChuva, PlanejaBorracha, etc.).
 
 ## Features
 
-TODO: List what your package can do. Maybe include images, gifs, or videos.
+*   **Identidade Visual Unificada**: Sistema de temas (Claro/Escuro), tipografia e cores padronizadas.
+*   **Autenticação Centralizada**: Telas de Login com suporte a Google Sign-In e Login Anônimo, incluindo migração de contas.
+*   **Gestão de Propriedades e Talhões**: Modelos e Serviços (CRUD) para gerenciar a estrutura básica do produtor rural (via Hive).
+*   **Backup na Nuvem**: Sistema unificado de backup e restauração via Firebase Storage.
+*   **Privacidade e LGPD**: Fluxo de consentimento, termos de uso e política de privacidade.
+*   **Componentes UI**: Drawer de navegação, Cards, Botões, Seletores e Gráficos padronizados.
+*   **Internacionalização (i18n)**: Suporte nativo a múltiplos idiomas (PT-BR, EN).
+*   **Integrações**: Previsão do tempo (Open-Meteo), Seleção de Localização (OpenStreetMap).
 
-## Getting started
+## Instalação
 
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+Adicione ao `pubspec.yaml` dos aplicativos:
 
-## Usage
-
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
-
-```dart
-const like = 'sample';
+```yaml
+dependencies:
+  agro_core:
+    path: ../../packages/agro_core
 ```
 
-## Additional information
+## Arquitetura
 
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
+Consulte [ARCHITECTURE.md](ARCHITECTURE.md) para detalhes sobre a organização dos módulos.

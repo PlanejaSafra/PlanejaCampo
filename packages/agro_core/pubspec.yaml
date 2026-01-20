@@ -30,6 +30,7 @@ dependencies:
   url_launcher: ^6.3.2
   flutter_map: ^7.0.0
   latlong2: ^0.9.1
+  firebase_storage: ^12.4.10
 
 dev_dependencies:
   flutter_test:
