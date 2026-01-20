@@ -12,6 +12,7 @@ class ConfiguracoesScreen extends StatefulWidget {
   final void Function(ThemeMode)? onChangeThemeMode;
   final ThemeMode currentThemeMode;
   final UserPreferences preferences;
+  final void Function(bool, TimeOfDay?)? onReminderChanged;
 
   const ConfiguracoesScreen({
     super.key,
@@ -21,6 +22,7 @@ class ConfiguracoesScreen extends StatefulWidget {
     this.onChangeThemeMode,
     this.currentThemeMode = ThemeMode.system,
     required this.preferences,
+    this.onReminderChanged,
   });
 
   @override
@@ -169,13 +171,21 @@ class _ConfiguracoesScreenState extends State<ConfiguracoesScreen> {
 
     setState(() => _reminderEnabled = value);
 
-    // Save to preferences
-    widget.preferences.reminderEnabled = value;
-    widget.preferences.reminderTime = _reminderTime;
-    await widget.preferences.saveToBox();
-
-    // Update notifications
-    await NotificationService.updateFromPreferences(widget.preferences);
+    if (widget.onReminderChanged != null) {
+      // Delegate to callback
+      final parts = _reminderTime.split(':');
+      final time = TimeOfDay(
+        hour: int.parse(parts[0]),
+        minute: int.parse(parts[1]),
+      );
+      widget.onReminderChanged!(value, time);
+    } else {
+      // Fallback: Save locally (should typically be handled by callback)
+      widget.preferences.reminderEnabled = value;
+      widget.preferences.reminderTime = _reminderTime;
+      await widget.preferences.saveToBox();
+      await NotificationService.updateFromPreferences(widget.preferences);
+    }
   }
 
   Future<void> _selectTime() async {
@@ -191,16 +201,22 @@ class _ConfiguracoesScreenState extends State<ConfiguracoesScreen> {
     );
 
     if (picked != null) {
-      final newTime = '${picked.hour.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0')}';
+      final newTime =
+          '${picked.hour.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0')}';
       setState(() => _reminderTime = newTime);
 
-      // Save to preferences
-      widget.preferences.reminderTime = newTime;
-      await widget.preferences.saveToBox();
+      if (widget.onReminderChanged != null) {
+        // Delegate to callback
+        widget.onReminderChanged!(_reminderEnabled, picked);
+      } else {
+        // Fallback
+        widget.preferences.reminderTime = newTime;
+        await widget.preferences.saveToBox();
 
-      // Update notifications if enabled
-      if (_reminderEnabled) {
-        await NotificationService.updateFromPreferences(widget.preferences);
+        // Update notifications if enabled
+        if (_reminderEnabled) {
+          await NotificationService.updateFromPreferences(widget.preferences);
+        }
       }
     }
   }
@@ -250,9 +266,7 @@ class _ConfiguracoesScreenState extends State<ConfiguracoesScreen> {
           SwitchListTile(
             secondary: const Icon(Icons.notifications_active),
             title: Text(
-              locale.startsWith('pt')
-                  ? 'Lembrete Diário'
-                  : 'Daily Reminder',
+              locale.startsWith('pt') ? 'Lembrete Diário' : 'Daily Reminder',
             ),
             subtitle: Text(
               locale.startsWith('pt')
