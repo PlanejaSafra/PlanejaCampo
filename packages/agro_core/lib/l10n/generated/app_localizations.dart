@@ -1396,6 +1396,66 @@ abstract class AgroLocalizations {
   /// In en, this message translates to:
   /// **'Weather Alerts'**
   String get alertsSectionTitle;
+
+  /// No description provided for @migrationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Account already exists'**
+  String get migrationTitle;
+
+  /// No description provided for @migrationMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This Google account already has data. Do you want to transfer your current records to it?'**
+  String get migrationMessage;
+
+  /// No description provided for @migrationTransfer.
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer Data'**
+  String get migrationTransfer;
+
+  /// No description provided for @migrationCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get migrationCancel;
+
+  /// No description provided for @migrationProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Migrating data...'**
+  String get migrationProgress;
+
+  /// No description provided for @migrationProgressProperties.
+  ///
+  /// In en, this message translates to:
+  /// **'Transferring properties...'**
+  String get migrationProgressProperties;
+
+  /// No description provided for @migrationProgressTalhoes.
+  ///
+  /// In en, this message translates to:
+  /// **'Transferring field plots...'**
+  String get migrationProgressTalhoes;
+
+  /// No description provided for @migrationProgressRecords.
+  ///
+  /// In en, this message translates to:
+  /// **'Transferring records...'**
+  String get migrationProgressRecords;
+
+  /// No description provided for @migrationSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Migration completed successfully!'**
+  String get migrationSuccess;
+
+  /// No description provided for @migrationError.
+  ///
+  /// In en, this message translates to:
+  /// **'Error during migration. Your original data has been preserved.'**
+  String get migrationError;
 }
 
 class _AgroLocalizationsDelegate extends LocalizationsDelegate<AgroLocalizations> {

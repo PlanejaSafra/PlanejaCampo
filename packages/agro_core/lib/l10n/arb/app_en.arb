@@ -305,5 +305,16 @@
   "alertDroughtMessage": "No significant rain forecast for the next 7 days.",
   "alertHighWindTitle": "High Winds",
   "alertHighWindMessage": "Wind gusts above 45km/h expected.",
-  "alertsSectionTitle": "Weather Alerts"
+  "alertsSectionTitle": "Weather Alerts",
+
+  "migrationTitle": "Account already exists",
+  "migrationMessage": "This Google account already has data. Do you want to transfer your current records to it?",
+  "migrationTransfer": "Transfer Data",
+  "migrationCancel": "Cancel",
+  "migrationProgress": "Migrating data...",
+  "migrationProgressProperties": "Transferring properties...",
+  "migrationProgressTalhoes": "Transferring field plots...",
+  "migrationProgressRecords": "Transferring records...",
+  "migrationSuccess": "Migration completed successfully!",
+  "migrationError": "Error during migration. Your original data has been preserved."
 }

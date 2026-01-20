@@ -269,4 +269,40 @@ class TalhaoService {
     await _box?.close();
     _box = null;
   }
+
+  /// Transfer all talhões from one user to another (Data Migration)
+  /// Used when merging an anonymous account into a new Google account
+  ///
+  /// Also updates propertyId mappings if properties were migrated with new IDs
+  Future<void> transferData(
+    String oldUserId,
+    String newUserId, {
+    Map<String, String>? propertyIdMapping,
+  }) async {
+    if (oldUserId == newUserId) return;
+
+    // Get all talhões belonging to the old user
+    final oldTalhoes = listByUser(oldUserId);
+    if (oldTalhoes.isEmpty) return;
+
+    for (final talhao in oldTalhoes) {
+      // Map propertyId if a mapping is provided (when properties got new IDs)
+      final newPropertyId =
+          propertyIdMapping?[talhao.propertyId] ?? talhao.propertyId;
+
+      final updatedTalhao = Talhao(
+        id: talhao.id,
+        userId: newUserId,
+        propertyId: newPropertyId,
+        nome: talhao.nome,
+        area: talhao.area,
+        cultura: talhao.cultura,
+        coordenadas: talhao.coordenadas,
+        createdAt: talhao.createdAt,
+        updatedAt: DateTime.now(),
+      );
+
+      await _getBox.put(talhao.id, updatedTalhao);
+    }
+  }
 }

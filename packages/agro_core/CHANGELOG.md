@@ -2,17 +2,56 @@
 
 ---
 
-## Phase CORE-34: Data Migration & UI Polish
+## Phase CORE-33: Cloud Backup Integration
 
 ### Status: [DONE]
 **Date Completed**: 2026-01-20
 **Priority**: 🟡 MEDIUM
-**Objective**: Ensure data integrity during updates and refine privacy management UI.
+**Objective**: Unified cloud backup system for all apps provided by agro_core.
 
 ### Implementation Summary
-*   **Data Migration**: Created `DataMigrationService` to initialize privacy keys with safe defaults (opt-out).
-*   **UI Polish**: Added icons to privacy switches and improved layout in `AgroPrivacyScreen`.
-*   **Version Tracking**: Added version indicator to privacy screen.
+*   **Service**: `CloudBackupService` in `agro_core` manages Firebase Storage uploads/downloads.
+*   **Provider**: `ChuvaBackupProvider` implements data serialization for PlanejaChuva.
+*   **UI**: Backup controls added to `AgroSettingsScreen`.
+
+---
+
+## Phase CORE-34: Data Migration & UI Polish
+
+### Status: [DONE]
+**Date Completed**: 2026-01-20
+**Priority**: 🟡 ARCHITECTURAL
+**Objective**: Allow seamless migration from anonymous to authenticated accounts, preserving all user data. Conditional UI display for properties/talhões.
+
+### Implementation Summary
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 34.1 | Implement `linkWithCredential` for anonymous → Google | ✅ DONE |
+| 34.2 | Handle `credential-already-in-use` error (merge conflict) | ✅ DONE |
+| 34.3 | Create `DataMigrationService.transferAllData(oldUid, newUid)` | ✅ DONE |
+| 34.4 | Add migration UI flow with progress indicator | ✅ DONE |
+| 34.5 | UI: Show Property Name only if user has > 1 property | ✅ DONE |
+| 34.6 | UI: Show Talhão Name only if > 1 talhão exists | ✅ DONE |
+
+### Files Modified
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/services/auth_service.dart` | EXISTS | linkAnonymousToGoogle() already implemented |
+| `lib/services/data_migration_service.dart` | MODIFY | Added transferAllData() with progress callbacks |
+| `lib/services/property_service.dart` | EXISTS | transferData() already implemented |
+| `lib/services/talhao_service.dart` | MODIFY | Added transferData() method |
+| `lib/screens/login_screen.dart` | EXISTS | _handleMergeConflict() already implemented |
+| `lib/widgets/weather_card.dart` | MODIFY | 34.5: Property label only if > 1 property |
+| `lib/l10n/arb/app_pt.arb` | MODIFY | Added 10 migration strings |
+| `lib/l10n/arb/app_en.arb` | MODIFY | Added 10 migration strings |
+
+### App-Specific Files (planejachuva)
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/widgets/registro_chuva_tile.dart` | MODIFY | 34.6: Talhão label only if > 1 talhão |
 
 ---
 
@@ -258,168 +297,6 @@ AgroPrivacyScreen -> "Excluir meus dados" button -> Confirmation Dialog (Checkbo
 | `lib/l10n/arb/app_pt.arb` | MODIFY | Added revoke strings |
 | `lib/l10n/arb/app_en.arb` | MODIFY | Added revoke strings |
 | `lib/widgets/weather_card.dart` | MODIFY | Reactive consent check |
-
----
-
-## Phase CORE-34: Data Migration & UI Polish
-
-### Status: [PLANNED]
-**Priority**: 🟡 ARCHITECTURAL
-**Objective**: Allow seamless migration from anonymous to authenticated accounts, preserving all user data.
-
-### Problem Statement
-Linking a Google account to an anonymous account can cause data loss if not handled correctly (orphaned data).
-
-### Implementation Summary
-
-| Sub-Phase | Description | Status |
-|-----------|-------------|--------|
-| 34.1 | Implement `linkWithCredential` for anonymous → Google | ⏳ TODO |
-| 34.2 | Handle `credential-already-in-use` error (merge conflict) | ⏳ TODO |
-| 34.3 | Create `MigrationService.transferData(oldUid, newUid)` | ⏳ TODO |
-| 34.4 | Add migration UI flow with progress indicator | ⏳ TODO |
-| 34.5 | UI: Show Property Name only if user has > 1 property | ⏳ TODO |
-| 34.6 | UI: Show Talhão Name only if > 1 talhão exists | ⏳ TODO |
-
-### Migration Scenarios
-1. **Anonymous → New Google**: Simple link, no data movement.
-2. **Anonymous → Existing Google**: Merge conflict. Requires manual data transfer service.
-
-### Proposed Service Logic
-The `MigrationService` handles:
-1. Linking anonymous accounts to Google credentials.
-2. Managing merge conflicts by signing in with the existing Google account.
-3. Transferring data from the old anonymous UID to the new Google UID across Firestore collections (properties, rainfall, talhões) and merging consents.
-
-### UI Flow
-LoginScreen (Anonymous user clicks "Sign in with Google") -> linkWithCredential() succeeds (Done) OR credential-already-in-use error -> Migration Dialog -> Choose "Transferir Dados" -> Progress Screen -> Success
-
-### Files to Create/Modify
-
-| File | Action | Description |
-|------|--------|-------------|
-| `lib/services/migration_service.dart` | CREATE | Data migration logic |
-| `lib/screens/login_screen.dart` | MODIFY | Handle migration flow |
-| `lib/screens/migration_progress_screen.dart` | CREATE | Progress UI |
-| `lib/l10n/arb/app_pt.arb` | MODIFY | Migration strings |
-| `lib/l10n/arb/app_en.arb` | MODIFY | Migration-related strings |
-
-### L10n Strings Needed
-
-```json
-"migrationTitle": "Conta já existe",
-"migrationMessage": "Esta conta Google já possui dados. Deseja transferir seus registros atuais para ela?",
-"migrationTransfer": "Transferir Dados",
-"migrationCancel": "Cancelar",
-"migrationProgress": "Migrando dados...",
-"migrationProgressProperties": "Transferindo propriedades...",
-"migrationProgressRecords": "Transferindo registros...",
-"migrationProgressSettings": "Transferindo configurações...",
-"migrationSuccess": "Migração concluída com sucesso!",
-"migrationError": "Erro durante migração. Seus dados originais foram preservados."
-```
-
----
-
-## Phase CORE-33: Cloud Backup & Restore
-
-### Status: [PLANNED]
-**Priority**: 🟡 ARCHITECTURAL
-**Objective**: Enable automatic cloud backup and restore of user data via Firebase Storage.
-
-### Features
-- Auto/Manual Backup to JSON in Firebase Storage
-- Restore function
-- Multi-device sync support
-
-### Implementation Summary
-
-| Sub-Phase | Description | Status |
-|-----------|-------------|--------|
-| 33.1 | Add `firebase_storage` dependency to agro_core | ⏳ TODO |
-| 33.2 | Create `CloudBackupService` with `BackupProvider` interface | ⏳ TODO |
-| 33.3 | Implement `backupAll()` - upload JSON to Storage | ⏳ TODO |
-| 33.4 | Implement `restoreAll()` - download & parse JSON | ⏳ TODO |
-| 33.5 | Add Backup/Restore UI to AgroSettingsScreen | ⏳ TODO |
-| 33.6 | App Integration: Create `ChuvaBackupProvider` in planejachuva | ⏳ TODO |
-| 33.7 | Register provider in main.dart | ⏳ TODO |
-
-### Architecture
-`CloudBackupService` orchestrates checking, uploading, and downloading backups. It uses a list of `BackupProvider` implementations (one per app/module) to get/set data.
-
-### Proposed Service Logic
-The `CloudBackupService` manages:
-1. Initializing with a list of `BackupProvider` instances.
-2. `backupAll()`: Exports data from all providers, aggregates into a JSON structure with metadata, encodes it, and uploads to Firebase Storage.
-3. `restoreAll()`: Downloads the latest backup JSON from Storage, decodes it, clears existing local data via providers, and imports the backup data into each provider.
-4. `getLastBackupDate()`: Retrieves the timestamp of the last backup from Storage metadata.
-5. `deleteBackup()`: Removes the backup file from Storage.
-The `BackupProvider` interface defines methods for `collectionName`, `exportData`, `importData`, and `clearData` for modular data handling.
-
-### Backup Format
-The backup is a JSON object containing:
-- `version`: Schema version.
-- `createdAt`: Timestamp of backup creation.
-- `userId`: ID of the user who created the backup.
-- `data`: An object where keys are `collectionName` from `BackupProvider` and values are arrays of exported data.
-
-### UI Flow
-AgroSettingsScreen -> "Backup e Sincronização" section -> Status ("Último backup: {date}" or "Nenhum backup") -> "[☁️ Fazer Backup Agora]" button (triggers backup) -> "[📥 Restaurar Backup]" button (triggers confirmation dialog, then restore)
-
-### Files to Create/Modify
-
-| File | Action | Description |
-|------|--------|-------------|
-| `lib/services/backup_provider.dart` | CREATE | Interface for backup providers |
-| `lib/services/cloud_backup_service.dart` | CREATE | Core backup/restore logic |
-| `lib/screens/agro_settings_screen.dart` | MODIFY | Add backup UI section |
-| `lib/l10n/arb/app_pt.arb` | MODIFY | Backup-related strings |
-| `lib/l10n/arb/app_en.arb` | MODIFY | Backup-related strings |
-| `pubspec.yaml` | MODIFY | Add firebase_storage dependency |
-
-### App-Specific Files (planejachuva)
-
-| File | Action | Description |
-|------|--------|-------------|
-| `lib/providers/chuva_backup_provider.dart` | CREATE | Rainfall backup provider |
-| `lib/main.dart` | MODIFY | Register backup providers |
-
-### L10n Strings Needed
-
-```json
-"backupSectionTitle": "Backup e Sincronização",
-"backupLastDate": "Último backup: {date}",
-"backupNever": "Nenhum backup realizado",
-"backupNowButton": "Fazer Backup Agora",
-"backupRestoreButton": "Restaurar Backup",
-"backupInProgress": "Fazendo backup...",
-"backupSuccess": "Backup realizado com sucesso!",
-"backupError": "Erro ao fazer backup: {error}",
-"restoreConfirmTitle": "Restaurar Backup?",
-"restoreConfirmMessage": "Isso substituirá todos os dados atuais pelos dados do backup. Esta ação não pode ser desfeita.",
-"restoreCancel": "Cancelar",
-"restoreConfirm": "Restaurar",
-"restoreInProgress": "Restaurando dados...",
-"restoreSuccess": "Dados restaurados com sucesso!",
-"restoreError": "Erro ao restaurar: {error}",
-"restoreNotFound": "Nenhum backup encontrado para esta conta."
-```
-
-### Dependencies
-- `firebase_storage` (for cloud storage interaction)
-
-### Security Rules (Firebase Storage)
-
-```javascript
-rules_version = '2';
-service firebase.storage {
-  match /b/{bucket}/o {
-    match /backups/{userId}/{allPaths=**} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
-    }
-  }
-}
-```
 
 ---
 

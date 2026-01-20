@@ -173,8 +173,9 @@ class _WeatherCardState extends State<WeatherCard> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Property Label (CORE-38)
-              if (widget.propertyId != null)
+              // Property Label (CORE-38 + CORE-34.5: only show if user has > 1 property)
+              if (widget.propertyId != null &&
+                  PropertyService().getPropertyCount() > 1)
                 FutureBuilder(
                   future: Future.value(PropertyService()
                       .getPropertyById(widget.propertyId!)

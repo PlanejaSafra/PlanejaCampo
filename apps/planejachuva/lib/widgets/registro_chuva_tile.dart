@@ -144,36 +144,39 @@ class RegistroChuvasTile extends StatelessWidget {
                           fontWeight: FontWeight.w600,
                         ),
                       ),
+                      // CORE-34.6: Only show talhão name if property has > 1 talhão
                       if (showTalhaoName && registro.talhaoId != null)
-                        FutureBuilder<String?>(
-                          future: Future.value(TalhaoService()
-                              .getById(registro.talhaoId!)
-                              ?.nome), // Hive is sync but just in case
-                          builder: (context, snapshot) {
-                            if (snapshot.hasData && snapshot.data != null) {
-                              return Padding(
-                                padding: const EdgeInsets.only(top: 2),
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      Icons.landscape,
-                                      size: 14,
+                        Builder(
+                          builder: (context) {
+                            final talhao =
+                                TalhaoService().getById(registro.talhaoId!);
+                            if (talhao == null) return const SizedBox.shrink();
+
+                            // Only show if property has more than one talhão
+                            final talhaoCount = TalhaoService()
+                                .countByProperty(talhao.propertyId);
+                            if (talhaoCount <= 1) return const SizedBox.shrink();
+
+                            return Padding(
+                              padding: const EdgeInsets.only(top: 2),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.landscape,
+                                    size: 14,
+                                    color: theme.colorScheme.secondary,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    talhao.nome,
+                                    style: theme.textTheme.labelSmall?.copyWith(
                                       color: theme.colorScheme.secondary,
+                                      fontWeight: FontWeight.bold,
                                     ),
-                                    const SizedBox(width: 4),
-                                    Text(
-                                      snapshot.data!,
-                                      style:
-                                          theme.textTheme.labelSmall?.copyWith(
-                                        color: theme.colorScheme.secondary,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            }
-                            return const SizedBox.shrink();
+                                  ),
+                                ],
+                              ),
+                            );
                           },
                         ),
                       if (registro.observacao != null &&

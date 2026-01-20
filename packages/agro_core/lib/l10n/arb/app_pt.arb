@@ -305,5 +305,16 @@
   "alertDroughtMessage": "Sem previsão significativa de chuva para os próximos 7 dias.",
   "alertHighWindTitle": "Ventos Fortes",
   "alertHighWindMessage": "Rajadas de vento acima de 45km/h previstas.",
-  "alertsSectionTitle": "Alertas Meteorológicos"
+  "alertsSectionTitle": "Alertas Meteorológicos",
+
+  "migrationTitle": "Conta já existe",
+  "migrationMessage": "Esta conta Google já possui dados. Deseja transferir seus registros atuais para ela?",
+  "migrationTransfer": "Transferir Dados",
+  "migrationCancel": "Cancelar",
+  "migrationProgress": "Migrando dados...",
+  "migrationProgressProperties": "Transferindo propriedades...",
+  "migrationProgressTalhoes": "Transferindo talhões...",
+  "migrationProgressRecords": "Transferindo registros...",
+  "migrationSuccess": "Migração concluída com sucesso!",
+  "migrationError": "Erro durante migração. Seus dados originais foram preservados."
 }

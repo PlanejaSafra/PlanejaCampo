@@ -674,4 +674,34 @@ class AgroLocalizationsEn extends AgroLocalizations {
 
   @override
   String get alertsSectionTitle => 'Weather Alerts';
+
+  @override
+  String get migrationTitle => 'Account already exists';
+
+  @override
+  String get migrationMessage => 'This Google account already has data. Do you want to transfer your current records to it?';
+
+  @override
+  String get migrationTransfer => 'Transfer Data';
+
+  @override
+  String get migrationCancel => 'Cancel';
+
+  @override
+  String get migrationProgress => 'Migrating data...';
+
+  @override
+  String get migrationProgressProperties => 'Transferring properties...';
+
+  @override
+  String get migrationProgressTalhoes => 'Transferring field plots...';
+
+  @override
+  String get migrationProgressRecords => 'Transferring records...';
+
+  @override
+  String get migrationSuccess => 'Migration completed successfully!';
+
+  @override
+  String get migrationError => 'Error during migration. Your original data has been preserved.';
 }
