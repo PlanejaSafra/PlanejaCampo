@@ -1,11 +1,11 @@
-package com.noverde.planejachuva.widget
+package br.com.planejacampo.planejachuva.widget
 
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
 import android.widget.RemoteViews
 import es.antonborri.home_widget.HomeWidgetPlugin
-import com.noverde.planejachuva.R
+import br.com.planejacampo.planejachuva.R
 
 class RainWidgetProvider : AppWidgetProvider() {
 
