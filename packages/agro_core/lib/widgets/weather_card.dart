@@ -86,6 +86,13 @@ class _WeatherCardState extends State<WeatherCard> {
     return l10n.weatherCloudy;
   }
 
+  /// Get cardinal direction label (N, NE, E, SE, S, SW, W, NW)
+  String _getWindDirectionLabel(int degrees) {
+    const directions = ['N', 'NE', 'L', 'SE', 'S', 'SO', 'O', 'NO'];
+    final index = ((degrees + 22.5) % 360) ~/ 45;
+    return directions[index];
+  }
+
   @override
   Widget build(BuildContext context) {
     // CORE-35.3: Reactive to consent changes
@@ -278,6 +285,7 @@ class _WeatherCardState extends State<WeatherCard> {
                 ];
               }(),
 
+              // Main Row: Icon + Temp
               Row(
                 children: [
                   Icon(
@@ -287,7 +295,7 @@ class _WeatherCardState extends State<WeatherCard> {
                   ),
                   const SizedBox(width: 16),
 
-                  // Temp + Wind Column
+                  // Temp Column
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -297,97 +305,88 @@ class _WeatherCardState extends State<WeatherCard> {
                           color: theme.colorScheme.onSurfaceVariant,
                         ),
                       ),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.baseline,
-                        textBaseline: TextBaseline.alphabetic,
-                        children: [
-                          Text(
-                            '$temp°C',
-                            style: theme.textTheme.headlineMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: theme.colorScheme.onSurface,
-                            ),
-                          ),
-
-                          // Wind Info (CORE-38)
-                          if (windSpeed != null && windDirection != null) ...[
-                            const SizedBox(width: 12),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 6, vertical: 2),
-                              decoration: BoxDecoration(
-                                color: theme.colorScheme.surface
-                                    .withValues(alpha: 0.5),
-                                borderRadius: BorderRadius.circular(4),
-                                border: Border.all(
-                                    color: theme.colorScheme.outlineVariant),
-                              ),
-                              child: Row(
-                                children: [
-                                  Icon(Icons.air,
-                                      size: 12,
-                                      color:
-                                          theme.colorScheme.onSurfaceVariant),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    '${windSpeed.round()} km/h',
-                                    style: theme.textTheme.labelSmall?.copyWith(
-                                      color: theme.colorScheme.onSurfaceVariant,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 2),
-                                  Transform.rotate(
-                                    angle: (windDirection * 3.14159 / 180),
-                                    child: Icon(Icons.arrow_upward,
-                                        size: 10,
-                                        color:
-                                            theme.colorScheme.onSurfaceVariant),
-                                  ),
-                                ],
-                              ),
-                            )
-                          ],
-                        ],
+                      Text(
+                        '$temp°C',
+                        style: theme.textTheme.headlineMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: theme.colorScheme.onSurface,
+                        ),
                       ),
                     ],
                   ),
 
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text(
-                          _getWeatherDescription(code, l10n),
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            fontWeight: FontWeight.w500,
-                          ),
-                          textAlign: TextAlign.end,
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
+                  const Spacer(),
+
+                  // Description + See Details (right side)
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        _getWeatherDescription(code, l10n),
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w500,
                         ),
-                        const SizedBox(height: 4),
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Flexible(
-                              child: Text(
-                                l10n.weatherSeeDetails,
-                                style: theme.textTheme.labelSmall?.copyWith(
-                                  color: theme.colorScheme.primary,
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                              ),
+                        textAlign: TextAlign.end,
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            l10n.weatherSeeDetails,
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: theme.colorScheme.primary,
                             ),
-                            Icon(Icons.chevron_right,
-                                size: 16, color: theme.colorScheme.primary),
-                          ],
-                        ),
-                      ],
-                    ),
+                          ),
+                          Icon(Icons.chevron_right,
+                              size: 16, color: theme.colorScheme.primary),
+                        ],
+                      ),
+                    ],
                   ),
                 ],
               ),
+
+              // Wind Info Row (below main content) - CORE-38
+              if (windSpeed != null && windDirection != null) ...[
+                const SizedBox(height: 12),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.surfaceContainerHighest
+                        .withValues(alpha: 0.5),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.air,
+                          size: 16, color: theme.colorScheme.onSurfaceVariant),
+                      const SizedBox(width: 6),
+                      Text(
+                        '${windSpeed.round()} km/h',
+                        style: theme.textTheme.labelMedium?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Transform.rotate(
+                        angle: (windDirection * 3.14159 / 180),
+                        child: Icon(Icons.navigation,
+                            size: 14, color: theme.colorScheme.onSurfaceVariant),
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        _getWindDirectionLabel(windDirection),
+                        style: theme.textTheme.labelMedium?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ],
           ),
         ),
