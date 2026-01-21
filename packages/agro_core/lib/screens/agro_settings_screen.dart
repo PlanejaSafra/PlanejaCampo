@@ -68,6 +68,9 @@ class AgroSettingsScreen extends StatefulWidget {
   /// Whether rain alerts are enabled
   final bool rainAlertsEnabled;
 
+  /// Callback to reset/switch user profile
+  final VoidCallback? onResetProfile;
+
   const AgroSettingsScreen({
     super.key,
     this.onNavigateToAbout,
@@ -89,6 +92,7 @@ class AgroSettingsScreen extends StatefulWidget {
     this.onImportLocalBackup,
     this.onToggleRainAlerts,
     this.rainAlertsEnabled = false,
+    this.onResetProfile,
   });
 
   @override
@@ -738,6 +742,15 @@ class _AgroSettingsScreenState extends State<AgroSettingsScreen> {
                 value: _cloudSyncEnabled,
                 onChanged: _handleToggleCloudSync,
               ),
+
+              // Switch Profile
+              if (widget.onResetProfile != null)
+                ListTile(
+                  leading: const Icon(Icons.switch_account),
+                  title: Text(l10n.settingsResetProfile),
+                  subtitle: Text(l10n.settingsResetProfileDesc),
+                  onTap: widget.onResetProfile,
+                ),
 
               // Export data (LGPD)
               ListTile(

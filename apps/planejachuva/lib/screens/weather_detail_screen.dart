@@ -127,6 +127,7 @@ class _WeatherDetailScreenState extends State<WeatherDetailScreen> {
         ],
       ),
       body: _buildBody(theme, l10n),
+      bottomNavigationBar: const AgroBannerWidget(),
     );
   }
 

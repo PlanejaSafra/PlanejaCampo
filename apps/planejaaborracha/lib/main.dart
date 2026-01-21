@@ -144,6 +144,13 @@ class PlanejaBorrachaApp extends StatelessWidget {
           '/settings': (context) => AgroSettingsScreen(
                 onExportLocalBackup: () => _handleExportLocalBackup(context),
                 onImportLocalBackup: () => _handleImportLocalBackup(context),
+                onResetProfile: () async {
+                  await UserProfileService.instance.clearProfile();
+                  if (context.mounted) {
+                    Navigator.of(context)
+                        .pushNamedAndRemoveUntil('/home', (route) => false);
+                  }
+                },
               ),
           '/profile-selection': (context) => ProfileSelectionScreen(
                 onProfileSelected: () {

@@ -1030,4 +1030,10 @@ class AgroLocalizationsPt extends AgroLocalizations {
 
   @override
   String get deleteCloudDataSuccess => 'Dados da nuvem excluídos com sucesso';
+
+  @override
+  String get settingsResetProfile => 'Trocar Perfil';
+
+  @override
+  String get settingsResetProfileDesc => 'Voltar para a seleção de Produtor/Sangrador/Comprador';
 }

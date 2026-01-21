@@ -491,5 +491,7 @@
   "deleteButton": "Delete",
   "deleteCloudDataTitle": "Delete cloud data?",
   "deleteCloudDataMessage": "This will remove your synced data from the cloud. Local data on your device will be kept. You can sync again in the future if you wish.",
-  "deleteCloudDataSuccess": "Cloud data deleted successfully"
+  "deleteCloudDataSuccess": "Cloud data deleted successfully",
+  "settingsResetProfile": "Switch Profile",
+  "settingsResetProfileDesc": "Return to Producer/Tapper/Buyer selection"
 }

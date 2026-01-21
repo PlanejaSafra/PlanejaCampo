@@ -242,6 +242,7 @@ class _EstatisticasScreenState extends State<EstatisticasScreen>
                 ),
               ],
             ),
+      bottomNavigationBar: const AgroBannerWidget(),
     );
   }
 

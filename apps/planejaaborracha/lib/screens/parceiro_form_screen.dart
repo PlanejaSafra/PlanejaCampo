@@ -100,7 +100,8 @@ class _ParceiroFormScreenState extends State<ParceiroFormScreen> {
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: Text(l10n.parceiroDeleteConfirm, style: const TextStyle(color: Colors.red)),
+            child: Text(l10n.parceiroDeleteConfirm,
+                style: const TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -120,8 +121,9 @@ class _ParceiroFormScreenState extends State<ParceiroFormScreen> {
     final l10n = BorrachaLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-            widget.parceiroId == null ? l10n.parceiroAddButton : l10n.parceiroEditButton),
+        title: Text(widget.parceiroId == null
+            ? l10n.parceiroAddButton
+            : l10n.parceiroEditButton),
         actions: [
           if (widget.parceiroId != null)
             IconButton(
@@ -196,6 +198,7 @@ class _ParceiroFormScreenState extends State<ParceiroFormScreen> {
           ],
         ),
       ),
+      bottomNavigationBar: const AgroBannerWidget(),
     );
   }
 }

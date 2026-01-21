@@ -44,7 +44,8 @@ class _RegionalStatsScreenState extends State<RegionalStatsScreen> {
     if (!_syncService.hasUserConsent) {
       setState(() {
         _hasError = true;
-        _errorMessage = 'Você precisa ativar o compartilhamento de dados nas configurações';
+        _errorMessage =
+            'Você precisa ativar o compartilhamento de dados nas configurações';
       });
       return;
     }
@@ -109,6 +110,7 @@ class _RegionalStatsScreenState extends State<RegionalStatsScreen> {
         ],
       ),
       body: _buildBody(theme, l10n),
+      bottomNavigationBar: const AgroBannerWidget(),
     );
   }
 
@@ -355,7 +357,8 @@ class _RegionalStatsScreenState extends State<RegionalStatsScreen> {
                 Expanded(
                   child: _buildStatColumn(
                     label: 'Média Regional',
-                    value: '${NumberFormat('#0.0', 'pt_BR').format(regionalMm)} mm',
+                    value:
+                        '${NumberFormat('#0.0', 'pt_BR').format(regionalMm)} mm',
                     color: theme.colorScheme.secondary,
                     theme: theme,
                   ),
@@ -443,7 +446,8 @@ class _RegionalStatsScreenState extends State<RegionalStatsScreen> {
             const SizedBox(height: 12),
             _buildDetailRow(
               label: 'Total acumulado',
-              value: '${NumberFormat('#0.0', 'pt_BR').format(stats.totalMm)} mm',
+              value:
+                  '${NumberFormat('#0.0', 'pt_BR').format(stats.totalMm)} mm',
               theme: theme,
             ),
             const SizedBox(height: 8),

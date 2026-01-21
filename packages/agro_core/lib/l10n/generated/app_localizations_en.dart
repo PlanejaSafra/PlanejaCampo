@@ -1030,4 +1030,10 @@ class AgroLocalizationsEn extends AgroLocalizations {
 
   @override
   String get deleteCloudDataSuccess => 'Cloud data deleted successfully';
+
+  @override
+  String get settingsResetProfile => 'Switch Profile';
+
+  @override
+  String get settingsResetProfileDesc => 'Return to Producer/Tapper/Buyer selection';
 }

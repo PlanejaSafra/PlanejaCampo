@@ -39,6 +39,9 @@ class UserProfileService extends ChangeNotifier {
   /// Whether the current user is a buyer.
   bool get isComprador => _currentProfile?.isComprador ?? false;
 
+  /// Whether the current user is a tapper.
+  bool get isSangrador => _currentProfile?.isSangrador ?? false;
+
   /// Set the user profile type.
   Future<void> setProfile({
     required UserProfileType profileType,

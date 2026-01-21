@@ -2068,6 +2068,18 @@ abstract class AgroLocalizations {
   /// In en, this message translates to:
   /// **'Cloud data deleted successfully'**
   String get deleteCloudDataSuccess;
+
+  /// No description provided for @settingsResetProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch Profile'**
+  String get settingsResetProfile;
+
+  /// No description provided for @settingsResetProfileDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Return to Producer/Tapper/Buyer selection'**
+  String get settingsResetProfileDesc;
 }
 
 class _AgroLocalizationsDelegate extends LocalizationsDelegate<AgroLocalizations> {

@@ -77,6 +77,7 @@ class _ParceirosListScreenState extends State<ParceirosListScreen> {
         onPressed: () => _navigateToForm(context),
         child: const Icon(Icons.add),
       ),
+      bottomNavigationBar: const AgroBannerWidget(),
     );
   }
 
