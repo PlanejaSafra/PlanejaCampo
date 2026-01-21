@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
@@ -491,6 +492,11 @@ class RadarTileProvider implements TileProvider {
   final String urlTemplate;
   final int tileSize;
 
+  // Static cache shared across all provider instances
+  // Key: URL, Value: raw bytes
+  static final Map<String, Uint8List> _cache = {};
+  static const int _maxCacheSize = 500; // ~500 tiles * ~50KB = ~25MB max
+
   RadarTileProvider({required this.urlTemplate, this.tileSize = 256});
 
   @override
@@ -499,6 +505,11 @@ class RadarTileProvider implements TileProvider {
         .replaceAll('{x}', x.toString())
         .replaceAll('{y}', y.toString())
         .replaceAll('{z}', zoom.toString());
+
+    // Check cache first
+    if (_cache.containsKey(url)) {
+      return Tile(tileSize, tileSize, _cache[url]!);
+    }
 
     // Retry up to 2 times with timeout
     for (int attempt = 0; attempt < 2; attempt++) {
@@ -511,19 +522,31 @@ class RadarTileProvider implements TileProvider {
         );
 
         if (response.statusCode == 200) {
-          return Tile(tileSize, tileSize, response.bodyBytes);
+          final bytes = response.bodyBytes;
+
+          // Store in cache (evict oldest if full)
+          if (_cache.length >= _maxCacheSize) {
+            _cache.remove(_cache.keys.first);
+          }
+          _cache[url] = Uint8List.fromList(bytes);
+
+          return Tile(tileSize, tileSize, bytes);
         } else if (response.statusCode == 403 || response.statusCode == 404) {
           // Don't retry on 403/404 - these won't change
-          debugPrint('RadarTileProvider: $url => ${response.statusCode}');
           return TileProvider.noTile;
         }
         // Other errors: retry
       } catch (e) {
         if (attempt == 1) {
-          debugPrint('RadarTileProvider failed after retry: $url => $e');
+          debugPrint('RadarTileProvider failed after retry: $url');
         }
       }
     }
     return TileProvider.noTile;
+  }
+
+  /// Clear the tile cache (call when refreshing timestamps)
+  static void clearCache() {
+    _cache.clear();
   }
 }
