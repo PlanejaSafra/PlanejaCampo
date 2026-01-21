@@ -34,26 +34,31 @@ class RadarService {
   }
 
   /// Construct the tile URL template with {x}, {y}, {z} placeholders.
+  /// [host] should come from the API response (e.g., "https://tilecache.rainviewer.com").
+  /// [path] is the API path (e.g., "/v2/radar/1769032200" or "/v2/radar/nowcast_xxx").
   String getTileUrlTemplate({
-    required int ts,
+    required String path,
+    required String host,
     int size = 256,
     int colorScheme = 2,
     int smooth = 1,
   }) {
-    return 'https://tile.rainviewer.com/v2/radar/$ts/$size/{z}/{x}/{y}/$colorScheme/${smooth}_1.png';
+    return '$host$path/$size/{z}/{x}/{y}/$colorScheme/${smooth}_1.png';
   }
+}
 
-  /// Construct a specific tile URL (legacy use).
-  String getTileUrl({
-    required int ts,
-    required int z,
-    required int x,
-    required int y,
-    int size = 256,
-    int colorScheme = 2,
-    int smooth = 1,
-  }) {
-    return 'https://tile.rainviewer.com/v2/radar/$ts/$size/$z/$x/$y/$colorScheme/${smooth}_1.png';
+/// Represents a single radar frame with time and path.
+class RadarFrame {
+  final int time;
+  final String path;
+
+  RadarFrame({required this.time, required this.path});
+
+  factory RadarFrame.fromJson(Map<String, dynamic> json) {
+    return RadarFrame(
+      time: json['time'] as int? ?? 0,
+      path: json['path'] as String? ?? '',
+    );
   }
 }
 
@@ -62,8 +67,8 @@ class RadarTimestamps {
   final String version;
   final int generated;
   final String host;
-  final List<int> radarPast; // Past frames (Radar)
-  final List<int> radarNowcast; // Future frames (Satellite/AI)
+  final List<RadarFrame> radarPast; // Past frames (Radar)
+  final List<RadarFrame> radarNowcast; // Future frames (Satellite/AI)
 
   RadarTimestamps({
     required this.version,
@@ -73,28 +78,25 @@ class RadarTimestamps {
     required this.radarNowcast,
   });
 
-  /// All timestamps combined (Past + Nowcast) sorted.
-  List<int> get allTimestamps => [...radarPast, ...radarNowcast];
+  /// All frames combined (Past + Nowcast).
+  List<RadarFrame> get allFrames => [...radarPast, ...radarNowcast];
 
   factory RadarTimestamps.fromJson(Map<String, dynamic> json) {
     return RadarTimestamps(
       version: json['version'] ?? '',
       generated: json['generated'] ?? 0,
       host: json['host'] ?? '',
-      radarPast: _parseTimestamps(json['radar']?['past']),
-      radarNowcast: _parseTimestamps(json['radar']?['nowcast']),
+      radarPast: _parseFrames(json['radar']?['past']),
+      radarNowcast: _parseFrames(json['radar']?['nowcast']),
     );
   }
 
-  static List<int> _parseTimestamps(dynamic list) {
+  static List<RadarFrame> _parseFrames(dynamic list) {
     if (list is! List) return [];
     return list
-        .map((e) {
-          if (e is int) return e;
-          if (e is Map) return e['time'] as int? ?? 0;
-          return 0;
-        })
-        .where((t) => t > 0)
+        .where((e) => e is Map)
+        .map((e) => RadarFrame.fromJson(e as Map<String, dynamic>))
+        .where((f) => f.time > 0 && f.path.isNotEmpty)
         .toList();
   }
 }

@@ -13,12 +13,15 @@
 |-----------|-------------|--------|
 | 58.1 | Fix Camera Reset: Track `onCameraMove` and preserve position | ✅ DONE |
 | 58.2 | Fix Tile Caching: Add Region Hash to `TileOverlayId` | ✅ DONE |
-| 58.3 | Logging: Add `debugPrint` for RadarTileProvider errors | ✅ DONE |
+| 58.3 | Logging: Add `debugPrint` for RadarTi
+leProvider errors | ✅ DONE |
+| 58.4 | Fix Tile Host: Use dynamic `host` from API response | ✅ DONE |
 
 ### Files Modified
 | File | Action | Description |
 |------|--------|-------------|
-| `lib/screens/weather_map_screen.dart` | MODIFY | Implemented fixes |
+| `lib/screens/weather_map_screen.dart` | MODIFY | Camera tracking, region hash, pass host |
+| `lib/services/radar_service.dart` | MODIFY | Dynamic host in getTileUrlTemplate |
 
 ---
 

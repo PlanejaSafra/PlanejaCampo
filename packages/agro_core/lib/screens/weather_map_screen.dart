@@ -56,7 +56,7 @@ class _WeatherMapScreenState extends State<WeatherMapScreen>
     _animController.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
         if (_radarTimestamps != null) {
-          final max = _radarTimestamps!.allTimestamps.length;
+          final max = _radarTimestamps!.allFrames.length;
           setState(() {
             _currentIndex = (_currentIndex + 1) % max;
             _animController.reset();
@@ -170,14 +170,14 @@ class _WeatherMapScreenState extends State<WeatherMapScreen>
   void _updateRadarOverlays() {
     if (_radarTimestamps == null) return;
 
-    final allTs = _radarTimestamps!.allTimestamps;
-    if (allTs.isEmpty) return;
+    final allFrames = _radarTimestamps!.allFrames;
+    if (allFrames.isEmpty) return;
 
-    final max = allTs.length;
+    final max = allFrames.length;
     final int nextIndex = (_currentIndex + 1) % max;
 
-    final currentTs = allTs[_currentIndex];
-    final nextTs = allTs[nextIndex];
+    final currentFrame = allFrames[_currentIndex];
+    final nextFrame = allFrames[nextIndex];
 
     // Interpolation Logic:
     // We render TWO layers:
@@ -191,11 +191,14 @@ class _WeatherMapScreenState extends State<WeatherMapScreen>
     // To prevent flicker, we handle single frame logic
     final Set<TileOverlay> overlays = {};
 
+    final String host = _radarTimestamps!.host;
+
     // Current Frame (Fading Out)
     overlays.add(TileOverlay(
-      tileOverlayId: TileOverlayId('radar_${currentTs}_$regionHash'),
+      tileOverlayId: TileOverlayId('radar_${currentFrame.time}_$regionHash'),
       tileProvider: RadarTileProvider(
-          urlTemplate: _radarService.getTileUrlTemplate(ts: currentTs)),
+          urlTemplate: _radarService.getTileUrlTemplate(
+              path: currentFrame.path, host: host)),
       transparency:
           1.0 - (0.6 * (1.0 - progress)), // Fading out (1.0 = invisible)
       zIndex: 1, // Lower zIndex
@@ -205,9 +208,10 @@ class _WeatherMapScreenState extends State<WeatherMapScreen>
     // Only show if we are playing or interpolating
     if (_isPlaying || progress > 0) {
       overlays.add(TileOverlay(
-        tileOverlayId: TileOverlayId('radar_${nextTs}_$regionHash'),
+        tileOverlayId: TileOverlayId('radar_${nextFrame.time}_$regionHash'),
         tileProvider: RadarTileProvider(
-            urlTemplate: _radarService.getTileUrlTemplate(ts: nextTs)),
+            urlTemplate: _radarService.getTileUrlTemplate(
+                path: nextFrame.path, host: host)),
         transparency: 1.0 - (0.6 * progress), // Fading in
         zIndex: 2, // Higher zIndex
       ));
@@ -418,13 +422,14 @@ class _WeatherMapScreenState extends State<WeatherMapScreen>
   Widget _buildRadarControls(AgroLocalizations l10n) {
     if (_radarTimestamps == null) return const SizedBox.shrink();
 
-    final allTs = _radarTimestamps!.allTimestamps;
-    final currentTs = allTs[_currentIndex];
-    final date = DateTime.fromMillisecondsSinceEpoch(currentTs * 1000);
+    final allFrames = _radarTimestamps!.allFrames;
+    final currentFrame = allFrames[_currentIndex];
+    final date = DateTime.fromMillisecondsSinceEpoch(currentFrame.time * 1000);
     final formattedTime =
         '${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
 
-    final isPast = currentTs <= (DateTime.now().millisecondsSinceEpoch / 1000);
+    final isPast =
+        currentFrame.time <= (DateTime.now().millisecondsSinceEpoch / 1000);
     final statusText = isPast
         ? l10n.radarPast(formattedTime)
         : l10n.radarFuture(formattedTime);
@@ -472,7 +477,7 @@ class _WeatherMapScreenState extends State<WeatherMapScreen>
                       child: Slider(
                         value: _currentIndex + _animController.value,
                         min: 0,
-                        max: (allTs.length - 1).toDouble() + 0.99,
+                        max: (allFrames.length - 1).toDouble() + 0.99,
                         onChanged: _onSliderChanged,
                         activeColor: isPast ? Colors.blue : Colors.purpleAccent,
                         inactiveColor: Colors.white24,
