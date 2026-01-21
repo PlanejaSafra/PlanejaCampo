@@ -13,9 +13,9 @@
 |-----------|-------------|--------|
 | 58.1 | Fix Camera Reset: Track `onCameraMove` and preserve position | ✅ DONE |
 | 58.2 | Fix Tile Caching: Add Region Hash to `TileOverlayId` | ✅ DONE |
-| 58.3 | Logging: Add `debugPrint` for RadarTi
-leProvider errors | ✅ DONE |
+| 58.3 | Logging: Add `debugPrint` for RadarTileProvider errors | ✅ DONE |
 | 58.4 | Fix Tile Host: Use dynamic `host` from API response | ✅ DONE |
+| 58.5 | Fix Nowcast URLs: Use `path` from API instead of timestamp | ✅ DONE |
 
 ### Files Modified
 | File | Action | Description |

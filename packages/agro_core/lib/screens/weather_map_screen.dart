@@ -160,6 +160,14 @@ class _WeatherMapScreenState extends State<WeatherMapScreen>
     setState(() => _radarLoading = false);
   }
 
+  /// Called when user stops moving the map - refresh radar data to avoid stale timestamps
+  void _onCameraIdle() {
+    if (_selectedLayer == MapLayer.radar && !_radarLoading) {
+      // Refresh radar data to get fresh timestamps (they expire every ~10 min)
+      _fetchRadarData();
+    }
+  }
+
   String _getRegionHash() {
     final target = _currentCameraPosition?.target ?? _initialPosition;
     // Round to integer to group tiles by large regions (~111km blocks)
@@ -296,6 +304,7 @@ class _WeatherMapScreenState extends State<WeatherMapScreen>
                   zoom: 8,
                 ),
             onCameraMove: (pos) => _currentCameraPosition = pos,
+            onCameraIdle: _onCameraIdle,
             circles: _circles,
             tileOverlays: _tileOverlays,
             mapType: MapType.hybrid,
