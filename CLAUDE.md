@@ -1,4 +1,4 @@
-# PLANEJASAFRA — RULES (Flutter Monorepo)
+# PLANEJACAMPO — RULES (Flutter Monorepo)
 
 ## 1) Before touching anything (mandatory)
 
@@ -8,7 +8,7 @@
 
 ## 2) Monorepo structure (fixed)
 
-PlanejaSafra\
+PlanejaCampo\
 
 * apps\
 
@@ -158,3 +158,13 @@ When a feature spans both core and app:
 * **Granularity**: Sub-phases (X.Y.1, X.Y.2) for large tasks
 * **Files modified**: Always list with action (CREATE/MODIFY/DELETE)
 * **Cross-reference**: When a phase affects multiple projects, document in both CHANGELOGs with cross-reference
+
+## 11) Build & Configuration Rules (Mandatory)
+
+* **minSdk**: Must be set to **23** or higher (required by `flutter_local_notifications` and modern AGP).
+* **Kotlin**: Use version **2.0.0** or higher in `android/settings.gradle`.
+* **Desugaring**: 
+  * Must enable `coreLibraryDesugaringEnabled true` in `android/app/build.gradle`.
+  * Must add `com.android.tools:desugar_jdk_libs` dependency (version 2.1.5+).
+* **Gradle**: Use compatible AGP (8.6.0+) and Gradle Wrapper (8.10.2+).
+

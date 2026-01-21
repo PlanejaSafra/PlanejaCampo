@@ -41,6 +41,7 @@ export 'models/property.dart';
 export 'models/talhao.dart';
 
 // Services (Auth & Cloud Sync)
+export 'auth/agro_auth_gate.dart';
 export 'services/auth_service.dart';
 export 'services/user_cloud_service.dart';
 

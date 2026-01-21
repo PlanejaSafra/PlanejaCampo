@@ -3,7 +3,7 @@ import 'package:hive/hive.dart';
 part 'property.g.dart';
 
 /// Model representing a farm/property where agricultural activities take place.
-/// Properties are shared across all PlanejaSafra apps (PlanejaChuva, PlanejaBorracha, etc.)
+/// Properties are shared across all PlanejaCampo apps (PlanejaChuva, PlanejaBorracha, etc.)
 /// and associated with a userId for multi-device sync.
 @HiveType(typeId: 13)
 class Property extends HiveObject {

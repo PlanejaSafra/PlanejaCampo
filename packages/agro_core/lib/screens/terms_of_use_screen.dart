@@ -16,7 +16,7 @@ class TermsOfUseScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         children: [
           Text(
-            'Termos de Uso - PlanejaSafra',
+            'Termos de Uso - PlanejaCampo',
             style: theme.textTheme.headlineSmall?.copyWith(
               fontWeight: FontWeight.bold,
             ),
@@ -32,12 +32,12 @@ class TermsOfUseScreen extends StatelessWidget {
           _buildSection(
             context,
             '1. Aceitação dos Termos',
-            'Ao utilizar os aplicativos da família PlanejaSafra (incluindo PlanejaChuva, PlanejaBorracha, PlanejaDiesel e outros), você concorda com estes Termos de Uso. Se você não concorda com alguma parte destes termos, não deve utilizar nossos serviços.',
+            'Ao utilizar os aplicativos da família PlanejaCampo (incluindo PlanejaChuva, PlanejaBorracha, PlanejaDiesel e outros), você concorda com estes Termos de Uso. Se você não concorda com alguma parte destes termos, não deve utilizar nossos serviços.',
           ),
           _buildSection(
             context,
             '2. Descrição do Serviço',
-            'Os aplicativos PlanejaSafra são ferramentas de gestão agrícola que permitem:\n\n'
+            'Os aplicativos PlanejaCampo são ferramentas de gestão agrícola que permitem:\n\n'
                 '• Registro e acompanhamento de dados agrícolas (chuvas, produção, etc.)\n'
                 '• Gerenciamento de propriedades rurais\n'
                 '• Visualização de estatísticas e métricas\n'
@@ -55,7 +55,7 @@ class TermsOfUseScreen extends StatelessWidget {
           _buildSection(
             context,
             '4. Propriedade de Dados',
-            'Todos os dados que você insere nos aplicativos PlanejaSafra pertencem a você. Nós:\n\n'
+            'Todos os dados que você insere nos aplicativos PlanejaCampo pertencem a você. Nós:\n\n'
                 '• NÃO vendemos seus dados pessoais\n'
                 '• NÃO compartilhamos dados identificáveis sem seu consentimento\n'
                 '• Utilizamos dados agregados e anonimizados apenas se você consentir\n'
@@ -74,7 +74,7 @@ class TermsOfUseScreen extends StatelessWidget {
           _buildSection(
             context,
             '6. Limitação de Responsabilidade',
-            'Os aplicativos PlanejaSafra são fornecidos "como estão". Não garantimos:\n\n'
+            'Os aplicativos PlanejaCampo são fornecidos "como estão". Não garantimos:\n\n'
                 '• Precisão absoluta de previsões ou métricas\n'
                 '• Disponibilidade ininterrupta do serviço\n'
                 '• Adequação para fins específicos\n\n'
@@ -92,7 +92,7 @@ class TermsOfUseScreen extends StatelessWidget {
           _buildSection(
             context,
             '8. Propriedade Intelectual',
-            'Todo o conteúdo, design, código e funcionalidades dos aplicativos PlanejaSafra são protegidos por direitos autorais e outras leis de propriedade intelectual. Você não pode copiar, modificar ou distribuir nosso software sem autorização.',
+            'Todo o conteúdo, design, código e funcionalidades dos aplicativos PlanejaCampo são protegidos por direitos autorais e outras leis de propriedade intelectual. Você não pode copiar, modificar ou distribuir nosso software sem autorização.',
           ),
           _buildSection(
             context,
@@ -114,7 +114,7 @@ class TermsOfUseScreen extends StatelessWidget {
           const SizedBox(height: 16),
           Center(
             child: Text(
-              '© 2026 PlanejaSafra. Todos os direitos reservados.',
+              '© 2026 PlanejaCampo. Todos os direitos reservados.',
               style: theme.textTheme.bodySmall?.copyWith(
                 color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
               ),

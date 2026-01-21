@@ -13,7 +13,7 @@ import '../services/property_service.dart';
 /// Follows Google Sign-In Branding Guidelines:
 /// https://developers.google.com/identity/branding-guidelines
 ///
-/// This screen is reusable across all PlanejaSafra apps (PlanejaChuva, PlanejaBorracha, etc).
+/// This screen is reusable across all PlanejaCampo apps (PlanejaChuva, PlanejaBorracha, etc).
 /// Each app can customize the icon, name, and description.
 class LoginScreen extends StatefulWidget {
   final VoidCallback onLoginSuccess;

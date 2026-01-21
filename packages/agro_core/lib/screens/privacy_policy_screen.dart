@@ -16,7 +16,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         children: [
           Text(
-            'Política de Privacidade - PlanejaSafra',
+            'Política de Privacidade - PlanejaCampo',
             style: theme.textTheme.headlineSmall?.copyWith(
               fontWeight: FontWeight.bold,
             ),
@@ -29,13 +29,11 @@ class PrivacyPolicyScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 24),
-
           _buildSection(
             context,
             '1. Introdução',
-            'A PlanejaSafra valoriza sua privacidade e está comprometida em proteger seus dados pessoais. Esta Política de Privacidade explica quais dados coletamos, como os usamos e seus direitos sobre eles.',
+            'A PlanejaCampo valoriza sua privacidade e está comprometida em proteger seus dados pessoais. Esta Política de Privacidade explica quais dados coletamos, como os usamos e seus direitos sobre eles.',
           ),
-
           _buildSection(
             context,
             '2. Dados que Coletamos',
@@ -54,7 +52,6 @@ class PrivacyPolicyScreen extends StatelessWidget {
                 '• Logs de erros e falhas (para melhorar o app)\n'
                 '• Informações de uso anônimas (se você consentir)',
           ),
-
           _buildSection(
             context,
             '3. Como Usamos Seus Dados',
@@ -70,7 +67,6 @@ class PrivacyPolicyScreen extends StatelessWidget {
                 '• Publicidade direcionada sem consentimento\n'
                 '• Compartilhar dados identificáveis sem permissão',
           ),
-
           _buildSection(
             context,
             '4. Compartilhamento de Dados',
@@ -85,7 +81,6 @@ class PrivacyPolicyScreen extends StatelessWidget {
                 '• Firebase (Google) - hospedagem e autenticação\n'
                 '• Servidores seguros para armazenamento de backup',
           ),
-
           _buildSection(
             context,
             '5. Armazenamento de Dados',
@@ -99,7 +94,6 @@ class PrivacyPolicyScreen extends StatelessWidget {
                 '• Backup automático entre dispositivos\n'
                 '• Armazenados em servidores seguros do Google',
           ),
-
           _buildSection(
             context,
             '6. Seus Direitos (LGPD)',
@@ -112,7 +106,6 @@ class PrivacyPolicyScreen extends StatelessWidget {
                 '• **Informação:** Saber com quem compartilhamos dados\n\n'
                 'Para exercer esses direitos, acesse Configurações > Privacidade no app.',
           ),
-
           _buildSection(
             context,
             '7. Consentimentos Opcionais',
@@ -136,7 +129,6 @@ class PrivacyPolicyScreen extends StatelessWidget {
                 '• Rastrear conversões e eficácia de campanhas\n\n'
                 'Você pode alterar esses consentimentos a qualquer momento em Configurações > Privacidade.',
           ),
-
           _buildSection(
             context,
             '8. Segurança',
@@ -148,7 +140,6 @@ class PrivacyPolicyScreen extends StatelessWidget {
                 '• Monitoramento de segurança contínuo\n\n'
                 'Apesar disso, nenhum sistema é 100% seguro. Use senhas fortes e proteja seu dispositivo.',
           ),
-
           _buildSection(
             context,
             '9. Retenção de Dados',
@@ -158,31 +149,26 @@ class PrivacyPolicyScreen extends StatelessWidget {
                 '• **Dados agregados:** Anonimizados permanentemente\n\n'
                 'Ao deletar sua conta, todos os dados identificáveis são removidos em até 30 dias.',
           ),
-
           _buildSection(
             context,
             '10. Crianças',
             'Nossos aplicativos não são direcionados a menores de 13 anos. Não coletamos intencionalmente dados de crianças. Se você acredita que coletamos dados de uma criança, entre em contato para que possamos removê-los.',
           ),
-
           _buildSection(
             context,
             '11. Alterações nesta Política',
             'Podemos atualizar esta Política de Privacidade periodicamente. Notificaremos sobre mudanças significativas através do aplicativo. Recomendamos revisar esta política regularmente.',
           ),
-
           _buildSection(
             context,
             '12. Cookies e Tecnologias Similares',
             'Nossos aplicativos móveis NÃO usam cookies. Armazenamos preferências localmente no dispositivo usando tecnologias seguras (Hive). Esses dados não são acessíveis por outros aplicativos.',
           ),
-
           _buildSection(
             context,
             '13. Transferência Internacional',
             'Se você usa nossos serviços de fora do Brasil, seus dados podem ser transferidos e armazenados em servidores do Google em outros países. Garantimos proteção adequada em conformidade com a LGPD.',
           ),
-
           _buildSection(
             context,
             '14. Contato',
@@ -191,14 +177,12 @@ class PrivacyPolicyScreen extends StatelessWidget {
                 '• Ou acesse Configurações > Privacidade para gerenciar dados\n\n'
                 'Responderemos todas as solicitações em até 15 dias úteis.',
           ),
-
           const SizedBox(height: 24),
           const Divider(),
           const SizedBox(height: 16),
-
           Center(
             child: Text(
-              '© 2026 PlanejaSafra. Todos os direitos reservados.\nEsta política está em conformidade com a LGPD (Lei nº 13.709/2018).',
+              '© 2026 PlanejaCampo. Todos os direitos reservados.\nEsta política está em conformidade com a LGPD (Lei nº 13.709/2018).',
               style: theme.textTheme.bodySmall?.copyWith(
                 color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
               ),

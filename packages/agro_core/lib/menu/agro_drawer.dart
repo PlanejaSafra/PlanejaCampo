@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../l10n/generated/app_localizations.dart';
 import 'agro_drawer_item.dart';
 
-/// Reusable drawer widget for all PlanejaSafra apps.
+/// Reusable drawer widget for all PlanejaCampo apps.
 ///
 /// Provides standard menu items (Home, Properties, Settings, About)
 /// and allows apps to add custom items via [extraItems].

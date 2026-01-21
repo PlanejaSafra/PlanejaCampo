@@ -127,7 +127,7 @@ class DataExportService {
     // Share via native sheet
     await Share.shareXFiles(
       [XFile(file.path)],
-      subject: 'Meus dados - PlanejaSafra',
+      subject: 'Meus dados - PlanejaCampo',
     );
   }
 

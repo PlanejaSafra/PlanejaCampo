@@ -1,7 +1,7 @@
 {
   "@@locale": "pt",
 
-  "appName": "PlanejaSafra",
+  "appName": "PlanejaCampo",
   "continueLabel": "CONTINUAR",
   "acceptAndContinueLabel": "ACEITAR E CONTINUAR",
   "acceptAllButton": "ACEITAR TUDO E CONTINUAR",
@@ -11,7 +11,7 @@
   "privacySettingsHint": "Você pode consultar os documentos completos em Configurações → Privacidade.",
 
   "termsTitle": "Termos de Uso e Privacidade",
-  "termsBodyIntro": "Ao tocar em \"Aceitar e continuar\", você concorda com os Termos de Uso e com a Política de Privacidade dos apps PlanejaSafra/PlanejaCampo.",
+  "termsBodyIntro": "Ao tocar em \"Aceitar e continuar\", você concorda com os Termos de Uso e com a Política de Privacidade dos apps PlanejaCampo.",
   "termsSummaryTitle": "Resumo do que acontece:",
   "termsSummaryItem1": "Você registra informações como chuvas, preços, pesagens, anotações e lançamentos.",
   "termsSummaryItem2": "Esses dados ficam armazenados no seu dispositivo para o app funcionar.",
@@ -59,9 +59,9 @@
   "settingsManagement": "Gerenciamento",
 
   "aboutTitle": "Sobre",
-  "aboutDescription": "Este app faz parte da suíte PlanejaSafra, projetada para ajudar produtores rurais a gerenciar suas atividades no campo.",
+  "aboutDescription": "Este app faz parte da suíte PlanejaCampo, projetada para ajudar produtores rurais a gerenciar suas atividades no campo.",
   "aboutOfflineFirst": "100% Offline-First: todos os seus dados ficam no seu dispositivo.",
-  "aboutSuite": "Suíte PlanejaSafra",
+  "aboutSuite": "Suíte PlanejaCampo",
   "aboutVersion": "Versão",
 
   "privacyTitle": "Privacidade e Consentimentos",

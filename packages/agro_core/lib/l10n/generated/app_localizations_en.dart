@@ -7,7 +7,7 @@ class AgroLocalizationsEn extends AgroLocalizations {
   AgroLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appName => 'PlanejaSafra';
+  String get appName => 'PlanejaCampo';
 
   @override
   String get continueLabel => 'CONTINUE';
@@ -34,7 +34,7 @@ class AgroLocalizationsEn extends AgroLocalizations {
   String get termsTitle => 'Terms of Use and Privacy';
 
   @override
-  String get termsBodyIntro => 'By tapping \"Accept and Continue\", you agree to the Terms of Use and Privacy Policy of PlanejaSafra/PlanejaCampo apps.';
+  String get termsBodyIntro => 'By tapping \"Accept and Continue\", you agree to the Terms of Use and Privacy Policy of PlanejaCampo apps.';
 
   @override
   String get termsSummaryTitle => 'Summary of what happens:';
@@ -163,13 +163,13 @@ class AgroLocalizationsEn extends AgroLocalizations {
   String get aboutTitle => 'About';
 
   @override
-  String get aboutDescription => 'This app is part of the PlanejaSafra Suite, designed to help rural producers manage their activities in the field.';
+  String get aboutDescription => 'This app is part of the PlanejaCampo Suite, designed to help rural producers manage their activities in the field.';
 
   @override
   String get aboutOfflineFirst => '100% Offline-First: all your data stays on your device.';
 
   @override
-  String get aboutSuite => 'PlanejaSafra Suite';
+  String get aboutSuite => 'PlanejaCampo Suite';
 
   @override
   String get aboutVersion => 'Version';

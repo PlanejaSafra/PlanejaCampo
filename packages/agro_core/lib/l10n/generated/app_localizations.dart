@@ -98,7 +98,7 @@ abstract class AgroLocalizations {
   /// No description provided for @appName.
   ///
   /// In en, this message translates to:
-  /// **'PlanejaSafra'**
+  /// **'PlanejaCampo'**
   String get appName;
 
   /// No description provided for @continueLabel.
@@ -152,7 +152,7 @@ abstract class AgroLocalizations {
   /// No description provided for @termsBodyIntro.
   ///
   /// In en, this message translates to:
-  /// **'By tapping \"Accept and Continue\", you agree to the Terms of Use and Privacy Policy of PlanejaSafra/PlanejaCampo apps.'**
+  /// **'By tapping \"Accept and Continue\", you agree to the Terms of Use and Privacy Policy of PlanejaCampo apps.'**
   String get termsBodyIntro;
 
   /// No description provided for @termsSummaryTitle.
@@ -410,7 +410,7 @@ abstract class AgroLocalizations {
   /// No description provided for @aboutDescription.
   ///
   /// In en, this message translates to:
-  /// **'This app is part of the PlanejaSafra Suite, designed to help rural producers manage their activities in the field.'**
+  /// **'This app is part of the PlanejaCampo Suite, designed to help rural producers manage their activities in the field.'**
   String get aboutDescription;
 
   /// No description provided for @aboutOfflineFirst.
@@ -422,7 +422,7 @@ abstract class AgroLocalizations {
   /// No description provided for @aboutSuite.
   ///
   /// In en, this message translates to:
-  /// **'PlanejaSafra Suite'**
+  /// **'PlanejaCampo Suite'**
   String get aboutSuite;
 
   /// No description provided for @aboutVersion.

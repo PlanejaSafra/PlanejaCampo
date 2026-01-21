@@ -5,7 +5,7 @@ import '../l10n/generated/app_localizations.dart';
 import '../models/property.dart';
 
 /// Service for managing properties (farms/rural properties).
-/// Properties are stored locally in Hive and shared across all PlanejaSafra apps
+/// Properties are stored locally in Hive and shared across all PlanejaCampo apps
 /// via userId (Firebase Auth).
 class PropertyService {
   static const String _boxName = 'properties';

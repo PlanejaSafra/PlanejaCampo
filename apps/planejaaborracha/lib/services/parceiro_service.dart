@@ -4,17 +4,19 @@ import '../models/parceiro.dart';
 
 class ParceiroService extends ChangeNotifier {
   static const String boxName = 'parceiros';
-  late Box<Parceiro> _box;
+  Box<Parceiro>? _box;
 
-  List<Parceiro> get parceiros => _box.values.toList();
+  List<Parceiro> get parceiros => _box?.values.toList() ?? [];
 
   Future<void> init() async {
+    if (_box != null && _box!.isOpen) return;
     _box = await Hive.openBox<Parceiro>(boxName);
     notifyListeners();
   }
 
   Future<void> addParceiro(Parceiro parceiro) async {
-    await _box.put(parceiro.id, parceiro);
+    if (_box == null) await init();
+    await _box!.put(parceiro.id, parceiro);
     notifyListeners();
   }
 
@@ -24,11 +26,12 @@ class ParceiroService extends ChangeNotifier {
   }
 
   Future<void> deleteParceiro(String id) async {
-    await _box.delete(id);
+    if (_box == null) return;
+    await _box!.delete(id);
     notifyListeners();
   }
 
   Parceiro? getParceiro(String id) {
-    return _box.get(id);
+    return _box?.get(id);
   }
 }

@@ -1,7 +1,7 @@
 {
   "@@locale": "en",
 
-  "appName": "PlanejaSafra",
+  "appName": "PlanejaCampo",
   "continueLabel": "CONTINUE",
   "acceptAndContinueLabel": "ACCEPT AND CONTINUE",
   "acceptAllButton": "ACCEPT ALL AND CONTINUE",
@@ -11,7 +11,7 @@
   "privacySettingsHint": "You can review the full documents in Settings → Privacy.",
 
   "termsTitle": "Terms of Use and Privacy",
-  "termsBodyIntro": "By tapping \"Accept and Continue\", you agree to the Terms of Use and Privacy Policy of PlanejaSafra/PlanejaCampo apps.",
+  "termsBodyIntro": "By tapping \"Accept and Continue\", you agree to the Terms of Use and Privacy Policy of PlanejaCampo apps.",
   "termsSummaryTitle": "Summary of what happens:",
   "termsSummaryItem1": "You record information such as rainfall, prices, weighings, notes, and entries.",
   "termsSummaryItem2": "This data is stored on your device to make the app work.",
@@ -59,9 +59,9 @@
   "settingsManagement": "Management",
 
   "aboutTitle": "About",
-  "aboutDescription": "This app is part of the PlanejaSafra Suite, designed to help rural producers manage their activities in the field.",
+  "aboutDescription": "This app is part of the PlanejaCampo Suite, designed to help rural producers manage their activities in the field.",
   "aboutOfflineFirst": "100% Offline-First: all your data stays on your device.",
-  "aboutSuite": "PlanejaSafra Suite",
+  "aboutSuite": "PlanejaCampo Suite",
   "aboutVersion": "Version",
 
   "privacyTitle": "Privacy and Consents",

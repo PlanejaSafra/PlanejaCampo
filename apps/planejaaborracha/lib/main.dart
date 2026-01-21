@@ -22,16 +22,47 @@ Future<void> main() async {
 
   await Hive.initFlutter();
 
+  // Initialize Privacy Store
+  await AgroPrivacyStore.init();
+
   // Register Adapters
   Hive.registerAdapter(ParceiroAdapter());
   Hive.registerAdapter(ItemEntregaAdapter());
   Hive.registerAdapter(EntregaAdapter());
+  Hive.registerAdapter(UserCloudDataAdapter());
+  Hive.registerAdapter(PropertyAdapter());
+  Hive.registerAdapter(TalhaoAdapter());
 
   // Initialize Firebase
-  if (Firebase.apps.isEmpty) {
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
+  try {
+    if (Firebase.apps.isEmpty) {
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+    }
+  } catch (e) {
+    debugPrint('Firebase initialization failed: $e');
+  }
+
+  // Initialize UserCloudService (depends on Firebase)
+  try {
+    await UserCloudService.instance.init();
+  } catch (e) {
+    debugPrint('UserCloudService initialization failed: $e');
+  }
+
+  // Initialize PropertyService (Shared)
+  try {
+    await PropertyService().init();
+  } catch (e) {
+    debugPrint('PropertyService initialization failed: $e');
+  }
+
+  // Initialize TalhaoService (Shared)
+  try {
+    await TalhaoService().init();
+  } catch (e) {
+    debugPrint('TalhaoService initialization failed: $e');
   }
 
   runApp(const PlanejaBorrachaApp());
@@ -59,7 +90,11 @@ class PlanejaBorrachaApp extends StatelessWidget {
           GlobalCupertinoLocalizations.delegate,
         ],
         supportedLocales: AgroLocalizations.supportedLocales,
-        home: const AgroOnboardingGate(
+        home: const AgroAuthGate(
+          appName: 'PlanejaBorracha',
+          appDescription:
+              'Gerencie suas entregas e acompanhe a produção de borracha',
+          appIcon: Icons.forest,
           home: PesagemScreen(),
         ),
         routes: {

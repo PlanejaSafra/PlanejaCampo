@@ -6,16 +6,23 @@ import '../models/item_entrega.dart';
 
 class EntregaService extends ChangeNotifier {
   static const String boxName = 'entregas';
-  late Box<Entrega> _box;
+  Box<Entrega>? _box;
 
   // Active session data
   Entrega? _currentEntrega;
 
-  List<Entrega> get entregas =>
-      _box.values.toList()..sort((a, b) => b.data.compareTo(a.data));
+  List<Entrega> get entregas {
+    final box = _box;
+    if (box == null) return [];
+    final list = box.values.toList();
+    list.sort((a, b) => b.data.compareTo(a.data));
+    return list;
+  }
+
   Entrega? get currentEntrega => _currentEntrega;
 
   Future<void> init() async {
+    if (_box != null && _box!.isOpen) return;
     _box = await Hive.openBox<Entrega>(boxName);
     _checkForOpenEntrega();
     notifyListeners();
@@ -24,8 +31,9 @@ class EntregaService extends ChangeNotifier {
   void _checkForOpenEntrega() {
     // Find the most recent 'Aberto' entrega
     try {
+      if (_box == null) return;
       final openEntregas =
-          _box.values.where((e) => e.status == 'Aberto').toList();
+          _box!.values.where((e) => e.status == 'Aberto').toList();
       if (openEntregas.isNotEmpty) {
         // Sort by date descending
         openEntregas.sort((a, b) => b.data.compareTo(a.data));
@@ -77,7 +85,8 @@ class EntregaService extends ChangeNotifier {
     }
 
     // Save/Update current entrega in Hive
-    await _box.put(_currentEntrega!.id, _currentEntrega!);
+    if (_box == null) await init();
+    await _box!.put(_currentEntrega!.id, _currentEntrega!);
     notifyListeners();
   }
 
@@ -93,7 +102,8 @@ class EntregaService extends ChangeNotifier {
         if (item.pesagens.isEmpty) {
           _currentEntrega!.itens.remove(item);
         }
-        await _box.put(_currentEntrega!.id, _currentEntrega!);
+        if (_box == null) await init();
+        await _box!.put(_currentEntrega!.id, _currentEntrega!);
         notifyListeners();
       }
     } catch (e) {

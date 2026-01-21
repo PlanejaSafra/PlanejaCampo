@@ -18,7 +18,7 @@ abstract class BackupProvider {
   Future<void> restoreData(Map<String, dynamic> data);
 }
 
-/// Service that manages cloud backups for all PlanejaSafra apps.
+/// Service that manages cloud backups for all PlanejaCampo apps.
 /// Stores a single 'backup.json' file in Firebase Storage for the user.
 class CloudBackupService {
   CloudBackupService._();

@@ -35,7 +35,7 @@ Classificados geolocalizados para venda de produção.
 
 ## Estrutura do Projeto
 
-Este app faz parte do monorrepo **PlanejaSafra** e utiliza o pacote compartilhado `agro_core`.
+Este app faz parte do monorrepo **PlanejaCampo** e utiliza o pacote compartilhado `agro_core`.
 
 *   **Arquitetura**: Consulte [ARCHITECTURE.md](ARCHITECTURE.md).
 *   **Changelog**: Consulte [CHANGELOG.md](CHANGELOG.md).

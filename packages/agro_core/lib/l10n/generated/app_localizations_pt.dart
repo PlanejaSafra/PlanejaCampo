@@ -7,7 +7,7 @@ class AgroLocalizationsPt extends AgroLocalizations {
   AgroLocalizationsPt([String locale = 'pt']) : super(locale);
 
   @override
-  String get appName => 'PlanejaSafra';
+  String get appName => 'PlanejaCampo';
 
   @override
   String get continueLabel => 'CONTINUAR';
@@ -34,7 +34,7 @@ class AgroLocalizationsPt extends AgroLocalizations {
   String get termsTitle => 'Termos de Uso e Privacidade';
 
   @override
-  String get termsBodyIntro => 'Ao tocar em \"Aceitar e continuar\", você concorda com os Termos de Uso e com a Política de Privacidade dos apps PlanejaSafra/PlanejaCampo.';
+  String get termsBodyIntro => 'Ao tocar em \"Aceitar e continuar\", você concorda com os Termos de Uso e com a Política de Privacidade dos apps PlanejaCampo.';
 
   @override
   String get termsSummaryTitle => 'Resumo do que acontece:';
@@ -163,13 +163,13 @@ class AgroLocalizationsPt extends AgroLocalizations {
   String get aboutTitle => 'Sobre';
 
   @override
-  String get aboutDescription => 'Este app faz parte da suíte PlanejaSafra, projetada para ajudar produtores rurais a gerenciar suas atividades no campo.';
+  String get aboutDescription => 'Este app faz parte da suíte PlanejaCampo, projetada para ajudar produtores rurais a gerenciar suas atividades no campo.';
 
   @override
   String get aboutOfflineFirst => '100% Offline-First: todos os seus dados ficam no seu dispositivo.';
 
   @override
-  String get aboutSuite => 'Suíte PlanejaSafra';
+  String get aboutSuite => 'Suíte PlanejaCampo';
 
   @override
   String get aboutVersion => 'Versão';

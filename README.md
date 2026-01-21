@@ -1,4 +1,4 @@
-# 🚜 PlanejaSafra (Monorepo)
+# 🚜 PlanejaCampo (Monorepo)
 
 Bem-vindo ao repositório central da suíte de aplicativos **PlanejaCampo**.
 
@@ -8,7 +8,7 @@ Este projeto utiliza uma arquitetura de **Monorepo** para gerenciar múltiplos m
 
 ## 🏗️ Estrutura do Projeto
 
-    PlanejaSafra/
+    PlanejaCampo/
     │
     ├── apps/                          # 📱 Os Aplicativos (Produtos Finais)
     │   ├── planeja_chuva/             # Pluviômetro Rural
