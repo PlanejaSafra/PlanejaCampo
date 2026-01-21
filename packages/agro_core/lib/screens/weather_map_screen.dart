@@ -218,14 +218,14 @@ class _WeatherMapScreenState extends State<WeatherMapScreen>
       _prefetchDone = 0;
     });
 
-    // Fetch in batches of 10 to avoid overwhelming the network
-    for (int i = 0; i < tilesToFetch.length; i += 10) {
+    // Fetch in batches of 30 for faster download
+    for (int i = 0; i < tilesToFetch.length; i += 30) {
       if (!mounted) break;
 
-      final batch = tilesToFetch.skip(i).take(10).toList();
+      final batch = tilesToFetch.skip(i).take(30).toList();
       await Future.wait(batch.map((url) async {
         try {
-          await http.get(Uri.parse(url)).timeout(const Duration(seconds: 8));
+          await http.get(Uri.parse(url)).timeout(const Duration(seconds: 5));
         } catch (_) {}
         if (mounted) {
           setState(() => _prefetchDone++);
