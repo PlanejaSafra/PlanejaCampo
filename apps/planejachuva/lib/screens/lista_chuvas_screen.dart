@@ -463,6 +463,7 @@ class _ListaChuvasScreenState extends State<ListaChuvasScreen> {
           ),
         ),
       ),
+      bottomNavigationBar: const AgroBannerWidget(),
     );
   }
 

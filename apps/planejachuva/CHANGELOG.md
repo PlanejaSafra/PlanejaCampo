@@ -1,7 +1,30 @@
 # CHANGELOG - planeja_chuva
 
-> **Note**: Core infrastructure phases (33-37, 46, 51-53) are documented in `packages/agro_core/CHANGELOG.md`.
+> **Note**: Core infrastructure phases (33-37, 46, 51-54) are documented in `packages/agro_core/CHANGELOG.md`.
 > This file contains only app-specific changes for PlanejaChuva.
+
+---
+
+## Phase CHUVA-54: AdMob Banner Integration
+### Status: [DONE]
+**Date Completed**: 2026-01-21
+**Priority**: 🟢 ENHANCEMENT
+**Objective**: Integrate banner ads on main screen for monetization.
+**Cross-Reference**: CORE-54
+
+### Implementation Summary
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 54.1 | Add AdMob App ID to AndroidManifest.xml | ✅ DONE |
+| 54.2 | Initialize `AgroAdService` in main.dart | ✅ DONE |
+| 54.3 | Add `AgroBannerWidget` to ListaChuvasScreen | ✅ DONE |
+
+### Files Modified
+| File | Action | Description |
+|------|--------|-------------|
+| `android/app/src/main/AndroidManifest.xml` | MODIFY | Added AdMob App ID (test) |
+| `lib/main.dart` | MODIFY | Initialize AgroAdService |
+| `lib/screens/lista_chuvas_screen.dart` | MODIFY | Added bottomNavigationBar with banner |
 
 ---
 

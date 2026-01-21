@@ -2,6 +2,43 @@
 
 ---
 
+## Phase BORRACHA-08: UX Overhaul - Dashboard, Profile & Smart Auth
+### Status: [DONE]
+**Date Completed**: 2026-01-21
+**Priority**: 🟡 ARCHITECTURAL
+**Objective**: Transformar o fluxo do app de "cair direto na pesagem" para experiência completa com dashboard, seleção de perfil (Produtor/Comprador), e navegação inteligente.
+
+### Implementation Summary
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 8.1 | Create `UserProfile` model with `UserProfileType` enum (Hive) | ✅ DONE |
+| 8.2 | Create `UserProfileService` singleton for profile management | ✅ DONE |
+| 8.3 | Create `ProfileSelectionScreen` with Produtor/Comprador cards | ✅ DONE |
+| 8.4 | Create `HomeScreen` (Dashboard) with profile-based content | ✅ DONE |
+| 8.5 | Add L10n strings for new screens (pt-BR and en) | ✅ DONE |
+| 8.6 | Modify `main.dart` to use HomeScreen as entry point | ✅ DONE |
+| 8.7 | Integrate profile check in auth flow | ✅ DONE |
+| 8.8 | Update documentation (README, ARCHITECTURE) | ✅ DONE |
+| 8.9 | Fix Propriedades navigation to use core PropertyListScreen | ✅ DONE |
+
+### Files Modified
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/models/user_profile.dart` | CREATE | UserProfile model with Hive adapters |
+| `lib/models/user_profile.g.dart` | CREATE | Generated Hive adapter |
+| `lib/services/user_profile_service.dart` | CREATE | Profile management service |
+| `lib/screens/profile_selection_screen.dart` | CREATE | Profile type selection UI |
+| `lib/screens/home_screen.dart` | CREATE | Dashboard with resumos |
+| `lib/l10n/arb/app_pt.arb` | MODIFY | Add ~25 new strings |
+| `lib/l10n/arb/app_en.arb` | MODIFY | Add ~25 new translations |
+| `lib/main.dart` | MODIFY | Change home, add routes |
+| `README.md` | MODIFY | Document new UX flow |
+| `ARCHITECTURE.md` | MODIFY | Add HomeScreen and Profile docs |
+
+---
+
 ## Phase BORRACHA-07: UX Improvements & Navigation Polish
 ### Status: [DONE]
 **Date Completed**: 2026-01-21

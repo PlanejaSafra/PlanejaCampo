@@ -98,5 +98,54 @@
 
   "unknownPartner": "Unknown",
   "partnersAttended": "partners attended",
-  "errorLabel": "Error"
+  "errorLabel": "Error",
+
+  "profileSelectionTitle": "Who are you?",
+  "profileSelectionSubtitle": "Select your profile to personalize your experience",
+  "profileProdutor": "I'm a Producer",
+  "profileProdutorDesc": "I manage rubber plantations, partners, and deliveries",
+  "profileComprador": "I'm a Buyer",
+  "profileCompradorDesc": "I buy rubber from producers (Mill, Trader, Intermediary)",
+  "profileContinue": "Continue",
+  "profileSelectOne": "Select a profile to continue",
+
+  "homeTitle": "Home",
+  "homeWelcome": "Hello, {name}!",
+  "@homeWelcome": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "homeWelcomeGeneric": "Welcome to PlanejaBorracha!",
+  "homeQuickActions": "Quick Actions",
+  "homeNewWeighing": "New Weighing",
+  "homeNewWeighingDesc": "Start today's weighing",
+  "homeViewPartners": "Partners",
+  "homeViewPartnersDesc": "Manage tappers",
+  "homeViewHistory": "History",
+  "homeViewHistoryDesc": "View past deliveries",
+  "homeViewMarket": "Market",
+  "homeViewMarketDesc": "View purchase offers",
+  
+  "homeSummaryTitle": "Monthly Summary",
+  "homeSummaryDeliveries": "Deliveries",
+  "homeSummaryTotalWeight": "Total Weight",
+  "homeSummaryTotalValue": "Total Value",
+  "homeSummaryNoData": "No deliveries this month",
+  
+  "homeRecentDeliveries": "Recent Deliveries",
+  "homeNoRecentDeliveries": "No recent deliveries",
+  "homeViewAllDeliveries": "View all",
+  
+  "homeMarketOffers": "Market Offers",
+  "homeNoMarketOffers": "No offers available",
+  "homeViewAllOffers": "View all",
+
+  "homeMyOffers": "My Offers",
+  "homeNoMyOffers": "You haven't published any offers yet",
+  "homeCreateOffer": "Create Offer",
+
+  "drawerHome": "Home"
 }

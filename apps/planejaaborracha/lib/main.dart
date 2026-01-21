@@ -10,13 +10,17 @@ import 'firebase_options.dart';
 import 'models/parceiro.dart';
 import 'models/entrega.dart';
 import 'models/item_entrega.dart';
+import 'models/user_profile.dart';
 import 'services/parceiro_service.dart';
-import 'screens/parceiros_list_screen.dart';
-
 import 'services/entrega_service.dart';
+import 'services/user_profile_service.dart';
+import 'screens/parceiros_list_screen.dart';
 import 'screens/pesagem_screen.dart';
 import 'screens/mercado_screen.dart';
 import 'screens/criar_oferta_screen.dart';
+import 'screens/home_screen.dart';
+import 'screens/profile_selection_screen.dart';
+import 'screens/lista_entregas_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,9 +36,11 @@ Future<void> main() async {
   Hive.registerAdapter(EntregaAdapter());
   Hive.registerAdapter(UserCloudDataAdapter());
   Hive.registerAdapter(DeviceInfoAdapter());
-  Hive.registerAdapter(ConsentDataAdapter()); // Required by UserCloudData
+  Hive.registerAdapter(ConsentDataAdapter());
   Hive.registerAdapter(PropertyAdapter());
   Hive.registerAdapter(TalhaoAdapter());
+  Hive.registerAdapter(UserProfileTypeAdapter());
+  Hive.registerAdapter(UserProfileAdapter());
 
   // Initialize Firebase
   try {
@@ -68,6 +74,20 @@ Future<void> main() async {
     debugPrint('TalhaoService initialization failed: $e');
   }
 
+  // Initialize UserProfileService
+  try {
+    await UserProfileService.instance.init();
+  } catch (e) {
+    debugPrint('UserProfileService initialization failed: $e');
+  }
+
+  // Initialize AdMob Service
+  try {
+    await AgroAdService.instance.initialize();
+  } catch (e) {
+    debugPrint('AgroAdService initialization failed: $e');
+  }
+
   runApp(const PlanejaBorrachaApp());
 }
 
@@ -80,6 +100,7 @@ class PlanejaBorrachaApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => ParceiroService()..init()),
         ChangeNotifierProvider(create: (_) => EntregaService()..init()),
+        ChangeNotifierProvider.value(value: UserProfileService.instance),
       ],
       child: MaterialApp(
         title: 'PlanejaBorracha',
@@ -99,16 +120,51 @@ class PlanejaBorrachaApp extends StatelessWidget {
           appDescription:
               'Gerencie suas entregas e acompanhe a produção de borracha',
           appIcon: Icons.forest,
-          home: PesagemScreen(),
+          home: _ProfileGatedHome(),
         ),
         routes: {
+          '/home': (context) => const HomeScreen(),
           '/parceiros': (context) => const ParceirosListScreen(),
           '/pesagem': (context) => const PesagemScreen(),
           '/mercado': (context) => const MercadoScreen(),
           '/criar-oferta': (context) => const CriarOfertaScreen(),
+          '/entregas': (context) => const ListaEntregasScreen(),
           '/settings': (context) => const AgroSettingsScreen(),
+          '/profile-selection': (context) => ProfileSelectionScreen(
+                onProfileSelected: () {
+                  Navigator.pushReplacementNamed(context, '/home');
+                },
+              ),
         },
       ),
+    );
+  }
+}
+
+/// Wrapper that checks if user has selected a profile.
+/// If not, shows ProfileSelectionScreen first.
+class _ProfileGatedHome extends StatefulWidget {
+  const _ProfileGatedHome();
+
+  @override
+  State<_ProfileGatedHome> createState() => _ProfileGatedHomeState();
+}
+
+class _ProfileGatedHomeState extends State<_ProfileGatedHome> {
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<UserProfileService>(
+      builder: (context, profileService, child) {
+        if (!profileService.hasProfile) {
+          return ProfileSelectionScreen(
+            onProfileSelected: () {
+              setState(() {});
+            },
+          );
+        }
+
+        return const HomeScreen();
+      },
     );
   }
 }

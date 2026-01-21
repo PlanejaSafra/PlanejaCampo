@@ -54,9 +54,17 @@ class _PesagemScreenState extends State<PesagemScreen> {
           onNavigate: (route) {
             switch (route) {
               case 'home':
-                Navigator.pushReplacementNamed(context, '/pesagem');
+                Navigator.pushReplacementNamed(context, '/home');
                 break;
               case 'properties':
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const PropertyListScreen(),
+                  ),
+                );
+                break;
+              case 'parceiros':
                 Navigator.pushReplacementNamed(context, '/parceiros');
                 break;
               case 'mercado':
@@ -65,22 +73,34 @@ class _PesagemScreenState extends State<PesagemScreen> {
               case 'settings':
                 Navigator.pushNamed(context, '/settings');
                 break;
+              case 'privacy':
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const AgroPrivacyScreen(),
+                  ),
+                );
+                break;
               case 'about':
-                showAboutDialog(
-                  context: context,
-                  applicationName: 'PlanejaBorracha',
-                  applicationVersion: '1.0.0',
-                  applicationIcon: const Icon(Icons.forest, size: 48),
-                  children: [
-                    const Text(
-                        'Gerencie suas entregas e acompanhe a produção de borracha'),
-                  ],
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const AgroAboutScreen(
+                      appName: 'PlanejaBorracha',
+                      version: '1.0.0',
+                    ),
+                  ),
                 );
                 break;
             }
           },
           extraItems: [
-            AgroDrawerItem(icon: Icons.store, title: l10n.drawerMercado, key: 'mercado'),
+            AgroDrawerItem(
+                icon: Icons.people,
+                title: l10n.drawerParceiros,
+                key: 'parceiros'),
+            AgroDrawerItem(
+                icon: Icons.store, title: l10n.drawerMercado, key: 'mercado'),
           ]),
       body: Consumer2<ParceiroService, EntregaService>(
         builder: (context, parceiroService, entregaService, child) {

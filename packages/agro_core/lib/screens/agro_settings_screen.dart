@@ -4,6 +4,10 @@ import 'package:intl/intl.dart';
 import '../l10n/generated/app_localizations.dart';
 import '../services/auth_service.dart';
 import '../services/cloud_backup_service.dart';
+import '../services/data_export_service.dart';
+import '../services/user_cloud_service.dart';
+import 'agro_privacy_screen.dart';
+import 'agro_about_screen.dart';
 
 /// Settings screen with language, theme, privacy, backup, and about options.
 class AgroSettingsScreen extends StatefulWidget {
@@ -111,6 +115,11 @@ class _AgroSettingsScreenState extends State<AgroSettingsScreen> {
     return user != null && user.isAnonymous;
   }
 
+  bool get _cloudSyncEnabled {
+    // Use widget value if explicitly set/tracked by app, otherwise fetch from service
+    return UserCloudService.instance.getCurrentUserData()?.syncEnabled ?? false;
+  }
+
   Future<void> _loadLastBackupInfo() async {
     if (!_isLoggedIn) return;
 
@@ -122,12 +131,124 @@ class _AgroSettingsScreenState extends State<AgroSettingsScreen> {
     }
   }
 
+  Future<void> _handleSignInWithGoogle() async {
+    final scaffold = ScaffoldMessenger.of(context);
+    try {
+      await AuthService.signInWithGoogle();
+      if (mounted) setState(() {});
+    } catch (e) {
+      scaffold.showSnackBar(
+        SnackBar(content: Text('Erro ao fazer login: $e')),
+      );
+    }
+  }
+
+  void _handleNavigateToPrivacy() {
+    if (widget.onNavigateToPrivacy != null) {
+      widget.onNavigateToPrivacy!.call();
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const AgroPrivacyScreen()),
+      );
+    }
+  }
+
+  void _handleNavigateToAbout() {
+    if (widget.onNavigateToAbout != null) {
+      widget.onNavigateToAbout!.call();
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const AgroAboutScreen(
+            appName: 'PlanejaCampo',
+            version: '1.0.0',
+          ),
+        ),
+      );
+    }
+  }
+
+  Future<void> _handleExportData() async {
+    if (widget.onExportData != null) {
+      widget.onExportData!.call();
+      return;
+    }
+
+    final l10n = AgroLocalizations.of(context)!;
+    final scaffold = ScaffoldMessenger.of(context);
+
+    try {
+      await DataExportService.instance.shareExport(asCsv: false);
+      scaffold.showSnackBar(
+        SnackBar(content: Text(l10n.exportDataSuccess)),
+      );
+    } catch (e) {
+      scaffold.showSnackBar(
+        SnackBar(
+          content: Text('${l10n.exportDataError}: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  Future<void> _handleDeleteCloudData() async {
+    if (widget.onDeleteCloudData != null) {
+      widget.onDeleteCloudData!.call();
+      return;
+    }
+
+    final l10n = AgroLocalizations.of(context)!;
+    final scaffold = ScaffoldMessenger.of(context);
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.deleteCloudDataTitle),
+        content: Text(l10n.deleteCloudDataMessage),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(l10n.cancelButton),
+          ),
+          TextButton(
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(l10n.deleteButton),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      await UserCloudService.instance.deleteCloudData();
+      scaffold.showSnackBar(
+        SnackBar(content: Text(l10n.deleteCloudDataSuccess)),
+      );
+    }
+  }
+
+  Future<void> _handleToggleCloudSync(bool value) async {
+    if (widget.onToggleCloudSync != null) {
+      widget.onToggleCloudSync!.call(value);
+    } else {
+      await UserCloudService.instance.setSyncEnabled(value);
+      if (mounted) setState(() {});
+    }
+  }
+
   Future<void> _handleBackup() async {
     final l10n = AgroLocalizations.of(context)!;
 
     if (!_isLoggedIn) {
       // Prompt to sign in
-      widget.onSignInWithGoogle?.call();
+      if (widget.onSignInWithGoogle != null) {
+        widget.onSignInWithGoogle!.call();
+      } else {
+        await _handleSignInWithGoogle();
+      }
       return;
     }
 
@@ -153,7 +274,11 @@ class _AgroSettingsScreenState extends State<AgroSettingsScreen> {
     final l10n = AgroLocalizations.of(context)!;
 
     if (!_isLoggedIn) {
-      widget.onSignInWithGoogle?.call();
+      if (widget.onSignInWithGoogle != null) {
+        widget.onSignInWithGoogle!.call();
+      } else {
+        await _handleSignInWithGoogle();
+      }
       return;
     }
 
@@ -325,81 +450,78 @@ class _AgroSettingsScreenState extends State<AgroSettingsScreen> {
         children: [
           ListView(
             children: [
-              // Language option
               ListTile(
                 leading: const Icon(Icons.language),
                 title: Text(l10n.settingsLanguage),
                 subtitle:
                     Text(_getLanguageLabel(context, widget.currentLocale)),
                 trailing: const Icon(Icons.chevron_right),
-                onTap: widget.onChangeLocale != null
-                    ? () => _showLanguageDialog(context)
-                    : null,
+                onTap: () => _showLanguageDialog(context),
               ),
               const Divider(),
 
-              // Theme option
               ListTile(
                 leading: const Icon(Icons.brightness_6),
                 title: Text(l10n.settingsTheme),
                 subtitle:
                     Text(_getThemeModeLabel(context, widget.currentThemeMode)),
                 trailing: const Icon(Icons.chevron_right),
-                onTap: widget.onChangeThemeMode != null
-                    ? () => _showThemeDialog(context)
-                    : null,
+                onTap: () => _showThemeDialog(context),
               ),
               const Divider(),
 
-              // Notifications Section
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                child: Text(
-                  l10n.settingsNotifications,
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    color: theme.colorScheme.primary,
+              // Notifications Section (only show if app provides reminder callback)
+              if (widget.onReminderChanged != null ||
+                  widget.onToggleRainAlerts != null) ...[
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                  child: Text(
+                    l10n.settingsNotifications,
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      color: theme.colorScheme.primary,
+                    ),
                   ),
                 ),
-              ),
-              SwitchListTile(
-                secondary: const Icon(Icons.notifications_active_outlined),
-                title: Text(l10n.settingsDailyReminder),
-                subtitle: Text(
-                  widget.reminderEnabled
-                      ? l10n.settingsReminderDailyAt(
-                          _formatTime(widget.reminderTime))
-                      : l10n.settingsReminderDisabled,
-                ),
-                value: widget.reminderEnabled,
-                onChanged: (value) {
-                  if (value) {
-                    final time = widget.reminderTime ??
-                        const TimeOfDay(hour: 18, minute: 0);
-                    widget.onReminderChanged?.call(true, time);
-                  } else {
-                    widget.onReminderChanged?.call(false, null);
-                  }
-                },
-              ),
-              if (widget.reminderEnabled)
-                ListTile(
-                  leading: const SizedBox(width: 24),
-                  title: Text(l10n.settingsReminderTime),
-                  subtitle: Text(_formatTime(widget.reminderTime)),
-                  trailing: const Icon(Icons.edit),
-                  onTap: () => _showTimePicker(context),
-                ),
-
-              SwitchListTile(
-                secondary:
-                    const Icon(Icons.water_drop_outlined, color: Colors.blue),
-                title: Text(l10n.settingsRainAlerts),
-                subtitle: Text(l10n.settingsRainAlertsDesc),
-                value: widget.rainAlertsEnabled,
-                onChanged: widget.onToggleRainAlerts,
-              ),
-
-              const Divider(),
+                if (widget.onReminderChanged != null)
+                  SwitchListTile(
+                    secondary: const Icon(Icons.notifications_active_outlined),
+                    title: Text(l10n.settingsDailyReminder),
+                    subtitle: Text(
+                      widget.reminderEnabled
+                          ? l10n.settingsReminderDailyAt(
+                              _formatTime(widget.reminderTime))
+                          : l10n.settingsReminderDisabled,
+                    ),
+                    value: widget.reminderEnabled,
+                    onChanged: (value) {
+                      if (value) {
+                        final time = widget.reminderTime ??
+                            const TimeOfDay(hour: 18, minute: 0);
+                        widget.onReminderChanged?.call(true, time);
+                      } else {
+                        widget.onReminderChanged?.call(false, null);
+                      }
+                    },
+                  ),
+                if (widget.onReminderChanged != null && widget.reminderEnabled)
+                  ListTile(
+                    leading: const SizedBox(width: 24),
+                    title: Text(l10n.settingsReminderTime),
+                    subtitle: Text(_formatTime(widget.reminderTime)),
+                    trailing: const Icon(Icons.edit),
+                    onTap: () => _showTimePicker(context),
+                  ),
+                if (widget.onToggleRainAlerts != null)
+                  SwitchListTile(
+                    secondary: const Icon(Icons.water_drop_outlined,
+                        color: Colors.blue),
+                    title: Text(l10n.settingsRainAlerts),
+                    subtitle: Text(l10n.settingsRainAlertsDesc),
+                    value: widget.rainAlertsEnabled,
+                    onChanged: widget.onToggleRainAlerts,
+                  ),
+                const Divider(),
+              ],
 
               // =============================================
               // CLOUD BACKUP SECTION (Prominent)
@@ -477,7 +599,7 @@ class _AgroSettingsScreenState extends State<AgroSettingsScreen> {
                           SizedBox(
                             width: double.infinity,
                             child: FilledButton.icon(
-                              onPressed: widget.onSignInWithGoogle,
+                              onPressed: _handleSignInWithGoogle,
                               icon: const Icon(Icons.login),
                               label: Text(l10n.backupCloudSignInButton),
                             ),
@@ -546,33 +668,37 @@ class _AgroSettingsScreenState extends State<AgroSettingsScreen> {
               ),
 
               // =============================================
-              // LOCAL BACKUP SECTION (Smaller)
+              // LOCAL BACKUP SECTION (only show if app provides callbacks)
               // =============================================
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
-                child: Text(
-                  l10n.backupLocalSection,
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
+              if (widget.onExportLocalBackup != null ||
+                  widget.onImportLocalBackup != null) ...[
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
+                  child: Text(
+                    l10n.backupLocalSection,
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
                   ),
                 ),
-              ),
-              ListTile(
-                dense: true,
-                leading: const Icon(Icons.save_alt, size: 20),
-                title: Text(l10n.backupLocalExport),
-                subtitle: Text(l10n.backupLocalExportDesc),
-                onTap: widget.onExportLocalBackup,
-              ),
-              ListTile(
-                dense: true,
-                leading: const Icon(Icons.file_upload_outlined, size: 20),
-                title: Text(l10n.backupLocalImport),
-                subtitle: Text(l10n.backupLocalImportDesc),
-                onTap: widget.onImportLocalBackup,
-              ),
-
-              const Divider(),
+                if (widget.onExportLocalBackup != null)
+                  ListTile(
+                    dense: true,
+                    leading: const Icon(Icons.save_alt, size: 20),
+                    title: Text(l10n.backupLocalExport),
+                    subtitle: Text(l10n.backupLocalExportDesc),
+                    onTap: widget.onExportLocalBackup,
+                  ),
+                if (widget.onImportLocalBackup != null)
+                  ListTile(
+                    dense: true,
+                    leading: const Icon(Icons.file_upload_outlined, size: 20),
+                    title: Text(l10n.backupLocalImport),
+                    subtitle: Text(l10n.backupLocalImportDesc),
+                    onTap: widget.onImportLocalBackup,
+                  ),
+                const Divider(),
+              ],
 
               // Privacy & Data section header
               Padding(
@@ -589,7 +715,7 @@ class _AgroSettingsScreenState extends State<AgroSettingsScreen> {
                 leading: const Icon(Icons.shield_outlined),
                 title: Text(l10n.settingsManageConsents),
                 trailing: const Icon(Icons.chevron_right),
-                onTap: widget.onNavigateToPrivacy,
+                onTap: _handleNavigateToPrivacy,
               ),
 
               const Divider(),
@@ -609,8 +735,8 @@ class _AgroSettingsScreenState extends State<AgroSettingsScreen> {
                 secondary: const Icon(Icons.cloud_sync),
                 title: Text(l10n.settingsSyncPrefs),
                 subtitle: Text(l10n.settingsSyncPrefsDesc),
-                value: widget.cloudSyncEnabled,
-                onChanged: widget.onToggleCloudSync,
+                value: _cloudSyncEnabled,
+                onChanged: _handleToggleCloudSync,
               ),
 
               // Export data (LGPD)
@@ -618,7 +744,7 @@ class _AgroSettingsScreenState extends State<AgroSettingsScreen> {
                 leading: const Icon(Icons.download_outlined),
                 title: Text(l10n.settingsExportMyData),
                 subtitle: Text(l10n.settingsExportMyDataDesc),
-                onTap: widget.onExportData,
+                onTap: _handleExportData,
               ),
 
               // Delete cloud data
@@ -629,7 +755,7 @@ class _AgroSettingsScreenState extends State<AgroSettingsScreen> {
                   style: TextStyle(color: Colors.red[700]),
                 ),
                 subtitle: Text(l10n.settingsDeleteCloudDataDesc),
-                onTap: widget.onDeleteCloudData,
+                onTap: _handleDeleteCloudData,
               ),
 
               const Divider(),
@@ -639,7 +765,7 @@ class _AgroSettingsScreenState extends State<AgroSettingsScreen> {
                 leading: const Icon(Icons.info_outline),
                 title: Text(l10n.settingsAboutApp),
                 trailing: const Icon(Icons.chevron_right),
-                onTap: widget.onNavigateToAbout,
+                onTap: _handleNavigateToAbout,
               ),
 
               const SizedBox(height: 24),

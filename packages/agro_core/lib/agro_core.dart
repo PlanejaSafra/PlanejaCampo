@@ -20,6 +20,8 @@ export 'services/background_service.dart';
 export 'services/heatmap_service.dart';
 export 'models/weather_forecast.dart';
 export 'services/home_widget_service.dart';
+export 'services/agro_ad_service.dart';
+export 'widgets/agro_banner_widget.dart';
 
 // L10n
 export 'l10n/generated/app_localizations.dart';

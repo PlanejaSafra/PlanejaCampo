@@ -84,6 +84,9 @@ Future<void> main() async {
   // Initialize background service (Rain Alerts)
   await BackgroundService().initialize();
 
+  // Initialize AdMob SDK
+  await AgroAdService.instance.initialize();
+
   runApp(PlanejaChuvaApp(initialPreferences: prefs));
 }
 

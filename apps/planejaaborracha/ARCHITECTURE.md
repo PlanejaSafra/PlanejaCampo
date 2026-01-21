@@ -14,6 +14,13 @@ O app atua em duas frentes principais:
 
 ### Fase 1: Gestão de Parceiros e Pesagem (Offline-First - Hive)
 
+*   **`UserProfile` (HiveObject)**:
+    *   `profileType`: Enum (produtor, comprador)
+    *   `displayName`: String?
+    *   `profileComplete`: bool
+    *   `createdAt`: DateTime
+    *   `updatedAt`: DateTime?
+
 *   **`Parceiro` (HiveObject)**:
     *   `id`: String (UUID)
     *   `nome`: String
@@ -53,6 +60,17 @@ O app atua em duas frentes principais:
 ---
 
 ## Telas Principais (Screens)
+
+### Módulo 0: Fluxo de Entrada
+
+*   **`ProfileSelectionScreen`**:
+    *   Seleção de perfil (Produtor ou Comprador).
+    *   Exibido apenas na primeira vez após login.
+
+*   **`HomeScreen` (Dashboard)**:
+    *   Visão geral personalizada baseada no perfil.
+    *   Resumo mensal, ações rápidas, entregas recentes.
+    *   FAB contextual (Nova Pesagem ou Nova Oferta).
 
 ### Módulo 1: Romaneio Digital (Produtor)
 

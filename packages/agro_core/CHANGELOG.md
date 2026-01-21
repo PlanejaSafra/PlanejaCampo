@@ -2,6 +2,53 @@
 
 ---
 
+## Phase CORE-55: Autonomous AgroSettingsScreen
+### Status: [DONE]
+**Date Completed**: 2026-01-21
+**Priority**: 🔵 FIX
+**Objective**: Make AgroSettingsScreen work without callbacks - all common features functional out-of-the-box.
+
+### Implementation Summary
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 55.1 | Add default Sign-In with Google handler | ✅ DONE |
+| 55.2 | Add default Privacy navigation | ✅ DONE |
+| 55.3 | Add default About navigation | ✅ DONE |
+| 55.4 | Add default Export data handler | ✅ DONE |
+| 55.5 | Add default Delete cloud data handler | ✅ DONE |
+| 55.6 | Add default Cloud sync toggle handler | ✅ DONE |
+
+### Files Modified
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/screens/agro_settings_screen.dart` | MODIFY | Added default implementations for all callbacks |
+
+---
+
+## Phase CORE-54: AdMob Banner Ads
+### Status: [DONE]
+**Date Completed**: 2026-01-21
+**Priority**: 🟢 ENHANCEMENT
+**Objective**: Monetization with non-intrusive banner ads, integrated with LGPD consent.
+
+### Implementation Summary
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 54.1 | Add `google_mobile_ads` dependency | ✅ DONE |
+| 54.2 | Create `AgroAdService` (SDK init, consent integration) | ✅ DONE |
+| 54.3 | Create `AgroBannerWidget` (reusable widget) | ✅ DONE |
+| 54.4 | Export in agro_core.dart | ✅ DONE |
+
+### Files Modified
+| File | Action | Description |
+|------|--------|-------------|
+| `pubspec.yaml` | MODIFY | Added google_mobile_ads: ^5.3.0 |
+| `lib/services/agro_ad_service.dart` | CREATE | AdMob service with consent check |
+| `lib/widgets/agro_banner_widget.dart` | CREATE | Reusable banner widget |
+| `lib/agro_core.dart` | MODIFY | Export new files |
+
+---
+
 ## Phase CORE-53: Comparative Charts (Safra x Safra)
 ### Status: [DONE]
 **Date Completed**: 2026-01-20

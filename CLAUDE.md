@@ -168,3 +168,70 @@ When a feature spans both core and app:
   * Must add `com.android.tools:desugar_jdk_libs` dependency (version 2.1.5+).
 * **Gradle**: Use compatible AGP (8.6.0+) and Gradle Wrapper (8.10.2+).
 
+## 12) AgroSettingsScreen — Features & Activation
+
+The `AgroSettingsScreen` in `agro_core` provides common settings functionality. Some features work automatically, others require callbacks to activate.
+
+### Features That Work Automatically (No Callbacks Needed)
+
+| Feature | Description |
+|---------|-------------|
+| Idioma (Language) | Switch between pt-BR and English |
+| Tema (Theme) | Light, Dark, or System |
+| Sign-in com Google | Uses `AuthService.signInWithGoogle()` |
+| Backup Nuvem | Uses `CloudBackupService` |
+| Restaurar Nuvem | Uses `CloudBackupService` |
+| Sincronizar Preferências | Uses `UserCloudService` |
+| Exportar Dados (LGPD) | Uses `DataExportService` |
+| Deletar Dados Nuvem | Uses `UserCloudService` |
+| Privacidade | Navigates to `AgroPrivacyScreen` |
+| Sobre | Navigates to `AgroAboutScreen` |
+
+### Features That Require Callbacks (App-Specific)
+
+| Feature | Callback(s) Required | Description |
+|---------|---------------------|-------------|
+| Backup Local (Export) | `onExportLocalBackup` | App-specific JSON export |
+| Backup Local (Import) | `onImportLocalBackup` | App-specific JSON import |
+| Lembretes Diários | `onReminderChanged` | Daily notification reminders |
+| Alertas de Chuva | `onToggleRainAlerts` | Weather-based alerts (planejachuva) |
+
+### Usage Examples
+
+**Minimal (all automatic features):**
+```dart
+'/settings': (context) => const AgroSettingsScreen(),
+```
+
+**With app-specific features:**
+```dart
+AgroSettingsScreen(
+  onReminderChanged: (enabled, time) async { /* ... */ },
+  reminderEnabled: _reminderEnabled,
+  reminderTime: _reminderTime,
+  onExportLocalBackup: () async { /* ... */ },
+  onImportLocalBackup: () async { /* ... */ },
+)
+```
+
+### AdMob Integration
+
+To enable AdMob ads in an app:
+
+1. Add to `AndroidManifest.xml`:
+```xml
+<meta-data
+    android:name="com.google.android.gms.ads.APPLICATION_ID"
+    android:value="ca-app-pub-XXXXX~YYYYY" />
+```
+
+2. Initialize in `main.dart`:
+```dart
+await AgroAdService.instance.initialize();
+```
+
+3. Add to screen:
+```dart
+bottomNavigationBar: const AgroBannerWidget(),
+```
+
