@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:agro_core/agro_core.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:intl/intl.dart';
 import '../models/market_offer.dart';
@@ -19,9 +20,10 @@ class _MercadoScreenState extends State<MercadoScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = BorrachaLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Mercado de Borracha'),
+        title: Text(l10n.mercadoTitle),
       ),
       drawer: AgroDrawer(
         appName: 'PlanejaBorracha',
@@ -47,15 +49,13 @@ class _MercadoScreenState extends State<MercadoScreen> {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    'Ofertas próximas a $_userRegion',
+                    '${l10n.mercadoFilterLabel}: $_userRegion',
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),
                 TextButton(
-                    onPressed: () {
-                      // Change location filter
-                    },
-                    child: const Text('Alterar')),
+                    onPressed: _showLocationFilterInfo,
+                    child: Text(l10n.mercadoChangeLocation)),
               ],
             ),
           ),
@@ -70,7 +70,7 @@ class _MercadoScreenState extends State<MercadoScreen> {
                   .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.hasError) {
-                  return Center(child: Text('Erro: ${snapshot.error}'));
+                  return Center(child: Text('${l10n.errorLabel}: ${snapshot.error}'));
                 }
 
                 if (snapshot.connectionState == ConnectionState.waiting) {
@@ -100,33 +100,30 @@ class _MercadoScreenState extends State<MercadoScreen> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          // Navigate to Create Offer (if buyer)
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-              content: Text('Funcionalidade para Compradores em breve')));
+          Navigator.pushNamed(context, '/criar-oferta');
         },
-        label: const Text('Anunciar Compra'),
+        label: Text(l10n.criarOfertaTitle),
         icon: const Icon(Icons.campaign),
       ),
     );
   }
 
   Widget _buildEmptyState() {
+    final l10n = BorrachaLocalizations.of(context)!;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const Icon(Icons.shopping_bag_outlined, size: 64, color: Colors.grey),
           const SizedBox(height: 16),
-          const Text(
-            'Nenhuma oferta na sua região agora.',
-            style: TextStyle(fontSize: 16, color: Colors.grey),
+          Text(
+            l10n.mercadoNoOffers,
+            style: const TextStyle(fontSize: 16, color: Colors.grey),
           ),
           const SizedBox(height: 8),
           TextButton(
-            onPressed: () {
-              // Notify me when offers appear
-            },
-            child: const Text('Avise-me quando chegar'),
+            onPressed: _showNotifyMeInfo,
+            child: Text(l10n.mercadoNotifyButton),
           )
         ],
       ),
@@ -134,6 +131,7 @@ class _MercadoScreenState extends State<MercadoScreen> {
   }
 
   Widget _buildOfferCard(MarketOffer offer) {
+    final l10n = BorrachaLocalizations.of(context)!;
     final currency = NumberFormat.simpleCurrency(locale: 'pt_BR');
 
     return CustomCard(
@@ -153,7 +151,7 @@ class _MercadoScreenState extends State<MercadoScreen> {
                   ),
                 ),
                 Chip(
-                  label: const Text('Indústria'),
+                  label: Text(l10n.mercadoBuyerRole),
                   backgroundColor: Colors.blue[100],
                   padding: EdgeInsets.zero,
                   visualDensity: VisualDensity.compact,
@@ -164,11 +162,11 @@ class _MercadoScreenState extends State<MercadoScreen> {
             Row(
               children: [
                 _buildPriceBox(
-                    'DRC (53%)', currency.format(offer.priceDrc), true),
+                    l10n.mercadoOfferDrc, currency.format(offer.priceDrc), true),
                 const SizedBox(width: 12),
                 if (offer.priceWet != null)
                   _buildPriceBox(
-                      'Úmido/Banca', currency.format(offer.priceWet), false),
+                      l10n.mercadoOfferWet, currency.format(offer.priceWet), false),
               ],
             ),
             const SizedBox(height: 12),
@@ -183,7 +181,7 @@ class _MercadoScreenState extends State<MercadoScreen> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
-                label: const Text('Tenho Interesse'),
+                label: Text(l10n.mercadoOfferInterested),
                 icon: const Icon(Icons.chat),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green,
@@ -221,6 +219,34 @@ class _MercadoScreenState extends State<MercadoScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  void _showLocationFilterInfo() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Filtro de Localização'),
+        content: const Text(
+          'O filtro de localização é baseado na propriedade principal cadastrada. '
+          'Para alterar, vá em Configurações > Propriedades e atualize sua localização.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showNotifyMeInfo() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Notificações de ofertas em desenvolvimento. Volte em breve!'),
+        duration: Duration(seconds: 3),
       ),
     );
   }

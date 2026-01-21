@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class TapeViewWidget extends StatelessWidget {
   final List<double> entries;
@@ -12,6 +13,7 @@ class TapeViewWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = BorrachaLocalizations.of(context)!;
     // Calculate intermediate sums for the "tape" effect
     // But for simplicity, we just show the list of inputs
 
@@ -30,9 +32,9 @@ class TapeViewWidget extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Fita de Somar',
-                  style: TextStyle(
+                Text(
+                  l10n.tapeViewTitle,
+                  style: const TextStyle(
                     fontFamily: 'Monospace',
                     fontSize: 12,
                     color: Colors.grey,
@@ -81,11 +83,11 @@ class TapeViewWidget extends StatelessWidget {
             ),
           ),
           if (entries.isEmpty)
-            const Expanded(
+            Expanded(
               child: Center(
                 child: Text(
-                  'Nenhuma pesagem',
-                  style: TextStyle(color: Colors.grey),
+                  l10n.tapeViewEmpty,
+                  style: const TextStyle(color: Colors.grey),
                 ),
               ),
             ),
@@ -95,8 +97,8 @@ class TapeViewWidget extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('TOTAL ACUMULADO:',
-                    style: TextStyle(fontWeight: FontWeight.bold)),
+                Text(l10n.pesagemTotalAccumulated,
+                    style: const TextStyle(fontWeight: FontWeight.bold)),
                 Text(
                   '${entries.fold(0.0, (sum, e) => sum + e).toStringAsFixed(1)} kg',
                   style: const TextStyle(

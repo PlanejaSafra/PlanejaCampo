@@ -15,6 +15,7 @@ import 'screens/parceiros_list_screen.dart';
 import 'services/entrega_service.dart';
 import 'screens/pesagem_screen.dart';
 import 'screens/mercado_screen.dart';
+import 'screens/criar_oferta_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,9 +28,11 @@ Future<void> main() async {
   Hive.registerAdapter(EntregaAdapter());
 
   // Initialize Firebase
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  if (Firebase.apps.isEmpty) {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  }
 
   runApp(const PlanejaBorrachaApp());
 }
@@ -63,6 +66,7 @@ class PlanejaBorrachaApp extends StatelessWidget {
           '/parceiros': (context) => const ParceirosListScreen(),
           '/pesagem': (context) => const PesagemScreen(),
           '/mercado': (context) => const MercadoScreen(),
+          '/criar-oferta': (context) => const CriarOfertaScreen(),
         },
       ),
     );

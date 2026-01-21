@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:agro_core/agro_core.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../services/parceiro_service.dart';
 import 'parceiro_form_screen.dart';
 
@@ -14,9 +15,10 @@ class ParceirosListScreen extends StatefulWidget {
 class _ParceirosListScreenState extends State<ParceirosListScreen> {
   @override
   Widget build(BuildContext context) {
+    final l10n = BorrachaLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Parceiros'),
+        title: Text(l10n.parceirosTitle),
       ),
       drawer: AgroDrawer(
         appName: 'PlanejaBorracha',
@@ -37,12 +39,12 @@ class _ParceirosListScreenState extends State<ParceirosListScreen> {
                       size: 64, color: Colors.grey),
                   const SizedBox(height: 16),
                   Text(
-                    'Nenhum parceiro cadastrado',
+                    l10n.parceirosEmpty,
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   const SizedBox(height: 8),
                   PrimaryButton(
-                    label: 'Cadastrar Parceiro',
+                    label: l10n.parceiroAddButton,
                     onPressed: () => _navigateToForm(context),
                   ),
                 ],

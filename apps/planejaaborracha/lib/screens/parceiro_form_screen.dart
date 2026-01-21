@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:agro_core/agro_core.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:uuid/uuid.dart';
 import '../models/parceiro.dart';
 import '../services/parceiro_service.dart';
@@ -86,19 +87,20 @@ class _ParceiroFormScreenState extends State<ParceiroFormScreen> {
   Future<void> _delete() async {
     if (widget.parceiroId == null) return;
 
+    final l10n = BorrachaLocalizations.of(context)!;
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Excluir Parceiro?'),
-        content: const Text('Esta ação não pode ser desfeita.'),
+        title: Text(l10n.parceiroDeleteTitle),
+        content: Text(l10n.parceiroDeleteMessage),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancelar'),
+            child: Text(l10n.parceiroDeleteCancel),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Excluir', style: TextStyle(color: Colors.red)),
+            child: Text(l10n.parceiroDeleteConfirm, style: const TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -115,10 +117,11 @@ class _ParceiroFormScreenState extends State<ParceiroFormScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = BorrachaLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
         title: Text(
-            widget.parceiroId == null ? 'Novo Parceiro' : 'Editar Parceiro'),
+            widget.parceiroId == null ? l10n.parceiroAddButton : l10n.parceiroEditButton),
         actions: [
           if (widget.parceiroId != null)
             IconButton(
@@ -140,13 +143,13 @@ class _ParceiroFormScreenState extends State<ParceiroFormScreen> {
                   children: [
                     TextFormField(
                       controller: _nomeController,
-                      decoration: const InputDecoration(
-                        labelText: 'Nome do Parceiro',
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        labelText: l10n.parceiroNome,
+                        border: const OutlineInputBorder(),
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Por favor, insira o nome';
+                          return l10n.parceiroNomeRequired;
                         }
                         return null;
                       },
@@ -155,18 +158,18 @@ class _ParceiroFormScreenState extends State<ParceiroFormScreen> {
                     TextFormField(
                       controller: _percentualController,
                       keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(
-                        labelText: 'Porcentagem Padrão (%)',
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        labelText: l10n.parceiroPercentual,
+                        border: const OutlineInputBorder(),
                         suffixText: '%',
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Insira a porcentagem';
+                          return l10n.parceiroPercentualInvalid;
                         }
                         final number = double.tryParse(value);
                         if (number == null || number < 0 || number > 100) {
-                          return 'Valor inválido (0-100)';
+                          return l10n.parceiroPercentualInvalid;
                         }
                         return null;
                       },
@@ -175,9 +178,9 @@ class _ParceiroFormScreenState extends State<ParceiroFormScreen> {
                     TextFormField(
                       controller: _telefoneController,
                       keyboardType: TextInputType.phone,
-                      decoration: const InputDecoration(
-                        labelText: 'Telefone (Opcional)',
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        labelText: l10n.parceiroTelefone,
+                        border: const OutlineInputBorder(),
                       ),
                     ),
                   ],
@@ -186,7 +189,7 @@ class _ParceiroFormScreenState extends State<ParceiroFormScreen> {
             ),
             const SizedBox(height: 24),
             PrimaryButton(
-              label: 'Salvar',
+              label: l10n.parceiroSaveButton,
               onPressed: _isLoading ? null : _save,
               loading: _isLoading,
             ),

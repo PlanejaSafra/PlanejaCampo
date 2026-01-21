@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:agro_core/agro_core.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../services/entrega_service.dart';
 import '../services/parceiro_service.dart';
 import '../services/pdf_service.dart';
@@ -26,20 +27,21 @@ class _FechamentoEntregaScreenState extends State<FechamentoEntregaScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = BorrachaLocalizations.of(context)!;
     final entregaService = context.watch<EntregaService>();
     final parceiroService = context.watch<ParceiroService>();
     final currentEntrega = entregaService.currentEntrega;
 
     if (currentEntrega == null || currentEntrega.itens.isEmpty) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Fechamento')),
-        body: const Center(child: Text('Nenhuma entrega ativa para fechar.')),
+        appBar: AppBar(title: Text(l10n.fechamentoTitle)),
+        body: Center(child: Text(l10n.fechamentoNoItems)),
       );
     }
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Fechamento Financeiro'),
+        title: Text(l10n.fechamentoTitle),
       ),
       body: Column(
         children: [
@@ -50,16 +52,16 @@ class _FechamentoEntregaScreenState extends State<FechamentoEntregaScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Defina o preço final (DRC ou Banca)'),
+                  Text(l10n.fechamentoPriceRequired),
                   const SizedBox(height: 8),
                   TextField(
                     controller: _precoController,
                     keyboardType:
                         const TextInputType.numberWithOptions(decimal: true),
-                    decoration: const InputDecoration(
-                      labelText: 'Preço por Kg (R\$)',
+                    decoration: InputDecoration(
+                      labelText: l10n.fechamentoBasePrice,
                       prefixText: 'R\$ ',
-                      border: OutlineInputBorder(),
+                      border: const OutlineInputBorder(),
                     ),
                     onChanged: (value) {
                       setState(() {
@@ -89,7 +91,7 @@ class _FechamentoEntregaScreenState extends State<FechamentoEntregaScreen> {
 
                 return Card(
                   child: ListTile(
-                    title: Text(parceiro?.nome ?? 'Desconhecido'),
+                    title: Text(parceiro?.nome ?? l10n.unknownPartner),
                     subtitle: Text(
                         '${item.pesoTotal.toStringAsFixed(1)} kg (${parceiro?.percentualPadrao.toStringAsFixed(0)}%)'),
                     trailing: Column(
@@ -123,7 +125,7 @@ class _FechamentoEntregaScreenState extends State<FechamentoEntregaScreen> {
               children: [
                 Expanded(
                   child: ElevatedButton.icon(
-                    label: const Text('Gerar Recibo (PDF)'),
+                    label: Text(l10n.fechamentoGeneratePdf),
                     icon: const Icon(Icons.share),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Theme.of(context).primaryColor,

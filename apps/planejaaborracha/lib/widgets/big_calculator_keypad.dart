@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class BigCalculatorKeypad extends StatelessWidget {
   final Function(String) onDigitPress;
@@ -75,9 +76,9 @@ class BigCalculatorKeypad extends StatelessWidget {
                       ),
                       onPressed: onAdd,
                       icon: const Icon(Icons.add, size: 32),
-                      label: const Text(
-                        'ADICIONAR PESO',
-                        style: TextStyle(
+                      label: Text(
+                        BorrachaLocalizations.of(context)!.calculatorAdd,
+                        style: const TextStyle(
                             fontSize: 20, fontWeight: FontWeight.bold),
                       ),
                     ),

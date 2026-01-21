@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:agro_core/agro_core.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'fechamento_entrega_screen.dart';
 import 'lista_entregas_screen.dart';
 import '../services/parceiro_service.dart';
@@ -21,9 +22,10 @@ class _PesagemScreenState extends State<PesagemScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = BorrachaLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Pesagem Rápida'),
+        title: Text(l10n.pesagemTitle),
         actions: [
           IconButton(
             icon: const Icon(Icons.history),
@@ -36,7 +38,7 @@ class _PesagemScreenState extends State<PesagemScreen> {
           ),
           IconButton(
             icon: const Icon(Icons.check_circle_outline),
-            tooltip: 'Fechar Entrega',
+            tooltip: l10n.fechamentoTitle,
             onPressed: () {
               Navigator.of(context).push(
                 MaterialPageRoute(
@@ -64,15 +66,15 @@ class _PesagemScreenState extends State<PesagemScreen> {
             if (route == 'mercado')
               Navigator.pushReplacementNamed(context, '/mercado');
           },
-          extraItems: const [
-            AgroDrawerItem(icon: Icons.store, title: 'Mercado', key: 'mercado'),
+          extraItems: [
+            AgroDrawerItem(icon: Icons.store, title: l10n.drawerMercado, key: 'mercado'),
           ]),
       body: Consumer2<ParceiroService, EntregaService>(
         builder: (context, parceiroService, entregaService, child) {
           final parceiros = parceiroService.parceiros;
 
           if (parceiros.isEmpty) {
-            return const Center(child: Text('Cadastre parceiros primeiro'));
+            return Center(child: Text(l10n.pesagemNoPartnersError));
           }
 
           // Auto-select first if none selected

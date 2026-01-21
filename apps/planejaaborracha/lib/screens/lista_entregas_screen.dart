@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:agro_core/agro_core.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 import '../services/entrega_service.dart';
 import '../models/entrega.dart';
@@ -11,17 +12,18 @@ class ListaEntregasScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = BorrachaLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Histórico de Entregas'),
+        title: Text(l10n.listaEntregasTitle),
       ),
       body: Consumer<EntregaService>(
         builder: (context, service, child) {
           final entregas = service.entregas;
 
           if (entregas.isEmpty) {
-            return const Center(
-              child: Text('Nenhuma entrega registrada.'),
+            return Center(
+              child: Text(l10n.listaEntregasEmpty),
             );
           }
 
@@ -48,7 +50,7 @@ class ListaEntregasScreen extends StatelessWidget {
                         color: Colors.white),
                   ),
                   title: Text(dateFormat.format(entrega.data)),
-                  subtitle: Text('${entrega.itens.length} parceiros atendidos'),
+                  subtitle: Text('${entrega.itens.length} ${l10n.partnersAttended}'),
                   trailing: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.end,
@@ -78,19 +80,20 @@ class ListaEntregasScreen extends StatelessWidget {
 
   void _showEntregaDetails(
       BuildContext context, Entrega entrega, DateFormat fmt) {
+    final l10n = BorrachaLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Entrega ${fmt.format(entrega.data)}'),
+        title: Text('${l10n.listaEntregasTitle} ${fmt.format(entrega.data)}'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Status: ${entrega.status}'),
-            Text('Total Peso: ${entrega.pesoTotalGeral.toStringAsFixed(1)} kg'),
+            Text('${l10n.listaEntregasStatus}: ${entrega.status}'),
+            Text('${l10n.listaEntregasWeight}: ${entrega.pesoTotalGeral.toStringAsFixed(1)} kg'),
             const SizedBox(height: 16),
-            const Text('Parceiros:',
-                style: TextStyle(fontWeight: FontWeight.bold)),
+            Text(l10n.parceirosTitle,
+                style: const TextStyle(fontWeight: FontWeight.bold)),
             ...entrega.itens.map(
                 (i) => Text('- ???: ${i.pesoTotal.toStringAsFixed(1)} kg')),
             // Note: To show names here we need ParceiroService, skipping for brevity in dialog
@@ -99,7 +102,7 @@ class ListaEntregasScreen extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Fechar'),
+            child: Text(l10n.listaEntregasClose),
           ),
           if (entrega.status == 'Aberto')
             ElevatedButton(
@@ -122,7 +125,7 @@ class ListaEntregasScreen extends StatelessWidget {
                     MaterialPageRoute(
                         builder: (_) => const FechamentoEntregaScreen()));
               },
-              child: const Text('Continuar/Fechar'),
+              child: Text(l10n.listaEntregasResume),
             )
         ],
       ),

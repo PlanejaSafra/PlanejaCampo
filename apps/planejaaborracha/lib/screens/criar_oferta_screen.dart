@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:agro_core/agro_core.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class CriarOfertaScreen extends StatefulWidget {
   const CriarOfertaScreen({super.key});
@@ -36,6 +37,7 @@ class _CriarOfertaScreenState extends State<CriarOfertaScreen> {
 
     setState(() => _isLoading = true);
 
+    final l10n = BorrachaLocalizations.of(context)!;
     try {
       final drc = double.parse(_priceDrcController.text.replaceAll(',', '.'));
       final wet = _priceWetController.text.isNotEmpty
@@ -61,14 +63,14 @@ class _CriarOfertaScreenState extends State<CriarOfertaScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Oferta publicada com sucesso!')),
+          SnackBar(content: Text(l10n.criarOfertaSuccess)),
         );
         Navigator.pop(context);
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erro ao publicar: $e')),
+          SnackBar(content: Text('${l10n.criarOfertaError}: $e')),
         );
       }
     } finally {
@@ -78,8 +80,9 @@ class _CriarOfertaScreenState extends State<CriarOfertaScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = BorrachaLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: const Text('Anunciar Compra')),
+      appBar: AppBar(title: Text(l10n.criarOfertaTitle)),
       body: Form(
         key: _formKey,
         child: ListView(
@@ -91,32 +94,32 @@ class _CriarOfertaScreenState extends State<CriarOfertaScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Dados do Comprador',
-                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text(l10n.mercadoBuyerRole,
+                        style: const TextStyle(fontWeight: FontWeight.bold)),
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: _buyerNameController,
-                      decoration: const InputDecoration(
-                          labelText: 'Nome da Empresa/Comprador',
-                          border: OutlineInputBorder()),
-                      validator: (v) => v!.isEmpty ? 'Obrigatório' : null,
+                      decoration: InputDecoration(
+                          labelText: l10n.criarOfertaTitleField,
+                          border: const OutlineInputBorder()),
+                      validator: (v) => v!.isEmpty ? l10n.criarOfertaTitleRequired : null,
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: _phoneController,
-                      decoration: const InputDecoration(
-                          labelText: 'WhatsApp para Contato',
-                          border: OutlineInputBorder()),
+                      decoration: InputDecoration(
+                          labelText: l10n.criarOfertaPhone,
+                          border: const OutlineInputBorder()),
                       keyboardType: TextInputType.phone,
-                      validator: (v) => v!.isEmpty ? 'Obrigatório' : null,
+                      validator: (v) => v!.isEmpty ? l10n.criarOfertaPhoneRequired : null,
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: _regionController,
-                      decoration: const InputDecoration(
-                          labelText: 'Região de Atuação',
-                          border: OutlineInputBorder()),
-                      validator: (v) => v!.isEmpty ? 'Obrigatório' : null,
+                      decoration: InputDecoration(
+                          labelText: l10n.mercadoFilterLabel,
+                          border: const OutlineInputBorder()),
+                      validator: (v) => v!.isEmpty ? l10n.criarOfertaTitleRequired : null,
                     ),
                   ],
                 ),
@@ -129,8 +132,8 @@ class _CriarOfertaScreenState extends State<CriarOfertaScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Detalhes da Oferta',
-                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text(l10n.mercadoOfferConditions,
+                        style: const TextStyle(fontWeight: FontWeight.bold)),
                     const SizedBox(height: 16),
                     Row(
                       children: [
@@ -139,10 +142,10 @@ class _CriarOfertaScreenState extends State<CriarOfertaScreen> {
                             controller: _priceDrcController,
                             keyboardType: const TextInputType.numberWithOptions(
                                 decimal: true),
-                            decoration: const InputDecoration(
-                                labelText: 'Preço DRC (R\$)',
-                                border: OutlineInputBorder()),
-                            validator: (v) => v!.isEmpty ? 'Obrigatório' : null,
+                            decoration: InputDecoration(
+                                labelText: l10n.criarOfertaPriceDrc,
+                                border: const OutlineInputBorder()),
+                            validator: (v) => v!.isEmpty ? l10n.criarOfertaPriceDrcInvalid : null,
                           ),
                         ),
                         const SizedBox(width: 16),
@@ -151,9 +154,9 @@ class _CriarOfertaScreenState extends State<CriarOfertaScreen> {
                             controller: _priceWetController,
                             keyboardType: const TextInputType.numberWithOptions(
                                 decimal: true),
-                            decoration: const InputDecoration(
-                                labelText: 'Preço Banca (Op)',
-                                border: OutlineInputBorder()),
+                            decoration: InputDecoration(
+                                labelText: l10n.criarOfertaPriceWet,
+                                border: const OutlineInputBorder()),
                           ),
                         ),
                       ],
@@ -161,11 +164,12 @@ class _CriarOfertaScreenState extends State<CriarOfertaScreen> {
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: _conditionsController,
-                      decoration: const InputDecoration(
-                          labelText: 'Condições (Pagamento, Retirada...)',
-                          border: OutlineInputBorder()),
+                      decoration: InputDecoration(
+                          labelText: l10n.criarOfertaConditions,
+                          hintText: l10n.criarOfertaConditionsHint,
+                          border: const OutlineInputBorder()),
                       maxLines: 3,
-                      validator: (v) => v!.isEmpty ? 'Obrigatório' : null,
+                      validator: (v) => v!.isEmpty ? l10n.criarOfertaTitleRequired : null,
                     ),
                   ],
                 ),
@@ -175,7 +179,7 @@ class _CriarOfertaScreenState extends State<CriarOfertaScreen> {
             SizedBox(
               width: double.infinity,
               child: PrimaryButton(
-                label: 'Publicar Oferta',
+                label: l10n.criarOfertaPublishButton,
                 loading: _isLoading,
                 onPressed: _publishOffer,
               ),
