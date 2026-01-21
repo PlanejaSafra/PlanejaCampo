@@ -495,26 +495,35 @@ class RadarTileProvider implements TileProvider {
 
   @override
   Future<Tile> getTile(int x, int y, int? zoom) async {
-    try {
-      final url = urlTemplate
-          .replaceAll('{x}', x.toString())
-          .replaceAll('{y}', y.toString())
-          .replaceAll('{z}', zoom.toString());
+    final url = urlTemplate
+        .replaceAll('{x}', x.toString())
+        .replaceAll('{y}', y.toString())
+        .replaceAll('{z}', zoom.toString());
 
-      // debugPrint('RadarTileProvider: $url');
+    // Retry up to 2 times with timeout
+    for (int attempt = 0; attempt < 2; attempt++) {
+      try {
+        final response = await http.get(Uri.parse(url)).timeout(
+          const Duration(seconds: 10),
+          onTimeout: () {
+            throw Exception('Timeout');
+          },
+        );
 
-      final response = await http.get(Uri.parse(url));
-
-      if (response.statusCode == 200) {
-        return Tile(tileSize, tileSize, response.bodyBytes);
-      } else {
-        debugPrint(
-            'RadarTileProvider HTTP Error: $url => ${response.statusCode}');
-        return TileProvider.noTile;
+        if (response.statusCode == 200) {
+          return Tile(tileSize, tileSize, response.bodyBytes);
+        } else if (response.statusCode == 403 || response.statusCode == 404) {
+          // Don't retry on 403/404 - these won't change
+          debugPrint('RadarTileProvider: $url => ${response.statusCode}');
+          return TileProvider.noTile;
+        }
+        // Other errors: retry
+      } catch (e) {
+        if (attempt == 1) {
+          debugPrint('RadarTileProvider failed after retry: $url => $e');
+        }
       }
-    } catch (e) {
-      debugPrint('RadarTileProvider Exception: $e');
-      return TileProvider.noTile;
     }
+    return TileProvider.noTile;
   }
 }
