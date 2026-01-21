@@ -221,7 +221,7 @@ class _ListaChuvasScreenState extends State<ListaChuvasScreen> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) => const RainHeatmapScreen(),
+              builder: (_) => const WeatherMapScreen(),
             ),
           );
         } else {

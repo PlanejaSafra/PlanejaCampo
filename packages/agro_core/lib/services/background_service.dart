@@ -6,6 +6,7 @@ import 'weather_service.dart';
 import 'property_service.dart';
 import '../models/property.dart';
 import '../models/instant_weather_forecast.dart';
+import '../models/rain_alert_metadata.dart';
 
 const String kRainCheckTask = 'rain_check_task';
 const String kRainCheckId = 'rain_check_id';
@@ -132,7 +133,8 @@ class BackgroundService {
     for (final prop in properties) {
       // Skip properties without location
       if (!prop.hasLocation) {
-        debugPrint('BackgroundService: Skipping ${prop.name} - no location set');
+        debugPrint(
+            'BackgroundService: Skipping ${prop.name} - no location set');
         continue;
       }
 
@@ -153,50 +155,50 @@ class BackgroundService {
 
         if (rawData == null) continue;
 
-        final summary = WeatherService().parseInstantForecast(rawData);
-        if (summary == null) continue;
+        // 6. Analyze with new Metadata Logic
+        final metadata = WeatherService().analyzeRainMetadata(rawData);
 
-        // 6. Analyze
-        if (summary.willRainSoon) {
+        if (metadata != null) {
           // Check Debounce
           final lastAlert =
               settingsBox.get('${kLastAlertKey}_${prop.id}', defaultValue: 0);
           final now = DateTime.now().millisecondsSinceEpoch;
           final diff = now - lastAlert;
 
-          // 2 hours debounce
+          // 2 hours debounce (avoid spamming for same storm)
           if (diff < 2 * 60 * 60 * 1000) {
             debugPrint('BackgroundService: Debounced alert for ${prop.name}');
             continue;
           }
-
-          // Prepare Message
-          // We don't have BuildContext for L10n.
-          // We used hardcoded fallback or primitive L10n based on locale in Hive?
-          // Or just Generic code.
-          // "Vai chover em breve em [Propriedade]!"
-
-          // Get time to rain
-          int minutesParams = 0;
-          for (var p in summary.points) {
-            if (p.precipitationMm >= 0.1 && p.time.isAfter(DateTime.now())) {
-              minutesParams = p.time.difference(DateTime.now()).inMinutes;
-              break;
-            }
-          }
-          if (minutesParams < 0) minutesParams = 0;
 
           // Get locale from Hive for background L10n
           final storedLocale =
               settingsBox.get(kLocaleKey, defaultValue: 'pt_BR') as String;
           final isEnglish = storedLocale.startsWith('en');
 
-          // Use proper l10n strings from ARB
-          final title =
-              isEnglish ? 'Rain starting soon!' : 'Vai chover em breve!';
-          final body = isEnglish
-              ? 'Rain expected in $minutesParams min at ${prop.name}.'
-              : 'Chuva prevista para começar em $minutesParams min na ${prop.name}.';
+          // Construct Rich Message
+          final minutesUntil =
+              metadata.startTime.difference(DateTime.now()).inMinutes;
+          // Clean up negative minutes (if slightly past)
+          final minDisplay = minutesUntil < 0 ? 0 : minutesUntil;
+
+          final timeStr =
+              '${metadata.startTime.hour.toString().padLeft(2, '0')}:${metadata.startTime.minute.toString().padLeft(2, '0')}';
+
+          String title;
+          String body;
+
+          if (isEnglish) {
+            title = '${metadata.intensityLabelEn} at ${prop.name}!';
+            body =
+                'Starts at $timeStr (in ${minDisplay}m). Duration: ~${metadata.durationMinutes}min (${metadata.totalVolumeMm.toStringAsFixed(1)}mm).';
+          } else {
+            // Portuguese
+            title = '${metadata.intensityLabel} na ${prop.name}!';
+            body =
+                'Começa às $timeStr (em ${minDisplay}min). Duração: ~${metadata.durationMinutes}min (${metadata.totalVolumeMm.toStringAsFixed(1)}mm).';
+          }
+
           final channelName = isEnglish ? 'Rain Alerts' : 'Alertas de Chuva';
           final channelDesc = isEnglish
               ? 'Notifies when heavy rain is approaching'

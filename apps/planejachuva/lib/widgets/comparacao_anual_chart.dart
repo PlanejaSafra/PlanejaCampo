@@ -189,14 +189,18 @@ class ComparacaoAnualChart extends StatelessWidget {
 
   Widget _buildLegend(BuildContext context, int currentYear, int previousYear) {
     final theme = Theme.of(context);
-    return Row(
-      children: [
-        _buildLegendItem(context, previousYear.toString(),
-            theme.colorScheme.outline.withValues(alpha: 0.5)),
-        const SizedBox(width: 12),
-        _buildLegendItem(
-            context, currentYear.toString(), theme.colorScheme.primary),
-      ],
+    return Flexible(
+      child: Wrap(
+        spacing: 12,
+        runSpacing: 4,
+        alignment: WrapAlignment.end,
+        children: [
+          _buildLegendItem(context, previousYear.toString(),
+              theme.colorScheme.outline.withValues(alpha: 0.5)),
+          _buildLegendItem(
+              context, currentYear.toString(), theme.colorScheme.primary),
+        ],
+      ),
     );
   }
 

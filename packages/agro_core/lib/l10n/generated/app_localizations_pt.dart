@@ -1014,7 +1014,38 @@ class AgroLocalizationsPt extends AgroLocalizations {
   String get heatmapFilter7d => '7d';
 
   @override
-  String get drawerHeatmap => 'Mapa de Chuvas';
+  String get drawerHeatmap => 'Mapa do Tempo';
+
+  @override
+  String get mapLayerRadar => 'Radar (Tempo Real)';
+
+  @override
+  String get mapLayerCommunity => 'Comunidade (Calor)';
+
+  @override
+  String get radarAttribution => 'Dados de Radar por RainViewer';
+
+  @override
+  String radarPast(String time) {
+    return 'Passado ($time)';
+  }
+
+  @override
+  String get radarPresent => 'Agora';
+
+  @override
+  String radarFuture(String time) {
+    return 'Futuro ($time)';
+  }
+
+  @override
+  String get radarSpeed => 'Velocidade';
+
+  @override
+  String get radarLoading => 'Carregando Radar...';
+
+  @override
+  String get radarError => 'Erro ao carregar radar';
 
   @override
   String get cancelButton => 'Cancelar';

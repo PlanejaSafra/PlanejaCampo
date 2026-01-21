@@ -25,8 +25,8 @@ Biblioteca central de componentes, serviços e modelos reutilizáveis para a su�
 *   **Componentes UI**: Drawer de navegação, Cards, Botões, Seletores e Gráficos padronizados.
 *   **Internacionalização (i18n)**: Suporte nativo a múltiplos idiomas (PT-BR, EN).
 *   **Integrações**: Previsão do tempo (Open-Meteo), Seleção de Localização (Google Maps).
-*   **Notificações Inteligentes**: Alertas de chuva em background (minutely forecast).
-*   **Mapa Colaborativo**: Visualização de chuva em tempo real via mapa de calor.
+*   **Notificações Inteligentes**: Alertas de chuva detalhados em background (Início exato, Duração, Intensidade).
+*   **Mapa do Tempo**: Visualização de radar meteorológico (RainViewer) em tempo real e mapa de calor colaborativo.
 
 ## Instalação
 

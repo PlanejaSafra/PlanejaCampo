@@ -97,11 +97,15 @@ Implementa direitos do titular de dados conforme LGPD.
 Sistema de alertas locais e tarefas em segundo plano.
 
 *   **`AgroNotificationService`**: Gerencia canais e exibição de notificações locais.
-*   **`BackgroundService`**: Implementa tarefas periódicas (`workmanager`) para checar previsão do tempo e disparar alertas mesmo com app fechado.
+*   **`BackgroundService`**: Tarefas periódicas (`workmanager`) para monitorar chuva. Implementa lógica de **Alertas Ricos**:
+    *   Analisa dados minuto-a-minuto (`minutely_1`) ou 15 min (`minutely_15`).
+    *   Calcula: Hora exata de início, Duração estimada, Intensidade (Leve/Moderada/Forte) e Volume total.
+    *   Exemplo: "Chuva Forte começa às 14:23 (daqui ~8 min). Duração: 45 min".
 
-### 14. Mapa de Calor (`lib/services/heatmap_service.dart`)
+### 14. Mapa do Tempo (`lib/services/radar_service.dart`, `heatmap_service.dart`)
 
-Visualização geoespacial de dados de chuva.
+Visualização geoespacial avançada.
 
-*   **`HeatmapService`**: Serviço para buscar dados agregados da comunidade (atualmente via Cloud Functions ou mock).
-*   **`RainHeatmapScreen`**: Tela com Google Maps e overlays (`Circle`) para indicar intensidade de chuva.
+*   **`WeatherMapScreen`**: Tela unificada com camadas (Radar e Heatmap).
+*   **`RadarService`**: Integração com RainViewer API para exibir tiles de radar (passado/presente/futuro).
+*   **`HeatmapService`**: Serviço para buscar dados agregados da comunidade.

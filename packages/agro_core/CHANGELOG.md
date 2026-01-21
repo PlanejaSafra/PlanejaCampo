@@ -2,6 +2,76 @@
 
 ---
 
+## Phase CORE-58: Map Bug Fixes (Camera & Tiles)
+### Status: [DONE]
+**Date Completed**: 2026-01-21
+**Priority**: 🔵 FIX
+**Objective**: Fix critical usability regressions in the Weather Map (Camera resetting on play, Tiles not loading in new regions).
+
+### Implementation Summary
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 58.1 | Fix Camera Reset: Track `onCameraMove` and preserve position | ✅ DONE |
+| 58.2 | Fix Tile Caching: Add Region Hash to `TileOverlayId` | ✅ DONE |
+| 58.3 | Logging: Add `debugPrint` for RadarTileProvider errors | ✅ DONE |
+
+### Files Modified
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/screens/weather_map_screen.dart` | MODIFY | Implemented fixes |
+
+---
+
+## Phase CORE-57: Enhanced Rain Alerts (Precision & Metadata)
+### Status: [DONE]
+**Date Completed**: 2026-01-21
+**Priority**: 🔴 CRITICAL
+**Objective**: Improve background rain alerts to provide exact start time, estimated duration, intensity, and total volume, avoiding false positives.
+
+### Implementation Summary
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 57.1 | Update `WeatherService` to fetch `minutely_1` data | ✅ DONE |
+| 57.2 | Implement `RainAlertAnalyzer` logic (Start/Duration/Volume) | ✅ DONE |
+| 57.3 | Refactor `BackgroundService` for Rich Notifications | ✅ DONE |
+| 57.4 | Add Intensity Classification Logic | ✅ DONE |
+| 57.5 | Unit Tests for Alert Logic | ⏩ SKIPPED |
+
+### Files Modified
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/services/weather_service.dart` | MODIFY | Add `minutely_1` support |
+| `lib/services/background_service.dart` | MODIFY | Rich notification format |
+| `lib/models/rain_alert_metadata.dart` | CREATE | Model for analysis results |
+
+---
+
+## Phase CORE-56: Real-Time Radar Integration (RainViewer)
+### Status: [DONE]
+**Date Completed**: 2026-01-21
+**Priority**: 🟢 ENHANCEMENT
+**Objective**: Integrate real-time weather radar (REDEMET/RainViewer) into the map to visualize actual precipitation and cloud movement (Past/Present/Future).
+
+### Implementation Summary
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 56.1 | Create `RadarService` to fetch timestamps | ✅ DONE |
+| 56.2 | Rename `RainHeatmapScreen` to `WeatherMapScreen` | ✅ DONE |
+| 56.3 | Implement `TileOverlay` for Radar Layers | ✅ DONE |
+| 56.4 | Implement Animation Player (Play/Pause, Loop) | ✅ DONE |
+| 56.5 | Add Layer Switching (Heatmap vs Radar) | ✅ DONE |
+| 56.6 | Add RainViewer Attribution | ✅ DONE |
+
+### Files Modified
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/services/radar_service.dart` | CREATE | Fetch/parse RainViewer API |
+| `lib/screens/weather_map_screen.dart` | CREATE | Renamed from rain_heatmap_screen |
+| `lib/screens/rain_heatmap_screen.dart` | DELETE | Replaced by WeatherMapScreen |
+| `lib/l10n/arb/app_pt.arb` | MODIFY | Add radar strings |
+
+---
+
 ## Phase CORE-55: Autonomous AgroSettingsScreen
 ### Status: [DONE]
 **Date Completed**: 2026-01-21

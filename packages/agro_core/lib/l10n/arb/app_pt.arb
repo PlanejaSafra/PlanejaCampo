@@ -485,7 +485,30 @@
   "heatmapFilter1h": "1h",
   "heatmapFilter24h": "24h",
   "heatmapFilter7d": "7d",
-  "drawerHeatmap": "Mapa de Chuvas",
+  "drawerHeatmap": "Mapa do Tempo",
+  "mapLayerRadar": "Radar (Tempo Real)",
+  "mapLayerCommunity": "Comunidade (Calor)",
+  "radarAttribution": "Dados de Radar por RainViewer",
+  "radarPast": "Passado ({time})",
+  "@radarPast": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "radarPresent": "Agora",
+  "radarFuture": "Futuro ({time})",
+  "@radarFuture": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "radarSpeed": "Velocidade",
+  "radarLoading": "Carregando Radar...",
+  "radarError": "Erro ao carregar radar",
 
   "cancelButton": "Cancelar",
   "deleteButton": "Excluir",

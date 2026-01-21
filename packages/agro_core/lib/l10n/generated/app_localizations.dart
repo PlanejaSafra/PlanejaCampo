@@ -2036,8 +2036,62 @@ abstract class AgroLocalizations {
   /// No description provided for @drawerHeatmap.
   ///
   /// In en, this message translates to:
-  /// **'Rain Map'**
+  /// **'Weather Map'**
   String get drawerHeatmap;
+
+  /// No description provided for @mapLayerRadar.
+  ///
+  /// In en, this message translates to:
+  /// **'Radar (Real-time)'**
+  String get mapLayerRadar;
+
+  /// No description provided for @mapLayerCommunity.
+  ///
+  /// In en, this message translates to:
+  /// **'Community (Heat)'**
+  String get mapLayerCommunity;
+
+  /// No description provided for @radarAttribution.
+  ///
+  /// In en, this message translates to:
+  /// **'Radar Data by RainViewer'**
+  String get radarAttribution;
+
+  /// No description provided for @radarPast.
+  ///
+  /// In en, this message translates to:
+  /// **'Past ({time})'**
+  String radarPast(String time);
+
+  /// No description provided for @radarPresent.
+  ///
+  /// In en, this message translates to:
+  /// **'Now'**
+  String get radarPresent;
+
+  /// No description provided for @radarFuture.
+  ///
+  /// In en, this message translates to:
+  /// **'Future ({time})'**
+  String radarFuture(String time);
+
+  /// No description provided for @radarSpeed.
+  ///
+  /// In en, this message translates to:
+  /// **'Speed'**
+  String get radarSpeed;
+
+  /// No description provided for @radarLoading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading Radar...'**
+  String get radarLoading;
+
+  /// No description provided for @radarError.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading radar'**
+  String get radarError;
 
   /// No description provided for @cancelButton.
   ///

@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import '../models/weather_forecast.dart';
 import '../models/weather_alert.dart';
 import '../models/instant_weather_forecast.dart';
+import '../models/rain_alert_metadata.dart';
 
 /// Service to fetch and cache weather data from Open-Meteo.
 class WeatherService {
@@ -104,7 +105,7 @@ class WeatherService {
       debugPrint('WeatherService: Fetching from API for $propertyId...');
       // Added minutely_15=precipitation
       final url = Uri.parse(
-          '$_baseUrl?latitude=$latitude&longitude=$longitude&current=temperature_2m,relative_humidity_2m,precipitation,weather_code,wind_speed_10m,wind_direction_10m&minutely_15=precipitation&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,weather_code,wind_speed_10m_max,wind_direction_10m_dominant&hourly=temperature_2m,precipitation_probability,weather_code,wind_speed_10m,wind_direction_10m&timezone=auto&forecast_days=7');
+          '$_baseUrl?latitude=$latitude&longitude=$longitude&current=temperature_2m,relative_humidity_2m,precipitation,weather_code,wind_speed_10m,wind_direction_10m&minutely_1=precipitation&minutely_15=precipitation&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,weather_code,wind_speed_10m_max,wind_direction_10m_dominant&hourly=temperature_2m,precipitation_probability,weather_code,wind_speed_10m,wind_direction_10m&timezone=auto&forecast_days=7');
 
       final response = await http.get(url).timeout(const Duration(seconds: 10));
 
@@ -230,10 +231,129 @@ class WeatherService {
     return null;
   }
 
+  /// Extract detailed rain metadata (Start Time, Duration, Intensity)
+  /// Prioritizes `minutely_1` if available, falls back to `minutely_15`.
+  RainAlertMetadata? analyzeRainMetadata(Map<String, dynamic>? data) {
+    if (data == null) return null;
+
+    final now = DateTime.now();
+
+    List<DateTime> times = [];
+    List<double> precips = [];
+    bool isMinutely1 = false;
+
+    // 1. Try minutely_1 (Best Precision)
+    if (data.containsKey('minutely_1') && data['minutely_1'] != null) {
+      final min1 = data['minutely_1'];
+      final t = min1['time'] as List;
+      final p = min1['precipitation'] as List;
+
+      // Sometimes APIs return nulls or weird lengths
+      if (t.length == p.length && t.isNotEmpty) {
+        times = t.map((e) => DateTime.parse(e.toString())).toList();
+        precips = p.map((e) => (e as num).toDouble()).toList();
+        isMinutely1 = true;
+      }
+    }
+
+    // 2. Fallback to minutely_15 (Good Precision)
+    if (times.isEmpty &&
+        data.containsKey('minutely_15') &&
+        data['minutely_15'] != null) {
+      final min15 = data['minutely_15'];
+      final t = min15['time'] as List;
+      final p = min15['precipitation'] as List;
+
+      if (t.length == p.length && t.isNotEmpty) {
+        times = t.map((e) => DateTime.parse(e.toString())).toList();
+        precips = p.map((e) => (e as num).toDouble()).toList();
+        isMinutely1 = false;
+      }
+    }
+
+    if (times.isEmpty) return null;
+
+    // Analysis Logic
+    DateTime? startTime;
+    int durationMinutes = 0;
+    double totalVolume = 0;
+    double maxRate = 0;
+
+    // Threshold to consider "raining" (0.1mm)
+    const double threshold = 0.1;
+
+    // Find first rain event in the future
+    int startIndex = -1;
+
+    for (var i = 0; i < times.length; i++) {
+      // Skip past data
+      if (times[i].isBefore(now)) continue;
+
+      final mm = precips[i];
+      if (mm >= threshold) {
+        if (startIndex == -1) {
+          startIndex = i;
+          startTime = times[i];
+        }
+
+        // Accumulate
+        totalVolume += mm;
+
+        // Normalize rate to mm/h
+        // If minutely_1, value is mm/min -> * 60
+        // If minutely_15, value is mm/15min -> * 4
+        final rate = isMinutely1 ? mm * 60 : mm * 4;
+        if (rate > maxRate) maxRate = rate;
+
+        // Add duration
+        durationMinutes += isMinutely1 ? 1 : 15;
+      } else {
+        // Stop if we found a start and now it's dry (break event)
+        // Or should we allow gaps? Let's stop at first dry period > 15 min?
+        // Simple Version: Stop at first 0 if we already started.
+        if (startIndex != -1) {
+          // Allow small gap? For now, strict contiguous.
+          break;
+        }
+      }
+    }
+
+    if (startTime == null || totalVolume < 0.2)
+      return null; // Too light or no rain
+
+    // Determine Intensity Class
+    RainIntensity intensity = RainIntensity.light;
+    if (maxRate < 0.5)
+      intensity = RainIntensity.veryLight;
+    else if (maxRate < 2.0)
+      intensity = RainIntensity.light;
+    else if (maxRate < 8.0)
+      intensity = RainIntensity.moderate;
+    else if (maxRate < 30.0)
+      intensity = RainIntensity.heavy;
+    else
+      intensity = RainIntensity.violent;
+
+    // Linear interpolation for Start Time (refine 15m block)
+    // If not minutely_1, and we have enough mm, maybe it started in the middle?
+    // Advanced: Assuming uniform distribution in 15 mins is safer than guessing.
+    // We stick to the block time for safety.
+
+    return RainAlertMetadata(
+      startTime: startTime,
+      durationMinutes: durationMinutes,
+      intensity: intensity,
+      totalVolumeMm: totalVolume,
+      peakIntensity: maxRate,
+      confidence: isMinutely1 ? 0.95 : 0.8,
+    );
+  }
+
   /// Extract instant forecast (Nowcasting) from raw data
   InstantForecastSummary? parseInstantForecast(Map<String, dynamic>? data) {
     if (data == null) return null;
 
+    // Legacy support or fallback
     final minutely = data['minutely_15'];
     if (minutely == null) return null;
 
