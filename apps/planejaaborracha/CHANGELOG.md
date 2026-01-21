@@ -2,6 +2,63 @@
 
 ---
 
+## Phase BORRACHA-07: UX Improvements & Navigation Polish
+### Status: [DONE]
+**Date Completed**: 2026-01-21
+**Priority**: 🔵 FIX
+**Objective**: Improve user experience by adding missing navigation elements, fixing drawer inconsistencies, and providing clear CTAs for empty states.
+
+### Implementation Summary
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 7.1 | Add "Cadastrar Parceiro" button to empty state in PesagemScreen | ✅ DONE |
+| 7.2 | Refactor drawer navigation from if-statements to switch-case | ✅ DONE |
+| 7.3 | Add Settings and About handlers to all screens with drawer | ✅ DONE |
+| 7.4 | Add drawer to CriarOfertaScreen (was missing) | ✅ DONE |
+| 7.5 | Add /settings route to main.dart | ✅ DONE |
+
+### Files Modified
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/screens/pesagem_screen.dart` | MODIFY | Added empty state with icon, message, and CTA button to navigate to /parceiros |
+| `lib/screens/pesagem_screen.dart` | MODIFY | Refactored onNavigate from if-statements to switch-case, added settings/about handlers |
+| `lib/screens/mercado_screen.dart` | MODIFY | Refactored drawer navigation to switch-case, added settings/about handlers |
+| `lib/screens/criar_oferta_screen.dart` | MODIFY | Added AgroDrawer with full navigation (was missing entirely) |
+| `lib/main.dart` | MODIFY | Added /settings route pointing to AgroSettingsScreen |
+
+### Issues Fixed
+
+**User Experience:**
+- ❌ **Empty state without action** → ✅ Added "Adicionar Parceiro" button when no partners exist
+- ❌ **Inconsistent drawer navigation** → ✅ All screens use switch-case pattern now
+- ❌ **Missing Settings/About handlers** → ✅ Settings opens AgroSettingsScreen, About shows dialog
+- ❌ **CriarOfertaScreen without drawer** → ✅ Added drawer with extraItems
+- ❌ **Code duplication in onNavigate** → ✅ Cleaned up redundant if-statements
+
+**Code Quality:**
+- ✅ DRY: Drawer navigation logic consistent across all 3 screens
+- ✅ Maintainability: Switch-case easier to extend than if-chains
+- ✅ Accessibility: showAboutDialog provides standard app info
+
+### Navigation Flow Improved
+
+**Before:**
+- Empty PesagemScreen: "Nenhum parceiro cadastrado" (dead end)
+- Drawer: Properties → Parceiros (confusing mapping)
+- Settings/About: Clicked but nothing happened
+- CriarOfertaScreen: No drawer (inconsistent)
+
+**After:**
+- Empty PesagemScreen: Icon + message + "Adicionar Parceiro" button → /parceiros
+- Drawer: Properties → Parceiros (consistent switch-case)
+- Settings: Opens AgroSettingsScreen
+- About: Shows dialog with app name, version, icon, description
+- CriarOfertaScreen: Full drawer with extraItems
+
+---
+
 ## Phase BORRACHA-06: Production Fixes & L10n Migration
 ### Status: [DONE]
 **Date Completed**: 2026-01-20

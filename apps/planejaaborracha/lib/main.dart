@@ -106,6 +106,7 @@ class PlanejaBorrachaApp extends StatelessWidget {
           '/pesagem': (context) => const PesagemScreen(),
           '/mercado': (context) => const MercadoScreen(),
           '/criar-oferta': (context) => const CriarOfertaScreen(),
+          '/settings': (context) => const AgroSettingsScreen(),
         },
       ),
     );

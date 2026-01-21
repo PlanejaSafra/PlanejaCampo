@@ -83,6 +83,42 @@ class _CriarOfertaScreenState extends State<CriarOfertaScreen> {
     final l10n = BorrachaLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(title: Text(l10n.criarOfertaTitle)),
+      drawer: AgroDrawer(
+        appName: 'PlanejaBorracha',
+        versionText: '1.0.0',
+        onNavigate: (route) {
+          switch (route) {
+            case 'home':
+              Navigator.pushReplacementNamed(context, '/pesagem');
+              break;
+            case 'properties':
+              Navigator.pushReplacementNamed(context, '/parceiros');
+              break;
+            case 'mercado':
+              Navigator.pushReplacementNamed(context, '/mercado');
+              break;
+            case 'settings':
+              Navigator.pushNamed(context, '/settings');
+              break;
+            case 'about':
+              showAboutDialog(
+                context: context,
+                applicationName: 'PlanejaBorracha',
+                applicationVersion: '1.0.0',
+                applicationIcon: const Icon(Icons.forest, size: 48),
+                children: [
+                  const Text(
+                      'Gerencie suas entregas e acompanhe a produção de borracha'),
+                ],
+              );
+              break;
+          }
+        },
+        extraItems: [
+          AgroDrawerItem(
+              icon: Icons.store, title: l10n.drawerMercado, key: 'mercado'),
+        ],
+      ),
       body: Form(
         key: _formKey,
         child: ListView(

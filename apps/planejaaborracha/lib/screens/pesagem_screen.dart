@@ -52,19 +52,32 @@ class _PesagemScreenState extends State<PesagemScreen> {
           appName: 'PlanejaBorracha',
           versionText: '1.0.0',
           onNavigate: (route) {
-            if (route == 'home') route = 'pesagem';
-            if (route == 'properties')
-              route =
-                  'parceiros'; // Map properties to partners? Or keep distinct?
-            // For now, map simple keys. The drawer callback expects us to handle keys.
-            // Standard keys: home, properties, settings, about.
-            // We can just push named routes.
-            if (route == 'home')
-              Navigator.pushReplacementNamed(context, '/pesagem');
-            if (route == 'properties')
-              Navigator.pushReplacementNamed(context, '/parceiros');
-            if (route == 'mercado')
-              Navigator.pushReplacementNamed(context, '/mercado');
+            switch (route) {
+              case 'home':
+                Navigator.pushReplacementNamed(context, '/pesagem');
+                break;
+              case 'properties':
+                Navigator.pushReplacementNamed(context, '/parceiros');
+                break;
+              case 'mercado':
+                Navigator.pushReplacementNamed(context, '/mercado');
+                break;
+              case 'settings':
+                Navigator.pushNamed(context, '/settings');
+                break;
+              case 'about':
+                showAboutDialog(
+                  context: context,
+                  applicationName: 'PlanejaBorracha',
+                  applicationVersion: '1.0.0',
+                  applicationIcon: const Icon(Icons.forest, size: 48),
+                  children: [
+                    const Text(
+                        'Gerencie suas entregas e acompanhe a produção de borracha'),
+                  ],
+                );
+                break;
+            }
           },
           extraItems: [
             AgroDrawerItem(icon: Icons.store, title: l10n.drawerMercado, key: 'mercado'),
@@ -74,7 +87,34 @@ class _PesagemScreenState extends State<PesagemScreen> {
           final parceiros = parceiroService.parceiros;
 
           if (parceiros.isEmpty) {
-            return Center(child: Text(l10n.pesagemNoPartnersError));
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.group_off, size: 64, color: Colors.grey),
+                  const SizedBox(height: 16),
+                  Text(
+                    l10n.pesagemNoPartnersError,
+                    style: const TextStyle(fontSize: 16, color: Colors.grey),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 24),
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/parceiros');
+                    },
+                    icon: const Icon(Icons.person_add),
+                    label: Text(l10n.parceiroAddButton),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 24, vertical: 12),
+                    ),
+                  ),
+                ],
+              ),
+            );
           }
 
           // Auto-select first if none selected

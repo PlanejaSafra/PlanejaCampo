@@ -29,13 +29,37 @@ class _MercadoScreenState extends State<MercadoScreen> {
         appName: 'PlanejaBorracha',
         versionText: '1.0.0',
         onNavigate: (route) {
-          if (route == 'home')
-            Navigator.pushReplacementNamed(context, '/pesagem');
-          if (route == 'properties')
-            Navigator.pushReplacementNamed(context, '/parceiros');
-          if (route == 'mercado')
-            Navigator.pushReplacementNamed(context, '/mercado');
+          switch (route) {
+            case 'home':
+              Navigator.pushReplacementNamed(context, '/pesagem');
+              break;
+            case 'properties':
+              Navigator.pushReplacementNamed(context, '/parceiros');
+              break;
+            case 'mercado':
+              Navigator.pushReplacementNamed(context, '/mercado');
+              break;
+            case 'settings':
+              Navigator.pushNamed(context, '/settings');
+              break;
+            case 'about':
+              showAboutDialog(
+                context: context,
+                applicationName: 'PlanejaBorracha',
+                applicationVersion: '1.0.0',
+                applicationIcon: const Icon(Icons.forest, size: 48),
+                children: [
+                  const Text(
+                      'Gerencie suas entregas e acompanhe a produção de borracha'),
+                ],
+              );
+              break;
+          }
         },
+        extraItems: [
+          AgroDrawerItem(
+              icon: Icons.store, title: l10n.drawerMercado, key: 'mercado'),
+        ],
       ),
       body: Column(
         children: [
