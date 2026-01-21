@@ -2,83 +2,89 @@
 
 ---
 
-## Phase BORRACHA-05: Mercado & Matchmaking (Online/Hybrid)
-### Status: [TODO]
+## Phase BORRACHA-05: O Mercado (Compradores e Ofertas)
+### Status: [DONE]
 **Priority**: 🟡 MEDIUM
-**Objective**: Connect producers with buyers through geo-located offers and direct negotiation.
+**Objective**: Conectar produtores a compradores (Usinas/Bancas) através de um mural de ofertas geolocalizado e negociação direta via WhatsApp.
 
 ### Implementation Plan
+
 | Sub-Phase | Description | Status |
 |-----------|-------------|--------|
-| 5.1 | Create `market_offers` collection structure in Firestore | ⏳ TODO |
-| 5.2 | Implement `MercadoScreen` with GeoHash filtering | ⏳ TODO |
-| 5.3 | Implement `CriarOfertaScreen` (Buyer Profile) | ⏳ TODO |
-| 5.4 | Implement WhatsApp Deep Link integration | ⏳ TODO |
+| 5.1 | **Perfil do Comprador**: Implementar cadastro com definição de Tipo (Indústria/Banca) e Regiões de Atuação (Raio km ou Cidades). | ✅ DONE |
+| 5.2 | **Mural de Ofertas (Classificados)**: Criar sistema de publicação de propostas com Título, Preço DRC (Referência), Preço Banca (Úmido), Condições de Pagamento e Validade da oferta. | ✅ DONE |
+| 5.3 | **Matchmaking Simples**: Implementar filtro de ofertas baseado na localização da propriedade do usuário (GeoHash) para mostrar apenas compradores relevantes. | ✅ DONE |
+| 5.4 | **Botão "Tenho Interesse"**: Integrar deeplink para WhatsApp com mensagem pré-formatada ("Olá, vi sua oferta no PlanejaBorracha...") para iniciar negociação direta. | ✅ DONE |
 
-### Files to Modify
-- `lib/services/market_service.dart` (NEW)
-- `lib/screens/mercado_screen.dart` (NEW)
-- `lib/screens/criar_oferta_screen.dart` (NEW)
+### Files Modified
+- `lib/models/market_offer.dart`
+- `lib/screens/mercado_screen.dart`
+- `lib/screens/criar_oferta_screen.dart`
 
 ---
 
-## Phase BORRACHA-04: Fechamento Financeiro & Output
-### Status: [TODO]
+## Phase BORRACHA-04: Fechamento Financeiro (O Pagamento)
+### Status: [DONE]
 **Priority**: 🟢 ENHANCEMENT
-**Objective**: Calculate financial totals based on DRC/Wet price and generate shareable receipts.
+**Objective**: Automatizar o cálculo de pagamentos e gerar recibos transparentes para os parceiros.
 
 ### Implementation Plan
+
 | Sub-Phase | Description | Status |
 |-----------|-------------|--------|
-| 4.1 | Implement financial calculation logic (Share split, Advances) | ⏳ TODO |
-| 4.2 | Create `FechamentoEntregaScreen` dialog | ⏳ TODO |
-| 4.3 | Implement PDF generation (Receipt) | ⏳ TODO |
-| 4.4 | Integrate simple content sharing (WhatsApp) | ⏳ TODO |
+| 4.1 | **Input de Preço Final**: Tela para entrada do Valor de Venda (R$/kg) ou DRC Médio apurado no romaneio. | ✅ DONE |
+| 4.2 | **Mágica Automática (Cálculo)**: Implementar lógica que calcula instantaneamente o Total da Venda e a Parte do Parceiro baseado na porcentagem contratada. | ✅ DONE |
+| 4.3 | **Gestão de Adiantamentos**: Campo para dedução de valores/vales já pagos ao parceiro. | ✅ DONE |
+| 4.4 | **Recibo Transparente**: Gerar PDF simplificado com o resumo do romaneio e cálculo financeiro para envio via WhatsApp. | ✅ DONE |
 
-### Files to Modify
-- `lib/screens/fechamento_entrega_screen.dart` (NEW)
-- `lib/services/pdf_service.dart` (NEW)
-- `lib/models/entrega.dart` (Logic extension)
+### Files Modified
+- `lib/screens/fechamento_entrega_screen.dart`
+- `lib/services/pdf_service.dart`
+- `lib/models/financeiro_helper.dart`
 
 ---
 
-## Phase BORRACHA-03: Pesagem Rápida UX (The "Killer Feature")
-### Status: [TODO]
+## Phase BORRACHA-03: Pesagem Rápida (UX "Calculadora de Padaria")
+### Status: [DONE]
 **Priority**: 🔴 CRITICAL
-**Objective**: Develop the "One-Handed Calculator" interface for rapid data entry in the field.
+**Objective**: Criar uma interface focada em agilidade e uso com uma mão para o momento caótico da pesagem.
 
 ### Implementation Plan
+
 | Sub-Phase | Description | Status |
 |-----------|-------------|--------|
-| 3.1 | Implement Custom Numeric Keypad (Big Buttons) | ⏳ TODO |
-| 3.2 | Create "Tape View" (Accumulator history: 120 + 95...) | ⏳ TODO |
-| 3.3 | Implement Partner Switching Logic (Hot-swap) | ⏳ TODO |
-| 3.4 | Persist state for "Work in Progress" delivery | ⏳ TODO |
+| 3.1 | **Teclado Numérico Customizado**: Implementar teclado com botões GRANDES para facilitar a digitação com mãos sujas ou em movimento. | ✅ DONE |
+| 3.2 | **Modo Acumulador**: Lógica de soma contínua (120kg + 95kg + ...) com visualização clara da "fita de somar" (histórico de entradas). | ✅ DONE |
+| 3.3 | **Troca Rápida de Contexto**: Permitir alternar a "Etiqueta" (Talhão/Tarefa) da pesagem atual com um único toque. | ✅ DONE |
+| 3.4 | **Fluxo de Salvamento**: Botão "Concluir Parceiro" que salva o total, zera o acumulador e prepara a tela instantaneamente para o próximo parceiro. | ✅ DONE |
 
-### Files to Modify
-- `lib/screens/pesagem_screen.dart` (NEW)
-- `lib/widgets/pesagem_keypad.dart` (NEW)
-- `lib/widgets/fita_somar_widget.dart` (NEW)
+### Files Modified
+- `lib/screens/pesagem_screen.dart`
+- `lib/widgets/big_calculator_keypad.dart`
+- `lib/widgets/tape_view_widget.dart`
+- `lib/services/entrega_service.dart`
 
 ---
 
-## Phase BORRACHA-02: Gestão de Parceiros & Models (Foundation)
-### Status: [TODO]
+## Phase BORRACHA-02: Gestão de Parceiros (Set-and-Forget)
+### Status: [DONE]
 **Priority**: 🔴 CRITICAL
-**Objective**: Implement core data structures and "Set-and-Forget" partner configuration.
+**Objective**: Configurar a "equipe" uma única vez para automatizar todos os cálculos futuros.
 
 ### Implementation Plan
+
 | Sub-Phase | Description | Status |
 |-----------|-------------|--------|
-| 2.1 | Implement Hive Models: `Parceiro`, `Entrega`, `ItemEntrega` | ⏳ TODO |
-| 2.2 | Generate Hive Adapters (`build_runner`) | ⏳ TODO |
-| 2.3 | Create `ParceirosListScreen` (CRUD) | ⏳ TODO |
-| 2.4 | Implement Task/Talhão linking | ⏳ TODO |
+| 2.1 | **Cadastro de Parceiro**: Implementar entidade (Hive) com Nome, Foto e Telefone. | ✅ DONE |
+| 2.2 | **Contrato Padrão**: Campo para definir a Porcentagem padrão do parceiro (ex: 40%, 50%) para automação financeira. | ✅ DONE |
+| 2.3 | **Vinculação de Tarefas**: Interface para selecionar quais Talhões (do `agro_core`) o parceiro atende, ou opção simples "Propriedade Toda". | ✅ DONE |
+| 2.4 | **Sincronização**: Garantir persistência offline robusta para acesso no campo. | ✅ DONE |
 
-### Files to Modify
-- `lib/models/parceiro.dart` (NEW)
-- `lib/models/entrega.dart` (NEW)
-- `lib/screens/parceiros_list_screen.dart` (NEW)
+### Files Modified
+- `lib/models/parceiro.dart`
+- `lib/screens/parceiros_list_screen.dart`
+- `lib/screens/parceiro_form_screen.dart`
+- `lib/services/parceiro_service.dart`
 
 ---
 
