@@ -181,49 +181,20 @@ class _WeatherMapScreenState extends State<WeatherMapScreen>
     final allFrames = _radarTimestamps!.allFrames;
     if (allFrames.isEmpty) return;
 
-    final max = allFrames.length;
-    final int nextIndex = (_currentIndex + 1) % max;
-
     final currentFrame = allFrames[_currentIndex];
-    final nextFrame = allFrames[nextIndex];
-
-    // Interpolation Logic:
-    // We render TWO layers:
-    // 1. Current Layer (fades OUT: opacity 1 -> 0)
-    // 2. Next Layer (fades IN: opacity 0 -> 1)
-    // Combined with base transparency (0.6 max)
-
-    final double progress = _animController.value; // 0.0 to 1.0
     final String regionHash = _getRegionHash();
-
-    // To prevent flicker, we handle single frame logic
     final Set<TileOverlay> overlays = {};
-
     final String host = _radarTimestamps!.host;
 
-    // Current Frame (Fading Out)
+    // Current Frame - visible at 70% opacity (transparency 0.3)
     overlays.add(TileOverlay(
       tileOverlayId: TileOverlayId('radar_${currentFrame.time}_$regionHash'),
       tileProvider: RadarTileProvider(
           urlTemplate: _radarService.getTileUrlTemplate(
               path: currentFrame.path, host: host)),
-      transparency:
-          1.0 - (0.6 * (1.0 - progress)), // Fading out (1.0 = invisible)
-      zIndex: 1, // Lower zIndex
+      transparency: 0.3, // 70% visible (0.0 = fully visible, 1.0 = invisible)
+      zIndex: 1,
     ));
-
-    // Next Frame (Fading In)
-    // Only show if we are playing or interpolating
-    if (_isPlaying || progress > 0) {
-      overlays.add(TileOverlay(
-        tileOverlayId: TileOverlayId('radar_${nextFrame.time}_$regionHash'),
-        tileProvider: RadarTileProvider(
-            urlTemplate: _radarService.getTileUrlTemplate(
-                path: nextFrame.path, host: host)),
-        transparency: 1.0 - (0.6 * progress), // Fading in
-        zIndex: 2, // Higher zIndex
-      ));
-    }
 
     setState(() {
       _tileOverlays = overlays;
