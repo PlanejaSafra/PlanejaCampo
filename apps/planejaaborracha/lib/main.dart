@@ -4,6 +4,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:agro_core/agro_core.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'firebase_options.dart';
 import 'models/parceiro.dart';
@@ -30,6 +31,8 @@ Future<void> main() async {
   Hive.registerAdapter(ItemEntregaAdapter());
   Hive.registerAdapter(EntregaAdapter());
   Hive.registerAdapter(UserCloudDataAdapter());
+  Hive.registerAdapter(DeviceInfoAdapter());
+  Hive.registerAdapter(ConsentDataAdapter()); // Required by UserCloudData
   Hive.registerAdapter(PropertyAdapter());
   Hive.registerAdapter(TalhaoAdapter());
 
@@ -84,6 +87,7 @@ class PlanejaBorrachaApp extends StatelessWidget {
         darkTheme: AppTheme.dark(),
         themeMode: ThemeMode.system,
         localizationsDelegates: const [
+          BorrachaLocalizations.delegate,
           AgroLocalizations.delegate,
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
