@@ -21,7 +21,10 @@ class _HomeScreenState extends State<HomeScreen> {
     final l10n = BorrachaLocalizations.of(context)!;
     final theme = Theme.of(context);
     final profile = UserProfileService.instance.currentProfile;
+    // Produtor and Sangrador share similar interface (weighing, partners, deliveries)
     final isProdutor = profile?.isProdutor ?? true;
+    final isSangrador = profile?.isSangrador ?? false;
+    final showWeighingInterface = isProdutor || isSangrador;
 
     return Scaffold(
       appBar: AppBar(
@@ -107,17 +110,17 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 24),
 
               // Quick Actions
-              _buildQuickActionsSection(context, l10n, theme, isProdutor),
+              _buildQuickActionsSection(context, l10n, theme, showWeighingInterface),
               const SizedBox(height: 24),
 
-              // Monthly Summary (Produtor only)
-              if (isProdutor) ...[
+              // Monthly Summary (Produtor and Sangrador)
+              if (showWeighingInterface) ...[
                 _buildMonthlySummary(context, l10n, theme),
                 const SizedBox(height: 24),
               ],
 
-              // Recent Deliveries (Produtor) or My Offers (Comprador)
-              if (isProdutor)
+              // Recent Deliveries (Produtor/Sangrador) or My Offers (Comprador)
+              if (showWeighingInterface)
                 _buildRecentDeliveries(context, l10n, theme)
               else
                 _buildMyOffers(context, l10n, theme),
@@ -127,15 +130,16 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          if (isProdutor) {
+          if (showWeighingInterface) {
             Navigator.pushNamed(context, '/pesagem');
           } else {
             Navigator.pushNamed(context, '/criar-oferta');
           }
         },
-        icon: Icon(isProdutor ? Icons.add : Icons.post_add),
-        label: Text(isProdutor ? l10n.homeNewWeighing : l10n.homeCreateOffer),
+        icon: Icon(showWeighingInterface ? Icons.add : Icons.post_add),
+        label: Text(showWeighingInterface ? l10n.homeNewWeighing : l10n.homeCreateOffer),
       ),
+      bottomNavigationBar: const AgroBannerWidget(),
     );
   }
 
@@ -160,7 +164,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildQuickActionsSection(BuildContext context,
-      BorrachaLocalizations l10n, ThemeData theme, bool isProdutor) {
+      BorrachaLocalizations l10n, ThemeData theme, bool showWeighingInterface) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -171,7 +175,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         const SizedBox(height: 12),
-        if (isProdutor)
+        if (showWeighingInterface)
           Row(
             children: [
               Expanded(

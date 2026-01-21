@@ -12,6 +12,10 @@ enum UserProfileType {
   /// Buyer - sees dashboard with their offers, statistics, and producer connections.
   @HiveField(1)
   comprador,
+
+  /// Tapper/Rubber collector - sees simplified weighing interface and partner tracking.
+  @HiveField(2)
+  sangrador,
 }
 
 /// User profile stored locally to determine app behavior.
@@ -67,4 +71,7 @@ class UserProfile extends HiveObject {
 
   /// Whether this is a buyer profile.
   bool get isComprador => profileType == UserProfileType.comprador;
+
+  /// Whether this is a tapper profile.
+  bool get isSangrador => profileType == UserProfileType.sangrador;
 }

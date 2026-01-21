@@ -103,9 +103,11 @@
   "profileSelectionTitle": "Who are you?",
   "profileSelectionSubtitle": "Select your profile to personalize your experience",
   "profileProdutor": "I'm a Producer",
-  "profileProdutorDesc": "I manage rubber plantations, partners, and deliveries",
+  "profileProdutorDesc": "I manage plantations and partners",
   "profileComprador": "I'm a Buyer",
-  "profileCompradorDesc": "I buy rubber from producers (Mill, Trader, Intermediary)",
+  "profileCompradorDesc": "I buy rubber from producers",
+  "profileSangrador": "I'm a Tapper",
+  "profileSangradorDesc": "I collect latex and weigh rubber",
   "profileContinue": "Continue",
   "profileSelectOne": "Select a profile to continue",
 

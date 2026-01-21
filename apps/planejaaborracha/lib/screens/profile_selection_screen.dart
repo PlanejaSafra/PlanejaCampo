@@ -80,6 +80,19 @@ class _ProfileSelectionScreenState extends State<ProfileSelectionScreen> {
               ),
               const SizedBox(height: 48),
 
+              // Comprador Card
+              _ProfileCard(
+                icon: Icons.store,
+                iconColor: Colors.blue,
+                title: l10n.profileComprador,
+                description: l10n.profileCompradorDesc,
+                isSelected: _selectedType == UserProfileType.comprador,
+                onTap: () {
+                  setState(() => _selectedType = UserProfileType.comprador);
+                },
+              ),
+              const SizedBox(height: 16),
+
               // Produtor Card
               _ProfileCard(
                 icon: Icons.agriculture,
@@ -93,15 +106,15 @@ class _ProfileSelectionScreenState extends State<ProfileSelectionScreen> {
               ),
               const SizedBox(height: 16),
 
-              // Comprador Card
+              // Sangrador Card
               _ProfileCard(
-                icon: Icons.store,
-                iconColor: Colors.blue,
-                title: l10n.profileComprador,
-                description: l10n.profileCompradorDesc,
-                isSelected: _selectedType == UserProfileType.comprador,
+                icon: Icons.water_drop,
+                iconColor: Colors.brown,
+                title: l10n.profileSangrador,
+                description: l10n.profileSangradorDesc,
+                isSelected: _selectedType == UserProfileType.sangrador,
                 onTap: () {
-                  setState(() => _selectedType = UserProfileType.comprador);
+                  setState(() => _selectedType = UserProfileType.sangrador);
                 },
               ),
 
@@ -212,14 +225,14 @@ class _ProfileCard extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: theme.textTheme.titleMedium?.copyWith(
+                      style: theme.textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       description,
-                      style: theme.textTheme.bodyMedium?.copyWith(
+                      style: theme.textTheme.bodySmall?.copyWith(
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
                     ),

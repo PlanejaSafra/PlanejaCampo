@@ -103,9 +103,11 @@
   "profileSelectionTitle": "Quem é você?",
   "profileSelectionSubtitle": "Selecione seu perfil para personalizar sua experiência",
   "profileProdutor": "Sou Produtor",
-  "profileProdutorDesc": "Gerencio seringais, parceiros e entregas de borracha",
+  "profileProdutorDesc": "Gerencio seringais e parceiros",
   "profileComprador": "Sou Comprador",
-  "profileCompradorDesc": "Compro borracha de produtores (Usina, Banca, Intermediário)",
+  "profileCompradorDesc": "Compro borracha de produtores",
+  "profileSangrador": "Sou Sangrador",
+  "profileSangradorDesc": "Coleto látex e faço pesagens",
   "profileContinue": "Continuar",
   "profileSelectOne": "Selecione um perfil para continuar",
 
