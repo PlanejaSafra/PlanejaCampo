@@ -1,5 +1,3 @@
-import 'dart:io';
-import 'package:flutter/services.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
@@ -30,7 +28,7 @@ class PdfService {
               pw.Text('ID: ${entrega.id.substring(0, 8)}'),
               pw.Text('Preço Base: ${currencyFormat.format(precoPorKg)} / kg'),
               pw.SizedBox(height: 20),
-              pw.Table.fromTextArray(
+              pw.TableHelper.fromTextArray(
                 context: context,
                 headers: [
                   'Parceiro',

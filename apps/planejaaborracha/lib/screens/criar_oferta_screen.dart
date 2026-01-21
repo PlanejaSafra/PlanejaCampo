@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:agro_core/agro_core.dart';
-import 'package:uuid/uuid.dart';
 
 class CriarOfertaScreen extends StatefulWidget {
   const CriarOfertaScreen({super.key});
@@ -86,7 +85,7 @@ class _CriarOfertaScreenState extends State<CriarOfertaScreen> {
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            AgroCard(
+            CustomCard(
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
@@ -124,7 +123,7 @@ class _CriarOfertaScreenState extends State<CriarOfertaScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            AgroCard(
+            CustomCard(
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
@@ -173,10 +172,13 @@ class _CriarOfertaScreenState extends State<CriarOfertaScreen> {
               ),
             ),
             const SizedBox(height: 24),
-            AgroButton(
-              text: 'Publicar Oferta',
-              isLoading: _isLoading,
-              onPressed: _publishOffer,
+            SizedBox(
+              width: double.infinity,
+              child: PrimaryButton(
+                label: 'Publicar Oferta',
+                loading: _isLoading,
+                onPressed: _publishOffer,
+              ),
             )
           ],
         ),

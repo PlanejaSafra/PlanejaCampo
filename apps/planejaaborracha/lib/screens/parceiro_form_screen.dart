@@ -132,7 +132,7 @@ class _ParceiroFormScreenState extends State<ParceiroFormScreen> {
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            AgroCard(
+            CustomCard(
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
@@ -185,10 +185,10 @@ class _ParceiroFormScreenState extends State<ParceiroFormScreen> {
               ),
             ),
             const SizedBox(height: 24),
-            AgroButton(
-              text: 'Salvar',
+            PrimaryButton(
+              label: 'Salvar',
               onPressed: _isLoading ? null : _save,
-              isLoading: _isLoading,
+              loading: _isLoading,
             ),
           ],
         ),

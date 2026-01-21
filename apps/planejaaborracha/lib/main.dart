@@ -57,7 +57,7 @@ class PlanejaBorrachaApp extends StatelessWidget {
         ],
         supportedLocales: AgroLocalizations.supportedLocales,
         home: const AgroOnboardingGate(
-          child: PesagemScreen(),
+          home: PesagemScreen(),
         ),
         routes: {
           '/parceiros': (context) => const ParceirosListScreen(),

@@ -23,7 +23,18 @@ class _MercadoScreenState extends State<MercadoScreen> {
       appBar: AppBar(
         title: const Text('Mercado de Borracha'),
       ),
-      drawer: const AgroDrawer(currentRoute: 'mercado', appVersion: '1.0.0'),
+      drawer: AgroDrawer(
+        appName: 'PlanejaBorracha',
+        versionText: '1.0.0',
+        onNavigate: (route) {
+          if (route == 'home')
+            Navigator.pushReplacementNamed(context, '/pesagem');
+          if (route == 'properties')
+            Navigator.pushReplacementNamed(context, '/parceiros');
+          if (route == 'mercado')
+            Navigator.pushReplacementNamed(context, '/mercado');
+        },
+      ),
       body: Column(
         children: [
           // Filter Header
@@ -125,7 +136,7 @@ class _MercadoScreenState extends State<MercadoScreen> {
   Widget _buildOfferCard(MarketOffer offer) {
     final currency = NumberFormat.simpleCurrency(locale: 'pt_BR');
 
-    return AgroCard(
+    return CustomCard(
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -171,10 +182,13 @@ class _MercadoScreenState extends State<MercadoScreen> {
             const SizedBox(height: 12),
             SizedBox(
               width: double.infinity,
-              child: AgroButton(
-                text: 'Tenho Interesse',
-                icon: Icons.chat, // WhatsApp icon approximation
-                backgroundColor: Colors.green,
+              child: ElevatedButton.icon(
+                label: const Text('Tenho Interesse'),
+                icon: const Icon(Icons.chat),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  foregroundColor: Colors.white,
+                ),
                 onPressed: () => _launchWhatsApp(offer),
               ),
             ),

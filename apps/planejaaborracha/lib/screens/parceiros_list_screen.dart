@@ -18,9 +18,11 @@ class _ParceirosListScreenState extends State<ParceirosListScreen> {
       appBar: AppBar(
         title: const Text('Parceiros'),
       ),
-      drawer: const AgroDrawer(
-        currentRoute: 'parceiros',
-        appVersion: '1.0.0',
+      drawer: AgroDrawer(
+        appName: 'PlanejaBorracha',
+        versionText: '1.0.0',
+        onNavigate: (route) =>
+            Navigator.pushReplacementNamed(context, '/$route'),
       ),
       body: Consumer<ParceiroService>(
         builder: (context, service, child) {
@@ -39,8 +41,8 @@ class _ParceirosListScreenState extends State<ParceirosListScreen> {
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   const SizedBox(height: 8),
-                  AgroButton(
-                    text: 'Cadastrar Parceiro',
+                  PrimaryButton(
+                    label: 'Cadastrar Parceiro',
                     onPressed: () => _navigateToForm(context),
                   ),
                 ],
@@ -53,7 +55,7 @@ class _ParceirosListScreenState extends State<ParceirosListScreen> {
             padding: const EdgeInsets.all(16),
             itemBuilder: (context, index) {
               final parceiro = parceiros[index];
-              return AgroCard(
+              return CustomCard(
                 onTap: () => _navigateToForm(context, parceiroId: parceiro.id),
                 child: ListTile(
                   leading: CircleAvatar(

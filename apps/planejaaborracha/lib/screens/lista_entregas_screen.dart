@@ -34,7 +34,7 @@ class ListaEntregasScreen extends StatelessWidget {
               final entrega = entregas[index];
               final isOpen = entrega.status == 'Aberto';
 
-              return AgroCard(
+              return CustomCard(
                 onTap: () {
                   // If open, go to closing? Or details?
                   // For now, simple view or re-open logic could go here

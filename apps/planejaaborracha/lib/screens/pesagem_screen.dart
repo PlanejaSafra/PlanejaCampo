@@ -7,7 +7,6 @@ import '../services/parceiro_service.dart';
 import '../services/entrega_service.dart';
 import '../widgets/big_calculator_keypad.dart';
 import '../widgets/tape_view_widget.dart';
-import 'fechamento_entrega_screen.dart';
 
 class PesagemScreen extends StatefulWidget {
   const PesagemScreen({super.key});
@@ -47,7 +46,27 @@ class _PesagemScreenState extends State<PesagemScreen> {
           )
         ],
       ),
-      drawer: const AgroDrawer(currentRoute: 'pesagem', appVersion: '1.0.0'),
+      drawer: AgroDrawer(
+          appName: 'PlanejaBorracha',
+          versionText: '1.0.0',
+          onNavigate: (route) {
+            if (route == 'home') route = 'pesagem';
+            if (route == 'properties')
+              route =
+                  'parceiros'; // Map properties to partners? Or keep distinct?
+            // For now, map simple keys. The drawer callback expects us to handle keys.
+            // Standard keys: home, properties, settings, about.
+            // We can just push named routes.
+            if (route == 'home')
+              Navigator.pushReplacementNamed(context, '/pesagem');
+            if (route == 'properties')
+              Navigator.pushReplacementNamed(context, '/parceiros');
+            if (route == 'mercado')
+              Navigator.pushReplacementNamed(context, '/mercado');
+          },
+          extraItems: const [
+            AgroDrawerItem(icon: Icons.store, title: 'Mercado', key: 'mercado'),
+          ]),
       body: Consumer2<ParceiroService, EntregaService>(
         builder: (context, parceiroService, entregaService, child) {
           final parceiros = parceiroService.parceiros;
@@ -57,10 +76,10 @@ class _PesagemScreenState extends State<PesagemScreen> {
           }
 
           // Auto-select first if none selected
-          _selectedParceiroId ??= parceiros.first.id;
+          if (_selectedParceiroId == null) {
+            _selectedParceiroId = parceiros.first.id;
+          }
 
-          final selectedParceiro =
-              parceiros.firstWhere((p) => p.id == _selectedParceiroId);
           final currentWeighings =
               entregaService.getPesagensForParceiro(_selectedParceiroId!);
 
@@ -94,7 +113,7 @@ class _PesagemScreenState extends State<PesagemScreen> {
                           decoration: BoxDecoration(
                             color: isSelected
                                 ? Colors.white
-                                : Colors.white.withOpacity(0.2),
+                                : Colors.white.withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(16),
                             border: isSelected
                                 ? Border.all(color: Colors.orange, width: 2)
@@ -187,7 +206,9 @@ class _PesagemScreenState extends State<PesagemScreen> {
                     setState(() {
                       if (_currentInput.length < 6) {
                         // Max 6 digits
-                        if (digit == '.' && _currentInput.contains('.')) return;
+                        if (digit == '.' && _currentInput.contains('.')) {
+                          return;
+                        }
                         _currentInput += digit;
                       }
                     });
@@ -202,7 +223,9 @@ class _PesagemScreenState extends State<PesagemScreen> {
                     });
                   },
                   onAdd: () {
-                    if (_currentInput.isEmpty) return;
+                    if (_currentInput.isEmpty) {
+                      return;
+                    }
                     final weight = double.tryParse(_currentInput);
                     if (weight != null && weight > 0) {
                       entregaService.addPesagem(_selectedParceiroId!, weight);

@@ -44,7 +44,7 @@ class _FechamentoEntregaScreenState extends State<FechamentoEntregaScreen> {
       body: Column(
         children: [
           // 1. Price Input
-          AgroCard(
+          CustomCard(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
@@ -122,9 +122,13 @@ class _FechamentoEntregaScreenState extends State<FechamentoEntregaScreen> {
             child: Row(
               children: [
                 Expanded(
-                  child: AgroButton(
-                    text: 'Gerar Recibo (PDF)',
-                    icon: Icons.share,
+                  child: ElevatedButton.icon(
+                    label: const Text('Gerar Recibo (PDF)'),
+                    icon: const Icon(Icons.share),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).primaryColor,
+                      foregroundColor: Colors.white,
+                    ),
                     onPressed: _precoPorKg > 0
                         ? () async {
                             await PdfService.generateAndShareReceipt(
