@@ -264,20 +264,26 @@ class _WeatherMapScreenState extends State<WeatherMapScreen>
     final allFrames = _radarTimestamps!.allFrames;
     if (allFrames.isEmpty) return;
 
-    final currentFrame = allFrames[_currentIndex];
     final String regionHash = _getRegionHash();
     final Set<TileOverlay> overlays = {};
     final String host = _radarTimestamps!.host;
 
-    // Current Frame - visible at 70% opacity (transparency 0.3)
-    overlays.add(TileOverlay(
-      tileOverlayId: TileOverlayId('radar_${currentFrame.time}_$regionHash'),
-      tileProvider: RadarTileProvider(
-          urlTemplate: _radarService.getTileUrlTemplate(
-              path: currentFrame.path, host: host)),
-      transparency: 0.3, // 70% visible (0.0 = fully visible, 1.0 = invisible)
-      zIndex: 1,
-    ));
+    // Load ALL frames simultaneously, show only current one via transparency
+    for (int i = 0; i < allFrames.length; i++) {
+      final frame = allFrames[i];
+      final isCurrentFrame = i == _currentIndex;
+
+      overlays.add(TileOverlay(
+        tileOverlayId: TileOverlayId('radar_${frame.time}_$regionHash'),
+        tileProvider: RadarTileProvider(
+            urlTemplate:
+                _radarService.getTileUrlTemplate(path: frame.path, host: host)),
+        // Current frame: 30% transparent (70% visible)
+        // Other frames: 100% transparent (invisible, but loaded)
+        transparency: isCurrentFrame ? 0.3 : 1.0,
+        zIndex: isCurrentFrame ? 2 : 1,
+      ));
+    }
 
     setState(() {
       _tileOverlays = overlays;
