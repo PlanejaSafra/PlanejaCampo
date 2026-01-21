@@ -520,5 +520,7 @@
   "radarRainMode": "Rain Mode",
   "radarSnowMode": "Snow Mode",
   "radarRainIntensity": "Rain Intensity",
-  "radarSnowIntensity": "Snow Intensity"
+  "radarSnowIntensity": "Snow Intensity",
+  "mapTypeSatellite": "Satellite",
+  "mapTypeNormal": "Road Map"
 }

@@ -520,5 +520,7 @@
   "radarRainMode": "Modo Chuva",
   "radarSnowMode": "Modo Neve",
   "radarRainIntensity": "Intensidade da Chuva",
-  "radarSnowIntensity": "Intensidade da Neve"
+  "radarSnowIntensity": "Intensidade da Neve",
+  "mapTypeSatellite": "Satélite",
+  "mapTypeNormal": "Mapa de Estrada"
 }

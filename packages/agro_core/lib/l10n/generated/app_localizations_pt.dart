@@ -1079,4 +1079,10 @@ class AgroLocalizationsPt extends AgroLocalizations {
 
   @override
   String get radarSnowIntensity => 'Intensidade da Neve';
+
+  @override
+  String get mapTypeSatellite => 'Satélite';
+
+  @override
+  String get mapTypeNormal => 'Mapa de Estrada';
 }

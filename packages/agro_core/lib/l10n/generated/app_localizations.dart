@@ -2158,6 +2158,18 @@ abstract class AgroLocalizations {
   /// In en, this message translates to:
   /// **'Snow Intensity'**
   String get radarSnowIntensity;
+
+  /// No description provided for @mapTypeSatellite.
+  ///
+  /// In en, this message translates to:
+  /// **'Satellite'**
+  String get mapTypeSatellite;
+
+  /// No description provided for @mapTypeNormal.
+  ///
+  /// In en, this message translates to:
+  /// **'Road Map'**
+  String get mapTypeNormal;
 }
 
 class _AgroLocalizationsDelegate extends LocalizationsDelegate<AgroLocalizations> {

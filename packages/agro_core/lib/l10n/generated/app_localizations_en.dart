@@ -1079,4 +1079,10 @@ class AgroLocalizationsEn extends AgroLocalizations {
 
   @override
   String get radarSnowIntensity => 'Snow Intensity';
+
+  @override
+  String get mapTypeSatellite => 'Satellite';
+
+  @override
+  String get mapTypeNormal => 'Road Map';
 }

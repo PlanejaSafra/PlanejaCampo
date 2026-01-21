@@ -48,6 +48,7 @@ class _WeatherMapScreenState extends State<WeatherMapScreen>
   int _prefetchDone = 0;
   int _colorScheme = 2; // 2=Universal Blue (rain), 5=Dark Sky (snow)
   DateTime? _lastRefreshTime;
+  MapType _currentMapType = MapType.hybrid;
 
   late AnimationController _animController;
 
@@ -382,7 +383,7 @@ class _WeatherMapScreenState extends State<WeatherMapScreen>
             onCameraIdle: _onCameraIdle,
             circles: _circles,
             tileOverlays: _tileOverlays,
-            mapType: MapType.hybrid,
+            mapType: _currentMapType,
             myLocationEnabled: true,
             myLocationButtonEnabled: false,
             zoomControlsEnabled: false,
@@ -432,6 +433,29 @@ class _WeatherMapScreenState extends State<WeatherMapScreen>
                       color: _colorScheme == 5 ? Colors.white : Colors.black54),
                   onPressed: () => _changeColorScheme(5),
                   tooltip: l10n.radarSnowMode,
+                ),
+                const SizedBox(height: 16),
+                // Map Type Buttons
+                FloatingActionButton.small(
+                  heroTag: 'map_satellite',
+                  backgroundColor: _currentMapType == MapType.hybrid
+                      ? Colors.green
+                      : Colors.white,
+                  child: const Icon(Icons.satellite_alt, color: Colors.black),
+                  onPressed: () =>
+                      setState(() => _currentMapType = MapType.hybrid),
+                  tooltip: l10n.mapTypeSatellite,
+                ),
+                const SizedBox(height: 8),
+                FloatingActionButton.small(
+                  heroTag: 'map_normal',
+                  backgroundColor: _currentMapType == MapType.normal
+                      ? Colors.green
+                      : Colors.white,
+                  child: const Icon(Icons.map, color: Colors.black),
+                  onPressed: () =>
+                      setState(() => _currentMapType = MapType.normal),
+                  tooltip: l10n.mapTypeNormal,
                 ),
               ],
             ),
