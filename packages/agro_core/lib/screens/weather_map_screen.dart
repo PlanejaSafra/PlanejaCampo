@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -42,6 +43,9 @@ class _WeatherMapScreenState extends State<WeatherMapScreen>
   int _currentIndex = 0;
   bool _isPlaying = false;
   bool _radarLoading = false;
+  bool _isPrefetching = false;
+  int _prefetchTotal = 0;
+  int _prefetchDone = 0;
 
   late AnimationController _animController;
 
@@ -161,12 +165,90 @@ class _WeatherMapScreenState extends State<WeatherMapScreen>
     setState(() => _radarLoading = false);
   }
 
-  /// Called when user stops moving the map - refresh radar data to avoid stale timestamps
+  /// Called when user stops moving the map - refresh radar data and prefetch tiles
   void _onCameraIdle() {
-    if (_selectedLayer == MapLayer.radar && !_radarLoading) {
-      // Refresh radar data to get fresh timestamps (they expire every ~10 min)
-      _fetchRadarData();
+    if (_selectedLayer == MapLayer.radar && !_radarLoading && !_isPrefetching) {
+      _refreshAndPrefetch();
     }
+  }
+
+  /// Refresh timestamps and prefetch all tiles for smooth playback
+  Future<void> _refreshAndPrefetch() async {
+    // First refresh timestamps
+    await _fetchRadarData();
+
+    // Then prefetch all frames
+    if (_radarTimestamps != null && mounted) {
+      await _prefetchAllFrames();
+    }
+  }
+
+  /// Pre-download tiles for all frames at current zoom level
+  Future<void> _prefetchAllFrames() async {
+    if (_radarTimestamps == null || _currentCameraPosition == null) return;
+
+    final allFrames = _radarTimestamps!.allFrames;
+    final host = _radarTimestamps!.host;
+    final zoom = _currentCameraPosition!.zoom.round();
+    final target = _currentCameraPosition!.target;
+
+    // Calculate center tile coordinates
+    final centerX = _lngToTileX(target.longitude, zoom);
+    final centerY = _latToTileY(target.latitude, zoom);
+
+    // Pre-fetch 3x3 grid around center for each frame
+    final tilesToFetch = <String>[];
+    for (final frame in allFrames) {
+      final baseUrl =
+          _radarService.getTileUrlTemplate(path: frame.path, host: host);
+      for (int dx = -1; dx <= 1; dx++) {
+        for (int dy = -1; dy <= 1; dy++) {
+          final url = baseUrl
+              .replaceAll('{x}', (centerX + dx).toString())
+              .replaceAll('{y}', (centerY + dy).toString())
+              .replaceAll('{z}', zoom.toString());
+          tilesToFetch.add(url);
+        }
+      }
+    }
+
+    setState(() {
+      _isPrefetching = true;
+      _prefetchTotal = tilesToFetch.length;
+      _prefetchDone = 0;
+    });
+
+    // Fetch in batches of 10 to avoid overwhelming the network
+    for (int i = 0; i < tilesToFetch.length; i += 10) {
+      if (!mounted) break;
+
+      final batch = tilesToFetch.skip(i).take(10).toList();
+      await Future.wait(batch.map((url) async {
+        try {
+          await http.get(Uri.parse(url)).timeout(const Duration(seconds: 8));
+        } catch (_) {}
+        if (mounted) {
+          setState(() => _prefetchDone++);
+        }
+      }));
+    }
+
+    if (mounted) {
+      setState(() => _isPrefetching = false);
+    }
+  }
+
+  int _lngToTileX(double lng, int zoom) {
+    return ((lng + 180) / 360 * (1 << zoom)).floor();
+  }
+
+  int _latToTileY(double lat, int zoom) {
+    final latRad = lat * math.pi / 180;
+    return ((1 -
+                (math.log(math.tan(latRad) + 1 / math.cos(latRad)) / math.pi)) /
+            2 *
+            (1 << zoom))
+        .floor();
   }
 
   String _getRegionHash() {
@@ -431,14 +513,37 @@ class _WeatherMapScreenState extends State<WeatherMapScreen>
         children: [
           Row(
             children: [
-              IconButton(
-                icon: Icon(_isPlaying
-                    ? Icons.pause_circle_filled
-                    : Icons.play_circle_fill),
-                color: Colors.white,
-                iconSize: 48,
-                onPressed: _togglePlay,
-              ),
+              // Play button - disabled during prefetch, shows progress
+              _isPrefetching
+                  ? SizedBox(
+                      width: 48,
+                      height: 48,
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          CircularProgressIndicator(
+                            value: _prefetchTotal > 0
+                                ? _prefetchDone / _prefetchTotal
+                                : null,
+                            strokeWidth: 3,
+                            color: Colors.white,
+                          ),
+                          Text(
+                            '${(_prefetchTotal > 0 ? _prefetchDone * 100 ~/ _prefetchTotal : 0)}%',
+                            style: const TextStyle(
+                                color: Colors.white, fontSize: 10),
+                          ),
+                        ],
+                      ),
+                    )
+                  : IconButton(
+                      icon: Icon(_isPlaying
+                          ? Icons.pause_circle_filled
+                          : Icons.play_circle_fill),
+                      color: Colors.white,
+                      iconSize: 48,
+                      onPressed: _togglePlay,
+                    ),
               const SizedBox(width: 8),
               Expanded(
                 child: Column(
