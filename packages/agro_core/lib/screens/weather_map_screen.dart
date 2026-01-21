@@ -488,13 +488,24 @@ class _WeatherMapScreenState extends State<WeatherMapScreen>
   }
 }
 
+/// Cached tile with expiration timestamp
+class _CachedTile {
+  final Uint8List bytes;
+  final DateTime cachedAt;
+
+  _CachedTile(this.bytes) : cachedAt = DateTime.now();
+
+  bool get isExpired =>
+      DateTime.now().difference(cachedAt) > const Duration(hours: 2);
+}
+
 class RadarTileProvider implements TileProvider {
   final String urlTemplate;
   final int tileSize;
 
   // Static cache shared across all provider instances
-  // Key: URL, Value: raw bytes
-  static final Map<String, Uint8List> _cache = {};
+  // Key: URL, Value: CachedTile with expiration
+  static final Map<String, _CachedTile> _cache = {};
   static const int _maxCacheSize = 500; // ~500 tiles * ~50KB = ~25MB max
 
   RadarTileProvider({required this.urlTemplate, this.tileSize = 256});
@@ -506,9 +517,15 @@ class RadarTileProvider implements TileProvider {
         .replaceAll('{y}', y.toString())
         .replaceAll('{z}', zoom.toString());
 
-    // Check cache first
-    if (_cache.containsKey(url)) {
-      return Tile(tileSize, tileSize, _cache[url]!);
+    // Check cache first (skip if expired)
+    final cached = _cache[url];
+    if (cached != null && !cached.isExpired) {
+      return Tile(tileSize, tileSize, cached.bytes);
+    }
+
+    // Remove expired entry
+    if (cached != null && cached.isExpired) {
+      _cache.remove(url);
     }
 
     // Retry up to 2 times with timeout
@@ -525,17 +542,16 @@ class RadarTileProvider implements TileProvider {
           final bytes = response.bodyBytes;
 
           // Store in cache (evict oldest if full)
+          _cleanupExpired();
           if (_cache.length >= _maxCacheSize) {
             _cache.remove(_cache.keys.first);
           }
-          _cache[url] = Uint8List.fromList(bytes);
+          _cache[url] = _CachedTile(Uint8List.fromList(bytes));
 
           return Tile(tileSize, tileSize, bytes);
         } else if (response.statusCode == 403 || response.statusCode == 404) {
-          // Don't retry on 403/404 - these won't change
           return TileProvider.noTile;
         }
-        // Other errors: retry
       } catch (e) {
         if (attempt == 1) {
           debugPrint('RadarTileProvider failed after retry: $url');
@@ -545,7 +561,12 @@ class RadarTileProvider implements TileProvider {
     return TileProvider.noTile;
   }
 
-  /// Clear the tile cache (call when refreshing timestamps)
+  /// Remove all expired entries from cache
+  static void _cleanupExpired() {
+    _cache.removeWhere((_, tile) => tile.isExpired);
+  }
+
+  /// Clear the tile cache entirely
   static void clearCache() {
     _cache.clear();
   }
