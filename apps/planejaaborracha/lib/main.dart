@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -14,6 +17,8 @@ import 'models/user_profile.dart';
 import 'services/parceiro_service.dart';
 import 'services/entrega_service.dart';
 import 'services/user_profile_service.dart';
+import 'services/backup_service.dart';
+import 'services/borracha_backup_provider.dart';
 import 'screens/parceiros_list_screen.dart';
 import 'screens/pesagem_screen.dart';
 import 'screens/mercado_screen.dart';
@@ -88,6 +93,13 @@ Future<void> main() async {
     debugPrint('AgroAdService initialization failed: $e');
   }
 
+  // Register BorrachaBackupProvider for cloud sync
+  try {
+    CloudBackupService.instance.registerProvider(BorrachaBackupProvider());
+  } catch (e) {
+    debugPrint('Failed to register BorrachaBackupProvider: $e');
+  }
+
   runApp(const PlanejaBorrachaApp());
 }
 
@@ -129,7 +141,10 @@ class PlanejaBorrachaApp extends StatelessWidget {
           '/mercado': (context) => const MercadoScreen(),
           '/criar-oferta': (context) => const CriarOfertaScreen(),
           '/entregas': (context) => const ListaEntregasScreen(),
-          '/settings': (context) => const AgroSettingsScreen(),
+          '/settings': (context) => AgroSettingsScreen(
+                onExportLocalBackup: () => _handleExportLocalBackup(context),
+                onImportLocalBackup: () => _handleImportLocalBackup(context),
+              ),
           '/profile-selection': (context) => ProfileSelectionScreen(
                 onProfileSelected: () {
                   Navigator.pushReplacementNamed(context, '/home');
@@ -138,6 +153,65 @@ class PlanejaBorrachaApp extends StatelessWidget {
         },
       ),
     );
+  }
+
+  static Future<void> _handleExportLocalBackup(BuildContext context) async {
+    final scaffold = ScaffoldMessenger.of(context);
+    try {
+      await BackupService.exportar();
+      scaffold.showSnackBar(
+        const SnackBar(content: Text('Backup exportado com sucesso!')),
+      );
+    } catch (e) {
+      scaffold.showSnackBar(
+        SnackBar(
+          content: Text('Erro ao exportar: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  static Future<void> _handleImportLocalBackup(BuildContext context) async {
+    final scaffold = ScaffoldMessenger.of(context);
+    try {
+      // Pick JSON file
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['json'],
+      );
+
+      if (result == null) return;
+
+      final file = File(result.files.single.path!);
+      final jsonString = await file.readAsString();
+
+      final parsed = BackupService.parseBackup(jsonString);
+      final parceiros = parsed['parceiros'] as List;
+      final entregas = parsed['entregas'] as List;
+
+      final importResult = await BackupService.importar(
+        parceiros.cast<Parceiro>(),
+        entregas.cast<Entrega>(),
+      );
+
+      scaffold.showSnackBar(
+        SnackBar(
+          content: Text(
+            'Importado: ${importResult.importedParceiros} parceiros, '
+            '${importResult.importedEntregas} entregas. '
+            '${importResult.duplicates} duplicatas ignoradas.',
+          ),
+        ),
+      );
+    } catch (e) {
+      scaffold.showSnackBar(
+        SnackBar(
+          content: Text('Erro ao importar: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 }
 

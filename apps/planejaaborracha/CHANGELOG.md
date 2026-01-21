@@ -2,6 +2,69 @@
 
 ---
 
+## Phase BORRACHA-09: Cloud Sync & Local Backup Integration
+### Status: [DONE]
+**Date Completed**: 2026-01-21
+**Priority**: 🟢 ENHANCEMENT
+**Objective**: Implement complete backup/restore system with cloud sync (via CloudBackupService) and local JSON export/import, matching PlanejaChuva's functionality.
+
+### Implementation Summary
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 9.1 | Create `BorrachaBackupProvider` implementing `BackupProvider` interface | ✅ DONE |
+| 9.2 | Create `BackupService` for local JSON export/import with Share integration | ✅ DONE |
+| 9.3 | Register `BorrachaBackupProvider` with `CloudBackupService` in main() | ✅ DONE |
+| 9.4 | Add local backup callbacks to `AgroSettingsScreen` route | ✅ DONE |
+| 9.5 | Add `file_picker` dependency for import functionality | ✅ DONE |
+
+### Files Modified
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/services/borracha_backup_provider.dart` | CREATE | Cloud sync provider - serializes/deserializes Parceiro and Entrega data to JSON |
+| `lib/services/backup_service.dart` | CREATE | Local backup service - exportar(), parseBackup(), importar() with duplicate detection |
+| `lib/main.dart` | MODIFY | Register cloud provider, add inline callbacks for local backup in /settings route |
+| `pubspec.yaml` | MODIFY | Add file_picker: ^8.1.6 dependency |
+
+### Implementation Details
+
+**BorrachaBackupProvider (Cloud Sync):**
+- Implements `BackupProvider` interface from agro_core
+- `key`: 'planeja_borracha' (unique identifier)
+- `getData()`: Serializes all Parceiro and Entrega data to JSON format
+- `restoreData()`: Deserializes JSON, imports avoiding duplicates, uses Hive box directly for entregas
+- Handles ItemEntrega fields correctly (valorTotal, descontos, not drc/precoKg)
+
+**BackupService (Local Backup):**
+- `exportar()`: Creates timestamped JSON file, shares via Share.shareXFiles
+- `parseBackup()`: Validates backup structure, parses JSON to model objects
+- `importar()`: Imports data avoiding duplicates by checking existing IDs
+- Returns `ImportResult` with counts of imported items and duplicates
+- Uses Hive.openBox for direct Entrega persistence
+
+**Main Integration:**
+- Registered BorrachaBackupProvider in main() initialization
+- Added inline lambda callbacks to AgroSettingsScreen route:
+  - `onExportLocalBackup`: Calls BackupService.exportar() with error handling
+  - `onImportLocalBackup`: Uses FilePicker, parses JSON, calls BackupService.importar()
+- Both callbacks show SnackBars for success/error feedback
+
+### Fixes Applied
+
+**Model Field Corrections:**
+- ❌ **ItemEntrega.drc/precoKg don't exist** → ✅ Use valorTotal/descontos instead
+- ❌ **ParceiroService.adicionarParceiro()** → ✅ Correct method is addParceiro()
+- ❌ **EntregaService.salvarEntrega() missing** → ✅ Save directly to Hive box
+
+**Architecture:**
+- ✅ Follows agro_core BackupProvider pattern (same as PlanejaChuva)
+- ✅ Local backup uses Share plugin for file distribution
+- ✅ Duplicate detection on import (by ID comparison)
+- ✅ Proper error handling with user feedback
+
+---
+
 ## Phase BORRACHA-08: UX Overhaul - Dashboard, Profile & Smart Auth
 ### Status: [DONE]
 **Date Completed**: 2026-01-21
