@@ -46,6 +46,7 @@ class _WeatherMapScreenState extends State<WeatherMapScreen>
   bool _isPrefetching = false;
   int _prefetchTotal = 0;
   int _prefetchDone = 0;
+  DateTime? _lastRefreshTime;
 
   late AnimationController _animController;
 
@@ -162,14 +163,17 @@ class _WeatherMapScreenState extends State<WeatherMapScreen>
     if (_currentIndex < 0) _currentIndex = 0;
 
     _updateRadarOverlays();
+    _lastRefreshTime = DateTime.now();
     setState(() => _radarLoading = false);
   }
 
   /// Called when user stops moving the map - refresh radar data and prefetch tiles
   void _onCameraIdle() {
-    if (_selectedLayer == MapLayer.radar && !_radarLoading && !_isPrefetching) {
-      _refreshAndPrefetch();
-    }
+    // Don't refresh while playing, loading, or prefetching
+    if (_isPlaying || _radarLoading || _isPrefetching) return;
+    if (_selectedLayer != MapLayer.radar) return;
+
+    _refreshAndPrefetch();
   }
 
   /// Refresh timestamps and prefetch all tiles for smooth playback
