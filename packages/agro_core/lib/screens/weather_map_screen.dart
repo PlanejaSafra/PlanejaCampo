@@ -571,9 +571,10 @@ class _WeatherMapScreenState extends State<WeatherMapScreen>
                         trackHeight: 2,
                       ),
                       child: Slider(
-                        value: _currentIndex + _animController.value,
+                        value: (_currentIndex.toDouble())
+                            .clamp(0, allFrames.length - 1),
                         min: 0,
-                        max: (allFrames.length - 1).toDouble() + 0.99,
+                        max: (allFrames.length - 1).toDouble(),
                         onChanged: _onSliderChanged,
                         activeColor: isPast ? Colors.blue : Colors.purpleAccent,
                         inactiveColor: Colors.white24,
