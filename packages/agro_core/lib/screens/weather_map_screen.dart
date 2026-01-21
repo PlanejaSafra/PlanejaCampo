@@ -46,6 +46,7 @@ class _WeatherMapScreenState extends State<WeatherMapScreen>
   bool _isPrefetching = false;
   int _prefetchTotal = 0;
   int _prefetchDone = 0;
+  int _colorScheme = 2; // 2=Universal Blue (rain), 5=Dark Sky (snow)
   DateTime? _lastRefreshTime;
 
   late AnimationController _animController;
@@ -278,10 +279,11 @@ class _WeatherMapScreenState extends State<WeatherMapScreen>
       final isCurrentFrame = i == _currentIndex;
 
       overlays.add(TileOverlay(
-        tileOverlayId: TileOverlayId('radar_${frame.time}_$regionHash'),
+        tileOverlayId:
+            TileOverlayId('radar_${frame.time}_${regionHash}_$_colorScheme'),
         tileProvider: RadarTileProvider(
-            urlTemplate:
-                _radarService.getTileUrlTemplate(path: frame.path, host: host)),
+            urlTemplate: _radarService.getTileUrlTemplate(
+                path: frame.path, host: host, colorScheme: _colorScheme)),
         // Current frame: 30% transparent (70% visible)
         // Other frames: 100% transparent (invisible, but loaded)
         transparency: isCurrentFrame ? 0.3 : 1.0,
@@ -303,6 +305,15 @@ class _WeatherMapScreenState extends State<WeatherMapScreen>
         _animController.stop();
       }
     });
+  }
+
+  void _changeColorScheme(int scheme) {
+    if (_colorScheme == scheme) return;
+    setState(() {
+      _colorScheme = scheme;
+    });
+    // Refresh overlays to load new tiles
+    _updateRadarOverlays();
   }
 
   void _stopPlayback() {
@@ -399,6 +410,28 @@ class _WeatherMapScreenState extends State<WeatherMapScreen>
                       : Colors.white,
                   child: const Icon(Icons.people, color: Colors.black),
                   onPressed: () => _onLayerChanged(MapLayer.community),
+                ),
+                const SizedBox(height: 16),
+                // Rain Mode Button
+                FloatingActionButton.small(
+                  heroTag: 'mode_rain',
+                  backgroundColor:
+                      _colorScheme == 2 ? Colors.blue : Colors.grey[200],
+                  child: Icon(Icons.water_drop,
+                      color: _colorScheme == 2 ? Colors.white : Colors.black54),
+                  onPressed: () => _changeColorScheme(2),
+                  tooltip: l10n.radarRainMode,
+                ),
+                const SizedBox(height: 8),
+                // Snow Mode Button
+                FloatingActionButton.small(
+                  heroTag: 'mode_snow',
+                  backgroundColor:
+                      _colorScheme == 5 ? Colors.cyan : Colors.grey[200],
+                  child: Icon(Icons.ac_unit,
+                      color: _colorScheme == 5 ? Colors.white : Colors.black54),
+                  onPressed: () => _changeColorScheme(5),
+                  tooltip: l10n.radarSnowMode,
                 ),
               ],
             ),
@@ -521,6 +554,8 @@ class _WeatherMapScreenState extends State<WeatherMapScreen>
       ),
       child: Column(
         children: [
+          _buildRadarLegend(l10n),
+          const SizedBox(height: 12),
           Row(
             children: [
               // Play button - disabled during prefetch, shows progress
@@ -599,6 +634,69 @@ class _WeatherMapScreenState extends State<WeatherMapScreen>
             decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
         const SizedBox(width: 8),
         Text(label, style: const TextStyle(color: Colors.white)),
+      ],
+    );
+  }
+
+  Widget _buildRadarLegend(AgroLocalizations l10n) {
+    // Current scheme colors
+    // Universal Blue (Rain) - ID 2
+    // Scheme matches standard radar: Transparent -> Light Blue -> Dark Blue -> Purple -> Pink -> Red -> Orange -> Yellow
+    final rainColors = [
+      Colors.transparent, // N/A
+      const Color(0xFF9BE1FF), // Light Rain
+      const Color(0xFF0094F7), // Moderate
+      const Color(0xFF0000FF), // Heavy
+      const Color(0xFF9000FF), // Very Heavy
+      const Color(0xFFFF0000), // Extreme
+      const Color(0xFFFFFF00), // Hail/Storm
+      const Color(0xFFFFFFFF), // Max
+    ];
+
+    // Universal Blue (Snow) - ID 2 with snow mask (if supported) or just winter colors
+    // For now we use a cool-toned gradient for snow mode approximation
+    final snowColors = [
+      Colors.transparent,
+      const Color(0xFFE0F7FA), // Light
+      const Color(0xFFB2EBF2),
+      const Color(0xFF4DD0E1),
+      const Color(0xFF00BCD4), // Moderate
+      const Color(0xFF0097A7),
+      const Color(0xFF006064), // Heavy
+    ];
+
+    final colors = _colorScheme == 2 ? rainColors : snowColors;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(bottom: 4),
+          child: Text(
+            _colorScheme == 2
+                ? l10n.radarRainIntensity
+                : l10n.radarSnowIntensity,
+            style: const TextStyle(color: Colors.white70, fontSize: 12),
+          ),
+        ),
+        Container(
+          height: 12,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(6),
+            gradient: LinearGradient(colors: colors),
+            border: Border.all(color: Colors.white24),
+          ),
+        ),
+        const SizedBox(height: 4),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: const [
+            Text('Light',
+                style: TextStyle(color: Colors.white70, fontSize: 10)),
+            Text('Heavy',
+                style: TextStyle(color: Colors.white70, fontSize: 10)),
+          ],
+        ),
       ],
     );
   }

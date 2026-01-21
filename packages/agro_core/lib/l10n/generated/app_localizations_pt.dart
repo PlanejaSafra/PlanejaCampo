@@ -1067,4 +1067,16 @@ class AgroLocalizationsPt extends AgroLocalizations {
 
   @override
   String get settingsResetProfileDesc => 'Voltar para a seleção de Produtor/Sangrador/Comprador';
+
+  @override
+  String get radarRainMode => 'Modo Chuva';
+
+  @override
+  String get radarSnowMode => 'Modo Neve';
+
+  @override
+  String get radarRainIntensity => 'Intensidade da Chuva';
+
+  @override
+  String get radarSnowIntensity => 'Intensidade da Neve';
 }

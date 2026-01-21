@@ -516,5 +516,9 @@
   "deleteCloudDataMessage": "Esta ação irá remover seus dados sincronizados na nuvem. Os dados locais no seu dispositivo serão mantidos. Você poderá sincronizar novamente no futuro se desejar.",
   "deleteCloudDataSuccess": "Dados da nuvem excluídos com sucesso",
   "settingsResetProfile": "Trocar Perfil",
-  "settingsResetProfileDesc": "Voltar para a seleção de Produtor/Sangrador/Comprador"
+  "settingsResetProfileDesc": "Voltar para a seleção de Produtor/Sangrador/Comprador",
+  "radarRainMode": "Modo Chuva",
+  "radarSnowMode": "Modo Neve",
+  "radarRainIntensity": "Intensidade da Chuva",
+  "radarSnowIntensity": "Intensidade da Neve"
 }

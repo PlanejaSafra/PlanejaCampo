@@ -2134,6 +2134,30 @@ abstract class AgroLocalizations {
   /// In en, this message translates to:
   /// **'Return to Producer/Tapper/Buyer selection'**
   String get settingsResetProfileDesc;
+
+  /// No description provided for @radarRainMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Rain Mode'**
+  String get radarRainMode;
+
+  /// No description provided for @radarSnowMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Snow Mode'**
+  String get radarSnowMode;
+
+  /// No description provided for @radarRainIntensity.
+  ///
+  /// In en, this message translates to:
+  /// **'Rain Intensity'**
+  String get radarRainIntensity;
+
+  /// No description provided for @radarSnowIntensity.
+  ///
+  /// In en, this message translates to:
+  /// **'Snow Intensity'**
+  String get radarSnowIntensity;
 }
 
 class _AgroLocalizationsDelegate extends LocalizationsDelegate<AgroLocalizations> {

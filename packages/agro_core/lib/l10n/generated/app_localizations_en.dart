@@ -1067,4 +1067,16 @@ class AgroLocalizationsEn extends AgroLocalizations {
 
   @override
   String get settingsResetProfileDesc => 'Return to Producer/Tapper/Buyer selection';
+
+  @override
+  String get radarRainMode => 'Rain Mode';
+
+  @override
+  String get radarSnowMode => 'Snow Mode';
+
+  @override
+  String get radarRainIntensity => 'Rain Intensity';
+
+  @override
+  String get radarSnowIntensity => 'Snow Intensity';
 }
