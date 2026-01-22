@@ -1367,4 +1367,12 @@ class AgroLocalizationsPt extends AgroLocalizations {
 
   @override
   String get revokeConsentsSubtitle => 'Revoga consentimentos e encerra sessão';
+
+  @override
+  String backupImportResult(int imported, int duplicates) {
+    return 'Importados: $imported, Duplicados: $duplicates';
+  }
+
+  @override
+  String get backupLocalExportSuccess => 'Backup local exportado com sucesso';
 }

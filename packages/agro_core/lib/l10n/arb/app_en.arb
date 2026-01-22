@@ -650,5 +650,15 @@
   "lgpdRightsTitle": "Your Rights (LGPD/GDPR)",
   "lgpdRightsDescription": "Exercise your data portability and deletion rights.",
   "deleteDataSubtitle": "Removes data from device and servers",
-  "revokeConsentsSubtitle": "Revokes consents and ends session"
+  "revokeConsentsSubtitle": "Revokes consents and ends session",
+
+  "backupImportResult": "Imported: {imported}, Duplicates: {duplicates}",
+  "@backupImportResult": {
+    "placeholders": {
+      "imported": {"type": "int"},
+      "duplicates": {"type": "int"}
+    }
+  },
+
+  "backupLocalExportSuccess": "Local backup exported successfully"
 }

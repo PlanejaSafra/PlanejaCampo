@@ -2734,6 +2734,18 @@ abstract class AgroLocalizations {
   /// In en, this message translates to:
   /// **'Revokes consents and ends session'**
   String get revokeConsentsSubtitle;
+
+  /// No description provided for @backupImportResult.
+  ///
+  /// In en, this message translates to:
+  /// **'Imported: {imported}, Duplicates: {duplicates}'**
+  String backupImportResult(int imported, int duplicates);
+
+  /// No description provided for @backupLocalExportSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Local backup exported successfully'**
+  String get backupLocalExportSuccess;
 }
 
 class _AgroLocalizationsDelegate extends LocalizationsDelegate<AgroLocalizations> {

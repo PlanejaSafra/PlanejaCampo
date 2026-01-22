@@ -650,5 +650,15 @@
   "lgpdRightsTitle": "Seus Direitos (LGPD)",
   "lgpdRightsDescription": "Exerça seus direitos de portabilidade e eliminação de dados.",
   "deleteDataSubtitle": "Remove dados do dispositivo e servidores",
-  "revokeConsentsSubtitle": "Revoga consentimentos e encerra sessão"
+  "revokeConsentsSubtitle": "Revoga consentimentos e encerra sessão",
+
+  "backupImportResult": "Importados: {imported}, Duplicados: {duplicates}",
+  "@backupImportResult": {
+    "placeholders": {
+      "imported": {"type": "int"},
+      "duplicates": {"type": "int"}
+    }
+  },
+
+  "backupLocalExportSuccess": "Backup local exportado com sucesso"
 }

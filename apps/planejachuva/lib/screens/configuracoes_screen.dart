@@ -75,7 +75,7 @@ class _ConfiguracoesScreenState extends State<ConfiguracoesScreen> {
             ListTile(
               leading: const Icon(Icons.code),
               title: Text(l10n.exportDataJson),
-              subtitle: const Text('Formato completo com todos os metadados'),
+              subtitle: Text(l10n.exportJsonSubtitle),
               onTap: () async {
                 Navigator.pop(context);
                 await _handleExport(asCsv: false);
@@ -84,7 +84,7 @@ class _ConfiguracoesScreenState extends State<ConfiguracoesScreen> {
             ListTile(
               leading: const Icon(Icons.table_chart),
               title: Text(l10n.exportDataCsv),
-              subtitle: const Text('Compatível com Excel e Google Sheets'),
+              subtitle: Text(l10n.exportCsvSubtitle),
               onTap: () async {
                 Navigator.pop(context);
                 await _handleExport(asCsv: true);
@@ -222,34 +222,37 @@ class _ConfiguracoesScreenState extends State<ConfiguracoesScreen> {
 
       // Cloud Backup callbacks
       onSignInWithGoogle: () async {
+        final l10n = AgroLocalizations.of(context)!;
         try {
           await AuthService.signInWithGoogle();
           if (mounted) setState(() {});
         } catch (e) {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Erro ao fazer login: $e')),
+              SnackBar(content: Text('${l10n.errorLogin}: $e')),
             );
           }
         }
       },
       onExportLocalBackup: () async {
+        final l10n = AgroLocalizations.of(context)!;
         try {
           await BackupService.exportar();
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Backup exportado com sucesso!')),
+              SnackBar(content: Text(l10n.backupLocalExportSuccess)),
             );
           }
         } catch (e) {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Erro ao exportar: $e')),
+              SnackBar(content: Text('${l10n.errorExport}: $e')),
             );
           }
         }
       },
       onImportLocalBackup: () async {
+        final l10n = AgroLocalizations.of(context)!;
         try {
           // Pick JSON file
           final result = await FilePicker.platform.pickFiles(
@@ -274,7 +277,8 @@ class _ConfiguracoesScreenState extends State<ConfiguracoesScreen> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(
-                  'Importados: ${importResult.imported}, Duplicados: ${importResult.duplicates}',
+                  l10n.backupImportResult(
+                      importResult.imported, importResult.duplicates),
                 ),
               ),
             );
@@ -282,7 +286,7 @@ class _ConfiguracoesScreenState extends State<ConfiguracoesScreen> {
         } catch (e) {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Erro ao importar: $e')),
+              SnackBar(content: Text('${l10n.errorImport}: $e')),
             );
           }
         }

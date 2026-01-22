@@ -269,11 +269,11 @@ class _AgroPrivacyScreenState extends State<AgroPrivacyScreen> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => const AlertDialog(
+      builder: (context) => AlertDialog(
         content: Row(
           children: [
-            CircularProgressIndicator(),
-            SizedBox(width: 24),
+            const CircularProgressIndicator(),
+            const SizedBox(width: 24),
             Text(l10n.deletingData),
           ],
         ),
