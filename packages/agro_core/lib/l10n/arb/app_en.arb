@@ -444,6 +444,10 @@
   "backupCloudSignInButton": "Sign in with Google",
   "backupCloudAnonymousWarning": "Create a Google account to save your data to the cloud",
 
+  "loginBenefitSync": "Sync & Backup (Optional)",
+  "loginBenefitSocial": "Access to Business Stats (Optional)",
+  "loginBenefitSecurity": "Your data is secure and private",
+
   "backupLocalSection": "Local Backup",
   "backupLocalExport": "Export to File",
   "backupLocalExportDesc": "Save data to your device",

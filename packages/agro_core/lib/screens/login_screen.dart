@@ -8,6 +8,7 @@ import '../screens/privacy_policy_screen.dart';
 import '../screens/terms_of_use_screen.dart';
 import '../services/auth_service.dart';
 import '../services/property_service.dart';
+import '../l10n/agro_localizations.dart';
 
 /// Login screen with Google Sign-In (official button design).
 /// Follows Google Sign-In Branding Guidelines:
@@ -353,19 +354,19 @@ class _LoginScreenState extends State<LoginScreen> {
                 _buildBenefitItem(
                   context,
                   Icons.cloud_sync,
-                  'Sincronize seus dados entre dispositivos',
+                  AgroLocalizations.of(context).loginBenefitSync,
                 ),
                 const SizedBox(height: 12),
                 _buildBenefitItem(
                   context,
                   Icons.backup,
-                  'Backup automático na nuvem',
+                  AgroLocalizations.of(context).loginBenefitSocial,
                 ),
                 const SizedBox(height: 12),
                 _buildBenefitItem(
                   context,
                   Icons.lock_outline,
-                  'Seus dados protegidos e privados',
+                  AgroLocalizations.of(context).loginBenefitSecurity,
                 ),
               ],
             ),

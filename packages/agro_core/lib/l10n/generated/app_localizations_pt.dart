@@ -914,6 +914,15 @@ class AgroLocalizationsPt extends AgroLocalizations {
   String get backupCloudAnonymousWarning => 'Crie uma conta Google para salvar seus dados na nuvem';
 
   @override
+  String get loginBenefitSync => 'Sincronização e Backup (Opcional)';
+
+  @override
+  String get loginBenefitSocial => 'Acesso à Rede de Negócios (Opcional)';
+
+  @override
+  String get loginBenefitSecurity => 'Seus dados protegidos e privados';
+
+  @override
   String get backupLocalSection => 'Backup Local';
 
   @override

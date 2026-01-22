@@ -1841,6 +1841,24 @@ abstract class AgroLocalizations {
   /// **'Create a Google account to save your data to the cloud'**
   String get backupCloudAnonymousWarning;
 
+  /// No description provided for @loginBenefitSync.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync & Backup (Optional)'**
+  String get loginBenefitSync;
+
+  /// No description provided for @loginBenefitSocial.
+  ///
+  /// In en, this message translates to:
+  /// **'Access to Business Stats (Optional)'**
+  String get loginBenefitSocial;
+
+  /// No description provided for @loginBenefitSecurity.
+  ///
+  /// In en, this message translates to:
+  /// **'Your data is secure and private'**
+  String get loginBenefitSecurity;
+
   /// No description provided for @backupLocalSection.
   ///
   /// In en, this message translates to:
