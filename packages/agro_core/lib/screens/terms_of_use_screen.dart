@@ -74,15 +74,16 @@ class TermsOfUseScreen extends StatelessWidget {
           ),
           _buildSection(
             context,
-            '6. Limitação de Responsabilidade (Simulação e Apoio)',
-            'ISENÇÃO TOTAL DE RESPONSABILIDADE:\n'
-                'Os aplicativos são ferramentas de SIMULAÇÃO MATEMÁTICA e APOIO À DECISÃO. Eles NÃO substituem o julgamento profissional de um Engenheiro Agrônomo, Técnico, Veterinário ou Consultor Financeiro.\n\n'
+            '6. Limitação de Responsabilidade (Blindagem Total)',
+            'ISENÇÃO TOTAL E ABRANGENTE DE RESPONSABILIDADE:\n'
+                'Os aplicativos são ferramentas de SIMULAÇÃO MATEMÁTICA e CONEXÃO. Eles NÃO substituem o julgamento profissional e NÃO garantem a idoneidade de terceiros.\n\n'
                 'Nós NÃO nos responsabilizamos, em nenhuma hipótese, por:\n'
-                '• Perda de safra, morte de animais ou prejuízos financeiros\n'
-                '• Erros de cálculo, dosagem, diagnóstico ou previsão meteorológica\n'
-                '• Falhas em negociações, inadimplência ou qualidade de serviços contratados via Rede de Negócios\n'
-                '• Ações de terceiros, acidentes ou eventos ocorridos no mundo físico (offline)\n\n'
-                'O uso das informações fornecidas pelo aplicativo para tomada de decisão é de risco exclusivo e integral do usuário.',
+                '• Perda de safra, morte de animais ou prejuízos financeiros decorrentes de decisões de manejo\n'
+                '• Erros de cálculo, dosagem, diagnóstico ou previsão meteorológica (simulações)\n'
+                '• TRANSAÇÕES FINANCEIRAS: Calotes, fraudes, não pagamento, estornos ou crimes financeiros (PIX, TED, Boleto) entre usuários\n'
+                '• SEGURANÇA DIGITAL: Phishing, roubo de senhas ou golpes aplicados por outros usuários via chat ou links externos\n'
+                '• EVENTOS NO MUNDO FÍSICO: Acidentes, agressões ou danos materiais ocorridos antes, durante ou após encontros presenciais\n\n'
+                'O uso das informações e a decisão de fechar qualquer negócio é de risco exclusivo e integral do usuário.',
           ),
           _buildSection(
             context,
