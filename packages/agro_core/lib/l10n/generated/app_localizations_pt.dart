@@ -268,6 +268,18 @@ class AgroLocalizationsPt extends AgroLocalizations {
   String get identityPrivacyLink => 'Política de Privacidade';
 
   @override
+  String get okButton => 'OK';
+
+  @override
+  String get consentFooterPrefix => 'Você pode revisar nossos ';
+
+  @override
+  String get consentFooterConnector => ' e ';
+
+  @override
+  String get consentFooterSuffix => ' a qualquer momento.';
+
+  @override
   String get identityNoInternetTitle => 'Sem Internet';
 
   @override

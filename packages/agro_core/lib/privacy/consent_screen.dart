@@ -262,9 +262,9 @@ class _ConsentScreenState extends State<ConsentScreen> {
                     color: Colors.grey[600],
                   ),
                   children: [
-                    const TextSpan(text: 'Você pode revisar nossos '),
+                    TextSpan(text: l10n.consentFooterPrefix),
                     TextSpan(
-                      text: 'Termos de Uso',
+                      text: l10n.identityTermsLink,
                       style: TextStyle(
                         color: theme.colorScheme.primary,
                         decoration: TextDecoration.underline,
@@ -273,9 +273,9 @@ class _ConsentScreenState extends State<ConsentScreen> {
                       recognizer: TapGestureRecognizer()
                         ..onTap = _showTermsOfUse,
                     ),
-                    const TextSpan(text: ' e '),
+                    TextSpan(text: l10n.consentFooterConnector),
                     TextSpan(
-                      text: 'Políticas de Privacidade',
+                      text: l10n.identityPrivacyLink,
                       style: TextStyle(
                         color: theme.colorScheme.primary,
                         decoration: TextDecoration.underline,
@@ -284,7 +284,7 @@ class _ConsentScreenState extends State<ConsentScreen> {
                       recognizer: TapGestureRecognizer()
                         ..onTap = _showPrivacyPolicy,
                     ),
-                    const TextSpan(text: ' a qualquer momento.'),
+                    TextSpan(text: l10n.consentFooterSuffix),
                   ],
                 ),
               ),
@@ -325,7 +325,7 @@ class _ConsentTile extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
+            child: Text(AgroLocalizations.of(context)!.okButton),
           ),
         ],
       ),

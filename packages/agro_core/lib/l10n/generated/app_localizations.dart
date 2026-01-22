@@ -617,6 +617,30 @@ abstract class AgroLocalizations {
   /// **'Privacy Policy'**
   String get identityPrivacyLink;
 
+  /// No description provided for @okButton.
+  ///
+  /// In en, this message translates to:
+  /// **'OK'**
+  String get okButton;
+
+  /// No description provided for @consentFooterPrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'You can review our '**
+  String get consentFooterPrefix;
+
+  /// No description provided for @consentFooterConnector.
+  ///
+  /// In en, this message translates to:
+  /// **' and '**
+  String get consentFooterConnector;
+
+  /// No description provided for @consentFooterSuffix.
+  ///
+  /// In en, this message translates to:
+  /// **' at any time.'**
+  String get consentFooterSuffix;
+
   /// No description provided for @identityNoInternetTitle.
   ///
   /// In en, this message translates to:
