@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:agro_core/l10n/generated/app_localizations.dart';
 
 /// Full Terms of Use screen with complete legal text.
 class TermsOfUseScreen extends StatelessWidget {
@@ -8,113 +9,51 @@ class TermsOfUseScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Termos de Uso'),
+        title: Text(l10n.termsTitle),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
           Text(
-            'Termos de Uso - PlanejaCampo',
+            l10n.termsTitle,
             style: theme.textTheme.headlineSmall?.copyWith(
               fontWeight: FontWeight.bold,
             ),
           ),
           const SizedBox(height: 8),
           Text(
-            'Última atualização: Janeiro de 2026',
+            'Jan/2026',
             style: theme.textTheme.bodySmall?.copyWith(
               color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
             ),
           ),
           const SizedBox(height: 24),
           _buildSection(
-            context,
-            '1. Aceitação dos Termos',
-            'Ao utilizar os aplicativos da família PlanejaCampo (incluindo PlanejaChuva, PlanejaBorracha, PlanejaDiesel e outros), você concorda com estes Termos de Uso. Se você não concorda com alguma parte destes termos, não deve utilizar nossos serviços.',
-          ),
+              context, l10n.termsSection1Title, l10n.termsSection1Body),
           _buildSection(
-            context,
-            '2. Descrição do Serviço',
-            'Os aplicativos PlanejaCampo são ferramentas de gestão agrícola que permitem:\n\n'
-                '• Registro e acompanhamento de dados agrícolas (chuvas, produção, etc.)\n'
-                '• Gerenciamento de propriedades rurais\n'
-                '• Visualização de estatísticas e métricas\n'
-                '• Backup e sincronização de dados na nuvem (opcional)\n'
-                '• Compartilhamento de dados agregados para pesquisa (opcional)\n'
-                '• Acesso a funcionalidades de Inteligência de Mercado e Ecossistema de Negócios (opcional)',
-          ),
+              context, l10n.termsSection2Title, l10n.termsSection2Body),
           _buildSection(
-            context,
-            '3. Conta de Usuário',
-            'Você pode utilizar nossos aplicativos de duas formas:\n\n'
-                '• Modo anônimo: sem criar conta, com dados armazenados apenas localmente\n'
-                '• Com login Google: permite sincronização entre dispositivos e backup na nuvem\n\n'
-                'Você é responsável por manter a confidencialidade de sua conta e por todas as atividades que ocorram sob sua conta.',
-          ),
+              context, l10n.termsSection3Title, l10n.termsSection3Body),
           _buildSection(
-            context,
-            '4. Propriedade e Uso de Dados (Modelo Híbrido)',
-            'Os dados inseridos pertencem a você e permanecem armazenados localmente no seu dispositivo por padrão (Offline-First).\n\n'
-                'Nós NÃO acessamos, vendemos ou compartilhamos seus dados, EXCETO se você optar explicitamente por ativar as funcionalidades de:\n'
-                '• Backup em Nuvem (armazenamento seguro vinculado à sua conta)\n'
-                '• Rede de Negócios (dados de contato tornam-se públicos para ofertas)\n'
-                '• Inteligência Agronômica (dados anonimizados compõem estatísticas de mercado)\n\n'
-                'Ao ativar essas funções, você nos concede uma licença para processar e utilizar os dados conforme necessário para a prestação do serviço e geração de inteligência, conforme detalhado na Política de Privacidade.',
-          ),
+              context, l10n.termsSection4Title, l10n.termsSection4Body),
           _buildSection(
-            context,
-            '5. Uso Aceitável',
-            'Ao usar nossos serviços, você concorda em NÃO:\n\n'
-                '• Violar leis ou regulamentos aplicáveis\n'
-                '• Tentar acessar ou interferir com sistemas de outros usuários\n'
-                '• Usar o serviço para atividades fraudulentas ou enganosas\n'
-                '• Sobrecarregar ou danificar a infraestrutura do serviço\n'
-                '• Fazer engenharia reversa ou tentar extrair código-fonte',
-          ),
+              context, l10n.termsSection5Title, l10n.termsSection5Body),
           _buildSection(
-            context,
-            '6. Limitação de Responsabilidade (Blindagem Total)',
-            'ISENÇÃO TOTAL E ABRANGENTE DE RESPONSABILIDADE:\n'
-                'Os aplicativos são ferramentas de SIMULAÇÃO MATEMÁTICA e CONEXÃO. Eles NÃO substituem o julgamento profissional e NÃO garantem a idoneidade de terceiros.\n\n'
-                'Nós NÃO nos responsabilizamos, em nenhuma hipótese, por:\n'
-                '• Perda de safra, morte de animais ou prejuízos financeiros decorrentes de decisões de manejo\n'
-                '• Erros de cálculo, dosagem, diagnóstico ou previsão meteorológica (simulações)\n'
-                '• TRANSAÇÕES FINANCEIRAS: Calotes, fraudes, não pagamento, estornos ou crimes financeiros (PIX, TED, Boleto) entre usuários\n'
-                '• SEGURANÇA DIGITAL: Phishing, roubo de senhas ou golpes aplicados por outros usuários via chat ou links externos\n'
-                '• EVENTOS NO MUNDO FÍSICO: Acidentes, agressões ou danos materiais ocorridos antes, durante ou após encontros presenciais\n\n'
-                'O uso das informações e a decisão de fechar qualquer negócio é de risco exclusivo e integral do usuário.',
-          ),
+              context, l10n.termsSection6Title, l10n.termsSection6Body),
           _buildSection(
-            context,
-            '7. Modificações do Serviço',
-            'Reservamos o direito de:\n\n'
-                '• Modificar ou descontinuar recursos a qualquer momento\n'
-                '• Atualizar estes Termos de Uso\n'
-                '• Suspender ou encerrar contas que violem os termos\n\n'
-                'Notificaremos sobre mudanças significativas através do aplicativo.',
-          ),
+              context, l10n.termsSection7Title, l10n.termsSection7Body),
           _buildSection(
-            context,
-            '8. Propriedade Intelectual',
-            'Todo o conteúdo, design, código e funcionalidades dos aplicativos PlanejaCampo são protegidos por direitos autorais e outras leis de propriedade intelectual. Você não pode copiar, modificar ou distribuir nosso software sem autorização.',
-          ),
+              context, l10n.termsSection8Title, l10n.termsSection8Body),
           _buildSection(
-            context,
-            '9. Lei Aplicável',
-            'Estes termos são regidos pelas leis do Brasil. Quaisquer disputas serão resolvidas nos tribunais competentes do Brasil.',
-          ),
+              context, l10n.termsSection9Title, l10n.termsSection9Body),
           _buildSection(
-            context,
-            '10. Coleta de Localização',
-            'O aplicativo pode coletar sua localização aproximada ou precisa (GPS) para funcionalidades específicas, como previsão do tempo e estatísticas regionais. Ao utilizar esses recursos, você autoriza a coleta e uso desses dados. Você pode revogar o acesso à localização nas configurações do seu dispositivo a qualquer momento.',
-          ),
+              context, l10n.termsSection10Title, l10n.termsSection10Body),
           _buildSection(
-            context,
-            '11. Contato',
-            'Para questões sobre estes Termos de Uso, entre em contato através do menu Configurações > Sobre no aplicativo.',
-          ),
+              context, l10n.termsSection11Title, l10n.termsSection11Body),
           const SizedBox(height: 24),
           const Divider(),
           const SizedBox(height: 16),

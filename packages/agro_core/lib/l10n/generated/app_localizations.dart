@@ -185,6 +185,138 @@ abstract class AgroLocalizations {
   /// **'You can view the full documents in Settings → Privacy.'**
   String get termsFooter;
 
+  /// No description provided for @termsSection1Title.
+  ///
+  /// In en, this message translates to:
+  /// **'1. Acceptance of Terms'**
+  String get termsSection1Title;
+
+  /// No description provided for @termsSection1Body.
+  ///
+  /// In en, this message translates to:
+  /// **'By using the PlanejaCampo family of apps (including PlanejaChuva, PlanejaBorracha, PlanejaDiesel, and others), you agree to these Terms of Use. If you do not agree with any part of these terms, you must not use our services.'**
+  String get termsSection1Body;
+
+  /// No description provided for @termsSection2Title.
+  ///
+  /// In en, this message translates to:
+  /// **'2. Service Description'**
+  String get termsSection2Title;
+
+  /// No description provided for @termsSection2Body.
+  ///
+  /// In en, this message translates to:
+  /// **'PlanejaCampo apps are agricultural management tools that allow:\n\n• Recording and tracking agricultural data (rainfall, production, etc.)\n• Managing rural properties\n• Viewing statistics and metrics\n• Cloud backup and data synchronization (optional)\n• Sharing aggregated data for research (optional)\n• Access to Market Intelligence and Business Ecosystem features (optional)'**
+  String get termsSection2Body;
+
+  /// No description provided for @termsSection3Title.
+  ///
+  /// In en, this message translates to:
+  /// **'3. User Account'**
+  String get termsSection3Title;
+
+  /// No description provided for @termsSection3Body.
+  ///
+  /// In en, this message translates to:
+  /// **'You can use our apps in two ways:\n\n• Guest Mode (Hybrid): No login. Operational data (rain/livestock) stays on the device, but technical metadata and IDs are sent to servers for security and ads.\n• Connected Mode (Google): Unlocks the Full Ecosystem, allowing secure cloud storage, synchronization, data recovery, and access to Network and Intelligence features.\n\nYou are responsible for maintaining the confidentiality of your account and for all activities that occur under your account.'**
+  String get termsSection3Body;
+
+  /// No description provided for @termsSection4Title.
+  ///
+  /// In en, this message translates to:
+  /// **'4. Property and Storage (Hybrid Model)'**
+  String get termsSection4Title;
+
+  /// No description provided for @termsSection4Body.
+  ///
+  /// In en, this message translates to:
+  /// **'The entered data belongs to you.\nWe use a **Hybrid** architecture:\n\n• **Local Base:** Your data stays on the device to ensure offline operation.\n• **Cloud Sync:** When using connected features (Google Login, Backup, Network), your data is **automatically replicated** on our secure servers (Google Cloud/Firebase).\n\nThis provides security against device loss and multi-device access. By logging in, you agree to this remote storage of your collections and profile data.'**
+  String get termsSection4Body;
+
+  /// No description provided for @termsSection5Title.
+  ///
+  /// In en, this message translates to:
+  /// **'5. Acceptable Use'**
+  String get termsSection5Title;
+
+  /// No description provided for @termsSection5Body.
+  ///
+  /// In en, this message translates to:
+  /// **'By using our services, you agree NOT to:\n\n• Violate applicable laws or regulations\n• Attempt to access or interfere with other users\' systems\n• Use the service for fraudulent or deceptive activities\n• Overload or damage the service infrastructure\n• Reverse engineer or attempt to extract source code'**
+  String get termsSection5Body;
+
+  /// No description provided for @termsSection6Title.
+  ///
+  /// In en, this message translates to:
+  /// **'6. Limitation of Liability (Total Shield)'**
+  String get termsSection6Title;
+
+  /// No description provided for @termsSection6Body.
+  ///
+  /// In en, this message translates to:
+  /// **'TOTAL AND COMPREHENSIVE LIABILITY WAIVER:\nThe apps are MATHEMATICAL SIMULATION and CONNECTION tools. They DO NOT replace professional judgment and DO NOT guarantee the integrity of third parties.\n\nWe are NOT liable, under any circumstances, for:\n• Crop loss, animal death, or financial losses resulting from management decisions\n• Calculation, dosage, diagnosis, or weather forecast errors (simulations)\n• FINANCIAL TRANSACTIONS: Default, fraud, non-payment, chargebacks, or financial crimes (PIX, Wire Transfer) between users\n• DIGITAL SECURITY: Phishing, password theft, or scams applied by other users via chat or external links\n• PHYSICAL WORLD EVENTS: Accidents, assaults, or material damage occurring before, during, or after in-person meetings\n\nThe use of information and the decision to close any deal is the sole and exclusive risk of the user.'**
+  String get termsSection6Body;
+
+  /// No description provided for @termsSection7Title.
+  ///
+  /// In en, this message translates to:
+  /// **'7. Service Modifications'**
+  String get termsSection7Title;
+
+  /// No description provided for @termsSection7Body.
+  ///
+  /// In en, this message translates to:
+  /// **'We reserve the right to:\n\n• Modify or discontinue features at any time\n• Update these Terms of Use\n• Suspend or terminate accounts that violate terms\n\nWe will notify you of significant changes through the app.'**
+  String get termsSection7Body;
+
+  /// No description provided for @termsSection8Title.
+  ///
+  /// In en, this message translates to:
+  /// **'8. Intellectual Property'**
+  String get termsSection8Title;
+
+  /// No description provided for @termsSection8Body.
+  ///
+  /// In en, this message translates to:
+  /// **'All content, design, code, and functionality of PlanejaCampo apps are protected by copyright and other intellectual property laws. You may not copy, modify, or distribute our software without authorization.'**
+  String get termsSection8Body;
+
+  /// No description provided for @termsSection9Title.
+  ///
+  /// In en, this message translates to:
+  /// **'9. Applicable Law'**
+  String get termsSection9Title;
+
+  /// No description provided for @termsSection9Body.
+  ///
+  /// In en, this message translates to:
+  /// **'These terms are governed by the laws of Brazil. Any disputes will be resolved in the competent courts of Brazil.'**
+  String get termsSection9Body;
+
+  /// No description provided for @termsSection10Title.
+  ///
+  /// In en, this message translates to:
+  /// **'10. Location Collection'**
+  String get termsSection10Title;
+
+  /// No description provided for @termsSection10Body.
+  ///
+  /// In en, this message translates to:
+  /// **'The app may collect your approximate or precise location (GPS) for specific features, such as weather forecast and regional statistics. By using these features, you authorize the collection and use of this data. You can revoke location access in your device settings at any time.'**
+  String get termsSection10Body;
+
+  /// No description provided for @termsSection11Title.
+  ///
+  /// In en, this message translates to:
+  /// **'11. Contact'**
+  String get termsSection11Title;
+
+  /// No description provided for @termsSection11Body.
+  ///
+  /// In en, this message translates to:
+  /// **'For questions about these Terms of Use, contact us via the Settings > About menu in the app.'**
+  String get termsSection11Body;
+
   /// No description provided for @consentTitle.
   ///
   /// In en, this message translates to:

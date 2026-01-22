@@ -52,6 +52,72 @@ class AgroLocalizationsEn extends AgroLocalizations {
   String get termsFooter => 'You can view the full documents in Settings → Privacy.';
 
   @override
+  String get termsSection1Title => '1. Acceptance of Terms';
+
+  @override
+  String get termsSection1Body => 'By using the PlanejaCampo family of apps (including PlanejaChuva, PlanejaBorracha, PlanejaDiesel, and others), you agree to these Terms of Use. If you do not agree with any part of these terms, you must not use our services.';
+
+  @override
+  String get termsSection2Title => '2. Service Description';
+
+  @override
+  String get termsSection2Body => 'PlanejaCampo apps are agricultural management tools that allow:\n\n• Recording and tracking agricultural data (rainfall, production, etc.)\n• Managing rural properties\n• Viewing statistics and metrics\n• Cloud backup and data synchronization (optional)\n• Sharing aggregated data for research (optional)\n• Access to Market Intelligence and Business Ecosystem features (optional)';
+
+  @override
+  String get termsSection3Title => '3. User Account';
+
+  @override
+  String get termsSection3Body => 'You can use our apps in two ways:\n\n• Guest Mode (Hybrid): No login. Operational data (rain/livestock) stays on the device, but technical metadata and IDs are sent to servers for security and ads.\n• Connected Mode (Google): Unlocks the Full Ecosystem, allowing secure cloud storage, synchronization, data recovery, and access to Network and Intelligence features.\n\nYou are responsible for maintaining the confidentiality of your account and for all activities that occur under your account.';
+
+  @override
+  String get termsSection4Title => '4. Property and Storage (Hybrid Model)';
+
+  @override
+  String get termsSection4Body => 'The entered data belongs to you.\nWe use a **Hybrid** architecture:\n\n• **Local Base:** Your data stays on the device to ensure offline operation.\n• **Cloud Sync:** When using connected features (Google Login, Backup, Network), your data is **automatically replicated** on our secure servers (Google Cloud/Firebase).\n\nThis provides security against device loss and multi-device access. By logging in, you agree to this remote storage of your collections and profile data.';
+
+  @override
+  String get termsSection5Title => '5. Acceptable Use';
+
+  @override
+  String get termsSection5Body => 'By using our services, you agree NOT to:\n\n• Violate applicable laws or regulations\n• Attempt to access or interfere with other users\' systems\n• Use the service for fraudulent or deceptive activities\n• Overload or damage the service infrastructure\n• Reverse engineer or attempt to extract source code';
+
+  @override
+  String get termsSection6Title => '6. Limitation of Liability (Total Shield)';
+
+  @override
+  String get termsSection6Body => 'TOTAL AND COMPREHENSIVE LIABILITY WAIVER:\nThe apps are MATHEMATICAL SIMULATION and CONNECTION tools. They DO NOT replace professional judgment and DO NOT guarantee the integrity of third parties.\n\nWe are NOT liable, under any circumstances, for:\n• Crop loss, animal death, or financial losses resulting from management decisions\n• Calculation, dosage, diagnosis, or weather forecast errors (simulations)\n• FINANCIAL TRANSACTIONS: Default, fraud, non-payment, chargebacks, or financial crimes (PIX, Wire Transfer) between users\n• DIGITAL SECURITY: Phishing, password theft, or scams applied by other users via chat or external links\n• PHYSICAL WORLD EVENTS: Accidents, assaults, or material damage occurring before, during, or after in-person meetings\n\nThe use of information and the decision to close any deal is the sole and exclusive risk of the user.';
+
+  @override
+  String get termsSection7Title => '7. Service Modifications';
+
+  @override
+  String get termsSection7Body => 'We reserve the right to:\n\n• Modify or discontinue features at any time\n• Update these Terms of Use\n• Suspend or terminate accounts that violate terms\n\nWe will notify you of significant changes through the app.';
+
+  @override
+  String get termsSection8Title => '8. Intellectual Property';
+
+  @override
+  String get termsSection8Body => 'All content, design, code, and functionality of PlanejaCampo apps are protected by copyright and other intellectual property laws. You may not copy, modify, or distribute our software without authorization.';
+
+  @override
+  String get termsSection9Title => '9. Applicable Law';
+
+  @override
+  String get termsSection9Body => 'These terms are governed by the laws of Brazil. Any disputes will be resolved in the competent courts of Brazil.';
+
+  @override
+  String get termsSection10Title => '10. Location Collection';
+
+  @override
+  String get termsSection10Body => 'The app may collect your approximate or precise location (GPS) for specific features, such as weather forecast and regional statistics. By using these features, you authorize the collection and use of this data. You can revoke location access in your device settings at any time.';
+
+  @override
+  String get termsSection11Title => '11. Contact';
+
+  @override
+  String get termsSection11Body => 'For questions about these Terms of Use, contact us via the Settings > About menu in the app.';
+
+  @override
   String get consentTitle => 'Privacy Configuration';
 
   @override

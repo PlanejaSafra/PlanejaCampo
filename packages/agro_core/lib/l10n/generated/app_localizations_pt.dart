@@ -52,6 +52,72 @@ class AgroLocalizationsPt extends AgroLocalizations {
   String get termsFooter => 'Você pode consultar os documentos completos em Configurações → Privacidade.';
 
   @override
+  String get termsSection1Title => '1. Aceitação dos Termos';
+
+  @override
+  String get termsSection1Body => 'Ao utilizar os aplicativos da família PlanejaCampo (incluindo PlanejaChuva, PlanejaBorracha, PlanejaDiesel e outros), você concorda com estes Termos de Uso. Se você não concorda com alguma parte destes termos, não deve utilizar nossos serviços.';
+
+  @override
+  String get termsSection2Title => '2. Descrição do Serviço';
+
+  @override
+  String get termsSection2Body => 'Os aplicativos PlanejaCampo são ferramentas de gestão agrícola que permitem:\n\n• Registro e acompanhamento de dados agrícolas (chuvas, produção, etc.)\n• Gerenciamento de propriedades rurais\n• Visualização de estatísticas e métricas\n• Backup e sincronização de dados na nuvem (opcional)\n• Compartilhamento de dados agregados para pesquisa (opcional)\n• Acesso a funcionalidades de Inteligência de Mercado e Ecossistema de Negócios (opcional)';
+
+  @override
+  String get termsSection3Title => '3. Conta de Usuário';
+
+  @override
+  String get termsSection3Body => 'Você pode utilizar nossos aplicativos de duas formas:\n\n• Modo Visitante (Híbrido): Sem login. Dados operacionais (chuva/gado) ficam no dispositivo, mas metadados técnicos e IDs são enviados para servidores para segurança e anúncios.\n• Modo Conectado (Google): Desbloqueia o Ecossistema Completo, permitindo armazenamento seguro em nuvem, sincronização, recuperação de dados e acesso a funcionalidades de Rede e Inteligência.\n\nVocê é responsável por manter a confidencialidade de sua conta e por todas as atividades que ocorram sob sua conta.';
+
+  @override
+  String get termsSection4Title => '4. Propriedade e Armazenamento (Modelo Híbrido)';
+
+  @override
+  String get termsSection4Body => 'Os dados inseridos pertencem a você.\nUtilizamos uma arquitetura **Híbrida**:\n\n• **Base Local:** Seus dados ficam no dispositivo para garantir funcionamento sem internet.\n• **Sincronização em Nuvem:** Ao utilizar funcionalidades conectadas (Login Google, Backup, Rede), seus dados são **replicados automaticamente** em nossos servidores seguros (Google Cloud/Firebase).\n\nIsso permite segurança contra perda do aparelho e acesso por múltiplos dispositivos. Ao fazer login, você concorda com esse armazenamento remoto das suas coleções e dados de perfil.';
+
+  @override
+  String get termsSection5Title => '5. Uso Aceitável';
+
+  @override
+  String get termsSection5Body => 'Ao usar nossos serviços, você concorda em NÃO:\n\n• Violar leis ou regulamentos aplicáveis\n• Tentar acessar ou interferir com sistemas de outros usuários\n• Usar o serviço para atividades fraudulentas ou enganosas\n• Sobrecarregar ou danificar a infraestrutura do serviço\n• Fazer engenharia reversa ou tentar extrair código-fonte';
+
+  @override
+  String get termsSection6Title => '6. Limitação de Responsabilidade (Blindagem Total)';
+
+  @override
+  String get termsSection6Body => 'ISENÇÃO TOTAL E ABRANGENTE DE RESPONSABILIDADE:\nOs aplicativos são ferramentas de SIMULAÇÃO MATEMÁTICA e CONEXÃO. Eles NÃO substituem o julgamento profissional e NÃO garantem a idoneidade de terceiros.\n\nNós NÃO nos responsabilizamos, em nenhuma hipótese, por:\n• Perda de safra, morte de animais ou prejuízos financeiros decorrentes de decisões de manejo\n• Erros de cálculo, dosagem, diagnóstico ou previsão meteorológica (simulações)\n• TRANSAÇÕES FINANCEIRAS: Calotes, fraudes, não pagamento, estornos ou crimes financeiros (PIX, TED, Boleto) entre usuários\n• SEGURANÇA DIGITAL: Phishing, roubo de senhas ou golpes aplicados por outros usuários via chat ou links externos\n• EVENTOS NO MUNDO FÍSICO: Acidentes, agressões ou danos materiais ocorridos antes, durante ou após encontros presenciais\n\nO uso das informações e a decisão de fechar qualquer negócio é de risco exclusivo e integral do usuário.';
+
+  @override
+  String get termsSection7Title => '7. Modificações do Serviço';
+
+  @override
+  String get termsSection7Body => 'Reservamos o direito de:\n\n• Modificar ou descontinuar recursos a qualquer momento\n• Atualizar estes Termos de Uso\n• Suspender ou encerrar contas que violem os termos\n\nNotificaremos sobre mudanças significativas através do aplicativo.';
+
+  @override
+  String get termsSection8Title => '8. Propriedade Intelectual';
+
+  @override
+  String get termsSection8Body => 'Todo o conteúdo, design, código e funcionalidades dos aplicativos PlanejaCampo são protegidos por direitos autorais e outras leis de propriedade intelectual. Você não pode copiar, modificar ou distribuir nosso software sem autorização.';
+
+  @override
+  String get termsSection9Title => '9. Lei Aplicável';
+
+  @override
+  String get termsSection9Body => 'Estes termos são regidos pelas leis do Brasil. Quaisquer disputas serão resolvidas nos tribunais competentes do Brasil.';
+
+  @override
+  String get termsSection10Title => '10. Coleta de Localização';
+
+  @override
+  String get termsSection10Body => 'O aplicativo pode coletar sua localização aproximada ou precisa (GPS) para funcionalidades específicas, como previsão do tempo e estatísticas regionais. Ao utilizar esses recursos, você autoriza a coleta e uso desses dados. Você pode revogar o acesso à localização nas configurações do seu dispositivo a qualquer momento.';
+
+  @override
+  String get termsSection11Title => '11. Contato';
+
+  @override
+  String get termsSection11Body => 'Para questões sobre estes Termos de Uso, entre em contato através do menu Configurações > Sobre no aplicativo.';
+
+  @override
   String get consentTitle => 'Configuração de Privacidade';
 
   @override
