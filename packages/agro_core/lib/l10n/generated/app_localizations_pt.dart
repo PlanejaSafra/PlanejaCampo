@@ -118,6 +118,90 @@ class AgroLocalizationsPt extends AgroLocalizations {
   String get termsSection11Body => 'Para questões sobre estes Termos de Uso, entre em contato através do menu Configurações > Sobre no aplicativo.';
 
   @override
+  String get privacyPolicyScreenTitle => 'Política de Privacidade';
+
+  @override
+  String get privacyPolicyTitle => 'Política de Privacidade - PlanejaCampo';
+
+  @override
+  String get privacyPolicyLastUpdate => 'Última atualização: Janeiro de 2026';
+
+  @override
+  String get privacyPolicyFooter => '© 2026 PlanejaCampo. Todos os direitos reservados.\nEsta política está em conformidade com a LGPD (Lei nº 13.709/2018).';
+
+  @override
+  String get privacySection1Title => '1. Introdução';
+
+  @override
+  String get privacySection1Body => 'A PlanejaCampo valoriza sua privacidade e está comprometida em proteger seus dados pessoais. Esta Política de Privacidade explica quais dados coletamos, como os usamos e seus direitos sobre eles.';
+
+  @override
+  String get privacySection2Title => '2. Dados que Coletamos';
+
+  @override
+  String get privacySection2Body => 'Para operar o Ecossistema Digital, coletamos:\n\n**Dados de Conta e Perfil:**\n• Nome, email, telefone e foto (login Google)\n• ID único de usuário e credenciais de acesso\n• Outros dados que você optar por preencher (tais como endereço, bio, qualificações, entre outros)\n\n**Dados Agronômicos e de Negócios:**\n• Dados operacionais (tais como inventário, chuvas, produção, rebanho, tarefas, entre outros)\n• Ofertas e transações (tais como compras, vendas, serviços, anúncios, entre outros)\n• Localização das propriedades (GPS) e dados geográficos\n\n**Dados Técnicos e de Comportamento:**\n• Informações do dispositivo (tais como modelo, IP, sistema operacional, entre outros)\n• Interações e uso do app (tais como cliques, navegação, tempo de uso, entre outros)';
+
+  @override
+  String get privacySection3Title => '3. Uso Comercial e Inteligência (Modelo de Negócio)';
+
+  @override
+  String get privacySection3Body => 'Ao utilizar o aplicativo gratuitamente, você concorda que sustentamos a plataforma através de:\n\n**1. Geração de Inteligência de Mercado:**\nAo ativar a opção de Inteligência, você autoriza o processamento dos seus dados — de forma identificada, anonimizada ou agregada — para criar relatórios, estatísticas, índices e produtos de inteligência que podem ser utilizados internamente ou comercializados com parceiros.\n\n**2. Conexão de Negócios (Matchmaking):**\nAo ativar a Rede de Negócios, você autoriza o uso dos seus dados de perfil, contato e ofertas para conectá-lo a potenciais compradores, vendedores ou prestadores de serviço.\n\n**3. Melhoria do Serviço:**\nPara aprimorar algoritmos de previsão climática, diagnóstico de pragas, recomendações de manejo e outras funcionalidades.';
+
+  @override
+  String get privacySection4Title => '4. Compartilhamento de Dados';
+
+  @override
+  String get privacySection4Body => 'Seus dados podem ser compartilhados nas seguintes situações, conforme os consentimentos que você ativar:\n\n**Rede de Negócios:**\n• Ao ativar, você autoriza o compartilhamento de dados de perfil, contato, ofertas e outros dados necessários para o funcionamento da plataforma e de seus parceiros\n\n**Inteligência Agronômica:**\n• Ao ativar, você autoriza o uso dos seus dados (de forma identificada, anonimizada ou agregada) para inteligência de mercado, pesquisa e parcerias comerciais\n\n**Operadores Legais e Técnicos:**\n• Para cumprir ordens judiciais ou prevenir fraudes\n• Com provedores de infraestrutura (tais como Google Cloud, Firebase, entre outros) sob contrato de sigilo';
+
+  @override
+  String get privacySection5Title => '5. Armazenamento e Transferência Internacional';
+
+  @override
+  String get privacySection5Body => 'Seus dados podem ser armazenados e processados no Brasil ou em qualquer outro país onde nós ou nossos parceiros mantenham servidores.\n\n**Modo Visitante (Sem Login):**\nPor padrão, dados operacionais ficam no dispositivo. Metadados técnicos (IP, logs) podem ser enviados para servidores. Se você ativar opções de Rede ou Inteligência, seus dados serão enviados mesmo sem login.\n\n**Modo Conectado:**\nDados são sincronizados na nuvem para backup e acesso multidispositivo, protegidos por criptografia em trânsito e repouso.';
+
+  @override
+  String get privacySection6Title => '6. Direitos do Usuário';
+
+  @override
+  String get privacySection6Body => 'Você mantém controle sobre seus dados pessoais diretos (Nome/Email) e pode solicitar exclusão ou portabilidade a qualquer momento. Dados já processados, anonimizados ou agregados em relatórios de inteligência não podem ser removidos, pois deixaram de ser pessoais.';
+
+  @override
+  String get privacySection7Title => '7. Termos Específicos (Blindagem Ampla)';
+
+  @override
+  String get privacySection7Body => 'Ao ativar funcionalidades específicas, você concorda com termos estendidos:\n\n**7.1. Rede de Negócios:**\nVocê autoriza o envio, armazenamento, processamento e compartilhamento de todos os dados necessários para o funcionamento da plataforma e de seus parceiros. A plataforma não modera antecipadamente o conteúdo e não se responsabiliza por negociações.\n\n**7.2. Inteligência Agronômica:**\nVocê concede licença perpétua e irrevogável para envio, armazenamento, processamento, agregação, análise e compartilhamento dos seus dados — de forma identificada, anonimizada ou agregada — para fins de inteligência de mercado, pesquisa, parcerias comerciais e melhoria dos serviços.';
+
+  @override
+  String get privacySection8Title => '8. Segurança';
+
+  @override
+  String get privacySection8Body => 'Utilizamos criptografia padrão de mercado e autenticação segura. Você é responsável por proteger suas credenciais de acesso.';
+
+  @override
+  String get privacySection9Title => '9. Uso Profissional e Restrição de Idade';
+
+  @override
+  String get privacySection9Body => 'Este aplicativo é destinado exclusivamente a USO PROFISSIONAL por produtores rurais, técnicos e trabalhadores do setor agropecuário.\n\nNão é permitido o uso por menores de 18 anos. Não coletamos intencionalmente dados de crianças. Se identificarmos uma conta de menor, ela será encerrada.';
+
+  @override
+  String get privacySection10Title => '10. Alterações';
+
+  @override
+  String get privacySection10Body => 'Podemos alterar esta política a qualquer momento para refletir novos modelos de negócio. O uso continuado do app implica aceitação das mudanças.';
+
+  @override
+  String get privacySection11Title => '11. Tecnologias de Armazenamento';
+
+  @override
+  String get privacySection11Body => 'Utilizamos bancos de dados locais seguros e tecnologias de cache para garantir o funcionamento offline-first.';
+
+  @override
+  String get privacySection12Title => '12. Contato';
+
+  @override
+  String get privacySection12Body => 'Dúvidas? Acesse Configurações > Sobre.';
+
+  @override
   String get consentTitle => 'Configuração de Privacidade';
 
   @override

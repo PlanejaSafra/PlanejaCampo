@@ -317,6 +317,174 @@ abstract class AgroLocalizations {
   /// **'For questions about these Terms of Use, contact us via the Settings > About menu in the app.'**
   String get termsSection11Body;
 
+  /// No description provided for @privacyPolicyScreenTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get privacyPolicyScreenTitle;
+
+  /// No description provided for @privacyPolicyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy - PlanejaCampo'**
+  String get privacyPolicyTitle;
+
+  /// No description provided for @privacyPolicyLastUpdate.
+  ///
+  /// In en, this message translates to:
+  /// **'Last updated: January 2026'**
+  String get privacyPolicyLastUpdate;
+
+  /// No description provided for @privacyPolicyFooter.
+  ///
+  /// In en, this message translates to:
+  /// **'© 2026 PlanejaCampo. All rights reserved.\nThis policy complies with LGPD (Law No. 13.709/2018) and GDPR.'**
+  String get privacyPolicyFooter;
+
+  /// No description provided for @privacySection1Title.
+  ///
+  /// In en, this message translates to:
+  /// **'1. Introduction'**
+  String get privacySection1Title;
+
+  /// No description provided for @privacySection1Body.
+  ///
+  /// In en, this message translates to:
+  /// **'PlanejaCampo values your privacy and is committed to protecting your personal data. This Privacy Policy explains what data we collect, how we use it, and your rights over it.'**
+  String get privacySection1Body;
+
+  /// No description provided for @privacySection2Title.
+  ///
+  /// In en, this message translates to:
+  /// **'2. Data We Collect'**
+  String get privacySection2Title;
+
+  /// No description provided for @privacySection2Body.
+  ///
+  /// In en, this message translates to:
+  /// **'To operate the Digital Ecosystem, we collect:\n\n**Account and Profile Data:**\n• Name, email, phone, and photo (Google login)\n• Unique user ID and access credentials\n• Other data you choose to fill in (such as address, bio, qualifications, among others)\n\n**Agronomic and Business Data:**\n• Operational data (such as inventory, rainfall, production, livestock, tasks, among others)\n• Offers and transactions (such as purchases, sales, services, ads, among others)\n• Property location (GPS) and geographic data\n\n**Technical and Behavioral Data:**\n• Device information (such as model, IP, operating system, among others)\n• App interactions and usage (such as clicks, navigation, time spent, among others)'**
+  String get privacySection2Body;
+
+  /// No description provided for @privacySection3Title.
+  ///
+  /// In en, this message translates to:
+  /// **'3. Commercial Use and Intelligence (Business Model)'**
+  String get privacySection3Title;
+
+  /// No description provided for @privacySection3Body.
+  ///
+  /// In en, this message translates to:
+  /// **'By using the app for free, you agree that we sustain the platform through:\n\n**1. Market Intelligence Generation:**\nBy enabling the Intelligence option, you authorize the processing of your data — in identified, anonymized, or aggregated form — to create reports, statistics, indices, and intelligence products that may be used internally or commercialized with partners.\n\n**2. Business Connections (Matchmaking):**\nBy enabling the Business Network, you authorize the use of your profile, contact, and offer data to connect you with potential buyers, sellers, or service providers.\n\n**3. Service Improvement:**\nTo enhance weather forecasting algorithms, pest diagnosis, management recommendations, and other features.'**
+  String get privacySection3Body;
+
+  /// No description provided for @privacySection4Title.
+  ///
+  /// In en, this message translates to:
+  /// **'4. Data Sharing'**
+  String get privacySection4Title;
+
+  /// No description provided for @privacySection4Body.
+  ///
+  /// In en, this message translates to:
+  /// **'Your data may be shared in the following situations, according to the consents you enable:\n\n**Business Network:**\n• By enabling, you authorize the sharing of profile, contact, offer data, and other data necessary for the operation of the platform and its partners\n\n**Agronomic Intelligence:**\n• By enabling, you authorize the use of your data (in identified, anonymized, or aggregated form) for market intelligence, research, and commercial partnerships\n\n**Legal and Technical Operators:**\n• To comply with court orders or prevent fraud\n• With infrastructure providers (such as Google Cloud, Firebase, among others) under confidentiality agreements'**
+  String get privacySection4Body;
+
+  /// No description provided for @privacySection5Title.
+  ///
+  /// In en, this message translates to:
+  /// **'5. Storage and International Transfer'**
+  String get privacySection5Title;
+
+  /// No description provided for @privacySection5Body.
+  ///
+  /// In en, this message translates to:
+  /// **'Your data may be stored and processed in Brazil or any other country where we or our partners maintain servers.\n\n**Guest Mode (No Login):**\nBy default, operational data stays on the device. Technical metadata (IP, logs) may be sent to servers. If you enable Network or Intelligence options, your data will be sent even without login.\n\n**Connected Mode:**\nData is synced to the cloud for backup and multi-device access, protected by encryption in transit and at rest.'**
+  String get privacySection5Body;
+
+  /// No description provided for @privacySection6Title.
+  ///
+  /// In en, this message translates to:
+  /// **'6. User Rights'**
+  String get privacySection6Title;
+
+  /// No description provided for @privacySection6Body.
+  ///
+  /// In en, this message translates to:
+  /// **'You maintain control over your direct personal data (Name/Email) and can request deletion or portability at any time. Data already processed, anonymized, or aggregated in intelligence reports cannot be removed, as it is no longer personal.'**
+  String get privacySection6Body;
+
+  /// No description provided for @privacySection7Title.
+  ///
+  /// In en, this message translates to:
+  /// **'7. Specific Terms (Comprehensive Shield)'**
+  String get privacySection7Title;
+
+  /// No description provided for @privacySection7Body.
+  ///
+  /// In en, this message translates to:
+  /// **'By enabling specific features, you agree to extended terms:\n\n**7.1. Business Network:**\nYou authorize the sending, storage, processing, and sharing of all data necessary for the operation of the platform and its partners. The platform does not moderate content in advance and is not responsible for negotiations.\n\n**7.2. Agronomic Intelligence:**\nYou grant a perpetual and irrevocable license to send, store, process, aggregate, analyze, and share your data — in identified, anonymized, or aggregated form — for market intelligence, research, commercial partnerships, and service improvement purposes.'**
+  String get privacySection7Body;
+
+  /// No description provided for @privacySection8Title.
+  ///
+  /// In en, this message translates to:
+  /// **'8. Security'**
+  String get privacySection8Title;
+
+  /// No description provided for @privacySection8Body.
+  ///
+  /// In en, this message translates to:
+  /// **'We use industry-standard encryption and secure authentication. You are responsible for protecting your access credentials.'**
+  String get privacySection8Body;
+
+  /// No description provided for @privacySection9Title.
+  ///
+  /// In en, this message translates to:
+  /// **'9. Professional Use and Age Restriction'**
+  String get privacySection9Title;
+
+  /// No description provided for @privacySection9Body.
+  ///
+  /// In en, this message translates to:
+  /// **'This app is intended exclusively for PROFESSIONAL USE by rural producers, technicians, and agricultural workers.\n\nUse by minors under 18 is not permitted. We do not intentionally collect data from children. If we identify a minor\'s account, it will be terminated.'**
+  String get privacySection9Body;
+
+  /// No description provided for @privacySection10Title.
+  ///
+  /// In en, this message translates to:
+  /// **'10. Changes'**
+  String get privacySection10Title;
+
+  /// No description provided for @privacySection10Body.
+  ///
+  /// In en, this message translates to:
+  /// **'We may change this policy at any time to reflect new business models. Continued use of the app implies acceptance of changes.'**
+  String get privacySection10Body;
+
+  /// No description provided for @privacySection11Title.
+  ///
+  /// In en, this message translates to:
+  /// **'11. Storage Technologies'**
+  String get privacySection11Title;
+
+  /// No description provided for @privacySection11Body.
+  ///
+  /// In en, this message translates to:
+  /// **'We use secure local databases and caching technologies to ensure offline-first operation.'**
+  String get privacySection11Body;
+
+  /// No description provided for @privacySection12Title.
+  ///
+  /// In en, this message translates to:
+  /// **'12. Contact'**
+  String get privacySection12Title;
+
+  /// No description provided for @privacySection12Body.
+  ///
+  /// In en, this message translates to:
+  /// **'Questions? Go to Settings > About.'**
+  String get privacySection12Body;
+
   /// No description provided for @consentTitle.
   ///
   /// In en, this message translates to:

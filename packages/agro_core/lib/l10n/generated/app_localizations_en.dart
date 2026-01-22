@@ -118,6 +118,90 @@ class AgroLocalizationsEn extends AgroLocalizations {
   String get termsSection11Body => 'For questions about these Terms of Use, contact us via the Settings > About menu in the app.';
 
   @override
+  String get privacyPolicyScreenTitle => 'Privacy Policy';
+
+  @override
+  String get privacyPolicyTitle => 'Privacy Policy - PlanejaCampo';
+
+  @override
+  String get privacyPolicyLastUpdate => 'Last updated: January 2026';
+
+  @override
+  String get privacyPolicyFooter => '© 2026 PlanejaCampo. All rights reserved.\nThis policy complies with LGPD (Law No. 13.709/2018) and GDPR.';
+
+  @override
+  String get privacySection1Title => '1. Introduction';
+
+  @override
+  String get privacySection1Body => 'PlanejaCampo values your privacy and is committed to protecting your personal data. This Privacy Policy explains what data we collect, how we use it, and your rights over it.';
+
+  @override
+  String get privacySection2Title => '2. Data We Collect';
+
+  @override
+  String get privacySection2Body => 'To operate the Digital Ecosystem, we collect:\n\n**Account and Profile Data:**\n• Name, email, phone, and photo (Google login)\n• Unique user ID and access credentials\n• Other data you choose to fill in (such as address, bio, qualifications, among others)\n\n**Agronomic and Business Data:**\n• Operational data (such as inventory, rainfall, production, livestock, tasks, among others)\n• Offers and transactions (such as purchases, sales, services, ads, among others)\n• Property location (GPS) and geographic data\n\n**Technical and Behavioral Data:**\n• Device information (such as model, IP, operating system, among others)\n• App interactions and usage (such as clicks, navigation, time spent, among others)';
+
+  @override
+  String get privacySection3Title => '3. Commercial Use and Intelligence (Business Model)';
+
+  @override
+  String get privacySection3Body => 'By using the app for free, you agree that we sustain the platform through:\n\n**1. Market Intelligence Generation:**\nBy enabling the Intelligence option, you authorize the processing of your data — in identified, anonymized, or aggregated form — to create reports, statistics, indices, and intelligence products that may be used internally or commercialized with partners.\n\n**2. Business Connections (Matchmaking):**\nBy enabling the Business Network, you authorize the use of your profile, contact, and offer data to connect you with potential buyers, sellers, or service providers.\n\n**3. Service Improvement:**\nTo enhance weather forecasting algorithms, pest diagnosis, management recommendations, and other features.';
+
+  @override
+  String get privacySection4Title => '4. Data Sharing';
+
+  @override
+  String get privacySection4Body => 'Your data may be shared in the following situations, according to the consents you enable:\n\n**Business Network:**\n• By enabling, you authorize the sharing of profile, contact, offer data, and other data necessary for the operation of the platform and its partners\n\n**Agronomic Intelligence:**\n• By enabling, you authorize the use of your data (in identified, anonymized, or aggregated form) for market intelligence, research, and commercial partnerships\n\n**Legal and Technical Operators:**\n• To comply with court orders or prevent fraud\n• With infrastructure providers (such as Google Cloud, Firebase, among others) under confidentiality agreements';
+
+  @override
+  String get privacySection5Title => '5. Storage and International Transfer';
+
+  @override
+  String get privacySection5Body => 'Your data may be stored and processed in Brazil or any other country where we or our partners maintain servers.\n\n**Guest Mode (No Login):**\nBy default, operational data stays on the device. Technical metadata (IP, logs) may be sent to servers. If you enable Network or Intelligence options, your data will be sent even without login.\n\n**Connected Mode:**\nData is synced to the cloud for backup and multi-device access, protected by encryption in transit and at rest.';
+
+  @override
+  String get privacySection6Title => '6. User Rights';
+
+  @override
+  String get privacySection6Body => 'You maintain control over your direct personal data (Name/Email) and can request deletion or portability at any time. Data already processed, anonymized, or aggregated in intelligence reports cannot be removed, as it is no longer personal.';
+
+  @override
+  String get privacySection7Title => '7. Specific Terms (Comprehensive Shield)';
+
+  @override
+  String get privacySection7Body => 'By enabling specific features, you agree to extended terms:\n\n**7.1. Business Network:**\nYou authorize the sending, storage, processing, and sharing of all data necessary for the operation of the platform and its partners. The platform does not moderate content in advance and is not responsible for negotiations.\n\n**7.2. Agronomic Intelligence:**\nYou grant a perpetual and irrevocable license to send, store, process, aggregate, analyze, and share your data — in identified, anonymized, or aggregated form — for market intelligence, research, commercial partnerships, and service improvement purposes.';
+
+  @override
+  String get privacySection8Title => '8. Security';
+
+  @override
+  String get privacySection8Body => 'We use industry-standard encryption and secure authentication. You are responsible for protecting your access credentials.';
+
+  @override
+  String get privacySection9Title => '9. Professional Use and Age Restriction';
+
+  @override
+  String get privacySection9Body => 'This app is intended exclusively for PROFESSIONAL USE by rural producers, technicians, and agricultural workers.\n\nUse by minors under 18 is not permitted. We do not intentionally collect data from children. If we identify a minor\'s account, it will be terminated.';
+
+  @override
+  String get privacySection10Title => '10. Changes';
+
+  @override
+  String get privacySection10Body => 'We may change this policy at any time to reflect new business models. Continued use of the app implies acceptance of changes.';
+
+  @override
+  String get privacySection11Title => '11. Storage Technologies';
+
+  @override
+  String get privacySection11Body => 'We use secure local databases and caching technologies to ensure offline-first operation.';
+
+  @override
+  String get privacySection12Title => '12. Contact';
+
+  @override
+  String get privacySection12Body => 'Questions? Go to Settings > About.';
+
+  @override
   String get consentTitle => 'Privacy Configuration';
 
   @override
