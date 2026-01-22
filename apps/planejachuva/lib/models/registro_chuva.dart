@@ -59,4 +59,15 @@ class RegistroChuva extends HiveObject {
       talhaoId: talhaoId,
     );
   }
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'data': data.toIso8601String(),
+      'milimetros': milimetros,
+      'observacao': observacao,
+      'criadoEm': criadoEm.toIso8601String(),
+      'propertyId': propertyId,
+      'talhaoId': talhaoId,
+    };
+  }
 }

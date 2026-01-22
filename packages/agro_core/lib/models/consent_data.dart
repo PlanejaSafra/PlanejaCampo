@@ -34,9 +34,13 @@ class ConsentData extends HiveObject {
   @HiveField(6)
   bool? regionalStats;
 
-  /// Consent version (tracks changes to consent structure)
-  @HiveField(7)
-  String consentVersion;
+  /// Optional consent: Cloud Backup (Option 1)
+  @HiveField(8)
+  bool? cloudBackup;
+
+  /// Optional consent: Social Network (Option 2)
+  @HiveField(9)
+  bool? socialNetwork;
 
   ConsentData({
     required this.termsAccepted,
@@ -46,6 +50,8 @@ class ConsentData extends HiveObject {
     this.sharePartners,
     this.adsPersonalization,
     this.regionalStats,
+    this.cloudBackup,
+    this.socialNetwork,
     this.consentVersion = '1.0',
   });
 
@@ -59,6 +65,8 @@ class ConsentData extends HiveObject {
       'consent_share_partners': sharePartners,
       'consent_ads_personalization': adsPersonalization,
       'consent_regional_stats': regionalStats,
+      'consent_cloud_backup': cloudBackup,
+      'consent_social_network': socialNetwork,
       'consent_version': consentVersion,
     };
   }
@@ -73,6 +81,8 @@ class ConsentData extends HiveObject {
       sharePartners: map['consent_share_partners'] as bool?,
       adsPersonalization: map['consent_ads_personalization'] as bool?,
       regionalStats: map['consent_regional_stats'] as bool?,
+      cloudBackup: map['consent_cloud_backup'] as bool?,
+      socialNetwork: map['consent_social_network'] as bool?,
       consentVersion: map['consent_version'] as String? ?? '1.0',
     );
   }
@@ -87,6 +97,8 @@ class ConsentData extends HiveObject {
       sharePartners: false,
       adsPersonalization: false,
       regionalStats: false,
+      cloudBackup: false,
+      socialNetwork: false,
       consentVersion: '1.0',
     );
   }

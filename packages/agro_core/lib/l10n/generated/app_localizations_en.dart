@@ -55,28 +55,37 @@ class AgroLocalizationsEn extends AgroLocalizations {
   String get termsFooter => 'You can review the full documents in Settings → Privacy.';
 
   @override
-  String get consentTitle => 'Features and Sharing (optional)';
+  String get consentTitle => 'Privacy Settings';
 
   @override
-  String get consentIntro => 'Authorize the use of data and optional features:';
+  String get consentIntro => 'Choose how PlanejaCampo works for you:';
 
   @override
-  String get consentOption1Title => 'Data and Location';
+  String get consentOption1Title => 'Cloud Backup & Sync';
 
   @override
-  String get consentOption1Desc => '';
+  String get consentOption1Desc => 'Save data to cloud for safety and team access.';
 
   @override
-  String get consentOption2Title => 'Offers and Promotions';
+  String get consentOption1Legal => 'By activating this, your data (records, inventory, tasks) will be sent to our secure servers and linked to your account. This allows recovery if you lose your phone and enables authorized team members to access the same data. This data is NOT made public.';
 
   @override
-  String get consentOption2Desc => '';
+  String get consentOption2Title => 'Business Network & Opportunities';
 
   @override
-  String get consentOption3Title => 'Personalized Ads';
+  String get consentOption2Desc => 'Enable job listings and offers view.';
 
   @override
-  String get consentOption3Desc => '';
+  String get consentOption2Legal => 'This option activates social features (Market, Jobs, Classifieds). By creating an ad, you agree to make your contact info (Name/WhatsApp) and offer location public within the platform. This allows other users to contact you directly. The app is merely a facilitator.';
+
+  @override
+  String get consentOption3Title => 'Regional Stats & Intelligence';
+
+  @override
+  String get consentOption3Desc => 'Contribute with anonymous data and get market insights.';
+
+  @override
+  String get consentOption3Legal => 'This unlocks collective intelligence features (rain maps, price averages). In exchange, your data (anonymized or aggregated) joins our market intelligence base, which may be used for sector studies and commercialized with partners (government, associations, companies). Without this permission, you won\'t access regional maps and averages.';
 
   @override
   String get consentSmallNoteUnderDecline => 'Without accepting, you can use the app normally in private mode (basic offline features).';
@@ -94,7 +103,7 @@ class AgroLocalizationsEn extends AgroLocalizations {
   String get identityAnonymousButton => 'Continue as Guest';
 
   @override
-  String get identityFooterLegal => 'By signing in, you agree to our Terms of Use and Privacy Policy.';
+  String get identityFooterLegal => 'Your data is yours. It stays on your device and can be synced if you authorize.';
 
   @override
   String get identityTermsLink => 'Terms of Use';

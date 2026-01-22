@@ -43,8 +43,11 @@ class ChuvaService {
     await _box.put(registro.id.toString(), registro);
     await _updateWidget();
 
-    // CORE-61: Trigger sync
+    // CORE-61: Trigger sync (stats - Option 3)
     await _trySyncRecord(registro);
+
+    // CORE-62: Trigger private backup (Option 1)
+    await _trySyncPrivateBackup(registro);
   }
 
   /// Updates an existing record.
@@ -52,8 +55,23 @@ class ChuvaService {
     await _box.put(registro.id.toString(), registro);
     await _updateWidget();
 
-    // CORE-61: Trigger sync (update might change values)
+    // CORE-61: Trigger sync (stats - Option 3)
     await _trySyncRecord(registro);
+
+    // CORE-62: Trigger private backup (Option 1)
+    await _trySyncPrivateBackup(registro);
+  }
+
+  /// Helper to sync private backup (Option 1)
+  Future<void> _trySyncPrivateBackup(RegistroChuva registro) async {
+    try {
+      await UserCloudService.instance.syncRainfallRecord(
+        recordId: registro.id.toString(),
+        data: registro.toMap(),
+      );
+    } catch (e) {
+      debugPrint('ChuvaService: Error syncing private backup: $e');
+    }
   }
 
   /// Helper to queue and sync a record
@@ -83,6 +101,14 @@ class ChuvaService {
   Future<void> excluir(int id) async {
     await _box.delete(id.toString());
     await _updateWidget();
+
+    // CORE-62: Delete from private backup (Option 1)
+    // We try to delete regardless of current consent (cleanup)
+    try {
+      await UserCloudService.instance.deleteRainfallRecord(id.toString());
+    } catch (e) {
+      // safe fail
+    }
   }
 
   /// Calculates the total rainfall for a specific month.

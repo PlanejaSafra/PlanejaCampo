@@ -194,50 +194,68 @@ abstract class AgroLocalizations {
   /// No description provided for @consentTitle.
   ///
   /// In en, this message translates to:
-  /// **'Features and Sharing (optional)'**
+  /// **'Privacy Settings'**
   String get consentTitle;
 
   /// No description provided for @consentIntro.
   ///
   /// In en, this message translates to:
-  /// **'Authorize the use of data and optional features:'**
+  /// **'Choose how PlanejaCampo works for you:'**
   String get consentIntro;
 
   /// No description provided for @consentOption1Title.
   ///
   /// In en, this message translates to:
-  /// **'Data and Location'**
+  /// **'Cloud Backup & Sync'**
   String get consentOption1Title;
 
   /// No description provided for @consentOption1Desc.
   ///
   /// In en, this message translates to:
-  /// **''**
+  /// **'Save data to cloud for safety and team access.'**
   String get consentOption1Desc;
+
+  /// No description provided for @consentOption1Legal.
+  ///
+  /// In en, this message translates to:
+  /// **'By activating this, your data (records, inventory, tasks) will be sent to our secure servers and linked to your account. This allows recovery if you lose your phone and enables authorized team members to access the same data. This data is NOT made public.'**
+  String get consentOption1Legal;
 
   /// No description provided for @consentOption2Title.
   ///
   /// In en, this message translates to:
-  /// **'Offers and Promotions'**
+  /// **'Business Network & Opportunities'**
   String get consentOption2Title;
 
   /// No description provided for @consentOption2Desc.
   ///
   /// In en, this message translates to:
-  /// **''**
+  /// **'Enable job listings and offers view.'**
   String get consentOption2Desc;
+
+  /// No description provided for @consentOption2Legal.
+  ///
+  /// In en, this message translates to:
+  /// **'This option activates social features (Market, Jobs, Classifieds). By creating an ad, you agree to make your contact info (Name/WhatsApp) and offer location public within the platform. This allows other users to contact you directly. The app is merely a facilitator.'**
+  String get consentOption2Legal;
 
   /// No description provided for @consentOption3Title.
   ///
   /// In en, this message translates to:
-  /// **'Personalized Ads'**
+  /// **'Regional Stats & Intelligence'**
   String get consentOption3Title;
 
   /// No description provided for @consentOption3Desc.
   ///
   /// In en, this message translates to:
-  /// **''**
+  /// **'Contribute with anonymous data and get market insights.'**
   String get consentOption3Desc;
+
+  /// No description provided for @consentOption3Legal.
+  ///
+  /// In en, this message translates to:
+  /// **'This unlocks collective intelligence features (rain maps, price averages). In exchange, your data (anonymized or aggregated) joins our market intelligence base, which may be used for sector studies and commercialized with partners (government, associations, companies). Without this permission, you won\'t access regional maps and averages.'**
+  String get consentOption3Legal;
 
   /// No description provided for @consentSmallNoteUnderDecline.
   ///
@@ -272,7 +290,7 @@ abstract class AgroLocalizations {
   /// No description provided for @identityFooterLegal.
   ///
   /// In en, this message translates to:
-  /// **'By signing in, you agree to our Terms of Use and Privacy Policy.'**
+  /// **'Your data is yours. It stays on your device and can be synced if you authorize.'**
   String get identityFooterLegal;
 
   /// No description provided for @identityTermsLink.

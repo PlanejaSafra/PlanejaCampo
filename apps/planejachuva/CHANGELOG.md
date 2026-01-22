@@ -5,6 +5,42 @@
 
 ---
 
+## Phase CHUVA-62: LGPD & Hybrid Privacy Architecture
+### Status: [IN PROGRESS]
+**Date Started**: 2026-01-22
+**Priority**: 🔴 CRITICAL
+**Objective**: Transition the app from "Offline-First" to "Hybrid Privacy" model to enable cloud features (backup, social, intelligence) while strictly adhering to LGPD using a granular consent model.
+**Cross-Reference**: CORE-62
+
+### Architectural Change
+The original promise of "data stays on device" is replaced by a transparent "Hybrid Choice":
+1.  **Strictly Confidential**: Default state. Data is local.
+2.  **Cloud Backup**: User opts-in (Option 1). Data is safely synced to private cloud.
+3.  **Social Network**: User opts-in (Option 2). Profile/Offers become public to enable business.
+4.  **Collective Intelligence**: User opts-in (Option 3). Rainfall/Price data is anonymized and aggregated for regional stats.
+
+### Implementation Summary
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 62.1 | Refactor `AgroPrivacyStore` to support 3 granular consents (Backup, Social, Intelligence) | ✅ DONE |
+| 62.2 | Update `AgroPrivacyKeys` with new constants (`consent_cloud_backup`, etc.) | ✅ DONE |
+| 62.3 | Update `app_pt.arb` and `app_en.arb` with new extensive legal texts | ✅ DONE |
+| 62.4 | Rewrite `ConsentScreen` to display validity and "Legal Info" dialogs | ✅ DONE |
+| 62.5 | Implement implied consent logic (e.g. Social implies Partners) | ✅ DONE |
+| 62.6 | Regenerate Localizations | ✅ DONE |
+| 62.7 | Verify `SyncService` respects `consentAggregateMetrics` key | ✅ DONE |
+| 62.8 | Verify `UserCloudService` respects `consentCloudBackup` key | ✅ DONE |
+
+### Files Modified
+| File | Action | Description |
+|------|--------|-------------|
+| `packages/agro_core/lib/privacy/agro_privacy_keys.dart` | MODIFY | Added new keys for granular consent |
+| `packages/agro_core/lib/privacy/agro_privacy_store.dart` | MODIFY | Added getters/setters and bulk update logic |
+| `packages/agro_core/lib/l10n/arb/app_pt.arb` | MODIFY | Updated texts to match legal requirements |
+| `packages/agro_core/lib/l10n/arb/app_en.arb` | MODIFY | Updated texts to match legal requirements |
+| `packages/agro_core/lib/privacy/consent_screen.dart` | MODIFY | Implemented new 3-checkbox UI with Legal Info |
+
+---
 ## Phase CHUVA-59: Enhanced Notifications & Weather UI
 ### Status: [DONE]
 **Date Completed**: 2026-01-22

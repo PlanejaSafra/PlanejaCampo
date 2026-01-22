@@ -31,6 +31,17 @@ Ponto de entrada do aplicativo.
         *   `AgroOnboardingGate` (do `agro_core` - para fluxo de privacidade)
         *   `ListaChuvasScreen` (tela inicial)
 
+### Fluxo de Inicialização e Privacidade
+1.  **AuthGate**: Verifica se o usuário está autenticado.
+    *   Se não: Mostra `LoginScreen` (Google/Anônimo).
+2.  **AgroOnboardingGate**: Verifica estado de consentimento.
+    *   Se `!hasAcceptedTerms`: Mostra `IdentityScreen` (Termos).
+    *   Se `!onboardingCompleted`: Mostra `ConsentScreen` (3 Opções: Backup, Social, Inteligência).
+    *   Se concluído: Mostra `ListaChuvasScreen` (Home).
+3.  **Híbrido**:
+    *   `SyncService`: Só envia dados se `AgroPrivacyStore.consentAggregateMetrics` for `true`.
+    *   `UserCloudService`: Só faz backup se `AgroPrivacyStore.consentCloudBackup` for `true`.
+
 ---
 
 ### `lib/screens/lista_chuvas_screen.dart`

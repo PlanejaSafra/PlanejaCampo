@@ -55,28 +55,37 @@ class AgroLocalizationsPt extends AgroLocalizations {
   String get termsFooter => 'Você pode consultar os documentos completos em Configurações → Privacidade.';
 
   @override
-  String get consentTitle => 'Recursos e compartilhamento (opcional)';
+  String get consentTitle => 'Configuração de Privacidade';
 
   @override
-  String get consentIntro => 'Autorize o uso de dados e recursos opcionais:';
+  String get consentIntro => 'Escolha como o PlanejaCampo deve funcionar para você:';
 
   @override
-  String get consentOption1Title => 'Dados e Localização';
+  String get consentOption1Title => 'Backup e Sincronização em Nuvem';
 
   @override
-  String get consentOption1Desc => '';
+  String get consentOption1Desc => 'Salvar dados na nuvem para segurança e acesso em equipe.';
 
   @override
-  String get consentOption2Title => 'Ofertas e Promoções';
+  String get consentOption1Legal => 'Ao ativar, seus dados (como registros de produção, estoque e tarefas) serão enviados para nossos servidores seguros e vinculados à sua conta. Isso permite recuperar tudo caso perca o celular e possibilita que colaboradores autorizados por você acessem os mesmos dados. Esses dados NÃO são tornados públicos.';
 
   @override
-  String get consentOption2Desc => '';
+  String get consentOption2Title => 'Rede de Negócios e Oportunidades';
 
   @override
-  String get consentOption3Title => 'Anúncios Personalizados';
+  String get consentOption2Desc => 'Habilita visualização de vagas e ofertas.';
 
   @override
-  String get consentOption3Desc => '';
+  String get consentOption2Legal => 'Esta opção ativa as funções sociais (Mercado, Vagas, Classificados). Ao criar um anúncio, você concorda em tornar públicos, dentro da plataforma, seus dados de contato (Nome/WhatsApp) e localização da oferta. Isso permite que outros usuários (compradores ou prestadores de serviço) chamem você diretamente. O aplicativo é apenas um facilitador.';
+
+  @override
+  String get consentOption3Title => 'Estatísticas Regionais e Inteligência';
+
+  @override
+  String get consentOption3Desc => 'Colabore com dados anônimos e receba inteligência de mercado.';
+
+  @override
+  String get consentOption3Legal => 'Esta opção desbloqueia as funcionalidades de inteligência coletiva (como ver onde choveu na região ou a média de preços praticada). Em troca, seus dados (anonimizados ou agregados) passam a compor nossa base de inteligência de mercado, que pode ser utilizada para estudos setoriais, pesquisas e comercializada com parceiros estratégicos (governo, associações e empresas). Sem esta permissão, você não terá acesso aos mapas e médias regionais.';
 
   @override
   String get consentSmallNoteUnderDecline => 'Sem aceitar, você pode usar o app normalmente no modo privado (funções básicas offline).';
@@ -94,7 +103,7 @@ class AgroLocalizationsPt extends AgroLocalizations {
   String get identityAnonymousButton => 'Continuar como Visitante';
 
   @override
-  String get identityFooterLegal => 'Ao entrar, você concorda com nossos Termos de Uso e Política de Privacidade.';
+  String get identityFooterLegal => 'Seus dados são seus. Eles ficam no seu dispositivo e podem ser sincronizados se você autorizar.';
 
   @override
   String get identityTermsLink => 'Termos de Uso';

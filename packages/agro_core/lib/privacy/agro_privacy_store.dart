@@ -49,7 +49,7 @@ class AgroPrivacyStore {
     await _safeBox.put(AgroPrivacyKeys.onboardingCompleted, value);
   }
 
-  /// Get consent for aggregate metrics.
+  /// Get consent for aggregate metrics (Option 3).
   static bool get consentAggregateMetrics {
     return _safeBox.get(
       AgroPrivacyKeys.consentAggregateMetrics,
@@ -57,7 +57,23 @@ class AgroPrivacyStore {
     ) as bool;
   }
 
-  /// Get consent for sharing with partners.
+  /// Get consent for cloud backup (Option 1).
+  static bool get consentCloudBackup {
+    return _safeBox.get(
+      AgroPrivacyKeys.consentCloudBackup,
+      defaultValue: false,
+    ) as bool;
+  }
+
+  /// Get consent for social network (Option 2).
+  static bool get consentSocialNetwork {
+    return _safeBox.get(
+      AgroPrivacyKeys.consentSocialNetwork,
+      defaultValue: false,
+    ) as bool;
+  }
+
+  /// Get consent for sharing with partners (Legacy).
   static bool get consentSharePartners {
     return _safeBox.get(
       AgroPrivacyKeys.consentSharePartners,
@@ -65,7 +81,7 @@ class AgroPrivacyStore {
     ) as bool;
   }
 
-  /// Get consent for ads personalization.
+  /// Get consent for ads personalization (Legacy).
   static bool get consentAdsPersonalization {
     return _safeBox.get(
       AgroPrivacyKeys.consentAdsPersonalization,
@@ -96,19 +112,25 @@ class AgroPrivacyStore {
   /// Get a Listenable that notifies when any consent changes.
   static ValueListenable<Box> get allConsentsListenable {
     return _safeBox.listenable(keys: [
+      AgroPrivacyKeys.consentCloudBackup,
+      AgroPrivacyKeys.consentSocialNetwork,
       AgroPrivacyKeys.consentAggregateMetrics,
-      AgroPrivacyKeys.consentSharePartners,
-      AgroPrivacyKeys.consentAdsPersonalization,
     ]);
   }
 
   // =================================================
 
   /// Accept all consents and save timestamp.
+  /// Enables: Backup, Social, Intelligence.
   static Future<void> acceptAllConsents() async {
+    await _safeBox.put(AgroPrivacyKeys.consentCloudBackup, true);
+    await _safeBox.put(AgroPrivacyKeys.consentSocialNetwork, true);
     await _safeBox.put(AgroPrivacyKeys.consentAggregateMetrics, true);
+
+    // Legacy mapping (implicit accept)
     await _safeBox.put(AgroPrivacyKeys.consentSharePartners, true);
     await _safeBox.put(AgroPrivacyKeys.consentAdsPersonalization, true);
+
     await _safeBox.put(
       AgroPrivacyKeys.consentTimestamp,
       DateTime.now().toIso8601String(),
@@ -120,9 +142,13 @@ class AgroPrivacyStore {
 
   /// Reject all consents and save timestamp.
   static Future<void> rejectAllConsents() async {
+    await _safeBox.put(AgroPrivacyKeys.consentCloudBackup, false);
+    await _safeBox.put(AgroPrivacyKeys.consentSocialNetwork, false);
     await _safeBox.put(AgroPrivacyKeys.consentAggregateMetrics, false);
+
     await _safeBox.put(AgroPrivacyKeys.consentSharePartners, false);
     await _safeBox.put(AgroPrivacyKeys.consentAdsPersonalization, false);
+
     await _safeBox.put(
       AgroPrivacyKeys.consentTimestamp,
       DateTime.now().toIso8601String(),
@@ -178,7 +204,9 @@ class AgroPrivacyStore {
         aggregateMetrics: consentAggregateMetrics,
         sharePartners: consentSharePartners,
         adsPersonalization: consentAdsPersonalization,
-        consentVersion: '1.0',
+        cloudBackup: consentCloudBackup,
+        socialNetwork: consentSocialNetwork,
+        consentVersion: '1.1', // Bump version for LGPD 2.0
       );
 
       await cloudService.updateConsents(consents);

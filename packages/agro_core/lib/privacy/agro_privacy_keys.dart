@@ -10,15 +10,21 @@ class AgroPrivacyKeys {
 
   /// Consent for data usage and market intelligence (including commercialization,
   /// sale, and licensing of individual or aggregated data to third parties in any sector).
+  /// Maps to "Option 3" in new LGPD flow.
   static const String consentAggregateMetrics = 'consent_aggregate_metrics';
 
-  /// Consent for receiving commercial offers from partners (any sector including
-  /// agribusiness, finance, digital entertainment, retail, etc.) via app, email, SMS, or WhatsApp.
-  /// Partners are not curated by PlanejaCampo.
+  /// Consent for Cloud Backup and Sync.
+  /// Maps to "Option 1" in new LGPD flow.
+  static const String consentCloudBackup = 'consent_cloud_backup';
+
+  /// Consent for Business Network and Social features.
+  /// Maps to "Option 2" in new LGPD flow.
+  static const String consentSocialNetwork = 'consent_social_network';
+
+  /// Legacy: Consent for receiving commercial offers from partners.
   static const String consentSharePartners = 'consent_share_partners';
 
-  /// Consent for personalized advertising via third-party ad networks (Google Ads, Meta, etc.).
-  /// Includes sharing user data for ad targeting and lookalike audience creation.
+  /// Legacy: Consent for personalized advertising.
   static const String consentAdsPersonalization = 'consent_ads_personalization';
 
   /// Whether onboarding flow has been completed.

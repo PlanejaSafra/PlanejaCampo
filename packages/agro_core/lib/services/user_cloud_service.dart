@@ -119,7 +119,8 @@ class UserCloudService {
   void _syncToFirestoreThrottled(UserCloudData userData) {
     if (!userData.syncEnabled) return;
     if (userData.lastSyncedAt != null) {
-      final timeSinceLastSync = DateTime.now().difference(userData.lastSyncedAt!);
+      final timeSinceLastSync =
+          DateTime.now().difference(userData.lastSyncedAt!);
       if (timeSinceLastSync.inMinutes < 5) {
         return; // Skip sync, too recent
       }
@@ -218,6 +219,61 @@ class UserCloudService {
       return userData;
     } catch (e) {
       return null;
+    }
+  }
+
+  /// Sync a private rainfall record to User's private collection (Option 1)
+  Future<void> syncRainfallRecord({
+    required String recordId,
+    required Map<String, dynamic> data,
+  }) async {
+    // 1. Check Consent (Redundant check, but safe)
+    // We can access AgroPrivacyStore here, but better to check caller or pass explicit flag?
+    // Actually UserCloudService is in agro_core, AgroPrivacyStore is in agro_core.
+    // BUT UserCloudService doesn't import AgroPrivacyStore to avoid circles?
+    // Let's check imports. It imports `consent_data.dart` (model).
+    // Let's assume caller checks consent, OR we check UserCloudData consents.
+
+    final userData = getCurrentUserData();
+    if (userData == null || !userData.syncEnabled) return;
+
+    // Check specific backup consent
+    // userData.consents has the flags.
+    if (!userData.consents.cloudBackup) return;
+
+    if (_firestore == null) return;
+
+    try {
+      await _firestore!
+          .collection(_collectionName)
+          .doc(userData.uid)
+          .collection('rainfall_records')
+          .doc(recordId)
+          .set(data, SetOptions(merge: true));
+    } catch (e) {
+      // Fire-and-forget
+    }
+  }
+
+  /// Delete a private rainfall record from cloud
+  Future<void> deleteRainfallRecord(String recordId) async {
+    final userData = getCurrentUserData();
+    if (userData == null) return;
+
+    // Even if consent is off NOW, if we are deleting, we should try to delete from cloud
+    // in case it was synced BEFORE. Deletion should always propagate if possible.
+
+    if (_firestore == null) return;
+
+    try {
+      await _firestore!
+          .collection(_collectionName)
+          .doc(userData.uid)
+          .collection('rainfall_records')
+          .doc(recordId)
+          .delete();
+    } catch (e) {
+      // safe fail
     }
   }
 }

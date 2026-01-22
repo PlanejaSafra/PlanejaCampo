@@ -27,14 +27,18 @@ class ConsentScreen extends StatefulWidget {
 }
 
 class _ConsentScreenState extends State<ConsentScreen> {
+  // Option 1: Backup (Default: TRUE)
+  bool _cloudBackup = true;
+  // Option 2: Social (Default: FALSE)
+  bool _socialNetwork = false;
+  // Option 3: Intelligence (Default: FALSE)
   bool _aggregateMetrics = false;
-  bool _sharePartners = false;
-  bool _adsPersonalization = false;
+
   bool _isProcessing = false;
 
   /// Check if any consent is selected
   bool get _hasAnyConsent =>
-      _aggregateMetrics || _sharePartners || _adsPersonalization;
+      _cloudBackup || _socialNetwork || _aggregateMetrics;
 
   /// Smart "Chameleon Button":
   /// - If NO checkboxes are marked: "Accept ALL and Continue" (accepts everything)
@@ -51,16 +55,30 @@ class _ConsentScreenState extends State<ConsentScreen> {
       } else {
         // Scenario B: User made manual selections
         await AgroPrivacyStore.setConsent(
+          AgroPrivacyKeys.consentCloudBackup,
+          _cloudBackup,
+        );
+        await AgroPrivacyStore.setConsent(
+          AgroPrivacyKeys.consentSocialNetwork,
+          _socialNetwork,
+        );
+        await AgroPrivacyStore.setConsent(
           AgroPrivacyKeys.consentAggregateMetrics,
           _aggregateMetrics,
         );
+
+        // Legacy/Implicit mapping
+        // If social is active, we might imply partners/ads?
+        // For compliance, let's keep legacy keys enabled if Social is enabled,
+        // OR just keep them false if not explicitly asked.
+        // Let's set legacy keys to match SocialNetwork for now, as that's the closest proxy.
         await AgroPrivacyStore.setConsent(
           AgroPrivacyKeys.consentSharePartners,
-          _sharePartners,
+          _socialNetwork,
         );
         await AgroPrivacyStore.setConsent(
           AgroPrivacyKeys.consentAdsPersonalization,
-          _adsPersonalization,
+          _socialNetwork, // Or _aggregateMetrics? User didn't specify. Safe bet: Social.
         );
       }
 
@@ -166,30 +184,38 @@ class _ConsentScreenState extends State<ConsentScreen> {
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
+                      // Option 1: Cloud Backup
                       _ConsentTile(
                         title: l10n.consentOption1Title,
                         subtitle: l10n.consentOption1Desc,
-                        value: _aggregateMetrics,
+                        legalText: l10n.consentOption1Legal,
+                        value: _cloudBackup,
                         onChanged: (v) => setState(() {
-                          _aggregateMetrics = v ?? false;
+                          _cloudBackup = v ?? false;
                         }),
                       ),
                       const SizedBox(height: 8),
+
+                      // Option 2: Business Network
                       _ConsentTile(
                         title: l10n.consentOption2Title,
                         subtitle: l10n.consentOption2Desc,
-                        value: _sharePartners,
+                        legalText: l10n.consentOption2Legal,
+                        value: _socialNetwork,
                         onChanged: (v) => setState(() {
-                          _sharePartners = v ?? false;
+                          _socialNetwork = v ?? false;
                         }),
                       ),
                       const SizedBox(height: 8),
+
+                      // Option 3: Intelligence
                       _ConsentTile(
                         title: l10n.consentOption3Title,
                         subtitle: l10n.consentOption3Desc,
-                        value: _adsPersonalization,
+                        legalText: l10n.consentOption3Legal,
+                        value: _aggregateMetrics,
                         onChanged: (v) => setState(() {
-                          _adsPersonalization = v ?? false;
+                          _aggregateMetrics = v ?? false;
                         }),
                       ),
                     ],
@@ -274,15 +300,37 @@ class _ConsentScreenState extends State<ConsentScreen> {
 class _ConsentTile extends StatelessWidget {
   final String title;
   final String subtitle;
+  final String? legalText;
   final bool value;
   final ValueChanged<bool?> onChanged;
 
   const _ConsentTile({
     required this.title,
     required this.subtitle,
+    this.legalText,
     required this.value,
     required this.onChanged,
   });
+
+  void _showLegalInfo(BuildContext context) {
+    if (legalText == null) return;
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(title),
+        content: SingleChildScrollView(
+          child: Text(legalText!),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -290,11 +338,25 @@ class _ConsentTile extends StatelessWidget {
 
     return Card(
       child: CheckboxListTile(
-        title: Text(
-          title,
-          style: theme.textTheme.bodyMedium?.copyWith(
-            fontWeight: FontWeight.w500,
-          ),
+        title: Row(
+          children: [
+            Expanded(
+              child: Text(
+                title,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+            if (legalText != null)
+              IconButton(
+                icon: const Icon(Icons.info_outline, size: 20),
+                color: theme.colorScheme.primary,
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+                onPressed: () => _showLegalInfo(context),
+              ),
+          ],
         ),
         subtitle: subtitle.isEmpty
             ? null
