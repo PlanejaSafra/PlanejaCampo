@@ -218,7 +218,7 @@ abstract class AgroLocalizations {
   /// No description provided for @termsSection3Body.
   ///
   /// In en, this message translates to:
-  /// **'You can use our apps in two ways:\n\n• Guest Mode (Hybrid): No Google login. By default, operational data (rain/livestock) stays on the device. Technical metadata and IDs are sent to servers for security and ads. **If you choose to enable Business Network or Intelligence**, your data will be sent to our servers even without login.\n• Connected Mode (Google): Unlocks the Full Ecosystem, allowing secure cloud storage, synchronization, data recovery, and easier access to Network and Intelligence features.\n\nIn both modes, you control which data you share through consent options. You are responsible for maintaining the confidentiality of your account and for all activities that occur under your account.'**
+  /// **'You can use our apps in two ways:\n\n• Guest Mode (Hybrid): No Google login. By default, your operational data (such as production records, weather, operations, among others) stays on the device. Technical metadata and IDs are sent to servers for security and ads. **If you choose to enable Business Network or Intelligence**, your data will be sent to our servers even without login.\n• Connected Mode (Google): Unlocks the Full Ecosystem, allowing secure cloud storage, synchronization, data recovery, and easier access to Network and Intelligence features.\n\nIn both modes, you control which data you share through consent options. You are responsible for maintaining the confidentiality of your account and for all activities that occur under your account.'**
   String get termsSection3Body;
 
   /// No description provided for @termsSection4Title.
@@ -362,7 +362,7 @@ abstract class AgroLocalizations {
   /// No description provided for @consentOption2Legal.
   ///
   /// In en, this message translates to:
-  /// **'This option activates social features (Market, Jobs, Classifieds, etc.) and is available for both guests and logged-in users. By creating an ad, you agree to make your contact details (Name/WhatsApp) and offer location public within the platform. Your data will be sent to our servers. The app is merely a connection facilitator.'**
+  /// **'This option activates social features (Market, Jobs, Classifieds, etc.) and is available for both guests and logged-in users. By activating, you authorize the sending, storage, processing, and sharing of your data — including, but not limited to, profile information, contact details, location, and ad content — as necessary for the operation of the platform and its partners. The app is merely a connection facilitator.'**
   String get consentOption2Legal;
 
   /// No description provided for @consentOptionSocialLearnMore.
@@ -392,7 +392,7 @@ abstract class AgroLocalizations {
   /// No description provided for @consentOption3Legal.
   ///
   /// In en, this message translates to:
-  /// **'This option unlocks collective intelligence features (such as seeing where it rained in the region, average prices, and other regional metrics) and is available for both guests and logged-in users. In exchange, your data (anonymized or aggregated) will be sent to our servers and makes up our market intelligence base. Without this permission, you will not have access to regional maps and averages.'**
+  /// **'This option unlocks collective intelligence features and is available for both guests and logged-in users. By activating, you authorize the sending, storage, processing, aggregation, analysis, and sharing of your data — including, but not limited to, production data, weather, location, and operations — in identified, anonymized, or aggregated form, for market intelligence, research, commercial partnerships, and service improvement purposes. Without this permission, you will not have access to regional maps and metrics.'**
   String get consentOption3Legal;
 
   /// No description provided for @consentOptionIntelligenceLearnMore.
