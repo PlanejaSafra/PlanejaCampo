@@ -1,6 +1,11 @@
 import 'package:agro_core/agro_core.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../models/registro_chuva.dart';
+import 'sync_service.dart';
+import 'package:flutter/foundation.dart'; // For debugPrint
+// Actually PropertyService is in agro_core/services.
+// check line 1: import 'package:agro_core/agro_core.dart';.
+// PropertyService is likely there.
 
 /// Service responsible for managing rainfall records storage using Hive.
 class ChuvaService {
@@ -37,12 +42,41 @@ class ChuvaService {
   Future<void> adicionar(RegistroChuva registro) async {
     await _box.put(registro.id.toString(), registro);
     await _updateWidget();
+
+    // CORE-61: Trigger sync
+    await _trySyncRecord(registro);
   }
 
   /// Updates an existing record.
   Future<void> atualizar(RegistroChuva registro) async {
     await _box.put(registro.id.toString(), registro);
     await _updateWidget();
+
+    // CORE-61: Trigger sync (update might change values)
+    await _trySyncRecord(registro);
+  }
+
+  /// Helper to queue and sync a record
+  Future<void> _trySyncRecord(RegistroChuva registro) async {
+    try {
+      // We need property details for the location
+      final propertyService = PropertyService();
+      // Ensure property service is initialized if not already (it usually is)
+      // But PropertyService.init() is async. Best to rely on it being ready or await?
+      // Prudence: await init.
+      await propertyService.init();
+
+      final property = propertyService.getPropertyById(registro.propertyId);
+      if (property != null) {
+        await SyncService().queueForSync(registro, property);
+
+        // Try to push immediately (fire and forget to not block UI)
+        SyncService().syncPendingItems().ignore();
+      }
+    } catch (e) {
+      // Silent fail for sync side effects
+      debugPrint('ChuvaService: Error syncing record: $e');
+    }
   }
 
   /// Deletes a record by its ID.

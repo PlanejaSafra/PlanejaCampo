@@ -3,6 +3,7 @@ import 'package:agro_core/agro_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dart_geohash/dart_geohash.dart';
 import 'package:hive/hive.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import '../models/regional_stats.dart';
 import '../models/registro_chuva.dart';
@@ -150,7 +151,13 @@ class SyncService {
 
   /// Sync a single item to Firestore
   Future<void> _syncSingleItem(SyncQueueItem item) async {
-    // Prepare document data (anonymized)
+    // Prepare document data (anonymized*)
+    // * We MUST include userId to satisfy Firestore Security Rules (Fail-Safe),
+    // even if logically we want it anonymized.
+    // The rules require: request.resource.data.userId == request.auth.uid
+    final userId =
+        _firestore.app.options.apiKey.isNotEmpty ? (await _getUserId()) : null;
+
     final docData = {
       'mm': item.millimeters,
       'date': Timestamp.fromDate(item.date),
@@ -161,6 +168,10 @@ class SyncService {
       'geohash3': item.geoHash5.substring(0, 3),
       'uploaded_at': FieldValue.serverTimestamp(),
     };
+
+    if (userId != null) {
+      docData['userId'] = userId;
+    }
 
     // Write to Firestore with timeout
     await _firestore
@@ -254,9 +265,8 @@ class SyncService {
   }
 
   /// Get pending sync queue count
-  int get pendingItemCount => _queueBox.values
-      .where((item) => item.shouldRetry)
-      .length;
+  int get pendingItemCount =>
+      _queueBox.values.where((item) => item.shouldRetry).length;
 
   /// Clear all sync queue (for testing/debugging)
   Future<void> clearQueue() async {
@@ -272,7 +282,16 @@ class SyncService {
 
   /// Update last sync timestamp
   void updateLastSyncTimestamp() {
-    _metadataBox.put('last_sync_timestamp', DateTime.now().millisecondsSinceEpoch);
+    _metadataBox.put(
+        'last_sync_timestamp', DateTime.now().millisecondsSinceEpoch);
+  }
+
+  Future<String?> _getUserId() async {
+    try {
+      return FirebaseAuth.instance.currentUser?.uid;
+    } catch (e) {
+      return null;
+    }
   }
 }
 
