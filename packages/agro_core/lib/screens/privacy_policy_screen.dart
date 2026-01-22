@@ -37,145 +37,90 @@ class PrivacyPolicyScreen extends StatelessWidget {
           _buildSection(
             context,
             '2. Dados que Coletamos',
-            'Dependendo de como você usa nossos aplicativos, podemos coletar:\n\n'
-                '**Dados de Conta (se você fizer login com Google):**\n'
-                '• Nome e email do Google\n'
-                '• ID único de usuário\n'
-                '• Foto de perfil (se disponível)\n\n'
-                '**Dados de Uso dos Aplicativos:**\n'
-                '• Registros agrícolas (chuvas, produção, etc.)\n'
-                '• Informações de propriedades rurais\n'
-                '• Configurações e preferências do aplicativo\n'
-                '• Dados de localização (apenas se você fornecer)\n\n'
-                '**Dados Técnicos:**\n'
-                '• Tipo de dispositivo e versão do sistema operacional\n'
-                '• Logs de erros e falhas (para melhorar o app)\n'
-                '• Informações de uso anônimas (se você consentir)',
+            'Para operar o Ecossistema Digital, coletamos:\n\n'
+                '**Dados de Conta e Perfil:**\n'
+                '• Nome, email, telefone e foto (login Google)\n'
+                '• ID único de usuário e credenciais de acesso\n'
+                '• Outros dados que você optar por preencher (endereço, bio, qualificações)\n\n'
+                '**Dados Agronômicos e de Negócios:**\n'
+                '• Inventário, chuvas, produção, rebanho e tarefas\n'
+                '• Ofertas de compras, vendas e serviços\n'
+                '• Localização das propriedades (GPS)\n\n'
+                '**Dados Técnicos e de Comportamento:**\n'
+                '• Modelo do dispositivo, IP e sistema operacional\n'
+                '• Interações com anúncios e funcionalidades do app',
           ),
           _buildSection(
             context,
-            '3. Como Usamos Seus Dados',
-            'Utilizamos seus dados para:\n\n'
-                '• Fornecer e melhorar nossos serviços\n'
-                '• Sincronizar dados entre seus dispositivos (se você usar login)\n'
-                '• Realizar backup na nuvem (se você usar login)\n'
-                '• Gerar estatísticas e métricas personalizadas\n'
-                '• Corrigir bugs e melhorar a estabilidade\n'
-                '• Pesquisa agrícola agregada (APENAS se você consentir)\n\n'
-                'Nós NÃO usamos seus dados para:\n'
-                '• Vender para terceiros\n'
-                '• Publicidade direcionada sem consentimento\n'
-                '• Compartilhar dados identificáveis sem permissão',
+            '3. Uso Comercial e Inteligência (Modelo de Negócio)',
+            'Ao utilizar o aplicativo gratuitamente, você concorda que sustentamos a plataforma através de:\n\n'
+                '**1. Geração de Inteligência de Mercado:**\n'
+                'Processamos seus dados agronômicos de forma AGREGADA ou ANONIMIZADA para criar relatórios, estatísticas e índices de mercado que podem ser comercializados com parceiros do setor.\n\n'
+                '**2. Conexão de Negócios (Matchmaking):**\n'
+                'Utilizamos seus dados de perfil e ofertas para conectar você a potenciais compradores, vendedores ou prestadores de serviço.\n\n'
+                '**3. Melhoria do Serviço:**\n'
+                'Para aprimorar algoritmos de previsão climática, diagnóstico de pragas e recomendações de manejo.',
           ),
           _buildSection(
             context,
             '4. Compartilhamento de Dados',
-            'Seus dados pessoais NÃO são compartilhados, exceto:\n\n'
-                '**Com seu consentimento explícito:**\n'
-                '• Dados agregados e anonimizados para pesquisa\n'
-                '• Métricas regionais sem identificação\n\n'
-                '**Para cumprir a lei:**\n'
-                '• Se exigido por ordem judicial\n'
-                '• Para proteger direitos legais\n\n'
-                '**Prestadores de serviço:**\n'
-                '• Firebase (Google) - hospedagem e autenticação\n'
-                '• Servidores seguros para armazenamento de backup',
+            'Seus dados pessoais NÃO são compartilhados, EXCETO nas seguintes situações que você optou por ativar:\n\n'
+                '**Rede de Negócios (Classificados):**\n'
+                '• Seu Nome e WhatsApp tornam-se públicos para outros usuários da plataforma ao criar um anúncio\n\n'
+                '**Inteligência Agronômica:**\n'
+                '• Seus dados de produção e clima são compartilhados de forma ANONIMIZADA ou AGREGADA para compor estatísticas de mercado\n\n'
+                '**Operadores Legais:**\n'
+                '• Para cumprir ordens judiciais ou prevenir fraudes\n'
+                '• Com provedores de infraestrutura (Google Cloud/Firebase) sob contrato de sigilo',
           ),
           _buildSection(
             context,
-            '5. Armazenamento de Dados',
-            '**Modo Anônimo (sem login):**\n'
-                '• Todos os dados ficam APENAS no seu dispositivo\n'
-                '• Não enviamos nada para servidores\n'
-                '• Você é responsável por backups locais\n\n'
-                '**Modo com Login Google:**\n'
-                '• Dados sincronizados na nuvem (Firebase)\n'
-                '• Criptografados em trânsito e em repouso\n'
-                '• Backup automático entre dispositivos\n'
-                '• Armazenados em servidores seguros do Google',
+            '5. Armazenamento e Transferência Internacional',
+            'Seus dados podem ser armazenados e processados no Brasil ou em qualquer outro país onde nós ou nossos parceiros (como Google/Firebase) mantenham servidores.\n\n'
+                '**Modo Visitante (Sem Login):**\n'
+                'Os dados agronômicos ficam prioritariamente no seu dispositivo, mas metadados técnicos (IP, logs) podem ser enviados para servidores para controle de segurança e anúncios.\n\n'
+                '**Modo Conectado:**\n'
+                'Dados são sincronizados na nuvem para backup e acesso multidispositivo, protegidos por criptografia em trânsito e repouso.',
           ),
           _buildSection(
             context,
-            '6. Seus Direitos (LGPD)',
-            'De acordo com a Lei Geral de Proteção de Dados (LGPD), você tem direito a:\n\n'
-                '• **Acesso:** Ver quais dados temos sobre você\n'
-                '• **Correção:** Corrigir dados incorretos\n'
-                '• **Exclusão:** Deletar sua conta e todos os dados\n'
-                '• **Portabilidade:** Exportar seus dados em formato JSON\n'
-                '• **Revogação:** Retirar consentimentos a qualquer momento\n'
-                '• **Informação:** Saber com quem compartilhamos dados\n\n'
-                'Para exercer esses direitos, acesse Configurações > Privacidade no app.',
+            '6. Direitos do Usuário',
+            'Você mantém controle sobre seus dados pessoais diretos (Nome/Email) e pode solicitar exclusão ou portabilidade a qualquer momento. Dados já anonimizados ou agregados em relatórios de inteligência não podem ser removidos, pois deixaram de ser pessoais.',
           ),
           _buildSection(
             context,
-            '7. Consentimentos Opcionais',
-            'Solicitamos seu consentimento separado para três finalidades:\n\n'
-                '**7.1. Dados e Localização**\n'
-                'Ao aceitar, você autoriza o uso dos seus registros (chuvas, preços, etc.) e localização para:\n'
-                '• Gerar inteligência de mercado e relatórios comerciais\n'
-                '• Licenciamento de dados agregados para terceiros\n'
-                '• Análises preditivas para o setor agrícola\n'
-                '• Previsão do tempo personalizada para sua propriedade\n'
-                'Seus dados podem ser comercializados de forma agregada ou individual (sem nome/CPF) para empresas de qualquer setor.\n\n'
-                '**7.2. Ofertas e Promoções**\n'
-                'Ao aceitar, você pode receber comunicações de parceiros comerciais via:\n'
-                '• Notificações push, email, SMS ou WhatsApp\n'
-                '• Banners e conteúdo patrocinado no app\n'
-                'Os parceiros NÃO são curados pela PlanejaCampo e podem incluir qualquer setor (agro, finanças, varejo, entretenimento, etc.).\n\n'
-                '**7.3. Anúncios Personalizados**\n'
-                'Ao aceitar, seus dados de perfil e comportamento de uso são compartilhados com redes de anúncios (Google Ads, Meta, etc.) para:\n'
-                '• Exibir anúncios personalizados dentro e fora do app\n'
-                '• Criar audiências personalizadas (custom/lookalike audiences)\n'
-                '• Rastrear conversões e eficácia de campanhas\n\n'
-                'Você pode alterar esses consentimentos a qualquer momento em Configurações > Privacidade.',
+            '7. Termos Específicos (Nuclear Shield)',
+            'Ao ativar funcionalidades específicas, você concorda com termos estendidos:\n\n'
+                '**7.1. Rede de Negócios:**\n'
+                'Você autoriza a exibição pública do seu perfil e ofertas. A plataforma não modera antecipadamente o conteúdo e não se responsabiliza por negociações.\n\n'
+                '**7.2. Inteligência Agronômica:**\n'
+                'Você concede licença perpétua e irrevogável para uso dos seus dados técnicos (clima, solo, produção) de forma anonimizada para composição de produtos de inteligência.',
           ),
           _buildSection(
             context,
             '8. Segurança',
-            'Implementamos medidas de segurança para proteger seus dados:\n\n'
-                '• Criptografia SSL/TLS em todas as conexões\n'
-                '• Autenticação segura via Google\n'
-                '• Armazenamento criptografado no Firebase\n'
-                '• Acesso restrito a dados pessoais\n'
-                '• Monitoramento de segurança contínuo\n\n'
-                'Apesar disso, nenhum sistema é 100% seguro. Use senhas fortes e proteja seu dispositivo.',
+            'Utilizamos criptografia padrão de mercado e autenticação segura. No entanto, nenhum sistema é infalível. Você é responsável por proteger suas credenciais de acesso.',
           ),
           _buildSection(
             context,
-            '9. Retenção de Dados',
-            '• **Dados de conta:** Mantidos enquanto sua conta estiver ativa\n'
-                '• **Dados de uso:** Excluídos quando você deletar a conta\n'
-                '• **Logs técnicos:** Mantidos por até 90 dias\n'
-                '• **Dados agregados:** Anonimizados permanentemente\n\n'
-                'Ao deletar sua conta, todos os dados identificáveis são removidos em até 30 dias.',
+            '9. Uso Profissional e Restrição de Idade',
+            'Este aplicativo é destinado exclusivamente a USO PROFISSIONAL por produtores rurais, técnicos e trabalhadores do setor agropecuário.\n\n'
+                'Não é permitido o uso por menores de 18 anos. Não coletamos intencionalmente dados de crianças. Se identificarmos uma conta de menor, ela será encerrada.',
           ),
           _buildSection(
             context,
-            '10. Crianças',
-            'Nossos aplicativos não são direcionados a menores de 13 anos. Não coletamos intencionalmente dados de crianças. Se você acredita que coletamos dados de uma criança, entre em contato para que possamos removê-los.',
+            '10. Alterações',
+            'Podemos alterar esta política a qualquer momento para refletir novos modelos de negócio. O uso continuado do app implica aceitação das mudanças.',
           ),
           _buildSection(
             context,
-            '11. Alterações nesta Política',
-            'Podemos atualizar esta Política de Privacidade periodicamente. Notificaremos sobre mudanças significativas através do aplicativo. Recomendamos revisar esta política regularmente.',
+            '11. Tecnologias de Armazenamento',
+            'Utilizamos bancos de dados locais seguros e tecnologias de cache para garantir o funcionamento offline-first.',
           ),
           _buildSection(
             context,
-            '12. Cookies e Tecnologias Similares',
-            'Nossos aplicativos móveis NÃO usam cookies. Armazenamos preferências localmente no dispositivo usando tecnologias seguras (Hive). Esses dados não são acessíveis por outros aplicativos.',
-          ),
-          _buildSection(
-            context,
-            '13. Transferência Internacional',
-            'Se você usa nossos serviços de fora do Brasil, seus dados podem ser transferidos e armazenados em servidores do Google em outros países. Garantimos proteção adequada em conformidade com a LGPD.',
-          ),
-          _buildSection(
-            context,
-            '14. Contato',
-            'Para questões sobre privacidade ou para exercer seus direitos:\n\n'
-                '• Acesse Configurações > Sobre no aplicativo\n'
-                '• Ou acesse Configurações > Privacidade para gerenciar dados\n\n'
-                'Responderemos todas as solicitações em até 15 dias úteis.',
+            '12. Contato',
+            'Dúvidas? Acesse Configurações > Sobre.',
           ),
           const SizedBox(height: 24),
           const Divider(),

@@ -8,7 +8,7 @@ import '../screens/privacy_policy_screen.dart';
 import '../screens/terms_of_use_screen.dart';
 import '../services/auth_service.dart';
 import '../services/property_service.dart';
-import '../l10n/agro_localizations.dart';
+import '../l10n/generated/app_localizations.dart';
 
 /// Login screen with Google Sign-In (official button design).
 /// Follows Google Sign-In Branding Guidelines:
@@ -354,19 +354,19 @@ class _LoginScreenState extends State<LoginScreen> {
                 _buildBenefitItem(
                   context,
                   Icons.cloud_sync,
-                  AgroLocalizations.of(context).loginBenefitSync,
+                  AgroLocalizations.of(context)!.loginBenefitSync,
                 ),
                 const SizedBox(height: 12),
                 _buildBenefitItem(
                   context,
                   Icons.backup,
-                  AgroLocalizations.of(context).loginBenefitSocial,
+                  AgroLocalizations.of(context)!.loginBenefitSocial,
                 ),
                 const SizedBox(height: 12),
                 _buildBenefitItem(
                   context,
                   Icons.lock_outline,
-                  AgroLocalizations.of(context).loginBenefitSecurity,
+                  AgroLocalizations.of(context)!.loginBenefitSecurity,
                 ),
               ],
             ),

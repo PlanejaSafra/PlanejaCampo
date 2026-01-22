@@ -40,52 +40,58 @@ class AgroLocalizationsEn extends AgroLocalizations {
   String get termsSummaryTitle => 'Summary of what happens:';
 
   @override
-  String get termsSummaryItem1 => 'You record information such as rainfall, prices, weighings, notes, and entries.';
+  String get termsSummaryItem1 => 'This app is a decision support and calculation tool. It provides simulations and estimates based on algorithms that do NOT replace professional evaluation by a technician or agronomist, and the developer is not responsible for any results obtained in the field.';
 
   @override
-  String get termsSummaryItem2 => 'This data is stored on your device to make the app work.';
+  String get termsSummaryItem2 => 'Your operational data stays on the device (Local Mode). Cloud upload, encryption, and backup occur only if you enable Backup or Network options.';
 
   @override
   String get termsSummaryItem3 => 'The app may display ads in the free version.';
 
   @override
-  String get termsSummaryItem4 => 'We may collect minimal technical information (e.g., crashes and performance) to improve the app.';
+  String get termsFooter => 'You can view the full documents in Settings → Privacy.';
 
   @override
-  String get termsFooter => 'You can review the full documents in Settings → Privacy.';
+  String get consentTitle => 'Privacy Configuration';
 
   @override
-  String get consentTitle => 'Privacy Settings';
-
-  @override
-  String get consentIntro => 'Choose how PlanejaCampo works for you:';
+  String get consentIntro => 'Choose how PlanejaCampo should work for you:';
 
   @override
   String get consentOption1Title => 'Cloud Backup & Sync';
 
   @override
-  String get consentOption1Desc => 'Save data to cloud for safety and team access.';
+  String get consentOption1Desc => 'Save data to the cloud for security and team access.';
 
   @override
-  String get consentOption1Legal => 'By activating this, your data (records, inventory, tasks) will be sent to our secure servers and linked to your account. This allows recovery if you lose your phone and enables authorized team members to access the same data. This data is NOT made public.';
+  String get consentOption1Legal => 'By activating this, your data (such as production records, inventory, and tasks) will be sent to our secure servers and linked to your account. This allows you to recover everything if you lose your phone and enables authorized collaborators to access the same data. This data is NOT made public.';
 
   @override
   String get consentOption2Title => 'Business Network & Opportunities';
 
   @override
-  String get consentOption2Desc => 'Enable job listings and offers view.';
+  String get consentOption2Desc => 'Enables viewing vacancies and offers (Digital Showcase).';
 
   @override
-  String get consentOption2Legal => 'This option activates social features (Market, Jobs, Classifieds). By creating an ad, you agree to make your contact info (Name/WhatsApp) and offer location public within the platform. This allows other users to contact you directly. The app is merely a facilitator.';
+  String get consentOption2Legal => 'This option activates social features (Market, Jobs, Classifieds). By creating an ad, you agree to make your contact details (Name/WhatsApp) and offer location public within the platform. This allows other users to contact you directly. The app is merely a facilitator.';
 
   @override
-  String get consentOption3Title => 'Regional Stats & Intelligence';
+  String get consentOptionSocialLearnMore => 'Enables the DIGITAL BUSINESS ECOSYSTEM. The app is a CONNECTION PLATFORM and does not guarantee transactions.\n\nTOTAL LIABILITY WAIVER:\n1. PHYSICAL SECURITY: We are not responsible for assaults, accidents, or crimes occurring in face-to-face meetings;\n2. FINANCIAL AND DIGITAL SECURITY: We are not responsible for bank transactions, PIX, non-payment, fraud, digital scams, or phishing occurring inside or outside the platform;\n3. LABOR RELATIONS: We do not check links or backgrounds.\nThe responsibility for any financial transaction or hiring is 100% YOURS.';
 
   @override
-  String get consentOption3Desc => 'Contribute with anonymous data and get market insights.';
+  String get safetyWarningMessage => 'SAFETY TIP: When scheduling in-person visits, check the person\'s references and let a family member know. PlanejaCampo does not check users\' criminal backgrounds.';
 
   @override
-  String get consentOption3Legal => 'This unlocks collective intelligence features (rain maps, price averages). In exchange, your data (anonymized or aggregated) joins our market intelligence base, which may be used for sector studies and commercialized with partners (government, associations, companies). Without this permission, you won\'t access regional maps and averages.';
+  String get consentOption3Title => 'Agronomic & Market Intelligence';
+
+  @override
+  String get consentOption3Desc => 'Enables maps, price averages, and advanced technical suggestion tools (fertilization, management, weather).';
+
+  @override
+  String get consentOption3Legal => 'This option unlocks collective intelligence features (such as seeing where it rained in the region or average prices). In exchange, your data (anonymized or aggregated) makes up our market intelligence base. Without this permission, you will not have access to regional maps and averages.';
+
+  @override
+  String get consentOptionIntelligenceLearnMore => 'This unlocks collective intelligence features and decision support tools. In exchange, your anonymized data composes our base.\n\nTOTAL TECHNICAL AND AGRONOMIC LIABILITY WAIVER:\nAll management suggestions, fertilization/liming calculations, pesticide indications, crop forecasts, or diagnoses generated by the system are SIMULATIONS based on mathematical and statistical algorithms.\n\nThe app does NOT replace face-to-face consulting or the issuance of an Agronomic Prescription by a qualified Agronomist, as required by law. The app is NOT liable for:\n1. Dosing errors, phytotoxicity, or product inefficiency;\n2. Environmental damage, soil/water contamination, or crop death;\n3. Chemical incompatibility of mixtures;\n4. Losses due to pests, diseases, or unforeseen weather.\n\nThe decision to apply any input or technique is the sole and exclusive responsibility of the user, who assumes all technical, environmental, and financial risks.';
 
   @override
   String get consentSmallNoteUnderDecline => 'Without accepting, you can use the app normally in private mode (basic offline features).';
@@ -103,7 +109,7 @@ class AgroLocalizationsEn extends AgroLocalizations {
   String get identityAnonymousButton => 'Continue as Guest';
 
   @override
-  String get identityFooterLegal => 'Your data is yours. It stays on your device and can be synced if you authorize.';
+  String get identityFooterLegal => 'Your data is private by default. We do not sell personally identifiable data. The use of data for market statistics and partnerships occurs only with your authorization in Intelligence modules.';
 
   @override
   String get identityTermsLink => 'Terms of Use';
@@ -914,13 +920,13 @@ class AgroLocalizationsEn extends AgroLocalizations {
   String get backupCloudAnonymousWarning => 'Create a Google account to save your data to the cloud';
 
   @override
-  String get loginBenefitSync => 'Sync & Backup (Optional)';
+  String get loginBenefitSync => 'Sync & Backup (If enabled)';
 
   @override
-  String get loginBenefitSocial => 'Access to Business Stats (Optional)';
+  String get loginBenefitSocial => 'Business Network (If enabled)';
 
   @override
-  String get loginBenefitSecurity => 'Your data is secure and private';
+  String get loginBenefitSecurity => 'Total privacy by default (you control what you share)';
 
   @override
   String get backupLocalSection => 'Local Backup';

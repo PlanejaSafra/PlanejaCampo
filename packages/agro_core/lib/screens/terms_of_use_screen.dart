@@ -54,12 +54,13 @@ class TermsOfUseScreen extends StatelessWidget {
           ),
           _buildSection(
             context,
-            '4. Propriedade de Dados',
-            'Todos os dados que você insere nos aplicativos PlanejaCampo pertencem a você. Nós:\n\n'
-                '• NÃO vendemos seus dados pessoais\n'
-                '• NÃO compartilhamos dados identificáveis sem seu consentimento\n'
-                '• Utilizamos dados agregados e anonimizados apenas se você consentir\n'
-                '• Permitimos que você exporte ou delete seus dados a qualquer momento',
+            '4. Propriedade e Uso de Dados (Modelo Híbrido)',
+            'Os dados inseridos pertencem a você e permanecem armazenados localmente no seu dispositivo por padrão (Offline-First).\n\n'
+                'Nós NÃO acessamos, vendemos ou compartilhamos seus dados, EXCETO se você optar explicitamente por ativar as funcionalidades de:\n'
+                '• Backup em Nuvem (armazenamento seguro vinculado à sua conta)\n'
+                '• Rede de Negócios (dados de contato tornam-se públicos para ofertas)\n'
+                '• Inteligência Agronômica (dados anonimizados compõem estatísticas de mercado)\n\n'
+                'Ao ativar essas funções, você nos concede uma licença para processar e utilizar os dados conforme necessário para a prestação do serviço e geração de inteligência, conforme detalhado na Política de Privacidade.',
           ),
           _buildSection(
             context,
@@ -73,12 +74,15 @@ class TermsOfUseScreen extends StatelessWidget {
           ),
           _buildSection(
             context,
-            '6. Limitação de Responsabilidade',
-            'Os aplicativos PlanejaCampo são fornecidos "como estão". Não garantimos:\n\n'
-                '• Precisão absoluta de previsões ou métricas\n'
-                '• Disponibilidade ininterrupta do serviço\n'
-                '• Adequação para fins específicos\n\n'
-                'Não somos responsáveis por perdas ou danos decorrentes do uso dos aplicativos, incluindo perda de dados ou lucros cessantes.',
+            '6. Limitação de Responsabilidade (Simulação e Apoio)',
+            'ISENÇÃO TOTAL DE RESPONSABILIDADE:\n'
+                'Os aplicativos são ferramentas de SIMULAÇÃO MATEMÁTICA e APOIO À DECISÃO. Eles NÃO substituem o julgamento profissional de um Engenheiro Agrônomo, Técnico, Veterinário ou Consultor Financeiro.\n\n'
+                'Nós NÃO nos responsabilizamos, em nenhuma hipótese, por:\n'
+                '• Perda de safra, morte de animais ou prejuízos financeiros\n'
+                '• Erros de cálculo, dosagem, diagnóstico ou previsão meteorológica\n'
+                '• Falhas em negociações, inadimplência ou qualidade de serviços contratados via Rede de Negócios\n'
+                '• Ações de terceiros, acidentes ou eventos ocorridos no mundo físico (offline)\n\n'
+                'O uso das informações fornecidas pelo aplicativo para tomada de decisão é de risco exclusivo e integral do usuário.',
           ),
           _buildSection(
             context,

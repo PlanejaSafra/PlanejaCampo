@@ -40,16 +40,13 @@ class AgroLocalizationsPt extends AgroLocalizations {
   String get termsSummaryTitle => 'Resumo do que acontece:';
 
   @override
-  String get termsSummaryItem1 => 'Você registra informações como chuvas, preços, pesagens, anotações e lançamentos.';
+  String get termsSummaryItem1 => 'Este app é uma ferramenta de apoio à decisão e cálculo. Ele fornece simulações e estimativas que NÃO substituem a avaliação profissional de um técnico ou agrônomo, e o desenvolvedor não se responsabiliza por quaisquer resultados obtidos no campo.';
 
   @override
-  String get termsSummaryItem2 => 'Esses dados ficam armazenados no seu dispositivo para o app funcionar.';
+  String get termsSummaryItem2 => 'Seus dados operacionais ficam no dispositivo (Modo Local). O envio para a nuvem, criptografia e backup ocorrem apenas se você ativar as opções de Backup ou Rede.';
 
   @override
   String get termsSummaryItem3 => 'O app pode exibir anúncios na versão gratuita.';
-
-  @override
-  String get termsSummaryItem4 => 'Podemos coletar informações técnicas mínimas (ex.: falhas e desempenho) para melhorar o app.';
 
   @override
   String get termsFooter => 'Você pode consultar os documentos completos em Configurações → Privacidade.';
@@ -73,19 +70,28 @@ class AgroLocalizationsPt extends AgroLocalizations {
   String get consentOption2Title => 'Rede de Negócios e Oportunidades';
 
   @override
-  String get consentOption2Desc => 'Habilita visualização de vagas e ofertas.';
+  String get consentOption2Desc => 'Habilita visualização de vagas e ofertas (Vitrine Digital).';
 
   @override
-  String get consentOption2Legal => 'Esta opção ativa as funções sociais (Mercado, Vagas, Classificados). Ao criar um anúncio, você concorda em tornar públicos, dentro da plataforma, seus dados de contato (Nome/WhatsApp) e localização da oferta. Isso permite que outros usuários (compradores ou prestadores de serviço) chamem você diretamente. O aplicativo é apenas um facilitador.';
+  String get consentOption2Legal => 'Esta opção ativa as funções sociais (Mercado, Vagas, Classificados). Ao criar um anúncio, você concorda em tornar públicos, dentro da plataforma, seus dados de contato (Nome/WhatsApp) e localização da oferta. Isso permite que outros usuários chamem você diretamente. O aplicativo é apenas um facilitador.';
 
   @override
-  String get consentOption3Title => 'Estatísticas Regionais e Inteligência';
+  String get consentOptionSocialLearnMore => 'Habilita o ECOSSISTEMA DIGITAL DE NEGÓCIOS. O app é uma PLATAFORMA DE CONEXÃO e não garante transações.\n\nISENÇÃO TOTAL DE RESPONSABILIDADE:\n1. SEGURANÇA FÍSICA: Não nos responsabilizamos por agressões, acidentes ou crimes ocorridos em encontros presenciais;\n2. SEGURANÇA FINANCEIRA E DIGITAL: Não nos responsabilizamos por transações bancárias, PIX, não pagamento, fraudes, golpes digitais ou phishing ocorridos dentro ou fora da plataforma;\n3. RELAÇÕES TRABALHISTAS: Não verificamos vínculos nem antecedentes.\nA responsabilidade por qualquer transação financeira ou contratação é 100% SUA.';
 
   @override
-  String get consentOption3Desc => 'Colabore com dados anônimos e receba inteligência de mercado.';
+  String get safetyWarningMessage => 'DICA DE SEGURANÇA: Ao marcar visitas presenciais, verifique as referências da pessoa e avise um familiar. O PlanejaCampo não verifica antecedentes criminais dos usuários.';
 
   @override
-  String get consentOption3Legal => 'Esta opção desbloqueia as funcionalidades de inteligência coletiva (como ver onde choveu na região ou a média de preços praticada). Em troca, seus dados (anonimizados ou agregados) passam a compor nossa base de inteligência de mercado, que pode ser utilizada para estudos setoriais, pesquisas e comercializada com parceiros estratégicos (governo, associações e empresas). Sem esta permissão, você não terá acesso aos mapas e médias regionais.';
+  String get consentOption3Title => 'Inteligência Agronômica e de Mercado';
+
+  @override
+  String get consentOption3Desc => 'Habilita mapas, médias de preços e ferramentas avançadas de sugestão técnica (adubação, manejo, clima).';
+
+  @override
+  String get consentOption3Legal => 'Esta opção desbloqueia as funcionalidades de inteligência coletiva (como ver onde choveu na região ou a média de preços praticada). Em troca, seus dados (anonimizados ou agregados) passam a compor nossa base de inteligência de mercado. Sem esta permissão, você não terá acesso aos mapas e médias regionais.';
+
+  @override
+  String get consentOptionIntelligenceLearnMore => 'Esta opção desbloqueia as funcionalidades de inteligência coletiva e ferramentas de suporte à decisão. Em troca, seus dados anonimizados compõem nossa base.\n\nISENÇÃO TOTAL DE RESPONSABILIDADE TÉCNICA E AGRONÔMICA:\nTodas as sugestões de manejo, cálculos de adubação/calagem, indicações de defensivos, previsões de safra ou diagnósticos gerados pelo sistema são SIMULAÇÕES baseadas em algoritmos matemáticos e estatísticos.\n\nO aplicativo NÃO substitui a consultoria presencial nem a emissão de Receituário Agronômico por Engenheiro Agrônomo habilitado, conforme exigido por lei. O aplicativo NÃO se responsabiliza por:\n1. Erros de dosagem, fitotoxicidade ou ineficiência de produtos;\n2. Danos ambientais, contaminação de solo/água ou morte de culturas;\n3. Incompatibilidade química de misturas;\n4. Prejuízos decorrentes de pragas, doenças ou intempéries não previstas.\n\nA decisão de aplicar qualquer insumo ou técnica é de inteira e exclusiva responsabilidade do usuário, que assume todos os riscos técnicos, ambientais e financeiros.';
 
   @override
   String get consentSmallNoteUnderDecline => 'Sem aceitar, você pode usar o app normalmente no modo privado (funções básicas offline).';
@@ -103,7 +109,7 @@ class AgroLocalizationsPt extends AgroLocalizations {
   String get identityAnonymousButton => 'Continuar como Visitante';
 
   @override
-  String get identityFooterLegal => 'Seus dados são seus. Eles ficam no seu dispositivo e podem ser sincronizados se você autorizar.';
+  String get identityFooterLegal => 'Seus dados são privados por padrão. Não vendemos dados pessoais identificáveis. O uso de dados para estatísticas de mercado e parcerias ocorre apenas mediante sua autorização nos módulos de Inteligência.';
 
   @override
   String get identityTermsLink => 'Termos de Uso';
@@ -914,13 +920,13 @@ class AgroLocalizationsPt extends AgroLocalizations {
   String get backupCloudAnonymousWarning => 'Crie uma conta Google para salvar seus dados na nuvem';
 
   @override
-  String get loginBenefitSync => 'Sincronização e Backup (Opcional)';
+  String get loginBenefitSync => 'Sincronização e Backup (Se você ativar)';
 
   @override
-  String get loginBenefitSocial => 'Acesso à Rede de Negócios (Opcional)';
+  String get loginBenefitSocial => 'Acesso à Rede de Negócios (Se você ativar)';
 
   @override
-  String get loginBenefitSecurity => 'Seus dados protegidos e privados';
+  String get loginBenefitSecurity => 'Privacidade total por padrão (você controla o que compartilha)';
 
   @override
   String get backupLocalSection => 'Backup Local';
