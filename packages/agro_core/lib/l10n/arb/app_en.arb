@@ -612,5 +612,43 @@
   "radarRainIntensity": "Rain Intensity",
   "radarSnowIntensity": "Snow Intensity",
   "mapTypeSatellite": "Satellite",
-  "mapTypeNormal": "Road Map"
+  "mapTypeNormal": "Road Map",
+
+  "weatherForecastTitle": "Weather Forecast",
+  "weatherForecastUpdated": "Forecast updated successfully",
+  "tryAgainButton": "Try again",
+  "loadForecastButton": "Load forecast",
+  "goToSettingsButton": "Go to Settings",
+  "checkAgainButton": "Check again",
+  "useCurrentGpsButton": "Use Current GPS",
+  "selectOnMapButton": "Select on Map",
+  "manageTalhoesButton": "Manage Field Plots",
+  "regionalStatsTitle": "Regional Statistics",
+  "configurePropertyFirst": "Configure a property with location first",
+
+  "exportJsonSubtitle": "Complete format with all metadata",
+  "exportCsvSubtitle": "Compatible with Excel and Google Sheets",
+  "exportJsonOrCsv": "JSON or CSV for use in other apps",
+  "deletingData": "Deleting data...",
+
+  "errorPrefix": "Error",
+  "errorLogin": "Login error",
+  "errorExport": "Export error",
+  "errorImport": "Import error",
+  "errorSave": "Save error",
+  "errorLoadProperties": "Error loading properties",
+  "errorGettingGps": "Error getting GPS",
+
+  "languagePortuguese": "Português (Brasil)",
+  "languageEnglish": "English",
+
+  "filterLocationTitle": "Location Filter",
+  "notificationsComingSoon": "Offer notifications coming soon!",
+  "receiptTitle": "Weighing Receipt",
+  "generatedByApp": "Generated automatically by app",
+
+  "lgpdRightsTitle": "Your Rights (LGPD/GDPR)",
+  "lgpdRightsDescription": "Exercise your data portability and deletion rights.",
+  "deleteDataSubtitle": "Removes data from device and servers",
+  "revokeConsentsSubtitle": "Revokes consents and ends session"
 }

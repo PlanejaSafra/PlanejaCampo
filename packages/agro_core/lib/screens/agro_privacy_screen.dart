@@ -155,7 +155,7 @@ class _AgroPrivacyScreenState extends State<AgroPrivacyScreen> {
               ListTile(
                 leading: const Icon(Icons.code),
                 title: Text(l10n.exportDataJson),
-                subtitle: const Text('Formato completo com todos os metadados'),
+                subtitle: Text(l10n.exportJsonSubtitle),
                 onTap: () async {
                   Navigator.pop(context);
                   await _handleExport(asCsv: false);
@@ -164,7 +164,7 @@ class _AgroPrivacyScreenState extends State<AgroPrivacyScreen> {
               ListTile(
                 leading: const Icon(Icons.table_chart),
                 title: Text(l10n.exportDataCsv),
-                subtitle: const Text('Compatível com Excel e Google Sheets'),
+                subtitle: Text(l10n.exportCsvSubtitle),
                 onTap: () async {
                   Navigator.pop(context);
                   await _handleExport(asCsv: true);
@@ -274,7 +274,7 @@ class _AgroPrivacyScreenState extends State<AgroPrivacyScreen> {
           children: [
             CircularProgressIndicator(),
             SizedBox(width: 24),
-            Text('Excluindo dados...'),
+            Text(l10n.deletingData),
           ],
         ),
       ),
@@ -461,12 +461,12 @@ class _AgroPrivacyScreenState extends State<AgroPrivacyScreen> {
                     const Divider(),
                     const SizedBox(height: 16),
                     Text(
-                      'Seus Direitos (LGPD)',
+                      l10n.lgpdRightsTitle,
                       style: theme.textTheme.titleMedium,
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Exerça seus direitos de portabilidade e eliminação de dados.',
+                      l10n.lgpdRightsDescription,
                       style: theme.textTheme.bodySmall?.copyWith(
                         color:
                             theme.colorScheme.onSurface.withValues(alpha: 0.7),
@@ -478,8 +478,7 @@ class _AgroPrivacyScreenState extends State<AgroPrivacyScreen> {
                       child: ListTile(
                         leading: const Icon(Icons.download_outlined),
                         title: Text(l10n.exportDataButton),
-                        subtitle:
-                            const Text('JSON ou CSV para uso em outros apps'),
+                        subtitle: Text(l10n.exportJsonOrCsv),
                         trailing: const Icon(Icons.chevron_right),
                         onTap: _showExportSheet,
                       ),
@@ -495,7 +494,7 @@ class _AgroPrivacyScreenState extends State<AgroPrivacyScreen> {
                           style: TextStyle(color: Colors.red[700]),
                         ),
                         subtitle: Text(
-                          'Remove dados do dispositivo e servidores',
+                          l10n.deleteDataSubtitle,
                           style: TextStyle(color: Colors.red[400]),
                         ),
                         trailing:
@@ -514,7 +513,7 @@ class _AgroPrivacyScreenState extends State<AgroPrivacyScreen> {
                           style: TextStyle(color: Colors.orange[700]),
                         ),
                         subtitle: Text(
-                          'Revoga consentimentos e encerra sessão',
+                          l10n.revokeConsentsSubtitle,
                           style: TextStyle(color: Colors.orange[400]),
                         ),
                         trailing: Icon(Icons.chevron_right,
@@ -558,9 +557,9 @@ class _AgroPrivacyScreenState extends State<AgroPrivacyScreen> {
                   color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                 ),
                 children: [
-                  const TextSpan(text: 'Você pode revisar nossos '),
+                  TextSpan(text: l10n.consentFooterPrefix),
                   TextSpan(
-                    text: 'Termos de Uso',
+                    text: l10n.identityTermsLink,
                     style: TextStyle(
                       color: theme.colorScheme.primary,
                       decoration: TextDecoration.underline,
@@ -568,9 +567,9 @@ class _AgroPrivacyScreenState extends State<AgroPrivacyScreen> {
                     ),
                     recognizer: TapGestureRecognizer()..onTap = _showTermsOfUse,
                   ),
-                  const TextSpan(text: ' e '),
+                  TextSpan(text: l10n.consentFooterConnector),
                   TextSpan(
-                    text: 'Políticas de Privacidade',
+                    text: l10n.identityPrivacyLink,
                     style: TextStyle(
                       color: theme.colorScheme.primary,
                       decoration: TextDecoration.underline,
@@ -579,7 +578,7 @@ class _AgroPrivacyScreenState extends State<AgroPrivacyScreen> {
                     recognizer: TapGestureRecognizer()
                       ..onTap = _showPrivacyPolicy,
                   ),
-                  const TextSpan(text: ' a qualquer momento.'),
+                  TextSpan(text: l10n.consentFooterSuffix),
                 ],
               ),
             ),

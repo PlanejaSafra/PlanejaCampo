@@ -612,5 +612,43 @@
   "radarRainIntensity": "Intensidade da Chuva",
   "radarSnowIntensity": "Intensidade da Neve",
   "mapTypeSatellite": "Satélite",
-  "mapTypeNormal": "Mapa de Estrada"
+  "mapTypeNormal": "Mapa de Estrada",
+
+  "weatherForecastTitle": "Previsão do Tempo",
+  "weatherForecastUpdated": "Previsão atualizada com sucesso",
+  "tryAgainButton": "Tentar novamente",
+  "loadForecastButton": "Carregar previsão",
+  "goToSettingsButton": "Ir para Configurações",
+  "checkAgainButton": "Verificar novamente",
+  "useCurrentGpsButton": "Usar GPS Atual",
+  "selectOnMapButton": "Selecionar no Mapa",
+  "manageTalhoesButton": "Gerenciar Talhões",
+  "regionalStatsTitle": "Estatísticas Regionais",
+  "configurePropertyFirst": "Configure uma propriedade com localização primeiro",
+
+  "exportJsonSubtitle": "Formato completo com todos os metadados",
+  "exportCsvSubtitle": "Compatível com Excel e Google Sheets",
+  "exportJsonOrCsv": "JSON ou CSV para uso em outros apps",
+  "deletingData": "Excluindo dados...",
+
+  "errorPrefix": "Erro",
+  "errorLogin": "Erro ao fazer login",
+  "errorExport": "Erro ao exportar",
+  "errorImport": "Erro ao importar",
+  "errorSave": "Erro ao salvar",
+  "errorLoadProperties": "Erro ao carregar propriedades",
+  "errorGettingGps": "Erro ao obter GPS",
+
+  "languagePortuguese": "Português (Brasil)",
+  "languageEnglish": "English",
+
+  "filterLocationTitle": "Filtro de Localização",
+  "notificationsComingSoon": "Notificações de ofertas em desenvolvimento. Volte em breve!",
+  "receiptTitle": "Recibo de Pesagem",
+  "generatedByApp": "Gerado automaticamente pelo app",
+
+  "lgpdRightsTitle": "Seus Direitos (LGPD)",
+  "lgpdRightsDescription": "Exerça seus direitos de portabilidade e eliminação de dados.",
+  "deleteDataSubtitle": "Remove dados do dispositivo e servidores",
+  "revokeConsentsSubtitle": "Revoga consentimentos e encerra sessão"
 }

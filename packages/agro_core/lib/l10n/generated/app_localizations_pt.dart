@@ -1271,4 +1271,100 @@ class AgroLocalizationsPt extends AgroLocalizations {
 
   @override
   String get mapTypeNormal => 'Mapa de Estrada';
+
+  @override
+  String get weatherForecastTitle => 'Previsão do Tempo';
+
+  @override
+  String get weatherForecastUpdated => 'Previsão atualizada com sucesso';
+
+  @override
+  String get tryAgainButton => 'Tentar novamente';
+
+  @override
+  String get loadForecastButton => 'Carregar previsão';
+
+  @override
+  String get goToSettingsButton => 'Ir para Configurações';
+
+  @override
+  String get checkAgainButton => 'Verificar novamente';
+
+  @override
+  String get useCurrentGpsButton => 'Usar GPS Atual';
+
+  @override
+  String get selectOnMapButton => 'Selecionar no Mapa';
+
+  @override
+  String get manageTalhoesButton => 'Gerenciar Talhões';
+
+  @override
+  String get regionalStatsTitle => 'Estatísticas Regionais';
+
+  @override
+  String get configurePropertyFirst => 'Configure uma propriedade com localização primeiro';
+
+  @override
+  String get exportJsonSubtitle => 'Formato completo com todos os metadados';
+
+  @override
+  String get exportCsvSubtitle => 'Compatível com Excel e Google Sheets';
+
+  @override
+  String get exportJsonOrCsv => 'JSON ou CSV para uso em outros apps';
+
+  @override
+  String get deletingData => 'Excluindo dados...';
+
+  @override
+  String get errorPrefix => 'Erro';
+
+  @override
+  String get errorLogin => 'Erro ao fazer login';
+
+  @override
+  String get errorExport => 'Erro ao exportar';
+
+  @override
+  String get errorImport => 'Erro ao importar';
+
+  @override
+  String get errorSave => 'Erro ao salvar';
+
+  @override
+  String get errorLoadProperties => 'Erro ao carregar propriedades';
+
+  @override
+  String get errorGettingGps => 'Erro ao obter GPS';
+
+  @override
+  String get languagePortuguese => 'Português (Brasil)';
+
+  @override
+  String get languageEnglish => 'English';
+
+  @override
+  String get filterLocationTitle => 'Filtro de Localização';
+
+  @override
+  String get notificationsComingSoon => 'Notificações de ofertas em desenvolvimento. Volte em breve!';
+
+  @override
+  String get receiptTitle => 'Recibo de Pesagem';
+
+  @override
+  String get generatedByApp => 'Gerado automaticamente pelo app';
+
+  @override
+  String get lgpdRightsTitle => 'Seus Direitos (LGPD)';
+
+  @override
+  String get lgpdRightsDescription => 'Exerça seus direitos de portabilidade e eliminação de dados.';
+
+  @override
+  String get deleteDataSubtitle => 'Remove dados do dispositivo e servidores';
+
+  @override
+  String get revokeConsentsSubtitle => 'Revoga consentimentos e encerra sessão';
 }

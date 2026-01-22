@@ -1271,4 +1271,100 @@ class AgroLocalizationsEn extends AgroLocalizations {
 
   @override
   String get mapTypeNormal => 'Road Map';
+
+  @override
+  String get weatherForecastTitle => 'Weather Forecast';
+
+  @override
+  String get weatherForecastUpdated => 'Forecast updated successfully';
+
+  @override
+  String get tryAgainButton => 'Try again';
+
+  @override
+  String get loadForecastButton => 'Load forecast';
+
+  @override
+  String get goToSettingsButton => 'Go to Settings';
+
+  @override
+  String get checkAgainButton => 'Check again';
+
+  @override
+  String get useCurrentGpsButton => 'Use Current GPS';
+
+  @override
+  String get selectOnMapButton => 'Select on Map';
+
+  @override
+  String get manageTalhoesButton => 'Manage Field Plots';
+
+  @override
+  String get regionalStatsTitle => 'Regional Statistics';
+
+  @override
+  String get configurePropertyFirst => 'Configure a property with location first';
+
+  @override
+  String get exportJsonSubtitle => 'Complete format with all metadata';
+
+  @override
+  String get exportCsvSubtitle => 'Compatible with Excel and Google Sheets';
+
+  @override
+  String get exportJsonOrCsv => 'JSON or CSV for use in other apps';
+
+  @override
+  String get deletingData => 'Deleting data...';
+
+  @override
+  String get errorPrefix => 'Error';
+
+  @override
+  String get errorLogin => 'Login error';
+
+  @override
+  String get errorExport => 'Export error';
+
+  @override
+  String get errorImport => 'Import error';
+
+  @override
+  String get errorSave => 'Save error';
+
+  @override
+  String get errorLoadProperties => 'Error loading properties';
+
+  @override
+  String get errorGettingGps => 'Error getting GPS';
+
+  @override
+  String get languagePortuguese => 'Português (Brasil)';
+
+  @override
+  String get languageEnglish => 'English';
+
+  @override
+  String get filterLocationTitle => 'Location Filter';
+
+  @override
+  String get notificationsComingSoon => 'Offer notifications coming soon!';
+
+  @override
+  String get receiptTitle => 'Weighing Receipt';
+
+  @override
+  String get generatedByApp => 'Generated automatically by app';
+
+  @override
+  String get lgpdRightsTitle => 'Your Rights (LGPD/GDPR)';
+
+  @override
+  String get lgpdRightsDescription => 'Exercise your data portability and deletion rights.';
+
+  @override
+  String get deleteDataSubtitle => 'Removes data from device and servers';
+
+  @override
+  String get revokeConsentsSubtitle => 'Revokes consents and ends session';
 }

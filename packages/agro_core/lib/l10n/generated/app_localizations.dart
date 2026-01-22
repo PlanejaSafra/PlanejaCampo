@@ -2542,6 +2542,198 @@ abstract class AgroLocalizations {
   /// In en, this message translates to:
   /// **'Road Map'**
   String get mapTypeNormal;
+
+  /// No description provided for @weatherForecastTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Weather Forecast'**
+  String get weatherForecastTitle;
+
+  /// No description provided for @weatherForecastUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Forecast updated successfully'**
+  String get weatherForecastUpdated;
+
+  /// No description provided for @tryAgainButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get tryAgainButton;
+
+  /// No description provided for @loadForecastButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Load forecast'**
+  String get loadForecastButton;
+
+  /// No description provided for @goToSettingsButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Go to Settings'**
+  String get goToSettingsButton;
+
+  /// No description provided for @checkAgainButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Check again'**
+  String get checkAgainButton;
+
+  /// No description provided for @useCurrentGpsButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Use Current GPS'**
+  String get useCurrentGpsButton;
+
+  /// No description provided for @selectOnMapButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Select on Map'**
+  String get selectOnMapButton;
+
+  /// No description provided for @manageTalhoesButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Field Plots'**
+  String get manageTalhoesButton;
+
+  /// No description provided for @regionalStatsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Regional Statistics'**
+  String get regionalStatsTitle;
+
+  /// No description provided for @configurePropertyFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Configure a property with location first'**
+  String get configurePropertyFirst;
+
+  /// No description provided for @exportJsonSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete format with all metadata'**
+  String get exportJsonSubtitle;
+
+  /// No description provided for @exportCsvSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Compatible with Excel and Google Sheets'**
+  String get exportCsvSubtitle;
+
+  /// No description provided for @exportJsonOrCsv.
+  ///
+  /// In en, this message translates to:
+  /// **'JSON or CSV for use in other apps'**
+  String get exportJsonOrCsv;
+
+  /// No description provided for @deletingData.
+  ///
+  /// In en, this message translates to:
+  /// **'Deleting data...'**
+  String get deletingData;
+
+  /// No description provided for @errorPrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'Error'**
+  String get errorPrefix;
+
+  /// No description provided for @errorLogin.
+  ///
+  /// In en, this message translates to:
+  /// **'Login error'**
+  String get errorLogin;
+
+  /// No description provided for @errorExport.
+  ///
+  /// In en, this message translates to:
+  /// **'Export error'**
+  String get errorExport;
+
+  /// No description provided for @errorImport.
+  ///
+  /// In en, this message translates to:
+  /// **'Import error'**
+  String get errorImport;
+
+  /// No description provided for @errorSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save error'**
+  String get errorSave;
+
+  /// No description provided for @errorLoadProperties.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading properties'**
+  String get errorLoadProperties;
+
+  /// No description provided for @errorGettingGps.
+  ///
+  /// In en, this message translates to:
+  /// **'Error getting GPS'**
+  String get errorGettingGps;
+
+  /// No description provided for @languagePortuguese.
+  ///
+  /// In en, this message translates to:
+  /// **'Português (Brasil)'**
+  String get languagePortuguese;
+
+  /// No description provided for @languageEnglish.
+  ///
+  /// In en, this message translates to:
+  /// **'English'**
+  String get languageEnglish;
+
+  /// No description provided for @filterLocationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Location Filter'**
+  String get filterLocationTitle;
+
+  /// No description provided for @notificationsComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Offer notifications coming soon!'**
+  String get notificationsComingSoon;
+
+  /// No description provided for @receiptTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Weighing Receipt'**
+  String get receiptTitle;
+
+  /// No description provided for @generatedByApp.
+  ///
+  /// In en, this message translates to:
+  /// **'Generated automatically by app'**
+  String get generatedByApp;
+
+  /// No description provided for @lgpdRightsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Rights (LGPD/GDPR)'**
+  String get lgpdRightsTitle;
+
+  /// No description provided for @lgpdRightsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise your data portability and deletion rights.'**
+  String get lgpdRightsDescription;
+
+  /// No description provided for @deleteDataSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Removes data from device and servers'**
+  String get deleteDataSubtitle;
+
+  /// No description provided for @revokeConsentsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Revokes consents and ends session'**
+  String get revokeConsentsSubtitle;
 }
 
 class _AgroLocalizationsDelegate extends LocalizationsDelegate<AgroLocalizations> {

@@ -136,13 +136,14 @@ class _AgroSettingsScreenState extends State<AgroSettingsScreen> {
   }
 
   Future<void> _handleSignInWithGoogle() async {
+    final l10n = AgroLocalizations.of(context)!;
     final scaffold = ScaffoldMessenger.of(context);
     try {
       await AuthService.signInWithGoogle();
       if (mounted) setState(() {});
     } catch (e) {
       scaffold.showSnackBar(
-        SnackBar(content: Text('Erro ao fazer login: $e')),
+        SnackBar(content: Text('${l10n.errorLogin}: $e')),
       );
     }
   }
@@ -306,8 +307,8 @@ class _AgroSettingsScreenState extends State<AgroSettingsScreen> {
   String _getLanguageLabel(BuildContext context, Locale? locale) {
     final l10n = AgroLocalizations.of(context)!;
     if (locale == null) return l10n.settingsLanguageAuto;
-    if (locale.languageCode == 'pt') return 'Português (Brasil)';
-    if (locale.languageCode == 'en') return 'English';
+    if (locale.languageCode == 'pt') return l10n.languagePortuguese;
+    if (locale.languageCode == 'en') return l10n.languageEnglish;
     return l10n.settingsLanguageAuto;
   }
 
@@ -344,7 +345,7 @@ class _AgroSettingsScreenState extends State<AgroSettingsScreen> {
               },
             ),
             RadioListTile<Locale?>(
-              title: const Text('Português (Brasil)'),
+              title: Text(l10n.languagePortuguese),
               subtitle: const Text('🇧🇷'),
               value: const Locale('pt', 'BR'),
               groupValue: widget.currentLocale,
@@ -354,7 +355,7 @@ class _AgroSettingsScreenState extends State<AgroSettingsScreen> {
               },
             ),
             RadioListTile<Locale?>(
-              title: const Text('English'),
+              title: Text(l10n.languageEnglish),
               subtitle: const Text('🇺🇸'),
               value: const Locale('en'),
               groupValue: widget.currentLocale,
