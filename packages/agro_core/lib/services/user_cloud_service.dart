@@ -239,7 +239,9 @@ class UserCloudService {
 
     // Check specific backup consent
     // userData.consents has the flags.
-    if (!userData.consents.cloudBackup) return;
+    // Check specific backup consent
+    // userData.consents has the flags.
+    if (userData.consents.cloudBackup != true) return;
 
     if (_firestore == null) return;
 

@@ -42,6 +42,10 @@ class ConsentData extends HiveObject {
   @HiveField(9)
   bool? socialNetwork;
 
+  /// Consent version (tracks changes to consent structure)
+  @HiveField(7)
+  String consentVersion;
+
   ConsentData({
     required this.termsAccepted,
     required this.termsVersion,
