@@ -9,7 +9,7 @@ class TermsOfUseScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AgroLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
