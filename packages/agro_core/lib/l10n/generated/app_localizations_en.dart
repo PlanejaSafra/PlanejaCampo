@@ -43,7 +43,7 @@ class AgroLocalizationsEn extends AgroLocalizations {
   String get termsSummaryItem1 => 'This app is a decision support and calculation tool. It provides simulations and estimates based on algorithms that do NOT replace professional evaluation by a technician or agronomist, and the developer is not responsible for any results obtained in the field.';
 
   @override
-  String get termsSummaryItem2 => 'Your operational data stays on the device (Local Mode). Cloud upload, encryption, and backup occur only if you enable Backup or Network options.';
+  String get termsSummaryItem2 => 'By default, your operational data stays on the device (Local Mode). If you choose to enable Backup, Business Network, or Intelligence — even as a guest — your data will be sent to our servers as described in each option.';
 
   @override
   String get termsSummaryItem3 => 'The app may display ads in the free version.';
@@ -67,7 +67,7 @@ class AgroLocalizationsEn extends AgroLocalizations {
   String get termsSection3Title => '3. User Account';
 
   @override
-  String get termsSection3Body => 'You can use our apps in two ways:\n\n• Guest Mode (Hybrid): No login. Operational data (rain/livestock) stays on the device, but technical metadata and IDs are sent to servers for security and ads.\n• Connected Mode (Google): Unlocks the Full Ecosystem, allowing secure cloud storage, synchronization, data recovery, and access to Network and Intelligence features.\n\nYou are responsible for maintaining the confidentiality of your account and for all activities that occur under your account.';
+  String get termsSection3Body => 'You can use our apps in two ways:\n\n• Guest Mode (Hybrid): No Google login. By default, operational data (rain/livestock) stays on the device. Technical metadata and IDs are sent to servers for security and ads. **If you choose to enable Business Network or Intelligence**, your data will be sent to our servers even without login.\n• Connected Mode (Google): Unlocks the Full Ecosystem, allowing secure cloud storage, synchronization, data recovery, and easier access to Network and Intelligence features.\n\nIn both modes, you control which data you share through consent options. You are responsible for maintaining the confidentiality of your account and for all activities that occur under your account.';
 
   @override
   String get termsSection4Title => '4. Property and Storage (Hybrid Model)';
@@ -130,7 +130,7 @@ class AgroLocalizationsEn extends AgroLocalizations {
   String get consentOption1Desc => 'Save data to the cloud for security and team access.';
 
   @override
-  String get consentOption1Legal => 'By activating this, your data (such as production records, inventory, and tasks) will be sent to our secure servers and linked to your account. This allows you to recover everything if you lose your phone and enables authorized collaborators to access the same data. This data is NOT made public.';
+  String get consentOption1Legal => 'By activating this (available only with Google login), your data (such as production records, inventory, tasks, and other operational data) will be sent to our secure servers and linked to your account. This allows you to recover everything if you lose your phone and enables authorized collaborators to access the same data. This data is NOT made public.';
 
   @override
   String get consentOption2Title => 'Business Network & Opportunities';
@@ -139,7 +139,7 @@ class AgroLocalizationsEn extends AgroLocalizations {
   String get consentOption2Desc => 'Enables viewing vacancies and offers (Digital Showcase).';
 
   @override
-  String get consentOption2Legal => 'This option activates social features (Market, Jobs, Classifieds). By creating an ad, you agree to make your contact details (Name/WhatsApp) and offer location public within the platform. This allows other users to contact you directly. The app is merely a facilitator.';
+  String get consentOption2Legal => 'This option activates social features (Market, Jobs, Classifieds, etc.) and is available for both guests and logged-in users. By creating an ad, you agree to make your contact details (Name/WhatsApp) and offer location public within the platform. Your data will be sent to our servers. The app is merely a connection facilitator.';
 
   @override
   String get consentOptionSocialLearnMore => 'Enables the DIGITAL BUSINESS ECOSYSTEM. The app is a CONNECTION PLATFORM and does not guarantee transactions.\n\nTOTAL LIABILITY WAIVER:\n1. PHYSICAL SECURITY: We are not responsible for assaults, accidents, or crimes occurring in face-to-face meetings;\n2. FINANCIAL AND DIGITAL SECURITY: We are not responsible for bank transactions, PIX, non-payment, fraud, digital scams, or phishing occurring inside or outside the platform;\n3. LABOR RELATIONS: We do not check links or backgrounds.\nThe responsibility for any financial transaction or hiring is 100% YOURS.';
@@ -154,7 +154,7 @@ class AgroLocalizationsEn extends AgroLocalizations {
   String get consentOption3Desc => 'Enables maps, price averages, and advanced technical suggestion tools (fertilization, management, weather).';
 
   @override
-  String get consentOption3Legal => 'This option unlocks collective intelligence features (such as seeing where it rained in the region or average prices). In exchange, your data (anonymized or aggregated) makes up our market intelligence base. Without this permission, you will not have access to regional maps and averages.';
+  String get consentOption3Legal => 'This option unlocks collective intelligence features (such as seeing where it rained in the region, average prices, and other regional metrics) and is available for both guests and logged-in users. In exchange, your data (anonymized or aggregated) will be sent to our servers and makes up our market intelligence base. Without this permission, you will not have access to regional maps and averages.';
 
   @override
   String get consentOptionIntelligenceLearnMore => 'This unlocks collective intelligence features and decision support tools. In exchange, your anonymized data composes our base.\n\nTOTAL TECHNICAL AND AGRONOMIC LIABILITY WAIVER:\nAll management suggestions, fertilization/liming calculations, pesticide indications, crop forecasts, or diagnoses generated by the system are SIMULATIONS based on mathematical and statistical algorithms.\n\nThe app does NOT replace face-to-face consulting or the issuance of an Agronomic Prescription by a qualified Agronomist, as required by law. The app is NOT liable for:\n1. Dosing errors, phytotoxicity, or product inefficiency;\n2. Environmental damage, soil/water contamination, or crop death;\n3. Chemical incompatibility of mixtures;\n4. Losses due to pests, diseases, or unforeseen weather.\n\nThe decision to apply any input or technique is the sole and exclusive responsibility of the user, who assumes all technical, environmental, and financial risks.';
@@ -247,7 +247,7 @@ class AgroLocalizationsEn extends AgroLocalizations {
   String get aboutDescription => 'This app is part of the PlanejaCampo Suite, designed to help rural producers manage their activities in the field.';
 
   @override
-  String get aboutOfflineFirst => '100% Offline-First: all your data stays on your device.';
+  String get aboutOfflineFirst => 'Offline-First by default: your data stays on the device. Optional features may sync with the cloud.';
 
   @override
   String get aboutSuite => 'PlanejaCampo Suite';

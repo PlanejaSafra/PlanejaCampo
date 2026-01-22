@@ -43,7 +43,7 @@ class AgroLocalizationsPt extends AgroLocalizations {
   String get termsSummaryItem1 => 'Este app é uma ferramenta de apoio à decisão e cálculo. Ele fornece simulações e estimativas que NÃO substituem a avaliação profissional de um técnico ou agrônomo, e o desenvolvedor não se responsabiliza por quaisquer resultados obtidos no campo.';
 
   @override
-  String get termsSummaryItem2 => 'Seus dados operacionais ficam no dispositivo (Modo Local). O envio para a nuvem, criptografia e backup ocorrem apenas se você ativar as opções de Backup ou Rede.';
+  String get termsSummaryItem2 => 'Por padrão, seus dados operacionais ficam no dispositivo (Modo Local). Se você optar por ativar Backup, Rede de Negócios ou Inteligência — mesmo como visitante — seus dados serão enviados para nossos servidores conforme descrito em cada opção.';
 
   @override
   String get termsSummaryItem3 => 'O app pode exibir anúncios na versão gratuita.';
@@ -67,7 +67,7 @@ class AgroLocalizationsPt extends AgroLocalizations {
   String get termsSection3Title => '3. Conta de Usuário';
 
   @override
-  String get termsSection3Body => 'Você pode utilizar nossos aplicativos de duas formas:\n\n• Modo Visitante (Híbrido): Sem login. Dados operacionais (chuva/gado) ficam no dispositivo, mas metadados técnicos e IDs são enviados para servidores para segurança e anúncios.\n• Modo Conectado (Google): Desbloqueia o Ecossistema Completo, permitindo armazenamento seguro em nuvem, sincronização, recuperação de dados e acesso a funcionalidades de Rede e Inteligência.\n\nVocê é responsável por manter a confidencialidade de sua conta e por todas as atividades que ocorram sob sua conta.';
+  String get termsSection3Body => 'Você pode utilizar nossos aplicativos de duas formas:\n\n• Modo Visitante (Híbrido): Sem login Google. Por padrão, dados operacionais (chuva/gado) ficam no dispositivo. Metadados técnicos e IDs são enviados para servidores para segurança e anúncios. **Se você optar por ativar Rede de Negócios ou Inteligência**, seus dados serão enviados para nossos servidores mesmo sem login.\n• Modo Conectado (Google): Desbloqueia o Ecossistema Completo, permitindo armazenamento seguro em nuvem, sincronização, recuperação de dados e acesso facilitado a funcionalidades de Rede e Inteligência.\n\nEm ambos os modos, você controla quais dados compartilha por meio das opções de consentimento. Você é responsável por manter a confidencialidade de sua conta e por todas as atividades que ocorram sob sua conta.';
 
   @override
   String get termsSection4Title => '4. Propriedade e Armazenamento (Modelo Híbrido)';
@@ -130,7 +130,7 @@ class AgroLocalizationsPt extends AgroLocalizations {
   String get consentOption1Desc => 'Salvar dados na nuvem para segurança e acesso em equipe.';
 
   @override
-  String get consentOption1Legal => 'Ao ativar, seus dados (como registros de produção, estoque e tarefas) serão enviados para nossos servidores seguros e vinculados à sua conta. Isso permite recuperar tudo caso perca o celular e possibilita que colaboradores autorizados por você acessem os mesmos dados. Esses dados NÃO são tornados públicos.';
+  String get consentOption1Legal => 'Ao ativar (disponível apenas com login Google), seus dados (tais como registros de produção, estoque, tarefas, e outros dados operacionais) serão enviados para nossos servidores seguros e vinculados à sua conta. Isso permite recuperar tudo caso perca o celular e possibilita que colaboradores autorizados por você acessem os mesmos dados. Esses dados NÃO são tornados públicos.';
 
   @override
   String get consentOption2Title => 'Rede de Negócios e Oportunidades';
@@ -139,7 +139,7 @@ class AgroLocalizationsPt extends AgroLocalizations {
   String get consentOption2Desc => 'Habilita visualização de vagas e ofertas (Vitrine Digital).';
 
   @override
-  String get consentOption2Legal => 'Esta opção ativa as funções sociais (Mercado, Vagas, Classificados). Ao criar um anúncio, você concorda em tornar públicos, dentro da plataforma, seus dados de contato (Nome/WhatsApp) e localização da oferta. Isso permite que outros usuários chamem você diretamente. O aplicativo é apenas um facilitador.';
+  String get consentOption2Legal => 'Esta opção ativa as funções sociais (Mercado, Vagas, Classificados, entre outras) e está disponível tanto para visitantes quanto para usuários logados. Ao criar um anúncio, você concorda em tornar públicos, dentro da plataforma, seus dados de contato (Nome/WhatsApp) e localização da oferta. Seus dados serão enviados para nossos servidores. O aplicativo é apenas um facilitador de conexões.';
 
   @override
   String get consentOptionSocialLearnMore => 'Habilita o ECOSSISTEMA DIGITAL DE NEGÓCIOS. O app é uma PLATAFORMA DE CONEXÃO e não garante transações.\n\nISENÇÃO TOTAL DE RESPONSABILIDADE:\n1. SEGURANÇA FÍSICA: Não nos responsabilizamos por agressões, acidentes ou crimes ocorridos em encontros presenciais;\n2. SEGURANÇA FINANCEIRA E DIGITAL: Não nos responsabilizamos por transações bancárias, PIX, não pagamento, fraudes, golpes digitais ou phishing ocorridos dentro ou fora da plataforma;\n3. RELAÇÕES TRABALHISTAS: Não verificamos vínculos nem antecedentes.\nA responsabilidade por qualquer transação financeira ou contratação é 100% SUA.';
@@ -154,7 +154,7 @@ class AgroLocalizationsPt extends AgroLocalizations {
   String get consentOption3Desc => 'Habilita mapas, médias de preços e ferramentas avançadas de sugestão técnica (adubação, manejo, clima).';
 
   @override
-  String get consentOption3Legal => 'Esta opção desbloqueia as funcionalidades de inteligência coletiva (como ver onde choveu na região ou a média de preços praticada). Em troca, seus dados (anonimizados ou agregados) passam a compor nossa base de inteligência de mercado. Sem esta permissão, você não terá acesso aos mapas e médias regionais.';
+  String get consentOption3Legal => 'Esta opção desbloqueia as funcionalidades de inteligência coletiva (tais como ver onde choveu na região, média de preços, e outras métricas regionais) e está disponível tanto para visitantes quanto para usuários logados. Em troca, seus dados (anonimizados ou agregados) serão enviados para nossos servidores e passam a compor nossa base de inteligência de mercado. Sem esta permissão, você não terá acesso aos mapas e médias regionais.';
 
   @override
   String get consentOptionIntelligenceLearnMore => 'Esta opção desbloqueia as funcionalidades de inteligência coletiva e ferramentas de suporte à decisão. Em troca, seus dados anonimizados compõem nossa base.\n\nISENÇÃO TOTAL DE RESPONSABILIDADE TÉCNICA E AGRONÔMICA:\nTodas as sugestões de manejo, cálculos de adubação/calagem, indicações de defensivos, previsões de safra ou diagnósticos gerados pelo sistema são SIMULAÇÕES baseadas em algoritmos matemáticos e estatísticos.\n\nO aplicativo NÃO substitui a consultoria presencial nem a emissão de Receituário Agronômico por Engenheiro Agrônomo habilitado, conforme exigido por lei. O aplicativo NÃO se responsabiliza por:\n1. Erros de dosagem, fitotoxicidade ou ineficiência de produtos;\n2. Danos ambientais, contaminação de solo/água ou morte de culturas;\n3. Incompatibilidade química de misturas;\n4. Prejuízos decorrentes de pragas, doenças ou intempéries não previstas.\n\nA decisão de aplicar qualquer insumo ou técnica é de inteira e exclusiva responsabilidade do usuário, que assume todos os riscos técnicos, ambientais e financeiros.';
@@ -247,7 +247,7 @@ class AgroLocalizationsPt extends AgroLocalizations {
   String get aboutDescription => 'Este app faz parte da suíte PlanejaCampo, projetada para ajudar produtores rurais a gerenciar suas atividades no campo.';
 
   @override
-  String get aboutOfflineFirst => '100% Offline-First: todos os seus dados ficam no seu dispositivo.';
+  String get aboutOfflineFirst => 'Offline-First por padrão: seus dados ficam no dispositivo. Funcionalidades opcionais podem sincronizar com a nuvem.';
 
   @override
   String get aboutSuite => 'Suíte PlanejaCampo';

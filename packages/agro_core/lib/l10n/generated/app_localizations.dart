@@ -170,7 +170,7 @@ abstract class AgroLocalizations {
   /// No description provided for @termsSummaryItem2.
   ///
   /// In en, this message translates to:
-  /// **'Your operational data stays on the device (Local Mode). Cloud upload, encryption, and backup occur only if you enable Backup or Network options.'**
+  /// **'By default, your operational data stays on the device (Local Mode). If you choose to enable Backup, Business Network, or Intelligence — even as a guest — your data will be sent to our servers as described in each option.'**
   String get termsSummaryItem2;
 
   /// No description provided for @termsSummaryItem3.
@@ -218,7 +218,7 @@ abstract class AgroLocalizations {
   /// No description provided for @termsSection3Body.
   ///
   /// In en, this message translates to:
-  /// **'You can use our apps in two ways:\n\n• Guest Mode (Hybrid): No login. Operational data (rain/livestock) stays on the device, but technical metadata and IDs are sent to servers for security and ads.\n• Connected Mode (Google): Unlocks the Full Ecosystem, allowing secure cloud storage, synchronization, data recovery, and access to Network and Intelligence features.\n\nYou are responsible for maintaining the confidentiality of your account and for all activities that occur under your account.'**
+  /// **'You can use our apps in two ways:\n\n• Guest Mode (Hybrid): No Google login. By default, operational data (rain/livestock) stays on the device. Technical metadata and IDs are sent to servers for security and ads. **If you choose to enable Business Network or Intelligence**, your data will be sent to our servers even without login.\n• Connected Mode (Google): Unlocks the Full Ecosystem, allowing secure cloud storage, synchronization, data recovery, and easier access to Network and Intelligence features.\n\nIn both modes, you control which data you share through consent options. You are responsible for maintaining the confidentiality of your account and for all activities that occur under your account.'**
   String get termsSection3Body;
 
   /// No description provided for @termsSection4Title.
@@ -344,7 +344,7 @@ abstract class AgroLocalizations {
   /// No description provided for @consentOption1Legal.
   ///
   /// In en, this message translates to:
-  /// **'By activating this, your data (such as production records, inventory, and tasks) will be sent to our secure servers and linked to your account. This allows you to recover everything if you lose your phone and enables authorized collaborators to access the same data. This data is NOT made public.'**
+  /// **'By activating this (available only with Google login), your data (such as production records, inventory, tasks, and other operational data) will be sent to our secure servers and linked to your account. This allows you to recover everything if you lose your phone and enables authorized collaborators to access the same data. This data is NOT made public.'**
   String get consentOption1Legal;
 
   /// No description provided for @consentOption2Title.
@@ -362,7 +362,7 @@ abstract class AgroLocalizations {
   /// No description provided for @consentOption2Legal.
   ///
   /// In en, this message translates to:
-  /// **'This option activates social features (Market, Jobs, Classifieds). By creating an ad, you agree to make your contact details (Name/WhatsApp) and offer location public within the platform. This allows other users to contact you directly. The app is merely a facilitator.'**
+  /// **'This option activates social features (Market, Jobs, Classifieds, etc.) and is available for both guests and logged-in users. By creating an ad, you agree to make your contact details (Name/WhatsApp) and offer location public within the platform. Your data will be sent to our servers. The app is merely a connection facilitator.'**
   String get consentOption2Legal;
 
   /// No description provided for @consentOptionSocialLearnMore.
@@ -392,7 +392,7 @@ abstract class AgroLocalizations {
   /// No description provided for @consentOption3Legal.
   ///
   /// In en, this message translates to:
-  /// **'This option unlocks collective intelligence features (such as seeing where it rained in the region or average prices). In exchange, your data (anonymized or aggregated) makes up our market intelligence base. Without this permission, you will not have access to regional maps and averages.'**
+  /// **'This option unlocks collective intelligence features (such as seeing where it rained in the region, average prices, and other regional metrics) and is available for both guests and logged-in users. In exchange, your data (anonymized or aggregated) will be sent to our servers and makes up our market intelligence base. Without this permission, you will not have access to regional maps and averages.'**
   String get consentOption3Legal;
 
   /// No description provided for @consentOptionIntelligenceLearnMore.
@@ -578,7 +578,7 @@ abstract class AgroLocalizations {
   /// No description provided for @aboutOfflineFirst.
   ///
   /// In en, this message translates to:
-  /// **'100% Offline-First: all your data stays on your device.'**
+  /// **'Offline-First by default: your data stays on the device. Optional features may sync with the cloud.'**
   String get aboutOfflineFirst;
 
   /// No description provided for @aboutSuite.
