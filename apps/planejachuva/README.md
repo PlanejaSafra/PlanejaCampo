@@ -1,16 +1,26 @@
-# planeja_chuva
+# Planeja Chuva
 
-A new Flutter project.
+Aplicativo para gestão pluviométrica e inteligência climática para produtores rurais. Parte da suíte PlanejaCampo.
 
-## Getting Started
+## Visão Geral
+O Planeja Chuva permite que o produtor registre chuvas, visualize estatísticas comparativas e receba alertas meteorológicos.
 
-This project is a starting point for a Flutter application.
+## Privacidade Híbrida (LGPD)
+O aplicativo opera em um modelo de **Privacidade Híbrida**, colocando o usuário no controle total de seus dados:
 
-A few resources to get you started if this is your first Flutter project:
+1.  **Estritamente Confidencial (Padrão)**: Seus dados ficam apenas no seu dispositivo. Nada sai do seu celular.
+2.  **Backup Privado (Opcional)**: Se ativado (Opção 1), seus registros são salvos em nuvem privada e segura (Google Cloud), permitindo recuperação e sincronização.
+3.  **Rede Social (Opcional)**: Se ativado (Opção 2), permite interações comerciais e visibilidade de perfil.
+4.  **Inteligência Coletiva (Opcional)**: Se ativado (Opção 3), dados anonimizados contribuem para estatísticas regionais.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## Funcionalidades
+- Registro de chuvas por talhão
+- Comparativo histórico
+- Previsão do tempo (24h/7dias)
+- Alertas de seca e tempestade
+- Login com Google ou Anônimo
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Desenvolvimento
+Este projeto utiliza Flutter modularizado (`agro_core`).
+- **Gerenciamento de Estado**: Provider + Hive (Offline-First cache)
+- **Backend**: Firebase (Auth, Firestore, Functions)
