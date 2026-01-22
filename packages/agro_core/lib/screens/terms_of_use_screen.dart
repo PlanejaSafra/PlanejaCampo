@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:agro_core/l10n/generated/app_localizations.dart';
+import '../l10n/generated/app_localizations.dart';
 
 /// Full Terms of Use screen with complete legal text.
 class TermsOfUseScreen extends StatelessWidget {
