@@ -42,7 +42,8 @@ class TermsOfUseScreen extends StatelessWidget {
                 '• Gerenciamento de propriedades rurais\n'
                 '• Visualização de estatísticas e métricas\n'
                 '• Backup e sincronização de dados na nuvem (opcional)\n'
-                '• Compartilhamento de dados agregados para pesquisa (opcional)',
+                '• Compartilhamento de dados agregados para pesquisa (opcional)\n'
+                '• Acesso a funcionalidades de Inteligência de Mercado e Ecossistema de Negócios (opcional)',
           ),
           _buildSection(
             context,
