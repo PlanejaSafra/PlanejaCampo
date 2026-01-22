@@ -177,6 +177,7 @@ class BackgroundService {
           final isEnglish = storedLocale.startsWith('en');
 
           // Construct Rich Message
+          // Construct Rich Message with Natural Language (CORE-60)
           final minutesUntil =
               metadata.startTime.difference(DateTime.now()).inMinutes;
           // Clean up negative minutes (if slightly past)
@@ -188,15 +189,64 @@ class BackgroundService {
           String title;
           String body;
 
+          final prob = metadata.probability;
+          final intensity =
+              isEnglish ? metadata.intensityLabelEn : metadata.intensityLabel;
+          final volume = metadata.totalVolumeMm.toStringAsFixed(1);
+
           if (isEnglish) {
-            title = '${metadata.intensityLabelEn} at ${prop.name}!';
-            body =
-                'Starts at $timeStr (in ${minDisplay}m). Duration: ~${metadata.durationMinutes}min (${metadata.totalVolumeMm.toStringAsFixed(1)}mm).';
+            // English Logic (Simplified for now, focusing on PT-BR as per request)
+            String certainty = prob > 70 ? "Forecast" : "Chance of";
+            title = '$certainty ${metadata.intensityLabelEn} at ${prop.name}';
+            body = 'Starting at $timeStr. Prob: $prob%. Vol: ${volume}mm.';
           } else {
-            // Portuguese
-            title = '${metadata.intensityLabel} na ${prop.name}!';
-            body =
-                'Começa às $timeStr (em ${minDisplay}min). Duração: ~${metadata.durationMinutes}min (${metadata.totalVolumeMm.toStringAsFixed(1)}mm).';
+            // Portuguese Logic for "Homens do Campo"
+
+            // 1. Determine Certainty Phrase
+            String callToAction; // Abertura da frase
+
+            if (prob >= 80) {
+              // Alta certeza - "Vai chover", "Chuva confirmada"
+              // Cravar na certeza.
+              callToAction = '🌧️ Vem chuva aí!';
+              title = 'Vai chover na ${prop.name}';
+            } else if (prob >= 50) {
+              // Incerteza média/alta - "Pode chover"
+              callToAction = '🌦️ Atenção: Pode chover.';
+              title = 'Possibilidade de chuva na ${prop.name}';
+            } else {
+              // Baixa certeza - "Possibilidade remota"
+              // O usuário pediu pra não cravar se for incerto.
+              callToAction = '☁️ Tempo instável.';
+              title = 'Chance de chuva na ${prop.name}';
+            }
+
+            // 2. Build the Body Text naturally
+            // Ex: "Pode chover forte (12mm) por volta das 15:30."
+            // Ex: "Chuva forte (12mm) esperada às 15:30."
+
+            String intensityPhrase =
+                metadata.intensityLabel.toLowerCase(); // "chuva forte"
+
+            if (prob >= 80) {
+              // Direct style
+              body =
+                  'Prepare-se: $intensityPhrase ($volume mm) deve começar às $timeStr.';
+            } else if (prob >= 50) {
+              // Possibility style
+              body =
+                  'Há chance de $intensityPhrase ($volume mm) por volta das $timeStr.';
+            } else {
+              // Low probability style
+              body =
+                  'Existe uma pequena chance de $intensityPhrase ($volume mm) perto das $timeStr.';
+            }
+
+            // Add duration context if long
+            if (metadata.durationMinutes > 60) {
+              final h = metadata.durationMinutes ~/ 60;
+              body += ' Duração estimada de ${h}h.';
+            }
           }
 
           final channelName = isEnglish ? 'Rain Alerts' : 'Alertas de Chuva';
@@ -209,6 +259,7 @@ class BackgroundService {
             body: body,
             channelName: channelName,
             channelDesc: channelDesc,
+            payload: 'rain_alert:${prop.id}',
           );
 
           settingsBox.put('${kLastAlertKey}_${prop.id}', now);

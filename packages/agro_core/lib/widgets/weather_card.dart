@@ -351,11 +351,11 @@ class _WeatherCardState extends State<WeatherCard> {
                 },
               ),
 
-              // Second Row: Wind + See Details
+              // Second Row: Wind + Humidity + See Details
               Row(
                 children: [
                   // Wind Info (CORE-38)
-                  if (windSpeed != null && windDirection != null)
+                  if (windSpeed != null && windDirection != null) ...[
                     Container(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 8, vertical: 4),
@@ -373,6 +373,36 @@ class _WeatherCardState extends State<WeatherCard> {
                           const SizedBox(width: 4),
                           Text(
                             '${windSpeed.round()} km/h ${_getWindDirectionLabel(windDirection)}',
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                  ],
+
+                  // Humidity Info (CORE-59)
+                  if (current['relative_humidity_2m'] != null)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.surfaceContainerHighest
+                            .withValues(alpha: 0.5),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.water_drop,
+                              size: 12,
+                              color: theme.colorScheme
+                                  .primary), // Use primary color for water
+                          const SizedBox(width: 4),
+                          Text(
+                            '${current['relative_humidity_2m']}%',
                             style: theme.textTheme.labelSmall?.copyWith(
                               color: theme.colorScheme.onSurfaceVariant,
                             ),

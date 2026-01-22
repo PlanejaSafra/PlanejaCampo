@@ -1,5 +1,6 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter/foundation.dart';
+import 'dart:async';
 
 class AgroNotificationService {
   static final AgroNotificationService _instance =
@@ -9,6 +10,11 @@ class AgroNotificationService {
 
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
+
+  final StreamController<String?> _onNotificationClick =
+      StreamController<String?>.broadcast();
+
+  Stream<String?> get onNotificationClick => _onNotificationClick.stream;
 
   bool _initialized = false;
 
@@ -37,8 +43,24 @@ class AgroNotificationService {
       initializationSettings,
       onDidReceiveNotificationResponse: (details) {
         debugPrint('Notification clicked: ${details.payload}');
+        _onNotificationClick.add(details.payload);
       },
     );
+
+    // Check if app was launched by notification
+    final NotificationAppLaunchDetails? notificationAppLaunchDetails =
+        await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
+
+    if (notificationAppLaunchDetails?.didNotificationLaunchApp ?? false) {
+      final payload =
+          notificationAppLaunchDetails?.notificationResponse?.payload;
+      if (payload != null) {
+        // Delay slightly to ensure listeners are registered
+        Future.delayed(const Duration(milliseconds: 500), () {
+          _onNotificationClick.add(payload);
+        });
+      }
+    }
 
     _initialized = true;
   }
@@ -48,6 +70,7 @@ class AgroNotificationService {
     required String body,
     required String channelName,
     required String channelDesc,
+    String? payload,
   }) async {
     // Ensure initialized (might be called from background isolate where _instance is fresh)
     if (!_initialized) await init();
@@ -71,7 +94,7 @@ class AgroNotificationService {
       title,
       body,
       notificationDetails,
-      payload: 'rain_alert',
+      payload: payload ?? 'rain_alert',
     );
   }
 

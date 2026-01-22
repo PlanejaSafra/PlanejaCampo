@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart'
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'dart:async';
 
 import 'firebase_options.dart';
 import 'models/registro_chuva.dart';
@@ -12,6 +13,7 @@ import 'models/sync_queue_item.dart';
 import 'models/user_preferences.dart';
 
 import 'screens/lista_chuvas_screen.dart';
+import 'screens/weather_detail_screen.dart';
 import 'services/chuva_service.dart';
 import 'services/chuva_backup_provider.dart';
 import 'services/migration_service.dart';
@@ -92,6 +94,8 @@ Future<void> main() async {
 
 class PlanejaChuvaApp extends StatefulWidget {
   final UserPreferences initialPreferences;
+  static final GlobalKey<NavigatorState> navigatorKey =
+      GlobalKey<NavigatorState>();
 
   const PlanejaChuvaApp({super.key, required this.initialPreferences});
 
@@ -102,6 +106,7 @@ class PlanejaChuvaApp extends StatefulWidget {
 class _PlanejaChuvaAppState extends State<PlanejaChuvaApp> {
   late Locale? _selectedLocale;
   late ThemeMode _themeMode;
+  StreamSubscription? _notificationSubscription;
 
   @override
   void initState() {
@@ -109,6 +114,46 @@ class _PlanejaChuvaAppState extends State<PlanejaChuvaApp> {
     // Load saved preferences
     _selectedLocale = _localeFromString(widget.initialPreferences.locale);
     _themeMode = _themeModeFromString(widget.initialPreferences.themeMode);
+
+    // Listen to notification clicks
+    _notificationSubscription =
+        AgroNotificationService().onNotificationClick.listen((payload) {
+      if (payload != null && payload.startsWith('rain_alert')) {
+        _handleRainAlertClick(payload);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _notificationSubscription?.cancel();
+    super.dispose();
+  }
+
+  void _handleRainAlertClick(String payload) async {
+    // payload format: "rain_alert:propertyId"
+    final parts = payload.split(':');
+    String? propertyId;
+    if (parts.length > 1) {
+      propertyId = parts[1];
+    }
+
+    if (propertyId != null) {
+      final property = PropertyService().getPropertyById(propertyId);
+      if (property != null && property.hasLocation) {
+        if (PlanejaChuvaApp.navigatorKey.currentState != null) {
+          PlanejaChuvaApp.navigatorKey.currentState!.push(
+            MaterialPageRoute(
+              builder: (context) => WeatherDetailScreen(
+                propertyId: propertyId!,
+                latitude: property.latitude!,
+                longitude: property.longitude!,
+              ),
+            ),
+          );
+        }
+      }
+    }
   }
 
   Locale? _localeFromString(String? localeString) {
@@ -205,6 +250,8 @@ class _PlanejaChuvaAppState extends State<PlanejaChuvaApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Planeja Chuva',
+      navigatorKey: PlanejaChuvaApp
+          .navigatorKey, // CORE-59: Handle navigation from notifications
       debugShowCheckedModeBanner: false,
       locale: _selectedLocale, // null = auto, otherwise force locale
       theme: AppTheme.light(),

@@ -96,7 +96,7 @@ Implementa direitos do titular de dados conforme LGPD.
 
 Sistema de alertas locais e tarefas em segundo plano.
 
-*   **`AgroNotificationService`**: Gerencia canais e exibição de notificações locais.
+*   **`AgroNotificationService`**: Gerencia canais e exibição de notificações locais. Expõe stream `onNotificationClick` para navegação.
 *   **`BackgroundService`**: Tarefas periódicas (`workmanager`) para monitorar chuva. Implementa lógica de **Alertas Ricos**:
     *   Analisa dados minuto-a-minuto (`minutely_1`) ou 15 min (`minutely_15`).
     *   Calcula: Hora exata de início, Duração estimada, Intensidade (Leve/Moderada/Forte) e Volume total.

@@ -79,7 +79,21 @@ class WeatherService {
     final windSpeeds = daily['wind_speed_10m_max'] as List;
     final windDirections = daily['wind_direction_10m_dominant'] as List;
 
+    // Calculate daily humidity from hourly data (avg)
+    final hourly = data['hourly'];
+    final hourlyHumidity = hourly?['relative_humidity_2m'] as List?;
+
     for (var i = 0; i < dates.length; i++) {
+      // Calculate avg humidity for this day (24 hours)
+      int avgHumidity = 0;
+      if (hourlyHumidity != null && hourlyHumidity.length >= (i + 1) * 24) {
+        final dayHumidities = hourlyHumidity.sublist(i * 24, (i + 1) * 24);
+        if (dayHumidities.isNotEmpty) {
+          final sum = dayHumidities.fold(0, (a, b) => a + (b as num).toInt());
+          avgHumidity = sum ~/ dayHumidities.length;
+        }
+      }
+
       forecasts.add(WeatherForecast.fromApi(
         date: DateTime.parse(dates[i]),
         precipitationMm: (precipitations[i] as num).toDouble(),
@@ -89,6 +103,7 @@ class WeatherService {
         propertyId: propertyId,
         windSpeed: (windSpeeds[i] as num).toDouble(),
         windDirection: (windDirections[i] as num).toInt(),
+        relativeHumidity: avgHumidity,
       ));
     }
     return forecasts;
@@ -105,7 +120,7 @@ class WeatherService {
       debugPrint('WeatherService: Fetching from API for $propertyId...');
       // Added minutely_15=precipitation
       final url = Uri.parse(
-          '$_baseUrl?latitude=$latitude&longitude=$longitude&current=temperature_2m,relative_humidity_2m,precipitation,weather_code,wind_speed_10m,wind_direction_10m&minutely_1=precipitation&minutely_15=precipitation&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,weather_code,wind_speed_10m_max,wind_direction_10m_dominant&hourly=temperature_2m,precipitation_probability,weather_code,wind_speed_10m,wind_direction_10m&timezone=auto&forecast_days=7');
+          '$_baseUrl?latitude=$latitude&longitude=$longitude&current=temperature_2m,relative_humidity_2m,precipitation,weather_code,wind_speed_10m,wind_direction_10m&minutely_1=precipitation&minutely_15=precipitation&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,weather_code,wind_speed_10m_max,wind_direction_10m_dominant&hourly=temperature_2m,relative_humidity_2m,precipitation_probability,weather_code,wind_speed_10m,wind_direction_10m&timezone=auto&forecast_days=7');
 
       final response = await http.get(url).timeout(const Duration(seconds: 10));
 
@@ -131,9 +146,25 @@ class WeatherService {
         final precipitations = daily['precipitation_sum'] as List;
         final weatherCodes = daily['weather_code'] as List;
         final windSpeeds = daily['wind_speed_10m_max'] as List;
+
         final windDirections = daily['wind_direction_10m_dominant'] as List;
 
+        // Calculate daily humidity from hourly data (avg)
+        final hourly = data['hourly'];
+        final hourlyHumidity = hourly?['relative_humidity_2m'] as List?;
+
         for (var i = 0; i < dates.length; i++) {
+          // Calculate avg humidity for this day (24 hours)
+          int avgHumidity = 0;
+          if (hourlyHumidity != null && hourlyHumidity.length >= (i + 1) * 24) {
+            final dayHumidities = hourlyHumidity.sublist(i * 24, (i + 1) * 24);
+            if (dayHumidities.isNotEmpty) {
+              final sum =
+                  dayHumidities.fold(0, (a, b) => a + (b as num).toInt());
+              avgHumidity = sum ~/ dayHumidities.length;
+            }
+          }
+
           forecasts.add(WeatherForecast.fromApi(
             date: DateTime.parse(dates[i]),
             precipitationMm: (precipitations[i] as num).toDouble(),
@@ -143,6 +174,7 @@ class WeatherService {
             propertyId: propertyId,
             windSpeed: (windSpeeds[i] as num).toDouble(),
             windDirection: (windDirections[i] as num).toInt(),
+            relativeHumidity: avgHumidity,
           ));
         }
 
@@ -318,6 +350,10 @@ class WeatherService {
       }
     }
 
+    // 3. Find Probability from Hourly Data
+    int eventProbability =
+        100; // Default to 100 if missing (conservative for past/nowcast)
+
     if (startTime == null || totalVolume < 0.2)
       return null; // Too light or no rain
 
@@ -334,18 +370,44 @@ class WeatherService {
     else
       intensity = RainIntensity.violent;
 
-    // Linear interpolation for Start Time (refine 15m block)
-    // If not minutely_1, and we have enough mm, maybe it started in the middle?
-    // Advanced: Assuming uniform distribution in 15 mins is safer than guessing.
-    // We stick to the block time for safety.
+    if (startTime != null && data.containsKey('hourly')) {
+      final hourly = data['hourly'];
+      final hTimes = hourly['time'] as List;
+      final hProbs = hourly['precipitation_probability'] as List;
+
+      // Hourly times are usually ISO strings "2023-10-10T10:00"
+      // We need to find the hour block that contains startTime
+      // Simple string matching or parsing
+
+      // Strategy: Find the hourly index where time <= startTime < time + 1h
+      // Since arrays are sorted:
+      for (var i = 0; i < hTimes.length; i++) {
+        final hTime = DateTime.parse(hTimes[i].toString());
+        // Check if this hour matches the rain start event (roughly)
+        // If rain starts at 14:15, we look for 14:00 slot.
+        final diff = startTime.difference(hTime).inMinutes;
+
+        if (diff >= 0 && diff < 60) {
+          // This is the hour
+          if (i < hProbs.length) {
+            final val = hProbs[i];
+            if (val != null) {
+              eventProbability = (val as num).toInt();
+            }
+          }
+          break;
+        }
+      }
+    }
 
     return RainAlertMetadata(
-      startTime: startTime,
+      startTime: startTime!,
       durationMinutes: durationMinutes,
       intensity: intensity,
       totalVolumeMm: totalVolume,
       peakIntensity: maxRate,
       confidence: isMinutely1 ? 0.95 : 0.8,
+      probability: eventProbability,
     );
   }
 

@@ -2,6 +2,33 @@
 
 ---
 
+## Phase CORE-59: Notification Intensity & Weather UI Polish
+### Status: [DONE]
+**Date Completed**: 2026-01-22
+**Priority**: 🟢 ENHANCEMENT
+**Objective**: Improve rain alert clarity with explicit intensity levels, ensure clicking alerts opens the app, and add humidity data to weather cards.
+
+### Implementation Summary
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 59.1 | Expose Notification Click Stream in `AgroNotificationService` | ✅ DONE |
+| 59.2 | Update `BackgroundService` to use explicit intensity text | ✅ DONE |
+| 59.3 | Add `relativeHumidity` to `WeatherForecast` model & Hive Adapter | ✅ DONE |
+| 59.4 | Update `WeatherService` to fetch and parse humidity | ✅ DONE |
+| 59.5 | Add Humidity Widget to `WeatherCard` | ✅ DONE |
+| 59.6 | Handle Notification Click in App (Navigation) | ✅ DONE |
+
+### Files Modified
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/services/notification_service.dart` | MODIFY | Add click stream |
+| `lib/services/background_service.dart` | MODIFY | Update alert text |
+| `lib/models/weather_forecast.dart` | MODIFY | Add humidity field |
+| `lib/services/weather_service.dart` | MODIFY | Fetch humidity |
+| `lib/widgets/weather_card.dart` | MODIFY | Add humidity UI |
+
+---
+
 ## Phase CORE-58: Map Bug Fixes (Camera & Tiles)
 ### Status: [DONE]
 **Date Completed**: 2026-01-21

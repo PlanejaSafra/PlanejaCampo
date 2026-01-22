@@ -1,5 +1,3 @@
-import 'package:flutter/foundation.dart';
-
 enum RainIntensity {
   none,
   veryLight, // < 0.25 mm/h
@@ -26,7 +24,10 @@ class RainAlertMetadata {
   /// Peak precipitation in mm/h (or mm/min * 60)
   final double peakIntensity;
 
-  /// Confidence of this prediction (0.0 to 1.0)
+  /// Probability of precipitation (0-100)
+  final int probability;
+
+  /// Confidence of prediction (0.0 to 1.0) - kept for internal logic
   final double confidence;
 
   RainAlertMetadata({
@@ -36,6 +37,7 @@ class RainAlertMetadata {
     required this.totalVolumeMm,
     required this.peakIntensity,
     this.confidence = 1.0,
+    required this.probability,
   });
 
   /// Human-readable label for intensity

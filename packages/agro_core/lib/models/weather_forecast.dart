@@ -40,7 +40,14 @@ class WeatherForecast extends HiveObject {
 
   /// Wind direction in degrees (0 = North, 90 = East, etc.)
   @HiveField(8)
+
+  /// Wind direction in degrees (0 = North, 90 = East, etc.)
+  @HiveField(8)
   final int windDirection;
+
+  /// Relative Humidity (2m) in percentage (0-100)
+  @HiveField(9)
+  final int relativeHumidity;
 
   WeatherForecast({
     required this.date,
@@ -52,6 +59,7 @@ class WeatherForecast extends HiveObject {
     required this.propertyId,
     this.windSpeed = 0.0,
     this.windDirection = 0,
+    this.relativeHumidity = 0,
   });
 
   /// Factory constructor to create from Open-Meteo API response
@@ -64,6 +72,7 @@ class WeatherForecast extends HiveObject {
     required String propertyId,
     required double windSpeed,
     required int windDirection,
+    required int relativeHumidity,
   }) {
     return WeatherForecast(
       date: date,
@@ -75,6 +84,7 @@ class WeatherForecast extends HiveObject {
       propertyId: propertyId,
       windSpeed: windSpeed,
       windDirection: windDirection,
+      relativeHumidity: relativeHumidity,
     );
   }
 
@@ -122,6 +132,6 @@ class WeatherForecast extends HiveObject {
 
   @override
   String toString() {
-    return 'WeatherForecast(date: $date, precip: ${precipitationMm}mm, temp: $temperatureMin-$temperatureMax°C, wind: ${windSpeed}km/h ${getWindDirectionLabel()})';
+    return 'WeatherForecast(date: $date, precip: ${precipitationMm}mm, temp: $temperatureMin-$temperatureMax°C, wind: ${windSpeed}km/h, humidity: $relativeHumidity%)';
   }
 }

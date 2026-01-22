@@ -5,6 +5,25 @@
 
 ---
 
+## Phase CHUVA-59: Enhanced Notifications & Weather UI
+### Status: [DONE]
+**Date Completed**: 2026-01-22
+**Priority**: 🟢 ENHANCEMENT
+**Objective**: Integrate new core notification features (handling clicks) and verify weather UI updates.
+**Cross-Reference**: CORE-59
+
+### Implementation Summary
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 59.1 | Handle notification click in `main.dart` to open Weather Detail | ✅ DONE |
+
+### Files Modified
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/main.dart` | MODIFY | Listen to notification clicks |
+
+---
+
 ## Phase CHUVA-54: AdMob Banner Integration
 ### Status: [DONE]
 **Date Completed**: 2026-01-21
