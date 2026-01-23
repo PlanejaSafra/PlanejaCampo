@@ -1375,4 +1375,10 @@ class AgroLocalizationsPt extends AgroLocalizations {
 
   @override
   String get backupLocalExportSuccess => 'Backup local exportado com sucesso';
+
+  @override
+  String get autoBackupTitle => 'Backup automático';
+
+  @override
+  String get autoBackupSubtitle => 'Fazer backup ao abrir o app';
 }

@@ -70,6 +70,43 @@ class CloudBackupService {
     }
   }
 
+  /// Try to perform auto backup on app start.
+  /// Only backs up if:
+  /// - autoBackupEnabled is true
+  /// - User is logged in (not anonymous)
+  /// - User has cloud backup consent
+  /// Returns true if backup was performed, false otherwise.
+  Future<bool> tryAutoBackup({
+    required bool autoBackupEnabled,
+    required bool hasCloudBackupConsent,
+  }) async {
+    if (!autoBackupEnabled) {
+      debugPrint('[AutoBackup] Disabled');
+      return false;
+    }
+
+    if (!hasCloudBackupConsent) {
+      debugPrint('[AutoBackup] No cloud backup consent');
+      return false;
+    }
+
+    final user = AuthService.currentUser;
+    if (user == null || user.isAnonymous) {
+      debugPrint('[AutoBackup] User not logged in or anonymous');
+      return false;
+    }
+
+    try {
+      debugPrint('[AutoBackup] Starting automatic backup...');
+      await backupAll();
+      debugPrint('[AutoBackup] Backup completed successfully');
+      return true;
+    } catch (e) {
+      debugPrint('[AutoBackup] Backup failed: $e');
+      return false;
+    }
+  }
+
   /// Perform a full backup of all registered apps.
   /// Returns the document ID of the backup or null if failed.
   /// Automatically chunks data if it exceeds 900KB.

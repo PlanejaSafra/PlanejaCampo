@@ -359,6 +359,12 @@ class _AuthGateState extends State<AuthGate> {
     // Initialize user data after successful login
     await _initializeUserData();
 
+    // Try automatic backup (if enabled and user has consent)
+    CloudBackupService.instance.tryAutoBackup(
+      autoBackupEnabled: AgroPrivacyStore.autoBackupEnabled,
+      hasCloudBackupConsent: AgroPrivacyStore.consentCloudBackup,
+    );
+
     // Refresh UI
     if (mounted) {
       setState(() {});

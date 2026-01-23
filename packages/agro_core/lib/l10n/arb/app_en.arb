@@ -660,5 +660,8 @@
     }
   },
 
-  "backupLocalExportSuccess": "Local backup exported successfully"
+  "backupLocalExportSuccess": "Local backup exported successfully",
+
+  "autoBackupTitle": "Automatic backup",
+  "autoBackupSubtitle": "Backup when opening the app"
 }

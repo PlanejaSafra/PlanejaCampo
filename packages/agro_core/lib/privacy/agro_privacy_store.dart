@@ -118,6 +118,22 @@ class AgroPrivacyStore {
     ]);
   }
 
+  // ========== AUTO BACKUP ==========
+
+  /// Check if auto backup on app start is enabled.
+  /// Defaults to true - automatic backup is enabled by default.
+  static bool get autoBackupEnabled {
+    return _safeBox.get(
+      AgroPrivacyKeys.autoBackupEnabled,
+      defaultValue: true,
+    ) as bool;
+  }
+
+  /// Set auto backup on app start.
+  static Future<void> setAutoBackupEnabled(bool value) async {
+    await _safeBox.put(AgroPrivacyKeys.autoBackupEnabled, value);
+  }
+
   // =================================================
 
   /// Accept all consents and save timestamp.

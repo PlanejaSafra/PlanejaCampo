@@ -2746,6 +2746,18 @@ abstract class AgroLocalizations {
   /// In en, this message translates to:
   /// **'Local backup exported successfully'**
   String get backupLocalExportSuccess;
+
+  /// No description provided for @autoBackupTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic backup'**
+  String get autoBackupTitle;
+
+  /// No description provided for @autoBackupSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup when opening the app'**
+  String get autoBackupSubtitle;
 }
 
 class _AgroLocalizationsDelegate extends LocalizationsDelegate<AgroLocalizations> {

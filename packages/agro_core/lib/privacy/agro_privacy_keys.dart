@@ -32,4 +32,7 @@ class AgroPrivacyKeys {
 
   /// Timestamp of when consent was given or rejected.
   static const String consentTimestamp = 'consent_timestamp';
+
+  /// Whether auto backup on app start is enabled.
+  static const String autoBackupEnabled = 'auto_backup_enabled';
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
 
 import '../l10n/generated/app_localizations.dart';
@@ -665,6 +666,10 @@ class _AgroSettingsScreenState extends State<AgroSettingsScreen> {
                               ),
                             ],
                           ),
+                          const SizedBox(height: 16),
+
+                          // Auto backup switch
+                          _AutoBackupSwitch(),
                         ],
                       ],
                     ),
@@ -795,6 +800,79 @@ class _AgroSettingsScreenState extends State<AgroSettingsScreen> {
               ),
             ),
         ],
+      ),
+    );
+  }
+}
+
+/// Widget for auto backup toggle switch
+class _AutoBackupSwitch extends StatefulWidget {
+  const _AutoBackupSwitch();
+
+  @override
+  State<_AutoBackupSwitch> createState() => _AutoBackupSwitchState();
+}
+
+class _AutoBackupSwitchState extends State<_AutoBackupSwitch> {
+  late bool _autoBackupEnabled;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSetting();
+  }
+
+  Future<void> _loadSetting() async {
+    // Import dynamically to avoid circular dependency
+    final enabled = await _getAutoBackupEnabled();
+    if (mounted) {
+      setState(() => _autoBackupEnabled = enabled);
+    }
+  }
+
+  Future<bool> _getAutoBackupEnabled() async {
+    try {
+      final box = await Hive.openBox('agro_settings');
+      return box.get('auto_backup_enabled', defaultValue: true) as bool;
+    } catch (e) {
+      return true;
+    }
+  }
+
+  Future<void> _setAutoBackupEnabled(bool value) async {
+    try {
+      final box = await Hive.openBox('agro_settings');
+      await box.put('auto_backup_enabled', value);
+    } catch (e) {
+      // Ignore
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AgroLocalizations.of(context)!;
+    final theme = Theme.of(context);
+
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(color: theme.colorScheme.outline.withOpacity(0.3)),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: SwitchListTile(
+        dense: true,
+        title: Text(
+          l10n.autoBackupTitle,
+          style: theme.textTheme.bodyMedium,
+        ),
+        subtitle: Text(
+          l10n.autoBackupSubtitle,
+          style: theme.textTheme.bodySmall,
+        ),
+        value: _autoBackupEnabled,
+        onChanged: (value) async {
+          setState(() => _autoBackupEnabled = value);
+          await _setAutoBackupEnabled(value);
+        },
       ),
     );
   }
