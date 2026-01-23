@@ -1,7 +1,6 @@
 import 'dart:convert';
-import 'dart:typed_data';
 
-import 'package:firebase_storage/firebase_storage.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 
 import 'auth_service.dart';
@@ -18,15 +17,47 @@ abstract class BackupProvider {
   Future<void> restoreData(Map<String, dynamic> data);
 }
 
+/// Metadata about a cloud backup.
+class CloudBackupMetadata {
+  final DateTime? updated;
+  final int appCount;
+  final int chunkCount;
+
+  CloudBackupMetadata({
+    required this.updated,
+    required this.appCount,
+    this.chunkCount = 1,
+  });
+
+  factory CloudBackupMetadata.fromMap(Map<String, dynamic> map) {
+    DateTime? timestamp;
+    if (map['timestamp'] is Timestamp) {
+      timestamp = (map['timestamp'] as Timestamp).toDate();
+    }
+    return CloudBackupMetadata(
+      updated: timestamp,
+      appCount: map['appCount'] as int? ?? 0,
+      chunkCount: map['chunkCount'] as int? ?? 1,
+    );
+  }
+}
+
 /// Service that manages cloud backups for all PlanejaCampo apps.
-/// Stores a single 'backup.json' file in Firebase Storage for the user.
+/// Stores backup data in Firestore (free tier) instead of Firebase Storage.
+/// Supports chunking for backups larger than 900KB (leaving margin for 1MB limit).
 class CloudBackupService {
   CloudBackupService._();
   static final CloudBackupService _instance = CloudBackupService._();
   static CloudBackupService get instance => _instance;
 
-  final FirebaseStorage _storage = FirebaseStorage.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final List<BackupProvider> _providers = [];
+
+  /// Collection path for user backups
+  static const String _backupsCollection = 'user_backups';
+
+  /// Maximum size per chunk (900KB to leave margin for Firestore's 1MB limit)
+  static const int _maxChunkSize = 900 * 1024;
 
   /// Register a provider (app) to participate in backup.
   void registerProvider(BackupProvider provider) {
@@ -37,7 +68,8 @@ class CloudBackupService {
   }
 
   /// Perform a full backup of all registered apps.
-  /// Returns URL of the uploaded file or null if failed.
+  /// Returns the document ID of the backup or null if failed.
+  /// Automatically chunks data if it exceeds 900KB.
   Future<String?> backupAll() async {
     final user = AuthService.currentUser;
     if (user == null) {
@@ -48,69 +80,145 @@ class CloudBackupService {
       throw Exception('Backup indisponível para contas anônimas');
     }
 
-    final backupData = <String, dynamic>{
-      'version': 1,
-      'timestamp': DateTime.now().toIso8601String(),
-      'apps': {},
-    };
+    final appsData = <String, dynamic>{};
 
     // Collect data from all providers
     for (final provider in _providers) {
       try {
         final data = await provider.getData();
-        backupData['apps'][provider.key] = data;
+        appsData[provider.key] = data;
       } catch (e) {
-        debugPrint('Erro ao obter dados de cleanup para ${provider.key}: $e');
+        debugPrint('Erro ao obter dados para backup de ${provider.key}: $e');
         // Continue backing up other apps even if one fails
       }
     }
 
-    // Convert to JSON
-    final jsonString = jsonEncode(backupData);
-    final data = Uint8List.fromList(utf8.encode(jsonString));
-
-    // Upload to Firebase Storage
-    final ref = _storage.ref().child('users/${user.uid}/backup.json');
-
-    final metadata = SettableMetadata(
-      contentType: 'application/json',
-      customMetadata: {
-        'timestamp': DateTime.now().toIso8601String(),
-        'app_count': _providers.length.toString(),
-      },
-    );
-
     try {
-      await ref.putData(data, metadata);
-      return await ref.getDownloadURL();
+      final userDocRef =
+          _firestore.collection(_backupsCollection).doc(user.uid);
+
+      // Check size of full backup
+      final jsonString = jsonEncode(appsData);
+      final dataSize = utf8.encode(jsonString).length;
+
+      if (dataSize <= _maxChunkSize) {
+        // Single document backup (most common case)
+        await _deleteExistingChunks(userDocRef);
+
+        await userDocRef.set({
+          'userId': user.uid,
+          'version': 1,
+          'timestamp': FieldValue.serverTimestamp(),
+          'appCount': _providers.length,
+          'chunkCount': 1,
+          'apps': appsData,
+        });
+
+        debugPrint('Backup salvo (${(dataSize / 1024).toStringAsFixed(1)}KB)');
+      } else {
+        // Need to chunk the data
+        await _saveChunkedBackup(userDocRef, appsData);
+      }
+
+      return user.uid;
     } catch (e) {
-      debugPrint('Erro no upload para Firebase Storage: $e');
+      debugPrint('Erro ao salvar backup no Firestore: $e');
       rethrow;
     }
   }
 
+  /// Delete existing chunk documents
+  Future<void> _deleteExistingChunks(DocumentReference userDocRef) async {
+    final chunksSnapshot = await userDocRef.collection('chunks').get();
+    for (final doc in chunksSnapshot.docs) {
+      await doc.reference.delete();
+    }
+  }
+
+  /// Save backup in multiple chunks
+  Future<void> _saveChunkedBackup(
+    DocumentReference userDocRef,
+    Map<String, dynamic> appsData,
+  ) async {
+    // Delete any existing chunks first
+    await _deleteExistingChunks(userDocRef);
+
+    // Split apps into chunks
+    final chunks = <Map<String, dynamic>>[];
+    var currentChunk = <String, dynamic>{};
+    var currentChunkSize = 0;
+
+    for (final entry in appsData.entries) {
+      final entryJson = jsonEncode({entry.key: entry.value});
+      final entrySize = utf8.encode(entryJson).length;
+
+      if (currentChunkSize + entrySize > _maxChunkSize &&
+          currentChunk.isNotEmpty) {
+        // Save current chunk and start new one
+        chunks.add(currentChunk);
+        currentChunk = <String, dynamic>{};
+        currentChunkSize = 0;
+      }
+
+      currentChunk[entry.key] = entry.value;
+      currentChunkSize += entrySize;
+    }
+
+    // Add last chunk
+    if (currentChunk.isNotEmpty) {
+      chunks.add(currentChunk);
+    }
+
+    // Save metadata document
+    // Extract userId from the document reference path
+    final userId = userDocRef.id;
+    await userDocRef.set({
+      'userId': userId,
+      'version': 1,
+      'timestamp': FieldValue.serverTimestamp(),
+      'appCount': _providers.length,
+      'chunkCount': chunks.length,
+      'chunked': true,
+    });
+
+    // Save each chunk as a subcollection document
+    for (var i = 0; i < chunks.length; i++) {
+      await userDocRef.collection('chunks').doc('chunk_$i').set({
+        'index': i,
+        'apps': chunks[i],
+      });
+    }
+
+    debugPrint('Backup salvo em ${chunks.length} chunks');
+  }
+
   /// Restore data from cloud backup.
-  /// [force] : Not used yet, could be for overwriting local conflicts.
   Future<void> restoreAll() async {
     final user = AuthService.currentUser;
     if (user == null) {
       throw Exception('Usuário não logado');
     }
 
-    final ref = _storage.ref().child('users/${user.uid}/backup.json');
-
     try {
-      // Download data (max 10MB)
-      final data = await ref.getData(10 * 1024 * 1024);
-      if (data == null) {
-        throw Exception('Nenhum backup encontrado');
+      final userDocRef =
+          _firestore.collection(_backupsCollection).doc(user.uid);
+      final snapshot = await userDocRef.get();
+
+      if (!snapshot.exists) {
+        throw Exception('Nenhum backup encontrado na nuvem.');
       }
 
-      final jsonString = utf8.decode(data);
-      final backupData = jsonDecode(jsonString) as Map<String, dynamic>;
+      final backupData = snapshot.data()!;
+      Map<String, dynamic> appsData;
 
-      final appsData = backupData['apps'] as Map<String, dynamic>?;
-      if (appsData == null) return;
+      if (backupData['chunked'] == true) {
+        // Load chunked backup
+        appsData = await _loadChunkedBackup(
+            userDocRef, backupData['chunkCount'] as int);
+      } else {
+        // Single document backup
+        appsData = backupData['apps'] as Map<String, dynamic>? ?? {};
+      }
 
       // Restore for each registered provider
       for (final provider in _providers) {
@@ -125,7 +233,8 @@ class CloudBackupService {
         }
       }
     } on FirebaseException catch (e) {
-      if (e.code == 'object-not-found') {
+      debugPrint('Erro do Firebase ao restaurar: ${e.code} - ${e.message}');
+      if (e.code == 'not-found') {
         throw Exception('Nenhum backup encontrado na nuvem.');
       }
       rethrow;
@@ -134,16 +243,64 @@ class CloudBackupService {
     }
   }
 
+  /// Load chunked backup from subcollection
+  Future<Map<String, dynamic>> _loadChunkedBackup(
+    DocumentReference userDocRef,
+    int chunkCount,
+  ) async {
+    final appsData = <String, dynamic>{};
+
+    for (var i = 0; i < chunkCount; i++) {
+      final chunkDoc =
+          await userDocRef.collection('chunks').doc('chunk_$i').get();
+      if (chunkDoc.exists) {
+        final chunkApps = chunkDoc.data()?['apps'] as Map<String, dynamic>?;
+        if (chunkApps != null) {
+          appsData.addAll(chunkApps);
+        }
+      }
+    }
+
+    return appsData;
+  }
+
   /// Get metadata of the last backup (timestamp, etc).
-  Future<FullMetadata?> getLastBackupMetadata() async {
+  Future<CloudBackupMetadata?> getLastBackupMetadata() async {
     final user = AuthService.currentUser;
     if (user == null) return null;
 
-    final ref = _storage.ref().child('users/${user.uid}/backup.json');
     try {
-      return await ref.getMetadata();
+      final docRef = _firestore.collection(_backupsCollection).doc(user.uid);
+      final snapshot = await docRef.get();
+
+      if (!snapshot.exists) return null;
+
+      return CloudBackupMetadata.fromMap(snapshot.data()!);
     } catch (e) {
+      debugPrint('Erro ao obter metadados do backup: $e');
       return null;
+    }
+  }
+
+  /// Delete the cloud backup for the current user.
+  Future<void> deleteBackup() async {
+    final user = AuthService.currentUser;
+    if (user == null) {
+      throw Exception('Usuário não logado');
+    }
+
+    try {
+      final userDocRef =
+          _firestore.collection(_backupsCollection).doc(user.uid);
+
+      // Delete chunks first
+      await _deleteExistingChunks(userDocRef);
+
+      // Delete main document
+      await userDocRef.delete();
+    } catch (e) {
+      debugPrint('Erro ao deletar backup: $e');
+      rethrow;
     }
   }
 }

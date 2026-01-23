@@ -128,9 +128,9 @@ class _AgroSettingsScreenState extends State<AgroSettingsScreen> {
     if (!_isLoggedIn) return;
 
     final metadata = await CloudBackupService.instance.getLastBackupMetadata();
-    if (metadata != null && metadata.updated != null && mounted) {
+    if (metadata?.updated != null && mounted) {
       setState(() {
-        _lastBackupDate = DateFormat.yMd().add_Hm().format(metadata.updated!);
+        _lastBackupDate = DateFormat.yMd().add_Hm().format(metadata!.updated!);
       });
     }
   }
