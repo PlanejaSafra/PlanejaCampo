@@ -43,8 +43,8 @@ class CloudBackupMetadata {
 }
 
 /// Service that manages cloud backups for all PlanejaCampo apps.
-/// Stores backup data in Firestore (free tier) instead of Firebase Storage.
-/// Supports chunking for backups larger than 900KB (leaving margin for 1MB limit).
+/// Stores backup data in Firestore (free tier) using flat collections.
+/// Uses 'user_backups' for metadata and 'user_backup_chunks' for large backups.
 class CloudBackupService {
   CloudBackupService._();
   static final CloudBackupService _instance = CloudBackupService._();
@@ -53,8 +53,11 @@ class CloudBackupService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final List<BackupProvider> _providers = [];
 
-  /// Collection path for user backups
+  /// Collection for backup metadata
   static const String _backupsCollection = 'user_backups';
+
+  /// Separate collection for backup chunks (flat, not subcollection)
+  static const String _chunksCollection = 'user_backup_chunks';
 
   /// Maximum size per chunk (900KB to leave margin for Firestore's 1MB limit)
   static const int _maxChunkSize = 900 * 1024;
@@ -103,7 +106,7 @@ class CloudBackupService {
 
       if (dataSize <= _maxChunkSize) {
         // Single document backup (most common case)
-        await _deleteExistingChunks(userDocRef);
+        await _deleteExistingChunks(user.uid);
 
         await userDocRef.set({
           'userId': user.uid,
@@ -111,13 +114,14 @@ class CloudBackupService {
           'timestamp': FieldValue.serverTimestamp(),
           'appCount': _providers.length,
           'chunkCount': 1,
+          'chunked': false,
           'apps': appsData,
         });
 
         debugPrint('Backup salvo (${(dataSize / 1024).toStringAsFixed(1)}KB)');
       } else {
         // Need to chunk the data
-        await _saveChunkedBackup(userDocRef, appsData);
+        await _saveChunkedBackup(user.uid, appsData);
       }
 
       return user.uid;
@@ -127,21 +131,26 @@ class CloudBackupService {
     }
   }
 
-  /// Delete existing chunk documents
-  Future<void> _deleteExistingChunks(DocumentReference userDocRef) async {
-    final chunksSnapshot = await userDocRef.collection('chunks').get();
+  /// Delete existing chunk documents from the flat chunks collection
+  Future<void> _deleteExistingChunks(String userId) async {
+    // Query chunks by userId (flat collection, relational-style)
+    final chunksSnapshot = await _firestore
+        .collection(_chunksCollection)
+        .where('userId', isEqualTo: userId)
+        .get();
+
     for (final doc in chunksSnapshot.docs) {
       await doc.reference.delete();
     }
   }
 
-  /// Save backup in multiple chunks
+  /// Save backup in multiple chunks using flat collection
   Future<void> _saveChunkedBackup(
-    DocumentReference userDocRef,
+    String userId,
     Map<String, dynamic> appsData,
   ) async {
     // Delete any existing chunks first
-    await _deleteExistingChunks(userDocRef);
+    await _deleteExistingChunks(userId);
 
     // Split apps into chunks
     final chunks = <Map<String, dynamic>>[];
@@ -169,9 +178,8 @@ class CloudBackupService {
       chunks.add(currentChunk);
     }
 
-    // Save metadata document
-    // Extract userId from the document reference path
-    final userId = userDocRef.id;
+    // Save metadata document in user_backups
+    final userDocRef = _firestore.collection(_backupsCollection).doc(userId);
     await userDocRef.set({
       'userId': userId,
       'version': 1,
@@ -181,9 +189,13 @@ class CloudBackupService {
       'chunked': true,
     });
 
-    // Save each chunk as a subcollection document
+    // Save each chunk in the flat chunks collection
+    // Document ID format: {userId}_chunk_{index}
     for (var i = 0; i < chunks.length; i++) {
-      await userDocRef.collection('chunks').doc('chunk_$i').set({
+      final chunkDocId = '${userId}_chunk_$i';
+      await _firestore.collection(_chunksCollection).doc(chunkDocId).set({
+        'userId': userId,
+        'backupId': userId,
         'index': i,
         'apps': chunks[i],
       });
@@ -212,9 +224,9 @@ class CloudBackupService {
       Map<String, dynamic> appsData;
 
       if (backupData['chunked'] == true) {
-        // Load chunked backup
-        appsData = await _loadChunkedBackup(
-            userDocRef, backupData['chunkCount'] as int);
+        // Load chunked backup from flat collection
+        appsData =
+            await _loadChunkedBackup(user.uid, backupData['chunkCount'] as int);
       } else {
         // Single document backup
         appsData = backupData['apps'] as Map<String, dynamic>? ?? {};
@@ -243,16 +255,18 @@ class CloudBackupService {
     }
   }
 
-  /// Load chunked backup from subcollection
+  /// Load chunked backup from flat chunks collection
   Future<Map<String, dynamic>> _loadChunkedBackup(
-    DocumentReference userDocRef,
+    String userId,
     int chunkCount,
   ) async {
     final appsData = <String, dynamic>{};
 
     for (var i = 0; i < chunkCount; i++) {
+      final chunkDocId = '${userId}_chunk_$i';
       final chunkDoc =
-          await userDocRef.collection('chunks').doc('chunk_$i').get();
+          await _firestore.collection(_chunksCollection).doc(chunkDocId).get();
+
       if (chunkDoc.exists) {
         final chunkApps = chunkDoc.data()?['apps'] as Map<String, dynamic>?;
         if (chunkApps != null) {
@@ -290,14 +304,11 @@ class CloudBackupService {
     }
 
     try {
-      final userDocRef =
-          _firestore.collection(_backupsCollection).doc(user.uid);
-
-      // Delete chunks first
-      await _deleteExistingChunks(userDocRef);
+      // Delete chunks first (from flat collection)
+      await _deleteExistingChunks(user.uid);
 
       // Delete main document
-      await userDocRef.delete();
+      await _firestore.collection(_backupsCollection).doc(user.uid).delete();
     } catch (e) {
       debugPrint('Erro ao deletar backup: $e');
       rethrow;

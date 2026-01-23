@@ -222,42 +222,34 @@ class UserCloudService {
     }
   }
 
-  /// Sync a private rainfall record to User's private collection (Option 1)
+  /// Sync a private rainfall record to flat collection (relational model)
   Future<void> syncRainfallRecord({
     required String recordId,
     required Map<String, dynamic> data,
   }) async {
-    // 1. Check Consent (Redundant check, but safe)
-    // We can access AgroPrivacyStore here, but better to check caller or pass explicit flag?
-    // Actually UserCloudService is in agro_core, AgroPrivacyStore is in agro_core.
-    // BUT UserCloudService doesn't import AgroPrivacyStore to avoid circles?
-    // Let's check imports. It imports `consent_data.dart` (model).
-    // Let's assume caller checks consent, OR we check UserCloudData consents.
-
     final userData = getCurrentUserData();
     if (userData == null || !userData.syncEnabled) return;
 
     // Check specific backup consent
-    // userData.consents has the flags.
-    // Check specific backup consent
-    // userData.consents has the flags.
     if (userData.consents.cloudBackup != true) return;
 
     if (_firestore == null) return;
 
     try {
+      // Use flat collection with userId as FK (no subcollections)
+      final docData = Map<String, dynamic>.from(data);
+      docData['userId'] = userData.uid;
+
       await _firestore!
-          .collection(_collectionName)
-          .doc(userData.uid)
           .collection('rainfall_records')
           .doc(recordId)
-          .set(data, SetOptions(merge: true));
+          .set(docData, SetOptions(merge: true));
     } catch (e) {
       // Fire-and-forget
     }
   }
 
-  /// Delete a private rainfall record from cloud
+  /// Delete a private rainfall record from cloud (flat collection)
   Future<void> deleteRainfallRecord(String recordId) async {
     final userData = getCurrentUserData();
     if (userData == null) return;
@@ -268,12 +260,8 @@ class UserCloudService {
     if (_firestore == null) return;
 
     try {
-      await _firestore!
-          .collection(_collectionName)
-          .doc(userData.uid)
-          .collection('rainfall_records')
-          .doc(recordId)
-          .delete();
+      // Use flat collection (no subcollections)
+      await _firestore!.collection('rainfall_records').doc(recordId).delete();
     } catch (e) {
       // safe fail
     }

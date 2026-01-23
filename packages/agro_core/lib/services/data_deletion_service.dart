@@ -78,37 +78,49 @@ class DataDeletionService {
     }
   }
 
-  /// Delete all Firestore data for the user.
+  /// Delete all Firestore data for the user from flat collections.
   Future<void> _deleteFirestoreUserData(String uid) async {
     final firestore = FirebaseFirestore.instance;
-    final userDoc = firestore.collection('users').doc(uid);
 
-    // Known subcollections to delete
-    final subcollections = [
-      'consents',
-      'properties',
-      'talhoes',
-      'chuvas',
-      'rainfall_records',
+    // Flat collections that store user data (with userId field)
+    final flatCollections = [
+      'users', // Main user document
+      'rainfall_records', // Rainfall data
+      'user_backups', // Cloud backup metadata
+      'user_backup_chunks', // Cloud backup chunks (if chunked)
     ];
 
-    // Delete each subcollection
-    for (final subcollection in subcollections) {
-      await _deleteCollection(userDoc.collection(subcollection));
+    // Delete documents from each flat collection where userId == uid
+    for (final collectionName in flatCollections) {
+      if (collectionName == 'users') {
+        // Main users collection - delete by document ID (uid)
+        await firestore.collection(collectionName).doc(uid).delete();
+      } else {
+        // Other collections - query by userId field
+        await _deleteDocumentsByUserId(
+          firestore.collection(collectionName),
+          uid,
+        );
+      }
     }
 
-    // Delete main user document
-    await userDoc.delete();
     debugPrint('DataDeletionService: Firestore data deleted for uid=$uid');
   }
 
-  /// Helper to delete all documents in a Firestore collection.
-  Future<void> _deleteCollection(CollectionReference collection) async {
+  /// Delete all documents in a collection where userId matches.
+  Future<void> _deleteDocumentsByUserId(
+    CollectionReference collection,
+    String userId,
+  ) async {
     const batchSize = 100;
 
     QuerySnapshot snapshot;
     do {
-      snapshot = await collection.limit(batchSize).get();
+      snapshot = await collection
+          .where('userId', isEqualTo: userId)
+          .limit(batchSize)
+          .get();
+
       if (snapshot.docs.isEmpty) break;
 
       final batch = FirebaseFirestore.instance.batch();
