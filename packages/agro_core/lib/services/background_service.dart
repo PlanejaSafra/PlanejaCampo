@@ -41,7 +41,7 @@ class BackgroundService {
     // We assume mobile for now.
     await Workmanager().initialize(
       callbackDispatcher,
-      isInDebugMode: kDebugMode, // True for dev
+      isInDebugMode: false, // Disabled to avoid system notifications
     );
   }
 
