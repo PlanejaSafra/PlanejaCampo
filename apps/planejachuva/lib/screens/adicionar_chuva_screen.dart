@@ -219,7 +219,8 @@ class _AdicionarChuvaScreenState extends State<AdicionarChuvaScreen> {
       body: Form(
         key: _formKey,
         child: ListView(
-          padding: const EdgeInsets.all(16),
+          // Add bottom padding to avoid FAB overlap
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
           children: [
             // Millimeters field (large and prominent)
             Card(
@@ -324,45 +325,41 @@ class _AdicionarChuvaScreenState extends State<AdicionarChuvaScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-              child: SizedBox(
-                height: 56,
-                child: ElevatedButton(
-                  onPressed: _salvando ? null : _salvar,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: theme.colorScheme.primary,
-                    foregroundColor: theme.colorScheme.onPrimary,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: _salvando
-                      ? const SizedBox(
-                          width: 24,
-                          height: 24,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.white,
-                          ),
-                        )
-                      : Text(
-                          l10n.chuvaBotaoSalvar,
-                          style: theme.textTheme.titleLarge?.copyWith(
-                            color: theme.colorScheme.onPrimary,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                ),
-              ),
-            ),
+      // Floating save button - always visible
+      floatingActionButton: SizedBox(
+        width: MediaQuery.of(context).size.width - 32,
+        height: 56,
+        child: FloatingActionButton.extended(
+          onPressed: _salvando ? null : _salvar,
+          backgroundColor: theme.colorScheme.primary,
+          foregroundColor: theme.colorScheme.onPrimary,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
           ),
-          const AgroBannerWidget(),
-        ],
+          label: _salvando
+              ? const SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Colors.white,
+                  ),
+                )
+              : Text(
+                  l10n.chuvaBotaoSalvar,
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    color: theme.colorScheme.onPrimary,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      bottomNavigationBar: const SafeArea(
+        child: Padding(
+          padding: EdgeInsets.only(bottom: 8),
+          child: AgroBannerWidget(),
+        ),
       ),
     );
   }
