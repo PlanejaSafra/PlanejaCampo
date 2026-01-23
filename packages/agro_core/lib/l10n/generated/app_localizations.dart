@@ -2756,7 +2756,7 @@ abstract class AgroLocalizations {
   /// No description provided for @autoBackupSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Backup when opening the app'**
+  /// **'Runs periodically'**
   String get autoBackupSubtitle;
 }
 

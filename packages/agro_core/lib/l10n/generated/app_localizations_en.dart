@@ -1380,5 +1380,5 @@ class AgroLocalizationsEn extends AgroLocalizations {
   String get autoBackupTitle => 'Automatic backup';
 
   @override
-  String get autoBackupSubtitle => 'Backup when opening the app';
+  String get autoBackupSubtitle => 'Runs periodically';
 }

@@ -70,11 +70,15 @@ class CloudBackupService {
     }
   }
 
-  /// Try to perform auto backup on app start.
+  /// Minimum interval between automatic backups (24 hours)
+  static const Duration _autoBackupInterval = Duration(hours: 24);
+
+  /// Try to perform auto backup periodically.
   /// Only backs up if:
   /// - autoBackupEnabled is true
   /// - User is logged in (not anonymous)
   /// - User has cloud backup consent
+  /// - Last backup was more than 24 hours ago
   /// Returns true if backup was performed, false otherwise.
   Future<bool> tryAutoBackup({
     required bool autoBackupEnabled,
@@ -94,6 +98,17 @@ class CloudBackupService {
     if (user == null || user.isAnonymous) {
       debugPrint('[AutoBackup] User not logged in or anonymous');
       return false;
+    }
+
+    // Check if enough time has passed since last backup
+    final metadata = await getLastBackupMetadata();
+    if (metadata?.updated != null) {
+      final timeSinceLastBackup = DateTime.now().difference(metadata!.updated!);
+      if (timeSinceLastBackup < _autoBackupInterval) {
+        debugPrint(
+            '[AutoBackup] Skipped - last backup was ${timeSinceLastBackup.inHours}h ago');
+        return false;
+      }
     }
 
     try {
