@@ -263,6 +263,18 @@ class BackgroundService {
           );
 
           settingsBox.put('${kLastAlertKey}_${prop.id}', now);
+
+          // Schedule rain record reminder 2h after rain start if significant (>= 5mm)
+          if (metadata.totalVolumeMm >= 5.0) {
+            final reminderTime =
+                metadata.startTime.add(const Duration(hours: 2));
+            await AgroNotificationService().scheduleRainRecordReminder(
+              propertyId: prop.id,
+              propertyName: prop.name,
+              scheduledTime: reminderTime,
+              isEnglish: isEnglish,
+            );
+          }
         }
       } catch (e) {
         debugPrint(

@@ -365,6 +365,18 @@ class _AuthGateState extends State<AuthGate> {
       hasCloudBackupConsent: AgroPrivacyStore.consentCloudBackup,
     );
 
+    // Auto-enable rain alerts if user accepted terms and is not anonymous
+    final user = AuthService.currentUser;
+    if (user != null &&
+        !user.isAnonymous &&
+        AgroPrivacyStore.hasAcceptedTerms()) {
+      final isAlreadyEnabled = await BackgroundService().isRainAlertsEnabled();
+      if (!isAlreadyEnabled) {
+        await BackgroundService().enableRainAlerts();
+        debugPrint('[RainAlerts] Auto-enabled after login');
+      }
+    }
+
     // Refresh UI
     if (mounted) {
       setState(() {});

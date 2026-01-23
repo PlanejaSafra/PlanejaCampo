@@ -104,4 +104,63 @@ class AgroNotificationService {
             AndroidFlutterLocalNotificationsPlugin>()
         ?.requestNotificationsPermission();
   }
+
+  /// Schedule a rain record reminder notification.
+  /// Sent 2 hours after predicted rain to remind user to record rainfall.
+  Future<void> scheduleRainRecordReminder({
+    required String propertyId,
+    required String propertyName,
+    required DateTime scheduledTime,
+    required bool isEnglish,
+  }) async {
+    // Ensure initialized
+    if (!_initialized) await init();
+
+    final title = isEnglish
+        ? '🌧️ Did it rain at $propertyName?'
+        : '🌧️ Choveu na $propertyName?';
+    final body =
+        isEnglish ? 'Tap to record rainfall' : 'Toque para registrar a chuva';
+    final channelName = isEnglish ? 'Rain Reminders' : 'Lembretes de Chuva';
+    final channelDesc = isEnglish
+        ? 'Reminds you to record rainfall after predicted rain'
+        : 'Lembra de registrar chuva após previsão';
+
+    final AndroidNotificationDetails androidNotificationDetails =
+        AndroidNotificationDetails(
+      'rain_reminders_channel',
+      channelName,
+      channelDescription: channelDesc,
+      importance: Importance.high,
+      priority: Priority.defaultPriority,
+      icon: '@mipmap/ic_launcher',
+    );
+
+    final NotificationDetails notificationDetails =
+        NotificationDetails(android: androidNotificationDetails);
+
+    // Generate unique ID based on property
+    final notificationId = propertyId.hashCode.abs() % 100000;
+
+    // For simplicity, we'll use a delayed show instead of zonedSchedule
+    // (zonedSchedule requires timezone package setup)
+    final delay = scheduledTime.difference(DateTime.now());
+    if (delay.isNegative) return; // Already past
+
+    // Schedule using Future.delayed (runs while app/service is alive)
+    // For production, consider using flutter_local_notifications zonedSchedule
+    Future.delayed(delay, () async {
+      await flutterLocalNotificationsPlugin.show(
+        notificationId,
+        title,
+        body,
+        notificationDetails,
+        payload: 'rain_record:$propertyId',
+      );
+      debugPrint('[RainReminder] Sent for $propertyName');
+    });
+
+    debugPrint(
+        '[RainReminder] Scheduled for $propertyName in ${delay.inMinutes}min');
+  }
 }
