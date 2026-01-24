@@ -2,6 +2,30 @@
 
 ---
 
+## Phase CORE-65: Weather Details Enhancements (Humidity & Daily View)
+
+### Status: [DONE]
+**Date Completed**: 2026-01-24
+**Priority**: 🟢 ENHANCEMENT
+**Objective**: Improve Weather Detail Screen with humidity info and specific daily detail views.
+
+### Implementation Summary
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 65.1 | Create `WeatherDayDetailScreen` | ✅ DONE |
+| 65.2 | Add Relative Humidity to `WeatherDetailScreen` header | ✅ DONE |
+| 65.3 | Navigate to daily detail on tap | ✅ DONE |
+
+### Files Modified
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/screens/weather_detail_screen.dart` | MODIFY | Add humidity, clickable daily items |
+| `lib/screens/weather_day_detail_screen.dart` | CREATE | New screen for day details |
+
+---
+
 ## Phase CORE-64: Improve Precipitation Intensity Labels
 
 ### Status: [DONE]

@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../services/weather_service.dart';
 import '../models/weather_alert.dart';
 import '../l10n/generated/app_localizations.dart';
+import 'weather_day_detail_screen.dart';
 
 class WeatherDetailScreen extends StatelessWidget {
   final Map<String, dynamic> weatherData;
@@ -73,7 +74,8 @@ class WeatherDetailScreen extends StatelessWidget {
                     ),
                     Icon(Icons.edit,
                         size: 12,
-                        color: theme.colorScheme.onSurface.withOpacity(0.5)),
+                        color:
+                            theme.colorScheme.onSurface.withValues(alpha: 0.5)),
                   ],
                 ),
               ),
@@ -188,6 +190,7 @@ class WeatherDetailScreen extends StatelessWidget {
             children: [
               // Min/Max Temp
               Row(
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(Icons.arrow_upward,
                       size: 16, color: theme.colorScheme.onPrimaryContainer),
@@ -201,9 +204,11 @@ class WeatherDetailScreen extends StatelessWidget {
                           color: theme.colorScheme.onPrimaryContainer)),
                 ],
               ),
+
               // Wind Info (CORE-38)
               if (windSpeed != null && windDirection != null)
                 Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(Icons.air,
                         size: 16, color: theme.colorScheme.onPrimaryContainer),
@@ -220,6 +225,23 @@ class WeatherDetailScreen extends StatelessWidget {
                       child: Icon(Icons.arrow_upward,
                           size: 14,
                           color: theme.colorScheme.onPrimaryContainer),
+                    ),
+                  ],
+                ),
+              // Humidity (CORE-XX)
+              if (current['relative_humidity_2m'] != null)
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const SizedBox(width: 12),
+                    Icon(Icons.water_drop_outlined,
+                        size: 16, color: theme.colorScheme.onPrimaryContainer),
+                    const SizedBox(width: 4),
+                    Text(
+                      '${current['relative_humidity_2m']}%',
+                      style: TextStyle(
+                          color: theme.colorScheme.onPrimaryContainer,
+                          fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
@@ -360,59 +382,75 @@ class WeatherDetailScreen extends StatelessWidget {
 
     final dateFormat = DateFormat('E, d MMM', 'pt_BR');
 
-    return ListTile(
-      leading: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(_getWeatherIcon(code)),
-        ],
-      ),
-      title: Text(
-        dateFormat.format(date),
-        style: const TextStyle(fontWeight: FontWeight.w600),
-      ),
-      subtitle: Text(
-        _getWeatherDescription(code),
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-      ),
-      trailing: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (rain > 0)
-                Row(
-                  children: [
-                    Icon(Icons.water_drop, size: 14, color: Colors.blue[400]),
-                    Text('${rain}mm  ',
-                        style:
-                            TextStyle(fontSize: 12, color: Colors.grey[700])),
-                  ],
-                ),
-              Text('$max° / $min°',
-                  style: const TextStyle(fontWeight: FontWeight.bold)),
-            ],
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => WeatherDayDetailScreen(
+              date: date,
+              dailyData: daily.cast<String, dynamic>(),
+              dailyIndex: index,
+              hourlyData: weatherData['hourly'],
+              propertyName: propertyName,
+            ),
           ),
-          const SizedBox(height: 4),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.air, size: 12, color: Colors.grey[600]),
-              Text(
-                ' ${wSpeed.round()} km/h ',
-                style: TextStyle(fontSize: 12, color: Colors.grey[700]),
-              ),
-              Transform.rotate(
-                angle: (wDir * 3.14159 / 180),
-                child:
-                    Icon(Icons.arrow_upward, size: 12, color: Colors.grey[600]),
-              ),
-            ],
-          )
-        ],
+        );
+      },
+      child: ListTile(
+        leading: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(_getWeatherIcon(code)),
+          ],
+        ),
+        title: Text(
+          dateFormat.format(date),
+          style: const TextStyle(fontWeight: FontWeight.w600),
+        ),
+        subtitle: Text(
+          _getWeatherDescription(code),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+        trailing: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (rain > 0)
+                  Row(
+                    children: [
+                      Icon(Icons.water_drop, size: 14, color: Colors.blue[400]),
+                      Text('${rain}mm  ',
+                          style:
+                              TextStyle(fontSize: 12, color: Colors.grey[700])),
+                    ],
+                  ),
+                Text('$max° / $min°',
+                    style: const TextStyle(fontWeight: FontWeight.bold)),
+              ],
+            ),
+            const SizedBox(height: 4),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.air, size: 12, color: Colors.grey[600]),
+                Text(
+                  ' ${wSpeed.round()} km/h ',
+                  style: TextStyle(fontSize: 12, color: Colors.grey[700]),
+                ),
+                Transform.rotate(
+                  angle: (wDir * 3.14159 / 180),
+                  child: Icon(Icons.arrow_upward,
+                      size: 12, color: Colors.grey[600]),
+                ),
+              ],
+            )
+          ],
+        ),
       ),
     );
   }
