@@ -1,5 +1,5 @@
 flutter_launcher_icons:
   android: true
   ios: true
-  image_path: "assets/images/planejachuva_logo.png"
+  image_path: "assets/images/planejachuva_dark.png"
   min_sdk_android: 21

@@ -4,25 +4,30 @@ import '../l10n/generated/app_localizations.dart';
 
 /// About screen showing app information.
 class AgroAboutScreen extends StatelessWidget {
-  /// App name to display.
-  final String appName;
+  /// Paths to the app-specific logo assets for light and dark modes.
+  final String? appLogoLightPath;
+  final String? appLogoDarkPath;
 
-  /// Version string to display.
-  final String? version;
-
-  /// Path to the app-specific logo asset.
-  final String? appLogoPath;
-
-  /// Path to the suite logo asset.
-  final String? suiteLogoPath;
+  /// Paths to the suite logo assets for light and dark modes.
+  final String? suiteLogoLightPath;
+  final String? suiteLogoDarkPath;
 
   const AgroAboutScreen({
     super.key,
     required this.appName,
     this.version,
-    this.appLogoPath,
-    this.suiteLogoPath,
-  });
+    this.appLogoLightPath,
+    this.appLogoDarkPath,
+    this.suiteLogoLightPath,
+    this.suiteLogoDarkPath,
+    @Deprecated('Use appLogoLightPath and appLogoDarkPath') String? appLogoPath,
+    @Deprecated('Use suiteLogoLightPath and suiteLogoDarkPath')
+    String? suiteLogoPath,
+  })  : _appLogoPath = appLogoPath,
+        _suiteLogoPath = suiteLogoPath;
+
+  final String? _appLogoPath;
+  final String? _suiteLogoPath;
 
   @override
   Widget build(BuildContext context) {
@@ -39,18 +44,14 @@ class AgroAboutScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const SizedBox(height: 24),
-            if (appLogoPath != null)
-              Image.asset(
-                appLogoPath!,
-                height: 120,
-                fit: BoxFit.contain,
-              )
-            else
-              Icon(
-                Icons.agriculture,
-                size: 80,
-                color: theme.colorScheme.primary,
-              ),
+            _buildLogo(
+              context,
+              lightPath: appLogoLightPath,
+              darkPath: appLogoDarkPath,
+              legacyPath: _appLogoPath,
+              height: 120,
+              placeholderIcon: Icons.agriculture,
+            ),
             const SizedBox(height: 16),
             Text(
               appName,
@@ -108,17 +109,52 @@ class AgroAboutScreen extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            if (suiteLogoPath != null) ...[
+            if (suiteLogoLightPath != null ||
+                suiteLogoDarkPath != null ||
+                _suiteLogoPath != null) ...[
               const SizedBox(height: 16),
-              Image.asset(
-                suiteLogoPath!,
+              _buildLogo(
+                context,
+                lightPath: suiteLogoLightPath,
+                darkPath: suiteLogoDarkPath,
+                legacyPath: _suiteLogoPath,
                 height: 80,
-                fit: BoxFit.contain,
               ),
             ],
           ],
         ),
       ),
     );
+  }
+
+  Widget _buildLogo(
+    BuildContext context, {
+    String? lightPath,
+    String? darkPath,
+    String? legacyPath,
+    required double height,
+    IconData? placeholderIcon,
+  }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final path = isDark ? (darkPath ?? lightPath) : (lightPath ?? darkPath);
+    final finalPath = path ?? legacyPath;
+
+    if (finalPath != null) {
+      return Image.asset(
+        finalPath,
+        height: height,
+        fit: BoxFit.contain,
+      );
+    }
+
+    if (placeholderIcon != null) {
+      return Icon(
+        placeholderIcon,
+        size: height * 0.66,
+        color: Theme.of(context).colorScheme.primary,
+      );
+    }
+
+    return const SizedBox.shrink();
   }
 }
