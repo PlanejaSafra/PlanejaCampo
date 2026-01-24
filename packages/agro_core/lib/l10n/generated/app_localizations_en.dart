@@ -1425,4 +1425,16 @@ class AgroLocalizationsEn extends AgroLocalizations {
 
   @override
   String get backupSkip => 'Skip';
+
+  @override
+  String get exitAppTitle => 'Exit App';
+
+  @override
+  String get exitAppMessage => 'Do you really want to exit the app?';
+
+  @override
+  String get exitAppConfirm => 'Yes, exit';
+
+  @override
+  String get exitAppCancel => 'No, back';
 }

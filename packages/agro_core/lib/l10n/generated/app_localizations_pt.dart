@@ -1425,4 +1425,16 @@ class AgroLocalizationsPt extends AgroLocalizations {
 
   @override
   String get backupSkip => 'Pular';
+
+  @override
+  String get exitAppTitle => 'Sair do Aplicativo';
+
+  @override
+  String get exitAppMessage => 'Deseja mesmo sair do aplicativo?';
+
+  @override
+  String get exitAppConfirm => 'Sim, sair';
+
+  @override
+  String get exitAppCancel => 'Não, voltar';
 }

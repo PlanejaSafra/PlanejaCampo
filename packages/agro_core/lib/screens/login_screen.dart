@@ -22,6 +22,7 @@ class LoginScreen extends StatefulWidget {
   final String appName;
   final String appDescription;
   final IconData appIcon;
+  final String? appLogoPath;
 
   const LoginScreen({
     super.key,
@@ -29,6 +30,7 @@ class LoginScreen extends StatefulWidget {
     required this.appName,
     required this.appDescription,
     required this.appIcon,
+    this.appLogoPath,
   });
 
   @override
@@ -192,12 +194,19 @@ class _LoginScreenState extends State<LoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // App Icon (specific to each app)
-                  Icon(
-                    widget.appIcon,
-                    size: 80,
-                    color: theme.colorScheme.primary,
-                  ),
+                  // App Icon or Logo (specific to each app)
+                  if (widget.appLogoPath != null)
+                    Image.asset(
+                      widget.appLogoPath!,
+                      height: 120,
+                      fit: BoxFit.contain,
+                    )
+                  else
+                    Icon(
+                      widget.appIcon,
+                      size: 80,
+                      color: theme.colorScheme.primary,
+                    ),
                   const SizedBox(height: 24),
 
                   // App Name (specific to each app)

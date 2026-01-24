@@ -259,7 +259,7 @@ class _PlanejaChuvaAppState extends State<PlanejaChuvaApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Planeja Chuva',
+      title: 'PlanejaChuva',
       navigatorKey: PlanejaChuvaApp
           .navigatorKey, // CORE-59: Handle navigation from notifications
       debugShowCheckedModeBanner: false,
@@ -507,6 +507,7 @@ class _AuthGateState extends State<AuthGate> {
         appName: 'PlanejaChuva',
         appDescription: 'Registre e acompanhe as chuvas na sua propriedade',
         appIcon: Icons.water_drop_outlined,
+        appLogoPath: 'assets/images/planejachuva_logo_transparent.png',
       );
     }
 

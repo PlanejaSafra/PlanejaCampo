@@ -1,7 +1,7 @@
 flutter_launcher_icons:
   android: true
   ios: true
-  image_path: "assets/images/planejachuva_logo.png"
-  adaptive_icon_background: "#003366"
-  adaptive_icon_foreground: "assets/images/planejachuva_logo.png"
+  image_path: "assets/images/planejachuva_logo_solid.png"
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: "assets/images/planejachuva_logo_solid.png"
   min_sdk_android: 21

@@ -158,7 +158,8 @@ class _ListaChuvasScreenState extends State<ListaChuvasScreen> {
                     builder: (_) => AgroAboutScreen(
                       appName: 'PlanejaChuva',
                       version: widget.version,
-                      appLogoPath: 'assets/images/planejachuva_logo.png',
+                      appLogoPath:
+                          'assets/images/planejachuva_logo_transparent.png',
                       suiteLogoPath:
                           'packages/agro_core/assets/images/planejacampo_light.png',
                     ),
@@ -184,7 +185,7 @@ class _ListaChuvasScreenState extends State<ListaChuvasScreen> {
             builder: (_) => AgroAboutScreen(
               appName: 'PlanejaChuva',
               version: widget.version,
-              appLogoPath: 'assets/images/planejachuva_logo.png',
+              appLogoPath: 'assets/images/planejachuva_logo_transparent.png',
               suiteLogoPath:
                   'packages/agro_core/assets/images/planejacampo_light.png',
             ),

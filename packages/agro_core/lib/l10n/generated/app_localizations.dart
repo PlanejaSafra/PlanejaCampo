@@ -2842,6 +2842,30 @@ abstract class AgroLocalizations {
   /// In en, this message translates to:
   /// **'Skip'**
   String get backupSkip;
+
+  /// No description provided for @exitAppTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Exit App'**
+  String get exitAppTitle;
+
+  /// No description provided for @exitAppMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Do you really want to exit the app?'**
+  String get exitAppMessage;
+
+  /// No description provided for @exitAppConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes, exit'**
+  String get exitAppConfirm;
+
+  /// No description provided for @exitAppCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'No, back'**
+  String get exitAppCancel;
 }
 
 class _AgroLocalizationsDelegate extends LocalizationsDelegate<AgroLocalizations> {
