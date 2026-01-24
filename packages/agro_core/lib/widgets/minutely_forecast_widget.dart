@@ -25,8 +25,8 @@ class MinutelyForecastWidget extends StatelessWidget {
 
     if (futurePoints.isEmpty) return const SizedBox.shrink();
 
-    // Only show if there is actual rain in this period
-    if (!futurePoints.any((p) => p.precipitationMm > 0)) {
+    // Only show if there is actual rain in this period (>= 0.3mm threshold)
+    if (!futurePoints.any((p) => p.precipitationMm >= 0.3)) {
       return const SizedBox.shrink();
     }
 

@@ -546,11 +546,11 @@
 
   "rainNoRainNextHour": "No rain in the next hour",
   "rainRainingNow": "Raining now",
-  "rainDrizzleNow": "Drizzle now",
+  "rainDrizzleNow": "Possible drizzle",
   "rainLightNow": "Light rain now",
   "rainModerateNow": "Moderate rain now",
   "rainHeavyNow": "Heavy rain now",
-  "rainDrizzleIn": "Drizzle starting in ~{minutes} min",
+  "rainDrizzleIn": "Possible drizzle in ~{minutes} min",
   "@rainDrizzleIn": {
     "placeholders": {
       "minutes": {"type": "int"}

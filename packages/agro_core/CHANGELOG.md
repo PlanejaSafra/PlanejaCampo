@@ -2,6 +2,43 @@
 
 ---
 
+## Phase CORE-64: Improve Precipitation Intensity Labels
+
+### Status: [DONE]
+**Date Completed**: 2026-01-24
+**Priority**: 🟢 ENHANCEMENT
+**Objective**: Add proper labels for precipitation intensity (drizzle, light, moderate, heavy) instead of just "Raining now".
+
+### Problem
+1. 0.1mm precipitation was labeled "Chovendo agora" when it should be "Garoando" (drizzle)
+2. No differentiation between light, moderate, and heavy rain
+3. Hourly forecast didn't show precipitation amounts
+
+### Solution
+1. Added `PrecipIntensity` enum with thresholds (none, drizzle, light, moderate, heavy)
+2. Added new l10n strings for each intensity level
+3. Modified `getStatusMessage()` to return appropriate description based on intensity
+4. Added `precipitation` to hourly API request
+5. Modified weather detail screen to show hourly precipitation amounts
+
+### Precipitation Thresholds (per 15 minutes)
+- < 0.1 mm = none
+- 0.1 - 0.5 mm = drizzle (garoa)
+- 0.5 - 2.0 mm = light rain (chuva fraca)
+- 2.0 - 5.0 mm = moderate rain (chuva moderada)
+- > 5.0 mm = heavy rain (chuva forte)
+
+### Files Modified
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/models/instant_weather_forecast.dart` | MODIFY | Added PrecipIntensity enum, intensity getter, updated getStatusMessage |
+| `lib/services/weather_service.dart` | MODIFY | Added precipitation to hourly API request |
+| `lib/screens/weather_detail_screen.dart` | MODIFY | Show hourly precipitation amounts |
+| `lib/l10n/arb/app_pt.arb` | MODIFY | Added intensity l10n strings |
+| `lib/l10n/arb/app_en.arb` | MODIFY | Added intensity l10n strings |
+
+---
+
 ## Phase CORE-63: Fix Restore Data (Replace vs Merge)
 
 ### Status: [DONE]

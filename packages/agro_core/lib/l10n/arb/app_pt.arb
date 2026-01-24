@@ -546,11 +546,11 @@
 
   "rainNoRainNextHour": "Sem chuva na próxima hora",
   "rainRainingNow": "Chovendo agora",
-  "rainDrizzleNow": "Garoando agora",
+  "rainDrizzleNow": "Possível garoa",
   "rainLightNow": "Chuva fraca agora",
   "rainModerateNow": "Chuva moderada agora",
   "rainHeavyNow": "Chuva forte agora",
-  "rainDrizzleIn": "Garoa começa em ~{minutes} min",
+  "rainDrizzleIn": "Possível garoa em ~{minutes} min",
   "@rainDrizzleIn": {
     "placeholders": {
       "minutes": {"type": "int"}

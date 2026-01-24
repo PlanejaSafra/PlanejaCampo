@@ -236,6 +236,7 @@ class WeatherDetailScreen extends StatelessWidget {
     final codes = hourly['weather_code'] as List;
     final windSpeeds = hourly['wind_speed_10m'] as List?;
     final windDirections = hourly['wind_direction_10m'] as List?;
+    final precipitations = hourly['precipitation'] as List?;
 
     // Open-Meteo returns huge list (7 days hourly). We only want next 24h.
     // We need to find "now" index.
@@ -259,7 +260,7 @@ class WeatherDetailScreen extends StatelessWidget {
         (times.length - startIndex) > 24 ? 24 : (times.length - startIndex);
 
     return SizedBox(
-      height: 160, // Increased height for wind info
+      height: 170, // Increased height for precipitation info
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -272,6 +273,9 @@ class WeatherDetailScreen extends StatelessWidget {
           final wSpeed = windSpeeds != null ? windSpeeds[index] as double : 0.0;
           final wDir =
               windDirections != null ? windDirections[index] as int : 0;
+          final precip = precipitations != null
+              ? (precipitations[index] as num).toDouble()
+              : 0.0;
 
           return Card(
             elevation: 0,
@@ -294,8 +298,19 @@ class WeatherDetailScreen extends StatelessWidget {
                         ?.copyWith(fontWeight: FontWeight.bold),
                   ),
                   const Spacer(),
-                  Icon(_getWeatherIcon(code), size: 32),
-                  const SizedBox(height: 8),
+                  Icon(_getWeatherIcon(code), size: 28),
+                  // Show precipitation if > 0
+                  if (precip >= 0.1)
+                    Text(
+                      '${precip.toStringAsFixed(1)}mm',
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: Colors.blue.shade700,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    )
+                  else
+                    const SizedBox(height: 14),
                   Text(
                     '$temp°',
                     style: Theme.of(context)

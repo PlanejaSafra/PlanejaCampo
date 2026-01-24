@@ -1,9 +1,10 @@
 import '../l10n/generated/app_localizations.dart';
 
 /// Precipitation intensity levels based on mm per 15 minutes
+/// Note: Minimum threshold is 0.3mm to avoid false positives from API noise
 enum PrecipIntensity {
-  none, // < 0.1 mm
-  drizzle, // 0.1 - 0.5 mm (garoa)
+  none, // < 0.3 mm (not significant / noise)
+  drizzle, // 0.3 - 0.5 mm (possível garoa)
   light, // 0.5 - 2.0 mm (chuva fraca)
   moderate, // 2.0 - 5.0 mm (chuva moderada)
   heavy, // > 5.0 mm (chuva forte)
@@ -29,7 +30,7 @@ class InstantWeatherForecast {
 
   /// Get precipitation intensity level
   PrecipIntensity get intensity {
-    if (precipitationMm < 0.1) return PrecipIntensity.none;
+    if (precipitationMm < 0.3) return PrecipIntensity.none;
     if (precipitationMm < 0.5) return PrecipIntensity.drizzle;
     if (precipitationMm < 2.0) return PrecipIntensity.light;
     if (precipitationMm < 5.0) return PrecipIntensity.moderate;
@@ -44,8 +45,8 @@ class InstantForecastSummary {
   InstantForecastSummary({required this.points});
 
   bool get willRainSoon {
-    // Check if any point in the next hour has rain > 0.1mm
-    return points.any((p) => p.precipitationMm >= 0.1);
+    // Check if any point in the next hour has rain >= 0.3mm
+    return points.any((p) => p.precipitationMm >= 0.3);
   }
 
   /// Returns a human readable status, e.g. "Chuva em 15 min"
@@ -60,10 +61,10 @@ class InstantForecastSummary {
 
     if (futurePoints.isEmpty) return '';
 
-    // Find first precipitation (any intensity)
+    // Find first precipitation (any intensity >= 0.3mm threshold)
     int firstPrecipIndex = -1;
     for (int i = 0; i < futurePoints.length; i++) {
-      if (futurePoints[i].precipitationMm >= 0.1) {
+      if (futurePoints[i].precipitationMm >= 0.3) {
         firstPrecipIndex = i;
         break;
       }

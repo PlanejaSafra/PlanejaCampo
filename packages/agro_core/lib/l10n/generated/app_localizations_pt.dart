@@ -1139,7 +1139,7 @@ class AgroLocalizationsPt extends AgroLocalizations {
   String get rainRainingNow => 'Chovendo agora';
 
   @override
-  String get rainDrizzleNow => 'Garoando agora';
+  String get rainDrizzleNow => 'Possível garoa';
 
   @override
   String get rainLightNow => 'Chuva fraca agora';
@@ -1152,7 +1152,7 @@ class AgroLocalizationsPt extends AgroLocalizations {
 
   @override
   String rainDrizzleIn(int minutes) {
-    return 'Garoa começa em ~$minutes min';
+    return 'Possível garoa em ~$minutes min';
   }
 
   @override

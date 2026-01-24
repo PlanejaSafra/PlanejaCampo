@@ -2294,7 +2294,7 @@ abstract class AgroLocalizations {
   /// No description provided for @rainDrizzleNow.
   ///
   /// In en, this message translates to:
-  /// **'Drizzle now'**
+  /// **'Possible drizzle'**
   String get rainDrizzleNow;
 
   /// No description provided for @rainLightNow.
@@ -2318,7 +2318,7 @@ abstract class AgroLocalizations {
   /// No description provided for @rainDrizzleIn.
   ///
   /// In en, this message translates to:
-  /// **'Drizzle starting in ~{minutes} min'**
+  /// **'Possible drizzle in ~{minutes} min'**
   String rainDrizzleIn(int minutes);
 
   /// No description provided for @rainStartingIn15.
