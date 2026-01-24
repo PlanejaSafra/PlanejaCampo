@@ -10,10 +10,18 @@ class AgroAboutScreen extends StatelessWidget {
   /// Version string to display.
   final String? version;
 
+  /// Path to the app-specific logo asset.
+  final String? appLogoPath;
+
+  /// Path to the suite logo asset.
+  final String? suiteLogoPath;
+
   const AgroAboutScreen({
     super.key,
     required this.appName,
     this.version,
+    this.appLogoPath,
+    this.suiteLogoPath,
   });
 
   @override
@@ -31,11 +39,18 @@ class AgroAboutScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const SizedBox(height: 24),
-            Icon(
-              Icons.agriculture,
-              size: 80,
-              color: theme.colorScheme.primary,
-            ),
+            if (appLogoPath != null)
+              Image.asset(
+                appLogoPath!,
+                height: 120,
+                fit: BoxFit.contain,
+              )
+            else
+              Icon(
+                Icons.agriculture,
+                size: 80,
+                color: theme.colorScheme.primary,
+              ),
             const SizedBox(height: 16),
             Text(
               appName,
@@ -90,8 +105,17 @@ class AgroAboutScreen extends StatelessWidget {
               l10n.aboutSuite,
               style: theme.textTheme.titleMedium?.copyWith(
                 color: theme.colorScheme.primary,
+                fontWeight: FontWeight.bold,
               ),
             ),
+            if (suiteLogoPath != null) ...[
+              const SizedBox(height: 16),
+              Image.asset(
+                suiteLogoPath!,
+                height: 80,
+                fit: BoxFit.contain,
+              ),
+            ],
           ],
         ),
       ),

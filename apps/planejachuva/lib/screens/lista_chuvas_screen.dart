@@ -158,6 +158,9 @@ class _ListaChuvasScreenState extends State<ListaChuvasScreen> {
                     builder: (_) => AgroAboutScreen(
                       appName: 'Planeja Chuva',
                       version: widget.version,
+                      appLogoPath: 'assets/images/planejachuva_logo.png',
+                      suiteLogoPath:
+                          'packages/agro_core/assets/images/planejacampo_logo.png',
                     ),
                   ),
                 );
@@ -181,6 +184,9 @@ class _ListaChuvasScreenState extends State<ListaChuvasScreen> {
             builder: (_) => AgroAboutScreen(
               appName: 'Planeja Chuva',
               version: widget.version,
+              appLogoPath: 'assets/images/planejachuva_logo.png',
+              suiteLogoPath:
+                  'packages/agro_core/assets/images/planejacampo_logo.png',
             ),
           ),
         );
