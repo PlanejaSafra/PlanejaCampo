@@ -22,7 +22,8 @@ class LoginScreen extends StatefulWidget {
   final String appName;
   final String appDescription;
   final IconData appIcon;
-  final String? appLogoPath;
+  final String? appLogoLightPath;
+  final String? appLogoDarkPath;
 
   const LoginScreen({
     super.key,
@@ -30,8 +31,12 @@ class LoginScreen extends StatefulWidget {
     required this.appName,
     required this.appDescription,
     required this.appIcon,
-    this.appLogoPath,
-  });
+    this.appLogoLightPath,
+    this.appLogoDarkPath,
+    @Deprecated('Use appLogoLightPath and appLogoDarkPath') String? appLogoPath,
+  }) : _appLogoPath = appLogoPath;
+
+  final String? _appLogoPath;
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -158,6 +163,31 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  Widget _buildLogo(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    final path = isDark
+        ? (widget.appLogoDarkPath ?? widget.appLogoLightPath)
+        : (widget.appLogoLightPath ?? widget.appLogoDarkPath);
+
+    final finalPath = path ?? widget._appLogoPath;
+
+    if (finalPath != null) {
+      return Image.asset(
+        finalPath,
+        height: 120,
+        fit: BoxFit.contain,
+      );
+    }
+
+    return Icon(
+      widget.appIcon,
+      size: 80,
+      color: theme.colorScheme.primary,
+    );
+  }
+
   void _showTermsOfUse() {
     Navigator.of(context).push(
       MaterialPageRoute(
@@ -195,18 +225,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   // App Icon or Logo (specific to each app)
-                  if (widget.appLogoPath != null)
-                    Image.asset(
-                      widget.appLogoPath!,
-                      height: 120,
-                      fit: BoxFit.contain,
-                    )
-                  else
-                    Icon(
-                      widget.appIcon,
-                      size: 80,
-                      color: theme.colorScheme.primary,
-                    ),
+                  _buildLogo(context),
                   const SizedBox(height: 24),
 
                   // App Name (specific to each app)

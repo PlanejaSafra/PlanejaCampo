@@ -199,7 +199,7 @@
   "propertyLocationPermissionDenied": "Location permission denied",
   "propertyLocationUnavailable": "Could not get your location",
 
-  "chuvaAppTitle": "Planeja Chuva",
+  "chuvaAppTitle": "PlanejaChuva",
   "chuvaListaVaziaTitle": "No rainfall recorded",
   "chuvaListaVaziaSubtitle": "Tap + to record your first rainfall",
   "chuvaAdicionarTitle": "Record Rainfall",
