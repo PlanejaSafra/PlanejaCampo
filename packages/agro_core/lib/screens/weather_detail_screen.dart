@@ -164,6 +164,33 @@ class WeatherDetailScreen extends StatelessWidget {
       ),
       child: Column(
         children: [
+          // Date Label Section
+          Container(
+            margin: const EdgeInsets.only(bottom: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surface.withValues(alpha: 0.2),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Column(
+              children: [
+                Text(
+                  'Previsão para Hoje',
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    color: theme.colorScheme.onPrimaryContainer,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  DateFormat("d 'de' MMMM", 'pt_BR').format(DateTime.now()),
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onPrimaryContainer
+                        .withValues(alpha: 0.8),
+                  ),
+                ),
+              ],
+            ),
+          ),
           Icon(
             _getWeatherIcon(code),
             size: 64,
