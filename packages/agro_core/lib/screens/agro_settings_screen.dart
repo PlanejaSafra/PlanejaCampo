@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
 
 import '../l10n/generated/app_localizations.dart';
@@ -100,7 +99,15 @@ class AgroSettingsScreen extends StatefulWidget {
     this.rainAlertsEnabled = false,
     this.onResetProfile,
     this.onRestoreComplete,
+    this.appLogoLightPath,
+    this.appLogoDarkPath,
   });
+
+  /// Path to the light mode app logo asset.
+  final String? appLogoLightPath;
+
+  /// Path to the dark mode app logo asset.
+  final String? appLogoDarkPath;
 
   @override
   State<AgroSettingsScreen> createState() => _AgroSettingsScreenState();
@@ -141,7 +148,8 @@ class _AgroSettingsScreenState extends State<AgroSettingsScreen> {
     if (!_isLoggedIn) return;
 
     // First, show cached value immediately (no network delay)
-    final cachedTime = await CloudBackupService.instance.getCachedLastBackupTime();
+    final cachedTime =
+        await CloudBackupService.instance.getCachedLastBackupTime();
     if (cachedTime != null && mounted) {
       setState(() {
         _lastBackupDate = _formatBackupDate(cachedTime);
@@ -197,9 +205,11 @@ class _AgroSettingsScreenState extends State<AgroSettingsScreen> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => const AgroAboutScreen(
+          builder: (_) => AgroAboutScreen(
             appName: 'PlanejaCampo',
             version: '1.0.0',
+            appLogoLightPath: widget.appLogoLightPath,
+            appLogoDarkPath: widget.appLogoDarkPath,
           ),
         ),
       );
@@ -359,7 +369,8 @@ class _AgroSettingsScreenState extends State<AgroSettingsScreen> {
       setState(() => _isBackingUp = true);
 
       // Restore from selected slot
-      debugPrint('[Settings] _handleRestore: restoring from slot ${result.slotIndex}...');
+      debugPrint(
+          '[Settings] _handleRestore: restoring from slot ${result.slotIndex}...');
       await CloudBackupService.instance.restoreFromSlot(result.slotIndex);
 
       // Update cache with MOST RECENT backup's timestamp (not the restored one)

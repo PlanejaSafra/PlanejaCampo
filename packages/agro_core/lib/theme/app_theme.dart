@@ -8,12 +8,15 @@ import 'extensions/theme_extensions.dart';
 /// Fornece ThemeData para modo claro e escuro com paleta verde/agro.
 class AppTheme {
   // Cores da paleta
-  static const Color _lightPrimaryGreen = Color(0xFF2E7D32); // Dark green for high contrast
+  static const Color _lightPrimaryGreen =
+      Color(0xFF2E7D32); // Dark green for high contrast
   static final Color _lightGreenItem = Colors.green[100]!;
-  static const Color _lightFloatingActionButtonColor = Colors.white; // Changed to white for contrast
+  static const Color _lightFloatingActionButtonColor =
+      Colors.white; // Changed to white for contrast
   static const Color _darkFloatingActionButtonColor = Colors.white;
-  static final Color _lightDrawerHeaderColor = const Color(0xFF2E7D32); // Dark green
-  static final Color _darkDrawerHeaderColor = Colors.green[700]!;
+  static final Color _lightDrawerHeaderColor = Colors.green[700]!;
+  static const Color _darkDrawerHeaderColor =
+      Color(0xFF1B5E20); // Darker green for dark mode
   static const Color _darkBackgroundColor = Color(0xFF1e2a26);
   static const Color _darkCardColor = Color(0xFF2a3d33);
   static final Color _lightBackgroundColor = Colors.white;
@@ -87,13 +90,15 @@ class AppTheme {
       style: ElevatedButton.styleFrom(
         backgroundColor: _lightPrimaryGreen,
         foregroundColor: Colors.white, // White for high contrast
-        minimumSize: const Size(double.infinity, 56), // Increased to 56dp for larger touch target
+        minimumSize: const Size(
+            double.infinity, 56), // Increased to 56dp for larger touch target
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(14),
         ),
       ),
     ),
-    textTheme: _buildTextTheme(Colors.black.withValues(alpha: 0.87)), // Increased contrast to 0.87
+    textTheme: _buildTextTheme(
+        Colors.black.withValues(alpha: 0.87)), // Increased contrast to 0.87
     iconTheme: IconThemeData(color: _lightEditIconColor),
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
       backgroundColor: _lightPrimaryGreen,
@@ -113,7 +118,8 @@ class AppTheme {
         borderSide: BorderSide(color: Colors.black.withValues(alpha: 0.6)),
       ),
       labelStyle: TextStyle(
-          color: Colors.black.withValues(alpha: 0.87), fontWeight: FontWeight.bold),
+          color: Colors.black.withValues(alpha: 0.87),
+          fontWeight: FontWeight.bold),
       hintStyle: TextStyle(color: Colors.black.withValues(alpha: 0.6)),
     ),
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(

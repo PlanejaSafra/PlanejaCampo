@@ -507,8 +507,8 @@ class _AuthGateState extends State<AuthGate> {
         appName: 'PlanejaChuva',
         appDescription: 'Registre e acompanhe as chuvas na sua propriedade',
         appIcon: Icons.water_drop_outlined,
-        appLogoLightPath: 'assets/images/planejachuva_light_transparent.png',
-        appLogoDarkPath: 'assets/images/planejachuva_dark_transparent.png',
+        appLogoLightPath: 'assets/images/planejachuva-icon.png',
+        appLogoDarkPath: 'assets/images/planejachuva-icon-dark.png',
       );
     }
 

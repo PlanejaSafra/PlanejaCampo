@@ -313,6 +313,10 @@ class _ConfiguracoesScreenState extends State<ConfiguracoesScreen> {
 
       // Restore complete callback
       onRestoreComplete: widget.onRestoreComplete,
+
+      // Branding
+      appLogoLightPath: 'assets/images/planejachuva-icon.png',
+      appLogoDarkPath: 'assets/images/planejachuva-icon-dark.png',
     );
   }
 }

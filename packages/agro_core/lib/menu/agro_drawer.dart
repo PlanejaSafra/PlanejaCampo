@@ -45,7 +45,8 @@ class AgroDrawer extends StatelessWidget {
         children: [
           DrawerHeader(
             decoration: BoxDecoration(
-              color: theme.colorScheme.primary,
+              color: theme.drawerTheme.backgroundColor ??
+                  theme.colorScheme.primary,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
