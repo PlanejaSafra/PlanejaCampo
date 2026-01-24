@@ -9,6 +9,7 @@ import '../screens/terms_of_use_screen.dart';
 import '../services/auth_service.dart';
 import '../services/property_service.dart';
 import '../l10n/generated/app_localizations.dart';
+import '../utils/exit_dialog_helper.dart';
 
 /// Login screen with Google Sign-In (official button design).
 /// Follows Google Sign-In Branding Guidelines:
@@ -177,198 +178,207 @@ class _LoginScreenState extends State<LoginScreen> {
     final isDarkMode = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                // App Icon (specific to each app)
-                Icon(
-                  widget.appIcon,
-                  size: 80,
-                  color: theme.colorScheme.primary,
-                ),
-                const SizedBox(height: 24),
-
-                // App Name (specific to each app)
-                Text(
-                  widget.appName,
-                  textAlign: TextAlign.center,
-                  style: theme.textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
+      body: PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (bool didPop, dynamic result) {
+          if (didPop) return;
+          ExitDialogHelper.showExitConfirmationDialog(context);
+        },
+        child: SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // App Icon (specific to each app)
+                  Icon(
+                    widget.appIcon,
+                    size: 80,
                     color: theme.colorScheme.primary,
                   ),
-                ),
-                const SizedBox(height: 12),
+                  const SizedBox(height: 24),
 
-                // App Description (specific to each app)
-                Text(
-                  widget.appDescription,
-                  textAlign: TextAlign.center,
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
-                  ),
-                ),
-                const SizedBox(height: 48),
-
-                // Error Message
-                if (_errorMessage != null)
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    margin: const EdgeInsets.only(bottom: 16),
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.errorContainer,
-                      borderRadius: BorderRadius.circular(8),
+                  // App Name (specific to each app)
+                  Text(
+                    widget.appName,
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.headlineMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: theme.colorScheme.primary,
                     ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.error_outline,
-                          color: theme.colorScheme.error,
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
-                            _errorMessage!,
-                            style: TextStyle(
-                              color: theme.colorScheme.error,
+                  ),
+                  const SizedBox(height: 12),
+
+                  // App Description (specific to each app)
+                  Text(
+                    widget.appDescription,
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                    ),
+                  ),
+                  const SizedBox(height: 48),
+
+                  // Error Message
+                  if (_errorMessage != null)
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      margin: const EdgeInsets.only(bottom: 16),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.errorContainer,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.error_outline,
+                            color: theme.colorScheme.error,
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              _errorMessage!,
+                              style: TextStyle(
+                                color: theme.colorScheme.error,
+                              ),
                             ),
                           ),
+                        ],
+                      ),
+                    ),
+
+                  // Google Sign-In Button (Official Design)
+                  // Follows Google Branding Guidelines
+                  Center(
+                    child: _GoogleSignInButton(
+                      // Removed SizedBox wrap
+                      onPressed: _isLoading ? null : _handleGoogleSignIn,
+                      isDarkMode: isDarkMode,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Divider
+                  // Divider
+                  Center(
+                    child: SizedBox(
+                      width: 240,
+                      child: Row(
+                        children: [
+                          const Expanded(child: Divider()),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: Text(
+                              'ou',
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: theme.colorScheme.onSurface
+                                    .withValues(alpha: 0.6),
+                              ),
+                            ),
+                          ),
+                          const Expanded(child: Divider()),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Anonymous Sign-In Button
+                  Center(
+                    child: SizedBox(
+                      height: 48, // Increased height for premium feel
+                      child: OutlinedButton.icon(
+                        onPressed: _isLoading ? null : _handleAnonymousSignIn,
+                        icon: const Icon(Icons.person_outline,
+                            size: 22), // Slightly larger icon
+                        label: const Text(
+                          'Continuar sem login',
+                          style: TextStyle(
+                            fontSize: 20, // Increased to 20px
+                            fontWeight:
+                                FontWeight.w400, // Removed Bold (Normal)
+                            fontFamily: 'Roboto',
+                          ),
+                        ),
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12), // 12px padding explicitly
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+
+                  // Loading Indicator
+                  if (_isLoading)
+                    const Center(
+                      child: CircularProgressIndicator(),
+                    ),
+
+                  const SizedBox(height: 16),
+
+                  // Info Text with Clickable Links
+                  RichText(
+                    textAlign: TextAlign.center,
+                    text: TextSpan(
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color:
+                            theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                      ),
+                      children: [
+                        const TextSpan(
+                            text: 'Ao continuar, você concorda com nossos '),
+                        TextSpan(
+                          text: 'Termos de Uso',
+                          style: TextStyle(
+                            color: theme.colorScheme.primary,
+                            decoration: TextDecoration.underline,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = _showTermsOfUse,
+                        ),
+                        const TextSpan(text: ' e '),
+                        TextSpan(
+                          text: 'Política de Privacidade',
+                          style: TextStyle(
+                            color: theme.colorScheme.primary,
+                            decoration: TextDecoration.underline,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = _showPrivacyPolicy,
                         ),
                       ],
                     ),
                   ),
+                  const SizedBox(height: 24),
 
-                // Google Sign-In Button (Official Design)
-                // Follows Google Branding Guidelines
-                Center(
-                  child: _GoogleSignInButton(
-                    // Removed SizedBox wrap
-                    onPressed: _isLoading ? null : _handleGoogleSignIn,
-                    isDarkMode: isDarkMode,
+                  // Benefits
+                  _buildBenefitItem(
+                    context,
+                    Icons.cloud_sync,
+                    AgroLocalizations.of(context)!.loginBenefitSync,
                   ),
-                ),
-                const SizedBox(height: 16),
-
-                // Divider
-                // Divider
-                Center(
-                  child: SizedBox(
-                    width: 240,
-                    child: Row(
-                      children: [
-                        const Expanded(child: Divider()),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: Text(
-                            'ou',
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onSurface
-                                  .withValues(alpha: 0.6),
-                            ),
-                          ),
-                        ),
-                        const Expanded(child: Divider()),
-                      ],
-                    ),
+                  const SizedBox(height: 12),
+                  _buildBenefitItem(
+                    context,
+                    Icons.backup,
+                    AgroLocalizations.of(context)!.loginBenefitSocial,
                   ),
-                ),
-                const SizedBox(height: 16),
-
-                // Anonymous Sign-In Button
-                Center(
-                  child: SizedBox(
-                    height: 48, // Increased height for premium feel
-                    child: OutlinedButton.icon(
-                      onPressed: _isLoading ? null : _handleAnonymousSignIn,
-                      icon: const Icon(Icons.person_outline,
-                          size: 22), // Slightly larger icon
-                      label: const Text(
-                        'Continuar sem login',
-                        style: TextStyle(
-                          fontSize: 20, // Increased to 20px
-                          fontWeight: FontWeight.w400, // Removed Bold (Normal)
-                          fontFamily: 'Roboto',
-                        ),
-                      ),
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12), // 12px padding explicitly
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                      ),
-                    ),
+                  const SizedBox(height: 12),
+                  _buildBenefitItem(
+                    context,
+                    Icons.lock_outline,
+                    AgroLocalizations.of(context)!.loginBenefitSecurity,
                   ),
-                ),
-                const SizedBox(height: 32),
-
-                // Loading Indicator
-                if (_isLoading)
-                  const Center(
-                    child: CircularProgressIndicator(),
-                  ),
-
-                const SizedBox(height: 16),
-
-                // Info Text with Clickable Links
-                RichText(
-                  textAlign: TextAlign.center,
-                  text: TextSpan(
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-                    ),
-                    children: [
-                      const TextSpan(
-                          text: 'Ao continuar, você concorda com nossos '),
-                      TextSpan(
-                        text: 'Termos de Uso',
-                        style: TextStyle(
-                          color: theme.colorScheme.primary,
-                          decoration: TextDecoration.underline,
-                          fontWeight: FontWeight.w500,
-                        ),
-                        recognizer: TapGestureRecognizer()
-                          ..onTap = _showTermsOfUse,
-                      ),
-                      const TextSpan(text: ' e '),
-                      TextSpan(
-                        text: 'Política de Privacidade',
-                        style: TextStyle(
-                          color: theme.colorScheme.primary,
-                          decoration: TextDecoration.underline,
-                          fontWeight: FontWeight.w500,
-                        ),
-                        recognizer: TapGestureRecognizer()
-                          ..onTap = _showPrivacyPolicy,
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 24),
-
-                // Benefits
-                _buildBenefitItem(
-                  context,
-                  Icons.cloud_sync,
-                  AgroLocalizations.of(context)!.loginBenefitSync,
-                ),
-                const SizedBox(height: 12),
-                _buildBenefitItem(
-                  context,
-                  Icons.backup,
-                  AgroLocalizations.of(context)!.loginBenefitSocial,
-                ),
-                const SizedBox(height: 12),
-                _buildBenefitItem(
-                  context,
-                  Icons.lock_outline,
-                  AgroLocalizations.of(context)!.loginBenefitSecurity,
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

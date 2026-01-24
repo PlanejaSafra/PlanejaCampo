@@ -683,5 +683,10 @@
   "backupMostRecent": "Mais recente",
   "backupSlot": "Backup",
   "backupRestore": "Restaurar",
-  "backupSkip": "Pular"
+  "backupSkip": "Pular",
+
+  "exitAppTitle": "Sair do Aplicativo",
+  "exitAppMessage": "Deseja mesmo sair do aplicativo?",
+  "exitAppConfirm": "Sim, sair",
+  "exitAppCancel": "Não, voltar"
 }

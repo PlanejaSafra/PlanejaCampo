@@ -58,6 +58,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "941184324936-6a06qv5fp0h05kjleg6obtsnccb6hr3l.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "br.com.planejacampo.planejachuva",
+            "certificate_hash": "a10637de01ed0c78835a0cf364214d866dbe9ab2"
+          }
+        },
+        {
           "client_id": "941184324936-kcd1r4e4u2fa594r51pmd1a1ihukd9cv.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
@@ -189,6 +197,14 @@
         }
       },
       "oauth_client": [
+        {
+          "client_id": "941184324936-4av07hjchpkq13fc6hhqmkajrthnparr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "br.com.planejacampodev",
+            "certificate_hash": "a10637de01ed0c78835a0cf364214d866dbe9ab2"
+          }
+        },
         {
           "client_id": "941184324936-v0dnh8vitggc61390910a255l6m8um61.apps.googleusercontent.com",
           "client_type": 1,
