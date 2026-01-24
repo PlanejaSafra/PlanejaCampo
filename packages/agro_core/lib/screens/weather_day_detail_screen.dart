@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../l10n/generated/app_localizations.dart';
 
 class WeatherDayDetailScreen extends StatelessWidget {
   final DateTime date;
@@ -22,18 +21,34 @@ class WeatherDayDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    // Format title: "Segunda-feira, 25 jan"
-    final titleDate = DateFormat("EEEE, d MMM", 'pt_BR').format(date);
-    // Capitalize first letter
-    final title =
-        titleDate.replaceFirst(titleDate[0], titleDate[0].toUpperCase());
+    // Logic for relative date label
+    String dateLabel;
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final checkDate = DateTime(date.year, date.month, date.day);
+    final diff = checkDate.difference(today).inDays;
+
+    if (diff == 0) {
+      dateLabel = 'Previsão para Hoje';
+    } else if (diff == 1) {
+      dateLabel = 'Previsão para Amanhã';
+    } else {
+      final weekday = DateFormat('EEEE', 'pt_BR').format(date);
+      // Capitalize first letter
+      final capitalized =
+          weekday.replaceFirst(weekday[0], weekday[0].toUpperCase());
+      dateLabel = 'Previsão para $capitalized';
+    }
+
+    // Secondary date label (e.g. 25 jan)
+    final dateSuffix = DateFormat("d 'de' MMMM", 'pt_BR').format(date);
 
     return Scaffold(
       appBar: AppBar(
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(title),
+            const Text('Detalhes da Previsão'),
             if (propertyName != null)
               Text(
                 propertyName!,
@@ -47,7 +62,7 @@ class WeatherDayDetailScreen extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            _buildDailySummary(context),
+            _buildDailySummary(context, dateLabel, dateSuffix),
             const SizedBox(height: 24),
             if (hourlyData != null) _buildHourlyList(context),
           ],
@@ -56,7 +71,8 @@ class WeatherDayDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDailySummary(BuildContext context) {
+  Widget _buildDailySummary(
+      BuildContext context, String dateLabel, String dateSuffix) {
     final theme = Theme.of(context);
 
     final max = dailyData['temperature_2m_max'][dailyIndex];
@@ -68,9 +84,6 @@ class WeatherDayDetailScreen extends StatelessWidget {
     final windDir =
         dailyData['wind_direction_10m_dominant']?[dailyIndex] as int? ?? 0;
 
-    // UV Index often comes with daily data in Open-Meteo, but we might not have requested it.
-    // We'll stick to what we have.
-
     return Container(
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.all(24),
@@ -80,6 +93,33 @@ class WeatherDayDetailScreen extends StatelessWidget {
       ),
       child: Column(
         children: [
+          // Date Label Section
+          Container(
+            margin: const EdgeInsets.only(bottom: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surface.withValues(alpha: 0.2),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Column(
+              children: [
+                Text(
+                  dateLabel,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    color: theme.colorScheme.onPrimaryContainer,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  dateSuffix,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onPrimaryContainer
+                        .withValues(alpha: 0.8),
+                  ),
+                ),
+              ],
+            ),
+          ),
           Icon(
             _getWeatherIcon(code),
             size: 64,
