@@ -1,5 +1,6 @@
 import 'package:agro_core/agro_core.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:flutter/foundation.dart'
     show kIsWeb, defaultTargetPlatform, TargetPlatform;
 import 'package:flutter/material.dart';
@@ -36,6 +37,13 @@ Future<void> main() async {
     // which are swapped by Gradle flavors.
     await Firebase.initializeApp();
   }
+
+  // Initialize App Check
+  await FirebaseAppCheck.instance.activate(
+    androidProvider: AndroidProvider.playIntegrity,
+    appleProvider: AppleProvider.appAttest,
+    webProvider: ReCaptchaV3Provider('recaptcha-v3-site-key'),
+  );
 
   // Initialize Hive
   await Hive.initFlutter();
