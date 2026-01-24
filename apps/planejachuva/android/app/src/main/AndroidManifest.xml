@@ -38,10 +38,10 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="${googleMapsApiKey}" />
-        <!-- AdMob App ID (TEST - substituir por ID real antes de publicar) -->
+        <!-- AdMob App ID (PlanejaChuva Production) -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-3940256099942544~3347511713" />
+            android:value="ca-app-pub-3109803084293083~7994550137" />
         
         <receiver android:name=".widget.RainWidgetProvider" android:exported="true">
             <intent-filter>

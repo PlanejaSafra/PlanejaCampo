@@ -481,7 +481,10 @@ class _ListaChuvasScreenState extends State<ListaChuvasScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: const AgroBannerWidget(),
+      bottomNavigationBar: const AgroBannerWidget(
+        adUnitId:
+            'ca-app-pub-3109803084293083/3225439181', // PlanejaChuva Production Banner
+      ),
     );
   }
 

@@ -110,7 +110,8 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 24),
 
               // Quick Actions
-              _buildQuickActionsSection(context, l10n, theme, showWeighingInterface),
+              _buildQuickActionsSection(
+                  context, l10n, theme, showWeighingInterface),
               const SizedBox(height: 24),
 
               // Monthly Summary (Produtor and Sangrador)
@@ -137,9 +138,14 @@ class _HomeScreenState extends State<HomeScreen> {
           }
         },
         icon: Icon(showWeighingInterface ? Icons.add : Icons.post_add),
-        label: Text(showWeighingInterface ? l10n.homeNewWeighing : l10n.homeCreateOffer),
+        label: Text(showWeighingInterface
+            ? l10n.homeNewWeighing
+            : l10n.homeCreateOffer),
       ),
-      bottomNavigationBar: const AgroBannerWidget(),
+      bottomNavigationBar: const AgroBannerWidget(
+        adUnitId:
+            'ca-app-pub-3109803084293083/5660030835', // PlanejaBorracha Production Banner
+      ),
     );
   }
 
