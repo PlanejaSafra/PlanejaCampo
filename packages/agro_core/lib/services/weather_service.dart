@@ -109,6 +109,52 @@ class WeatherService {
     return forecasts;
   }
 
+  /// Fetch historical Evapotranspiration (ET0) from Open-Meteo Archive API.
+  /// Used for Hydric Balance calculations.
+  Future<Map<DateTime, double>> getHistoricalEvapotranspiration({
+    required double latitude,
+    required double longitude,
+    required DateTime startDate,
+    required DateTime endDate,
+  }) async {
+    // Format dates as YYYY-MM-DD
+    final startStr = startDate.toIso8601String().split('T')[0];
+    final endStr = endDate.toIso8601String().split('T')[0];
+
+    final url = Uri.parse(
+        'https://archive-api.open-meteo.com/v1/archive?latitude=$latitude&longitude=$longitude&start_date=$startStr&end_date=$endStr&daily=et0_fao_evapotranspiration&timezone=auto');
+
+    try {
+      debugPrint('[WeatherService] Fetching historical ET0: $url');
+      final response = await http.get(url).timeout(const Duration(seconds: 15));
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final daily = data['daily'];
+        if (daily == null) return {};
+
+        final times = daily['time'] as List;
+        final et0s = daily['et0_fao_evapotranspiration'] as List;
+        final result = <DateTime, double>{};
+
+        for (int i = 0; i < times.length; i++) {
+          final date = DateTime.parse(times[i]);
+          final val = et0s[i];
+          if (val != null) {
+            result[date] = (val as num).toDouble();
+          }
+        }
+        return result;
+      } else {
+        debugPrint('[WeatherService] API Error: ${response.statusCode}');
+        return {};
+      }
+    } catch (e) {
+      debugPrint('[WeatherService] Exception fetching ET0: $e');
+      return {};
+    }
+  }
+
   /// Force fetch from API
   Future<List<WeatherForecast>> refreshForecast({
     required double latitude,

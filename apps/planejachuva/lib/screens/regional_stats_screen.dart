@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../models/regional_stats.dart';
 import '../services/chuva_service.dart';
 import '../services/sync_service.dart';
+import '../widgets/balanco_hidrico_chart.dart';
 
 /// Screen showing regional rainfall statistics and comparison with user's data.
 class RegionalStatsScreen extends StatefulWidget {
@@ -211,6 +212,14 @@ class _RegionalStatsScreenState extends State<RegionalStatsScreen> {
           const SizedBox(height: 16),
           // Comparison card
           _buildComparisonCard(theme),
+          const SizedBox(height: 16),
+          // Regional Water Balance Chart
+          if (widget.latitude != null && widget.longitude != null)
+            BalancoHidricoChart(
+              propertyId: widget.propertyId,
+              latitude: widget.latitude!,
+              longitude: widget.longitude!,
+            ),
           const SizedBox(height: 16),
           // Details card
           _buildDetailsCard(theme),

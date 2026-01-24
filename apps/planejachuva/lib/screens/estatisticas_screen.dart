@@ -7,6 +7,7 @@ import '../services/chuva_service.dart';
 import '../widgets/comparacao_anual_card.dart';
 import '../widgets/comparacao_anual_chart.dart';
 import '../widgets/visualizacao_barras.dart';
+import '../widgets/balanco_hidrico_chart.dart';
 
 /// Screen displaying rainfall statistics.
 class EstatisticasScreen extends StatefulWidget {
@@ -30,6 +31,8 @@ class _EstatisticasScreenState extends State<EstatisticasScreen>
 
   String? _propertyId;
   String? _selectedTalhaoId;
+  double? _propertyLat;
+  double? _propertyLng;
   bool _isLoadingProperty = true;
   final _propertyService = PropertyService();
   final _talhaoService = TalhaoService();
@@ -47,6 +50,8 @@ class _EstatisticasScreenState extends State<EstatisticasScreen>
     if (mounted) {
       setState(() {
         _propertyId = property?.id;
+        _propertyLat = property?.latitude;
+        _propertyLng = property?.longitude;
         _isLoadingProperty = false;
         _calcularEstatisticas();
       });
@@ -316,6 +321,16 @@ class _EstatisticasScreenState extends State<EstatisticasScreen>
               ),
             ),
           ),
+          // Water Balance Chart (CORE-68)
+          if (_propertyId != null &&
+              _propertyLat != null &&
+              _propertyLng != null)
+            BalancoHidricoChart(
+              propertyId: _propertyId!,
+              talhaoId: _selectedTalhaoId,
+              latitude: _propertyLat!,
+              longitude: _propertyLng!,
+            ),
           const SizedBox(height: 16),
           // Year total
           _buildStatCard(
