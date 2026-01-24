@@ -37,5 +37,13 @@
 config.json
 
 # Hive / Generated
-**/*.g.dart
 **/*.freezed.dart
+
+# Keystores and Certificates
+*.jks
+*.keystore
+*.p12
+*.pfX
+apk_cert.txt
+key_release_ascii.txt
+key_release_utf8.txt
