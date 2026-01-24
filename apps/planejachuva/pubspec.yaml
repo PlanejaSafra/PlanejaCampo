@@ -88,6 +88,8 @@ flutter:
     - assets/images/planejachuva_logo_transparent.png
     - assets/images/planejachuva_logo_solid.png
     - assets/images/planejachuva_logo.png
+    - assets/images/planejachuva_light_transparent.png
+    - assets/images/planejachuva_dark_transparent.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
