@@ -119,7 +119,7 @@ class WeatherDetailScreen extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
               child: Text(
-                'Próximos 7 Dias',
+                'Próximos Dias',
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -132,10 +132,16 @@ class WeatherDetailScreen extends StatelessWidget {
             delegate: SliverChildBuilderDelegate(
               (context, index) {
                 final dates = daily['time'] as List;
-                if (index >= dates.length) return null;
-                return _buildDailyItem(context, daily, index);
+                // Skip today (index 0)
+                final actualIndex = index + 1;
+
+                if (actualIndex >= dates.length) return null;
+                return _buildDailyItem(context, daily, actualIndex);
               },
-              childCount: (daily['time'] as List).length,
+              // Subtract 1 because we are skipping today
+              childCount: (daily['time'] as List).isEmpty
+                  ? 0
+                  : (daily['time'] as List).length - 1,
             ),
           ),
 

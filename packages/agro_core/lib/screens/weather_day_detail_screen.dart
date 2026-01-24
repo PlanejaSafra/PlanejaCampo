@@ -210,6 +210,7 @@ class WeatherDayDetailScreen extends StatelessWidget {
     final codes = hourlyData!['weather_code'] as List;
     final precipitations = hourlyData!['precipitation'] as List?;
     final winds = hourlyData!['wind_speed_10m'] as List?;
+    final windDirections = hourlyData!['wind_direction_10m'] as List?;
 
     // Filter for this specific date
     // API times are ISO strings: "2023-10-25T00:00"
@@ -256,6 +257,9 @@ class WeatherDayDetailScreen extends StatelessWidget {
                   : 0.0;
               final wind =
                   winds != null ? (winds[index] as num).toDouble() : 0.0;
+              final windDir = windDirections != null
+                  ? (windDirections[index] as num).toDouble()
+                  : 0.0;
 
               return Card(
                 elevation: 0,
@@ -301,6 +305,12 @@ class WeatherDayDetailScreen extends StatelessWidget {
                             style: TextStyle(
                                 fontSize: 10, color: Colors.grey[700]),
                           ),
+                          if (windDir != 0)
+                            Transform.rotate(
+                              angle: (windDir * 3.14159 / 180),
+                              child: Icon(Icons.arrow_upward,
+                                  size: 10, color: Colors.grey[600]),
+                            ),
                         ],
                       ),
                     ],
