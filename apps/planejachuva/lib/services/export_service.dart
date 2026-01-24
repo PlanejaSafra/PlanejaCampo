@@ -20,7 +20,7 @@ enum ExportFormat {
 
 /// Service for exporting rainfall records in various formats (PDF, CSV, JSON).
 class ExportService {
-  static const String _appName = 'Planeja Chuva';
+  static const String _appName = 'PlanejaChuva';
   static const String _appVersion = '1.0.0';
 
   /// Exports all records in the specified format and shares the file.

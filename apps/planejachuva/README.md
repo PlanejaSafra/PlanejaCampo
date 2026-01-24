@@ -1,9 +1,9 @@
-# Planeja Chuva
+# PlanejaChuva
 
 Aplicativo para gestão pluviométrica e inteligência climática para produtores rurais. Parte da suíte PlanejaCampo.
 
 ## Visão Geral
-O Planeja Chuva permite que o produtor registre chuvas, visualize estatísticas comparativas e receba alertas meteorológicos.
+O PlanejaChuva permite que o produtor registre chuvas, visualize estatísticas comparativas e receba alertas meteorológicos.
 
 ## Privacidade Híbrida (LGPD)
 O aplicativo opera em um modelo de **Privacidade Híbrida**, colocando o usuário no controle total de seus dados:

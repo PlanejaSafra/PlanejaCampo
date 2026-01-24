@@ -57,7 +57,7 @@ class BackupService {
     // Share the file
     await Share.shareXFiles(
       [XFile(file.path)],
-      subject: 'Backup Planeja Chuva',
+      subject: 'Backup PlanejaChuva',
       text: 'Backup de ${registros.length} registros de chuva',
     );
   }
@@ -124,11 +124,11 @@ class BackupService {
     final registros = service.listarTodos();
 
     if (registros.isEmpty) {
-      return 'Planeja Chuva - Nenhum registro';
+      return 'PlanejaChuva - Nenhum registro';
     }
 
     final buffer = StringBuffer();
-    buffer.writeln('=== PLANEJA CHUVA ===');
+    buffer.writeln('=== PLANEJACHUVA ===');
     buffer.writeln('Backup: ${DateTime.now().toString().split('.')[0]}');
     buffer.writeln('Total: ${registros.length} registros');
     buffer.writeln('');
@@ -143,7 +143,8 @@ class BackupService {
     for (final month in byMonth.keys.toList()..sort((a, b) => b.compareTo(a))) {
       final regs = byMonth[month]!;
       final total = regs.fold(0.0, (sum, r) => sum + r.milimetros);
-      buffer.writeln('$month: ${total.toStringAsFixed(1)}mm (${regs.length} chuvas)');
+      buffer.writeln(
+          '$month: ${total.toStringAsFixed(1)}mm (${regs.length} chuvas)');
     }
 
     return buffer.toString();

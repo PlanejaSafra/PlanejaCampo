@@ -98,7 +98,7 @@ class NotificationService {
 
     // Notification text
     final title =
-        locale.startsWith('pt') ? '🌧️ Planeja Chuva' : '🌧️ Planeja Chuva';
+        locale.startsWith('pt') ? '🌧️ PlanejaChuva' : '🌧️ PlanejaChuva';
     final body = locale.startsWith('pt')
         ? 'Já registrou a chuva de hoje?'
         : 'Did you log today\'s rainfall?';

@@ -5,7 +5,7 @@ import '../models/registro_chuva.dart';
 import '../services/backup_service.dart';
 import '../services/chuva_service.dart';
 
-/// Provider for Planeja Chuva backup data.
+/// Provider for PlanejaChuva backup data.
 class ChuvaBackupProvider implements BackupProvider {
   @override
   String get key => 'planeja_chuva';
