@@ -21,6 +21,12 @@ class AgroDrawer extends StatelessWidget {
   /// Additional menu items rendered after Settings (before Privacy/About).
   final List<AgroDrawerItem> afterSettingsItems;
 
+  /// Path to the app logo for light mode (displayed in drawer header).
+  final String? appLogoLightPath;
+
+  /// Path to the app logo for dark mode (displayed in drawer header).
+  final String? appLogoDarkPath;
+
   /// Callback when a menu item is selected.
   /// Receives the route key (e.g., 'home', 'settings', 'privacy', 'about').
   final void Function(String routeKey) onNavigate;
@@ -31,6 +37,8 @@ class AgroDrawer extends StatelessWidget {
     this.versionText,
     this.extraItems = const [],
     this.afterSettingsItems = const [],
+    this.appLogoLightPath,
+    this.appLogoDarkPath,
     required this.onNavigate,
   });
 
@@ -45,30 +53,48 @@ class AgroDrawer extends StatelessWidget {
         children: [
           DrawerHeader(
             decoration: BoxDecoration(
-              color: theme.drawerTheme.backgroundColor ??
-                  theme.colorScheme.primary,
+              color: theme.brightness == Brightness.dark
+                  ? const Color(
+                      0xFF334B40) // Lighter Dark Green (Previous Body Color)
+                  : const Color(0xFF2E7D32), // Primary Green for Light Mode Top
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                Icon(
-                  Icons.agriculture,
-                  size: 48,
-                  color: theme.colorScheme.onPrimary,
-                ),
+                if (appLogoLightPath != null || appLogoDarkPath != null)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: Image.asset(
+                      theme.brightness == Brightness.dark
+                          ? (appLogoDarkPath ?? appLogoLightPath!)
+                          : (appLogoLightPath ?? appLogoDarkPath!),
+                      height: 64,
+                      fit: BoxFit.contain,
+                    ),
+                  )
+                else
+                  Icon(
+                    Icons.agriculture,
+                    size: 48,
+                    color: theme.colorScheme.onPrimary,
+                  ),
                 const SizedBox(height: 12),
                 Text(
                   appName,
                   style: theme.textTheme.titleLarge?.copyWith(
-                    color: theme.colorScheme.onPrimary,
+                    color: theme.brightness == Brightness.dark
+                        ? Colors.white
+                        : theme.colorScheme.onPrimary,
                   ),
                 ),
                 if (versionText != null)
                   Text(
                     versionText!,
                     style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onPrimary.withValues(alpha: 0.8),
+                      color: theme.brightness == Brightness.dark
+                          ? Colors.white.withValues(alpha: 0.8)
+                          : theme.colorScheme.onPrimary.withValues(alpha: 0.8),
                     ),
                   ),
               ],

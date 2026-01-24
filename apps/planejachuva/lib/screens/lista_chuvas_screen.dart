@@ -161,8 +161,10 @@ class _ListaChuvasScreenState extends State<ListaChuvasScreen> {
                       appLogoLightPath: 'assets/images/planejachuva-icon.png',
                       appLogoDarkPath:
                           'assets/images/planejachuva-icon-dark.png',
-                      suiteLogoPath:
+                      suiteLogoLightPath:
                           'packages/agro_core/assets/images/planejacampo_light.png',
+                      suiteLogoDarkPath:
+                          'packages/agro_core/assets/images/planejacampo_dark.png',
                     ),
                   ),
                 );
@@ -188,8 +190,10 @@ class _ListaChuvasScreenState extends State<ListaChuvasScreen> {
               version: widget.version,
               appLogoLightPath: 'assets/images/planejachuva-icon.png',
               appLogoDarkPath: 'assets/images/planejachuva-icon-dark.png',
-              suiteLogoPath:
+              suiteLogoLightPath:
                   'packages/agro_core/assets/images/planejacampo_light.png',
+              suiteLogoDarkPath:
+                  'packages/agro_core/assets/images/planejacampo_dark.png',
             ),
           ),
         );
@@ -392,8 +396,10 @@ class _ListaChuvasScreenState extends State<ListaChuvasScreen> {
         ],
       ),
       drawer: AgroDrawer(
-        appName: 'Planeja Chuva',
+        appName: 'PlanejaChuva',
         versionText: 'v${widget.version}',
+        appLogoLightPath: 'assets/images/planejachuva-icon-light-menu.png',
+        appLogoDarkPath: 'assets/images/planejachuva-icon-dark-menu.png',
         onNavigate: _handleDrawerNavigation,
         extraItems: [
           AgroDrawerItem(

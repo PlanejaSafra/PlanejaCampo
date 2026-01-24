@@ -37,7 +37,7 @@
             android:value="2" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyC5ZS0y9UEPBmvbWCjxl5fcBG6uBACEtPc" />
+            android:value="${googleMapsApiKey}" />
         <!-- AdMob App ID (TEST - substituir por ID real antes de publicar) -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"

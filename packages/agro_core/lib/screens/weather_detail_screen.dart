@@ -66,10 +66,9 @@ class WeatherDetailScreen extends StatelessWidget {
                     Text(
                       '📍 $propertyName',
                       style: theme.textTheme.labelMedium?.copyWith(
-                        color: theme.colorScheme.onSurface,
+                        color:
+                            theme.colorScheme.onSurface.withValues(alpha: 0.6),
                         fontWeight: FontWeight.w400,
-                        decoration:
-                            TextDecoration.underline, // Hint it is clickable
                       ),
                     ),
                     Icon(Icons.edit,
@@ -424,7 +423,8 @@ class WeatherDetailScreen extends StatelessWidget {
               date: date,
               dailyData: daily.cast<String, dynamic>(),
               dailyIndex: index,
-              hourlyData: weatherData['hourly'],
+              hourlyData:
+                  (weatherData['hourly'] as Map?)?.cast<String, dynamic>(),
               propertyName: propertyName,
             ),
           ),

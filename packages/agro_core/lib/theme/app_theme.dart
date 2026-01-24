@@ -14,9 +14,10 @@ class AppTheme {
   static const Color _lightFloatingActionButtonColor =
       Colors.white; // Changed to white for contrast
   static const Color _darkFloatingActionButtonColor = Colors.white;
-  static final Color _lightDrawerHeaderColor = Colors.green[700]!;
+  static final Color _lightDrawerHeaderColor =
+      Colors.white; // Body color (lighter than header)
   static const Color _darkDrawerHeaderColor =
-      Color(0xFF1B5E20); // Darker green for dark mode
+      Color(0xFF3E584D); // Body color (Lighter than Header 0xFF334B40)
   static const Color _darkBackgroundColor = Color(0xFF1e2a26);
   static const Color _darkCardColor = Color(0xFF2a3d33);
   static final Color _lightBackgroundColor = Colors.white;
@@ -179,7 +180,7 @@ class AppTheme {
         ),
       ),
     ),
-    textTheme: _buildTextTheme(Colors.white70),
+    textTheme: _buildTextTheme(Colors.white),
     iconTheme: const IconThemeData(color: _darkEditIconColor),
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
       backgroundColor: Colors.green,

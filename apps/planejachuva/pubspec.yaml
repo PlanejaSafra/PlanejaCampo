@@ -87,6 +87,8 @@ flutter:
   assets:
     - assets/images/planejachuva-icon.png
     - assets/images/planejachuva-icon-dark.png
+    - assets/images/planejachuva-icon-light-menu.png
+    - assets/images/planejachuva-icon-dark-menu.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
