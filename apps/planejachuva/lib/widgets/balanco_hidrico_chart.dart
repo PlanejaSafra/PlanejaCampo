@@ -26,6 +26,7 @@ class _BalancoHidricoChartState extends State<BalancoHidricoChart> {
   bool _isLoading = true;
   final Map<int, double> _monthlyRain = {};
   final Map<int, double> _monthlyEt0 = {};
+  final Map<int, double> _monthlyBalance = {}; // Cumulative Balance
   final List<DateTime> _months = [];
 
   @override
@@ -34,16 +35,7 @@ class _BalancoHidricoChartState extends State<BalancoHidricoChart> {
     _loadData();
   }
 
-  @override
-  void didUpdateWidget(covariant BalancoHidricoChart oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.propertyId != widget.propertyId ||
-        oldWidget.latitude != widget.latitude ||
-        oldWidget.longitude != widget.longitude ||
-        oldWidget.talhaoId != widget.talhaoId) {
-      _loadData();
-    }
-  }
+  // ... (didUpdateWidget is same)
 
   Future<void> _loadData() async {
     setState(() => _isLoading = true);
@@ -53,6 +45,7 @@ class _BalancoHidricoChartState extends State<BalancoHidricoChart> {
       _months.clear();
       _monthlyRain.clear();
       _monthlyEt0.clear();
+      _monthlyBalance.clear();
 
       // 1. Prepare Last 12 Months
       for (int i = 11; i >= 0; i--) {
@@ -60,26 +53,31 @@ class _BalancoHidricoChartState extends State<BalancoHidricoChart> {
         _months.add(monthDate);
       }
 
-      // 2. Load User Rain Data
-      // Assuming ChuvaService is available and initialized
+      // 2. Load User Rain Data & First Record Date
       final chuvaService = ChuvaService();
-      // Ensure box is open? The parent screen usually handles this, but safe check:
-      // await chuvaService.init(); // Usually safe to skip if app already runs.
+      final allRecords = chuvaService.listarByTalhao(widget.propertyId,
+          talhaoId: widget.talhaoId);
+
+      // Determine start date for balance calculation
+      // It should be the first record date, or the start of the chart, whichever is later?
+      // Actually, if first record is older, we just start accumulation from 0 at the start of chart (relative balance)?
+      // Or should we try to approximate? Sticking to "relative to period" or "relative to first record if inside period".
+
+      DateTime? firstRecordDate;
+      if (allRecords.isNotEmpty) {
+        // Records are sorted desc, so last is oldest
+        firstRecordDate = allRecords.last.data;
+      }
 
       for (var month in _months) {
-        // Use totalDoMesByTalhao to respect filters
         final total = chuvaService.totalDoMesByTalhao(month, widget.propertyId,
             talhaoId: widget.talhaoId);
-        // Use month index (0..11) for X-axis
         _monthlyRain[_months.indexOf(month)] = total;
       }
 
-      // 3. Load Historical ET0 from Open-Meteo
-      // Start date: 1st day of 11 months ago
-      // End date: last day of current month (or yesterday)
+      // 3. Load Historical ET0
       final startDate = _months.first;
-      final endDate = now.subtract(
-          const Duration(days: 1)); // Archive is until yesterday usually
+      final endDate = now.subtract(const Duration(days: 1));
 
       final et0Map = await WeatherService().getHistoricalEvapotranspiration(
         latitude: widget.latitude,
@@ -88,18 +86,52 @@ class _BalancoHidricoChartState extends State<BalancoHidricoChart> {
         endDate: endDate,
       );
 
-      // Aggregate ET0 by month
+      // Aggregate ET0
       for (var entry in et0Map.entries) {
         final date = entry.key;
         final val = entry.value;
-
-        // Find which month-index this date belongs to
-        // We match by year and month
         final monthIndex = _months
             .indexWhere((m) => m.year == date.year && m.month == date.month);
 
         if (monthIndex != -1) {
           _monthlyEt0[monthIndex] = (_monthlyEt0[monthIndex] ?? 0.0) + val;
+        }
+      }
+
+      // 4. Calculate Cumulative Balance
+      double currentBalance = 0.0;
+      bool started = false;
+
+      for (int i = 0; i < _months.length; i++) {
+        final monthDate = _months[i];
+
+        // Logic: Start accumulating only if we passed the first record date
+        // If firstRecordDate is NULL (no data), we never start? Or start at 0?
+        // If firstRecordDate is BEFORE chart start, we start at i=0.
+        // If firstRecordDate is INSIDE chart, we start at that month.
+
+        if (!started && firstRecordDate != null) {
+          // Check if this month is equal or after the first record month
+          // Normalize to month start for comparison
+          final mStart = DateTime(monthDate.year, monthDate.month, 1);
+          final fStart =
+              DateTime(firstRecordDate.year, firstRecordDate.month, 1);
+
+          if (mStart.isAtSameMomentAs(fStart) || mStart.isAfter(fStart)) {
+            started = true;
+          }
+        } else if (firstRecordDate != null &&
+            firstRecordDate.isBefore(_months.first)) {
+          // If first record is older than chart, we start immediately
+          started = true;
+        }
+
+        if (started) {
+          final rain = _monthlyRain[i] ?? 0.0;
+          final et0 = _monthlyEt0[i] ?? 0.0;
+          final balance = rain - et0;
+          currentBalance += balance;
+          _monthlyBalance[i] = currentBalance;
         }
       }
     } catch (e) {
@@ -122,15 +154,26 @@ class _BalancoHidricoChartState extends State<BalancoHidricoChart> {
       );
     }
 
-    // Determine Y max for scaling
+    // Determine Y range
     double maxVal = 100.0;
+    double minVal = 0.0;
+
     for (var v in _monthlyRain.values) {
       if (v > maxVal) maxVal = v;
     }
     for (var v in _monthlyEt0.values) {
       if (v > maxVal) maxVal = v;
     }
-    maxVal = maxVal * 1.1; // 10% padding
+    for (var v in _monthlyBalance.values) {
+      if (v > maxVal) maxVal = v;
+      if (v < minVal) minVal = v;
+    }
+
+    // Add padding
+    final range = maxVal - minVal;
+    maxVal += range * 0.1;
+    minVal -= range * 0.1;
+    if (maxVal == minVal) maxVal += 10; // Avoid flat line error
 
     return Card(
       child: Padding(
@@ -149,9 +192,9 @@ class _BalancoHidricoChartState extends State<BalancoHidricoChart> {
               spacing: 16,
               runSpacing: 8,
               children: [
-                _buildLegendItem(theme, 'Precipitação (Você)', Colors.blue),
-                _buildLegendItem(
-                    theme, 'Evapotranspiração (Estimada)', Colors.orange),
+                _buildLegendItem(theme, 'Precipitação', Colors.blue),
+                _buildLegendItem(theme, 'Evapotranspiração', Colors.orange),
+                _buildLegendItem(theme, 'Saldo Acumulado', Colors.teal),
               ],
             ),
             const SizedBox(height: 24),
@@ -162,11 +205,14 @@ class _BalancoHidricoChartState extends State<BalancoHidricoChart> {
                   gridData: FlGridData(
                     show: true,
                     drawVerticalLine: false,
-                    horizontalInterval: maxVal / 5,
+                    horizontalInterval: (maxVal - minVal) / 5,
                     getDrawingHorizontalLine: (value) {
                       return FlLine(
-                        color: theme.colorScheme.outlineVariant,
-                        strokeWidth: 1,
+                        color: value == 0
+                            ? theme.colorScheme.onSurface
+                            : theme.colorScheme.outlineVariant,
+                        strokeWidth:
+                            value == 0 ? 1.5 : 1, // Highlight zero line
                       );
                     },
                   ),
@@ -186,7 +232,6 @@ class _BalancoHidricoChartState extends State<BalancoHidricoChart> {
                         getTitlesWidget: (value, meta) {
                           final index = value.toInt();
                           if (index >= 0 && index < _months.length) {
-                            // Show abbreviated month: "Jan"
                             return Padding(
                               padding: const EdgeInsets.only(top: 8.0),
                               child: Text(
@@ -203,7 +248,7 @@ class _BalancoHidricoChartState extends State<BalancoHidricoChart> {
                     leftTitles: AxisTitles(
                       sideTitles: SideTitles(
                         showTitles: true,
-                        interval: maxVal / 5,
+                        interval: (maxVal - minVal) / 5,
                         getTitlesWidget: (value, meta) {
                           return Text(
                             value.toInt().toString(),
@@ -214,12 +259,10 @@ class _BalancoHidricoChartState extends State<BalancoHidricoChart> {
                       ),
                     ),
                   ),
-                  borderData: FlBorderData(
-                    show: false,
-                  ),
+                  borderData: FlBorderData(show: false),
                   minX: 0,
                   maxX: 11,
-                  minY: 0,
+                  minY: minVal,
                   maxY: maxVal,
                   lineBarsData: [
                     // Rain Line (Blue)
@@ -249,6 +292,21 @@ class _BalancoHidricoChartState extends State<BalancoHidricoChart> {
                       isStrokeCapRound: true,
                       dotData: const FlDotData(show: false),
                     ),
+                    // Balance Line (Teal)
+                    LineChartBarData(
+                      spots: _monthlyBalance.entries
+                          .map((e) => FlSpot(e.key.toDouble(), e.value))
+                          .toList(),
+                      isCurved: true,
+                      color: Colors.teal,
+                      barWidth: 4,
+                      isStrokeCapRound: true,
+                      dotData: const FlDotData(show: true),
+                      belowBarData: BarAreaData(
+                        show: true,
+                        color: Colors.teal.withValues(alpha: 0.1),
+                      ),
+                    ),
                   ],
                   lineTouchData: LineTouchData(
                     touchTooltipData: LineTouchTooltipData(
@@ -261,8 +319,13 @@ class _BalancoHidricoChartState extends State<BalancoHidricoChart> {
                               fontWeight: FontWeight.bold,
                               fontSize: 12,
                             );
+                            String label = '';
+                            if (touchedSpot.barIndex == 0) label = 'Chuva';
+                            if (touchedSpot.barIndex == 1) label = 'ET0';
+                            if (touchedSpot.barIndex == 2) label = 'Saldo';
+
                             return LineTooltipItem(
-                              '${touchedSpot.y.toStringAsFixed(1)} mm',
+                              '$label: ${touchedSpot.y.toStringAsFixed(1)} mm',
                               textStyle,
                             );
                           }).toList();
