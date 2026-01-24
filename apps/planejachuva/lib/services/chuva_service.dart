@@ -111,6 +111,13 @@ class ChuvaService {
     }
   }
 
+  /// Clears all records from the box (used for restore).
+  Future<void> limparTodos() async {
+    await _box.clear();
+    await _updateWidget();
+    debugPrint('[ChuvaService] Cleared all records for restore.');
+  }
+
   /// Calculates the total rainfall for a specific month.
   /// If propertyId is provided, calculates only for that property.
   double totalDoMes(DateTime dataReferencia, {String? propertyId}) {

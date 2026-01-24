@@ -51,11 +51,11 @@ class UserCloudData extends HiveObject {
   /// Convert to Firestore-compatible Map
   Map<String, dynamic> toMap() {
     return {
+      'userId': uid, // Required by security rules
       'created_at': Timestamp.fromDate(createdAt),
       'last_active': Timestamp.fromDate(lastActive),
       'device_info': deviceInfo.toMap(),
       'consents': consents.toMap(),
-      // userId is stored in the document path, not in the data
     };
   }
 
@@ -65,7 +65,8 @@ class UserCloudData extends HiveObject {
       uid: uid,
       createdAt: (map['created_at'] as Timestamp).toDate(),
       lastActive: (map['last_active'] as Timestamp).toDate(),
-      deviceInfo: DeviceInfo.fromMap(map['device_info'] as Map<String, dynamic>),
+      deviceInfo:
+          DeviceInfo.fromMap(map['device_info'] as Map<String, dynamic>),
       consents: ConsentData.fromMap(map['consents'] as Map<String, dynamic>),
       lastSyncedAt: DateTime.now(), // Just synced
       syncEnabled: true,

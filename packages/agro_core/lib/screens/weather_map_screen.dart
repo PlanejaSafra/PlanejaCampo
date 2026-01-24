@@ -10,7 +10,7 @@ import '../services/property_service.dart';
 import '../privacy/agro_privacy_store.dart';
 import '../l10n/generated/app_localizations.dart';
 
-enum MapLayer { community, radar }
+enum MapLayer { community, radar, cloud }
 
 class WeatherMapScreen extends StatefulWidget {
   const WeatherMapScreen({super.key});
@@ -46,9 +46,7 @@ class _WeatherMapScreenState extends State<WeatherMapScreen>
   bool _isPrefetching = false;
   int _prefetchTotal = 0;
   int _prefetchDone = 0;
-  int _colorScheme = 2; // 2=Universal Blue (rain), 5=Dark Sky (snow)
-  DateTime? _lastRefreshTime;
-  MapType _currentMapType = MapType.hybrid;
+  MapType _currentMapType = MapType.normal; // Default to road map
 
   late AnimationController _animController;
 
@@ -64,12 +62,19 @@ class _WeatherMapScreenState extends State<WeatherMapScreen>
     _animController.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
         if (_radarTimestamps != null) {
-          final max = _radarTimestamps!.allFrames.length;
-          setState(() {
-            _currentIndex = (_currentIndex + 1) % max;
-            _animController.reset();
-            _animController.forward();
-          });
+          // Use the frames from the currently selected layer
+          final frames = _selectedLayer == MapLayer.cloud
+              ? _radarTimestamps!.satellite
+              : _radarTimestamps!.allRadarFrames;
+
+          if (frames.isNotEmpty) {
+            final max = frames.length;
+            setState(() {
+              _currentIndex = (_currentIndex + 1) % max;
+              _animController.reset();
+              _animController.forward();
+            });
+          }
         }
       }
     });
@@ -112,8 +117,8 @@ class _WeatherMapScreenState extends State<WeatherMapScreen>
   }
 
   Future<void> _fetchHeatmapData() async {
-    _stopPlayback();
-    _tileOverlays.clear();
+    // Note: _stopPlayback and _tileOverlays.clear() are now done
+    // synchronously in _onLayerChanged for immediate visual feedback
 
     if (!AgroPrivacyStore.consentAggregateMetrics) {
       _circles.clear();
@@ -149,8 +154,11 @@ class _WeatherMapScreenState extends State<WeatherMapScreen>
   }
 
   Future<void> _fetchRadarData() async {
-    _circles.clear();
-    setState(() => _radarLoading = true);
+    // Clear community heatmap circles immediately with setState
+    setState(() {
+      _circles.clear();
+      _radarLoading = true;
+    });
 
     final timestamps = await _radarService.fetchRadarTimestamps();
     if (timestamps == null) {
@@ -160,12 +168,16 @@ class _WeatherMapScreenState extends State<WeatherMapScreen>
     }
 
     _radarTimestamps = timestamps;
-    // Start at Present (last of past list)
-    _currentIndex = timestamps.radarPast.length - 1;
+
+    final frames = _selectedLayer == MapLayer.cloud
+        ? timestamps.satellite
+        : timestamps.allRadarFrames;
+
+    // Start at Present (last of list)
+    _currentIndex = frames.length - 1;
     if (_currentIndex < 0) _currentIndex = 0;
 
     _updateRadarOverlays();
-    _lastRefreshTime = DateTime.now();
     setState(() => _radarLoading = false);
   }
 
@@ -173,7 +185,9 @@ class _WeatherMapScreenState extends State<WeatherMapScreen>
   void _onCameraIdle() {
     // Don't refresh while playing, loading, or prefetching
     if (_isPlaying || _radarLoading || _isPrefetching) return;
-    if (_selectedLayer != MapLayer.radar) return;
+    if (_selectedLayer != MapLayer.radar && _selectedLayer != MapLayer.cloud) {
+      return;
+    }
 
     _refreshAndPrefetch();
   }
@@ -193,7 +207,10 @@ class _WeatherMapScreenState extends State<WeatherMapScreen>
   Future<void> _prefetchAllFrames() async {
     if (_radarTimestamps == null || _currentCameraPosition == null) return;
 
-    final allFrames = _radarTimestamps!.allFrames;
+    final frames = _selectedLayer == MapLayer.cloud
+        ? _radarTimestamps!.satellite
+        : _radarTimestamps!.allRadarFrames;
+
     final host = _radarTimestamps!.host;
     final zoom = _currentCameraPosition!.zoom.round();
     final target = _currentCameraPosition!.target;
@@ -204,9 +221,12 @@ class _WeatherMapScreenState extends State<WeatherMapScreen>
 
     // Pre-fetch 3x3 grid around center for each frame
     final tilesToFetch = <String>[];
-    for (final frame in allFrames) {
-      final baseUrl =
-          _radarService.getTileUrlTemplate(path: frame.path, host: host);
+    for (final frame in frames) {
+      final baseUrl = _radarService.getTileUrlTemplate(
+        path: frame.path,
+        host: host,
+        colorScheme: _selectedLayer == MapLayer.cloud ? 0 : 2,
+      );
       for (int dx = -1; dx <= 1; dx++) {
         for (int dy = -1; dy <= 1; dy++) {
           final url = baseUrl
@@ -267,24 +287,30 @@ class _WeatherMapScreenState extends State<WeatherMapScreen>
   void _updateRadarOverlays() {
     if (_radarTimestamps == null) return;
 
-    final allFrames = _radarTimestamps!.allFrames;
-    if (allFrames.isEmpty) return;
+    final frames = _selectedLayer == MapLayer.cloud
+        ? _radarTimestamps!.satellite
+        : _radarTimestamps!.allRadarFrames;
+
+    if (frames.isEmpty) return;
 
     final String regionHash = _getRegionHash();
     final Set<TileOverlay> overlays = {};
     final String host = _radarTimestamps!.host;
 
     // Load ALL frames simultaneously, show only current one via transparency
-    for (int i = 0; i < allFrames.length; i++) {
-      final frame = allFrames[i];
+    for (int i = 0; i < frames.length; i++) {
+      final frame = frames[i];
       final isCurrentFrame = i == _currentIndex;
+
+      // Cloud uses scheme 0 or 1 usually
+      final scheme = _selectedLayer == MapLayer.cloud ? 0 : 2;
 
       overlays.add(TileOverlay(
         tileOverlayId:
-            TileOverlayId('radar_${frame.time}_${regionHash}_$_colorScheme'),
+            TileOverlayId('radar_${frame.time}_${regionHash}_$scheme'),
         tileProvider: RadarTileProvider(
             urlTemplate: _radarService.getTileUrlTemplate(
-                path: frame.path, host: host, colorScheme: _colorScheme)),
+                path: frame.path, host: host, colorScheme: scheme)),
         // Current frame: 30% transparent (70% visible)
         // Other frames: 100% transparent (invisible, but loaded)
         transparency: isCurrentFrame ? 0.3 : 1.0,
@@ -308,15 +334,6 @@ class _WeatherMapScreenState extends State<WeatherMapScreen>
     });
   }
 
-  void _changeColorScheme(int scheme) {
-    if (_colorScheme == scheme) return;
-    setState(() {
-      _colorScheme = scheme;
-    });
-    // Refresh overlays to load new tiles
-    _updateRadarOverlays();
-  }
-
   void _stopPlayback() {
     _animController.stop();
     setState(() => _isPlaying = false);
@@ -324,7 +341,19 @@ class _WeatherMapScreenState extends State<WeatherMapScreen>
 
   void _onLayerChanged(MapLayer layer) {
     if (_selectedLayer == layer) return;
-    setState(() => _selectedLayer = layer);
+
+    // When switching to community, clear radar/cloud overlays immediately
+    // to avoid visual overlap during async data fetch
+    if (layer == MapLayer.community) {
+      _stopPlayback();
+      setState(() {
+        _selectedLayer = layer;
+        _tileOverlays.clear();
+      });
+    } else {
+      setState(() => _selectedLayer = layer);
+    }
+
     _fetchData();
   }
 
@@ -395,67 +424,70 @@ class _WeatherMapScreenState extends State<WeatherMapScreen>
             right: 16,
             child: Column(
               children: [
-                FloatingActionButton.small(
-                  heroTag: 'layer_radar',
-                  backgroundColor: _selectedLayer == MapLayer.radar
-                      ? Colors.blue
-                      : Colors.white,
-                  child: const Icon(Icons.radar, color: Colors.black),
-                  onPressed: () => _onLayerChanged(MapLayer.radar),
-                ),
-                const SizedBox(height: 8),
+                // ═══════════════════════════════════════════════
+                // GROUP 1: Data Layers (Estatísticas, Chuva, Nuvem, Geada)
+                // ═══════════════════════════════════════════════
+                // 1. Community Data (estatísticas)
                 FloatingActionButton.small(
                   heroTag: 'layer_community',
                   backgroundColor: _selectedLayer == MapLayer.community
                       ? Colors.orange
                       : Colors.white,
+                  tooltip: l10n.heatmapTitle,
                   child: const Icon(Icons.people, color: Colors.black),
                   onPressed: () => _onLayerChanged(MapLayer.community),
                 ),
-                const SizedBox(height: 16),
-                // Rain Mode Button
+                const SizedBox(height: 6),
+                // 2. Rain Mode (chuva)
                 FloatingActionButton.small(
                   heroTag: 'mode_rain',
-                  backgroundColor:
-                      _colorScheme == 2 ? Colors.blue : Colors.grey[200],
-                  child: Icon(Icons.water_drop,
-                      color: _colorScheme == 2 ? Colors.white : Colors.black54),
-                  onPressed: () => _changeColorScheme(2),
-                  tooltip: l10n.radarRainMode,
-                ),
-                const SizedBox(height: 8),
-                // Snow Mode Button
-                FloatingActionButton.small(
-                  heroTag: 'mode_snow',
-                  backgroundColor:
-                      _colorScheme == 5 ? Colors.cyan : Colors.grey[200],
-                  child: Icon(Icons.ac_unit,
-                      color: _colorScheme == 5 ? Colors.white : Colors.black54),
-                  onPressed: () => _changeColorScheme(5),
-                  tooltip: l10n.radarSnowMode,
-                ),
-                const SizedBox(height: 16),
-                // Map Type Buttons
-                FloatingActionButton.small(
-                  heroTag: 'map_satellite',
-                  backgroundColor: _currentMapType == MapType.hybrid
-                      ? Colors.green
+                  backgroundColor: _selectedLayer == MapLayer.radar
+                      ? Colors.blue
                       : Colors.white,
-                  child: const Icon(Icons.satellite_alt, color: Colors.black),
-                  onPressed: () =>
-                      setState(() => _currentMapType = MapType.hybrid),
-                  tooltip: l10n.mapTypeSatellite,
+                  onPressed: () => _onLayerChanged(MapLayer.radar),
+                  tooltip: l10n.radarRainMode,
+                  child: Icon(Icons.water_drop,
+                      color: _selectedLayer == MapLayer.radar
+                          ? Colors.white
+                          : Colors.black54),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 6),
+                // 3. Cloud (nuvem - satélite infravermelho)
+                FloatingActionButton.small(
+                  heroTag: 'layer_cloud',
+                  backgroundColor: _selectedLayer == MapLayer.cloud
+                      ? Colors.lightBlue[100]
+                      : Colors.white,
+                  tooltip: l10n.mapLayerCloud,
+                  child: const Icon(Icons.cloud, color: Colors.black),
+                  onPressed: () => _onLayerChanged(MapLayer.cloud),
+                ),
+                // ═══════════════════════════════════════════════
+                // GROUP 2: Base Map (Mapa, Satélite)
+                // ═══════════════════════════════════════════════
+                const SizedBox(height: 24), // Larger gap between groups
+                // 5. Map Type: Normal (mapa/rodoviário)
                 FloatingActionButton.small(
                   heroTag: 'map_normal',
                   backgroundColor: _currentMapType == MapType.normal
                       ? Colors.green
                       : Colors.white,
-                  child: const Icon(Icons.map, color: Colors.black),
                   onPressed: () =>
                       setState(() => _currentMapType = MapType.normal),
                   tooltip: l10n.mapTypeNormal,
+                  child: const Icon(Icons.map, color: Colors.black),
+                ),
+                const SizedBox(height: 6),
+                // 6. Map Type: Satellite
+                FloatingActionButton.small(
+                  heroTag: 'map_satellite',
+                  backgroundColor: _currentMapType == MapType.hybrid
+                      ? Colors.green
+                      : Colors.white,
+                  onPressed: () =>
+                      setState(() => _currentMapType = MapType.hybrid),
+                  tooltip: l10n.mapTypeSatellite,
+                  child: const Icon(Icons.satellite_alt, color: Colors.black),
                 ),
               ],
             ),
@@ -464,7 +496,8 @@ class _WeatherMapScreenState extends State<WeatherMapScreen>
             bottom: 32,
             left: 16,
             right: 16,
-            child: _selectedLayer == MapLayer.radar
+            child: _selectedLayer == MapLayer.radar ||
+                    _selectedLayer == MapLayer.cloud
                 ? _buildRadarControls(l10n)
                 : _buildHeatmapControls(l10n),
           ),
@@ -552,8 +585,36 @@ class _WeatherMapScreenState extends State<WeatherMapScreen>
   Widget _buildRadarControls(AgroLocalizations l10n) {
     if (_radarTimestamps == null) return const SizedBox.shrink();
 
-    final allFrames = _radarTimestamps!.allFrames;
-    final currentFrame = allFrames[_currentIndex];
+    final frames = _selectedLayer == MapLayer.cloud
+        ? _radarTimestamps!.satellite
+        : _radarTimestamps!.allRadarFrames;
+
+    // Guard against empty frames list to prevent red screen error
+    if (frames.isEmpty) {
+      return Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.black87,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.white24),
+        ),
+        child: Text(
+          l10n.radarNoData,
+          style: const TextStyle(color: Colors.white70),
+          textAlign: TextAlign.center,
+        ),
+      );
+    }
+
+    // Ensure _currentIndex is within bounds
+    final safeIndex = _currentIndex.clamp(0, frames.length - 1);
+    if (safeIndex != _currentIndex) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) setState(() => _currentIndex = safeIndex);
+      });
+    }
+
+    final currentFrame = frames[safeIndex];
     final date = DateTime.fromMillisecondsSinceEpoch(currentFrame.time * 1000);
     final formattedTime =
         '${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
@@ -564,8 +625,10 @@ class _WeatherMapScreenState extends State<WeatherMapScreen>
         ? l10n.radarPast(formattedTime)
         : l10n.radarFuture(formattedTime);
 
-    final bool isNow =
-        _currentIndex == (_radarTimestamps!.radarPast.length - 1);
+    final bool isNow = _selectedLayer == MapLayer.cloud
+        ? safeIndex == (frames.length - 1)
+        : safeIndex == (_radarTimestamps!.radarPast.length - 1);
+
     final displayLabel =
         isNow ? '${l10n.radarPresent} ($formattedTime)' : statusText;
 
@@ -630,10 +693,9 @@ class _WeatherMapScreenState extends State<WeatherMapScreen>
                         trackHeight: 2,
                       ),
                       child: Slider(
-                        value: (_currentIndex.toDouble())
-                            .clamp(0, allFrames.length - 1),
+                        value: safeIndex.toDouble(),
                         min: 0,
-                        max: (allFrames.length - 1).toDouble(),
+                        max: (frames.length - 1).toDouble(),
                         onChanged: _onSliderChanged,
                         activeColor: isPast ? Colors.blue : Colors.purpleAccent,
                         inactiveColor: Colors.white24,
@@ -663,6 +725,40 @@ class _WeatherMapScreenState extends State<WeatherMapScreen>
   }
 
   Widget _buildRadarLegend(AgroLocalizations l10n) {
+    if (_selectedLayer == MapLayer.cloud) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(bottom: 4),
+            child: Text(
+              l10n.mapLayerCloud, // Need to add this
+              style: const TextStyle(color: Colors.white70, fontSize: 12),
+            ),
+          ),
+          Container(
+            height: 12,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(6),
+              gradient: const LinearGradient(
+                colors: [Colors.black, Colors.white],
+              ),
+              border: Border.all(color: Colors.white24),
+            ),
+          ),
+          const SizedBox(height: 4),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: const [
+              Text('Clear',
+                  style: TextStyle(color: Colors.white70, fontSize: 10)),
+              Text('Cloudy',
+                  style: TextStyle(color: Colors.white70, fontSize: 10)),
+            ],
+          ),
+        ],
+      );
+    }
     // Current scheme colors
     // Universal Blue (Rain) - ID 2
     // Scheme matches standard radar: Transparent -> Light Blue -> Dark Blue -> Purple -> Pink -> Red -> Orange -> Yellow
@@ -677,29 +773,13 @@ class _WeatherMapScreenState extends State<WeatherMapScreen>
       const Color(0xFFFFFFFF), // Max
     ];
 
-    // Universal Blue (Snow) - ID 2 with snow mask (if supported) or just winter colors
-    // For now we use a cool-toned gradient for snow mode approximation
-    final snowColors = [
-      Colors.transparent,
-      const Color(0xFFE0F7FA), // Light
-      const Color(0xFFB2EBF2),
-      const Color(0xFF4DD0E1),
-      const Color(0xFF00BCD4), // Moderate
-      const Color(0xFF0097A7),
-      const Color(0xFF006064), // Heavy
-    ];
-
-    final colors = _colorScheme == 2 ? rainColors : snowColors;
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: const EdgeInsets.only(bottom: 4),
           child: Text(
-            _colorScheme == 2
-                ? l10n.radarRainIntensity
-                : l10n.radarSnowIntensity,
+            l10n.radarRainIntensity,
             style: const TextStyle(color: Colors.white70, fontSize: 12),
           ),
         ),
@@ -707,7 +787,7 @@ class _WeatherMapScreenState extends State<WeatherMapScreen>
           height: 12,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(6),
-            gradient: LinearGradient(colors: colors),
+            gradient: LinearGradient(colors: rainColors),
             border: Border.all(color: Colors.white24),
           ),
         ),

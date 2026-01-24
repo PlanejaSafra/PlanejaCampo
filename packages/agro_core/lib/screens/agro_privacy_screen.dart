@@ -33,6 +33,7 @@ class _AgroPrivacyScreenState extends State<AgroPrivacyScreen> {
     _shareAggregated = AgroPrivacyStore.consentAggregateMetrics;
     _receiveMetrics = AgroPrivacyStore.consentSharePartners;
     _personalizedAds = AgroPrivacyStore.consentAdsPersonalization;
+    debugPrint('[AgroPrivacyScreen] _loadConsents - aggregate=$_shareAggregated, partners=$_receiveMetrics, ads=$_personalizedAds');
   }
 
   Future<void> _saveConsent(String key, bool value) async {

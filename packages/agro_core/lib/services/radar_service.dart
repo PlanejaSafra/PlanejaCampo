@@ -69,6 +69,7 @@ class RadarTimestamps {
   final String host;
   final List<RadarFrame> radarPast; // Past frames (Radar)
   final List<RadarFrame> radarNowcast; // Future frames (Satellite/AI)
+  final List<RadarFrame> satellite; // Satellite (Infrared) frames
 
   RadarTimestamps({
     required this.version,
@@ -76,10 +77,11 @@ class RadarTimestamps {
     required this.host,
     required this.radarPast,
     required this.radarNowcast,
+    required this.satellite,
   });
 
   /// All frames combined (Past + Nowcast).
-  List<RadarFrame> get allFrames => [...radarPast, ...radarNowcast];
+  List<RadarFrame> get allRadarFrames => [...radarPast, ...radarNowcast];
 
   factory RadarTimestamps.fromJson(Map<String, dynamic> json) {
     return RadarTimestamps(
@@ -88,6 +90,7 @@ class RadarTimestamps {
       host: json['host'] ?? '',
       radarPast: _parseFrames(json['radar']?['past']),
       radarNowcast: _parseFrames(json['radar']?['nowcast']),
+      satellite: _parseFrames(json['satellite']?['infrared']),
     );
   }
 

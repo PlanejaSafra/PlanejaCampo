@@ -34,4 +34,11 @@ class ParceiroService extends ChangeNotifier {
   Parceiro? getParceiro(String id) {
     return _box?.get(id);
   }
+
+  /// Clear all parceiros (used for restore).
+  Future<void> clearAll() async {
+    if (_box == null) await init();
+    await _box!.clear();
+    notifyListeners();
+  }
 }

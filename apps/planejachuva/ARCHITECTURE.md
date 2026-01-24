@@ -33,14 +33,17 @@ Ponto de entrada do aplicativo.
 
 ### Fluxo de Inicialização e Privacidade
 1.  **AuthGate**: Verifica se o usuário está autenticado.
-    *   Se não: Mostra `LoginScreen` (Google/Anônimo).
+    *   **Loading State**: Exibe spinner durante verificações e processos de login.
+    *   **Restore Flow**: Ao logar (ou reiniciar), se o perfil local não existir, busca no Firestore (`fetchFromFirestore`) para restaurar consentimentos e metadados.
+    *   **Implied Consent**: Login com Google implica `consentCloudBackup = true` (Termos de Uso).
+    *   Se não logado: Mostra `LoginScreen` (Google/Anônimo).
 2.  **AgroOnboardingGate**: Verifica estado de consentimento.
     *   Se `!hasAcceptedTerms`: Mostra `IdentityScreen` (Termos).
-    *   Se `!onboardingCompleted`: Mostra `ConsentScreen` (3 Opções: Backup, Social, Inteligência).
+    *   Se `!onboardingCompleted`: Mostra `ConsentScreen` (3 Opções: Backup [Pré-ativado], Social, Inteligência).
     *   Se concluído: Mostra `ListaChuvasScreen` (Home).
 3.  **Híbrido**:
     *   `SyncService`: Só envia dados se `AgroPrivacyStore.consentAggregateMetrics` for `true`.
-    *   `UserCloudService`: Só faz backup se `AgroPrivacyStore.consentCloudBackup` for `true`.
+    *   `UserCloudService`: Backup ativo implicitamente para usuários logados.
 
 ---
 

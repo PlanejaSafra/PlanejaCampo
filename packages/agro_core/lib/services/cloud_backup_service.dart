@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 import 'auth_service.dart';
 
@@ -22,14 +24,21 @@ class CloudBackupMetadata {
   final DateTime? updated;
   final int appCount;
   final int chunkCount;
+  final int slotIndex; // Sorted order (0 = newest)
+  final int firestoreSlot; // Actual slot in Firestore (0, 1, or 2)
+  final String? backupId; // Document ID in Firestore
 
   CloudBackupMetadata({
     required this.updated,
     required this.appCount,
     this.chunkCount = 1,
+    this.slotIndex = 0,
+    this.firestoreSlot = 0,
+    this.backupId,
   });
 
-  factory CloudBackupMetadata.fromMap(Map<String, dynamic> map) {
+  factory CloudBackupMetadata.fromMap(Map<String, dynamic> map,
+      [int index = 0]) {
     DateTime? timestamp;
     if (map['timestamp'] is Timestamp) {
       timestamp = (map['timestamp'] as Timestamp).toDate();
@@ -38,13 +47,16 @@ class CloudBackupMetadata {
       updated: timestamp,
       appCount: map['appCount'] as int? ?? 0,
       chunkCount: map['chunkCount'] as int? ?? 1,
+      slotIndex: index,
+      firestoreSlot: map['slot'] as int? ?? 0,
+      backupId: map['backupId'] as String?,
     );
   }
 }
 
 /// Service that manages cloud backups for all PlanejaCampo apps.
 /// Stores backup data in Firestore (free tier) using flat collections.
-/// Uses 'user_backups' for metadata and 'user_backup_chunks' for large backups.
+/// Supports up to 3 backup slots with automatic rotation.
 class CloudBackupService {
   CloudBackupService._();
   static final CloudBackupService _instance = CloudBackupService._();
@@ -61,6 +73,189 @@ class CloudBackupService {
 
   /// Maximum size per chunk (900KB to leave margin for Firestore's 1MB limit)
   static const int _maxChunkSize = 900 * 1024;
+
+  /// Maximum number of backup slots to keep
+  static const int _maxBackupSlots = 3;
+
+  /// Local cache box name
+  static const String _cacheBoxName = 'backup_cache';
+  static const String _lastBackupKey = 'last_backup_timestamp';
+  static const String _currentSlotKey = 'current_backup_slot';
+  static const String _backupListKey = 'backup_list';
+  static const String _backupListTimeKey = 'backup_list_time';
+  static const String _pendingBackupPrefix = 'pending_backup_';
+
+  /// Check if there are pending backups to sync
+  Future<void> syncPendingBackups() async {
+    try {
+      final box = await Hive.openBox(_cacheBoxName);
+      final keys = box.keys.where((k) => k.toString().startsWith(_pendingBackupPrefix)).toList();
+
+      if (keys.isEmpty) return;
+
+      debugPrint('[CloudBackup] Found ${keys.length} pending backups to sync');
+
+      for (final key in keys) {
+        final pendingData = box.get(key) as Map?;
+        if (pendingData == null) continue;
+
+        final docId = pendingData['docId'] as String?;
+        final backupData = pendingData['data'] as Map?;
+        if (docId == null || backupData == null) {
+          await box.delete(key);
+          continue;
+        }
+
+        try {
+          await _firestore
+              .collection(_backupsCollection)
+              .doc(docId)
+              .set(Map<String, dynamic>.from(backupData))
+              .timeout(const Duration(seconds: 15));
+
+          await box.delete(key);
+          debugPrint('[CloudBackup] Synced pending backup: $docId');
+        } catch (e) {
+          debugPrint('[CloudBackup] Failed to sync pending backup $docId: $e');
+          // Keep for next retry
+        }
+      }
+    } catch (e) {
+      debugPrint('[CloudBackup] syncPendingBackups error: $e');
+    }
+  }
+
+  /// Save backup data locally for retry if Firestore fails
+  Future<void> _savePendingBackup(String docId, Map<String, dynamic> data) async {
+    try {
+      final box = await Hive.openBox(_cacheBoxName);
+      await box.put('$_pendingBackupPrefix$docId', {
+        'docId': docId,
+        'data': data,
+        'timestamp': DateTime.now().toIso8601String(),
+      });
+      debugPrint('[CloudBackup] Saved pending backup locally: $docId');
+    } catch (e) {
+      debugPrint('[CloudBackup] Failed to save pending backup: $e');
+    }
+  }
+
+  /// Remove pending backup after successful sync
+  Future<void> _removePendingBackup(String docId) async {
+    try {
+      final box = await Hive.openBox(_cacheBoxName);
+      await box.delete('$_pendingBackupPrefix$docId');
+    } catch (_) {}
+  }
+
+  /// Cache the last backup timestamp locally for instant UI display
+  Future<void> cacheLastBackupTime(DateTime timestamp) async {
+    try {
+      final box = await Hive.openBox(_cacheBoxName);
+      await box.put(_lastBackupKey, timestamp.toIso8601String());
+    } catch (e) {
+      debugPrint('[CloudBackup] Cache write error: $e');
+    }
+  }
+
+  /// Get cached last backup timestamp (instant, no network)
+  Future<DateTime?> getCachedLastBackupTime() async {
+    try {
+      final box = await Hive.openBox(_cacheBoxName);
+      final cached = box.get(_lastBackupKey) as String?;
+      if (cached != null) {
+        return DateTime.parse(cached);
+      }
+    } catch (e) {
+      debugPrint('[CloudBackup] Cache read error: $e');
+    }
+    return null;
+  }
+
+  /// Cache backup list for instant restore after backup
+  Future<void> _cacheBackupList(List<CloudBackupMetadata> backups) async {
+    try {
+      final box = await Hive.openBox(_cacheBoxName);
+      final list = backups
+          .map((b) => {
+                'updated': b.updated?.toIso8601String(),
+                'appCount': b.appCount,
+                'chunkCount': b.chunkCount,
+                'slotIndex': b.slotIndex,
+                'firestoreSlot': b.firestoreSlot,
+                'backupId': b.backupId,
+              })
+          .toList();
+      await box.put(_backupListKey, list);
+      await box.put(_backupListTimeKey, DateTime.now().toIso8601String());
+      debugPrint('[CloudBackup] Cached ${backups.length} backups to Hive');
+    } catch (e) {
+      debugPrint('[CloudBackup] Cache backup list error: $e');
+    }
+  }
+
+  /// Get cached backup list (returns null if cache is stale or empty)
+  /// Use [ignoreExpiration] to get cache even if expired (for merging)
+  Future<List<CloudBackupMetadata>?> _getCachedBackupList({bool ignoreExpiration = false}) async {
+    try {
+      final box = await Hive.openBox(_cacheBoxName);
+      final cacheTimeStr = box.get(_backupListTimeKey) as String?;
+      if (cacheTimeStr == null) return null;
+
+      if (!ignoreExpiration) {
+        final cacheTime = DateTime.parse(cacheTimeStr);
+        // Cache valid for 30 seconds after backup
+        if (DateTime.now().difference(cacheTime).inSeconds > 30) {
+          debugPrint('[CloudBackup] Backup list cache expired');
+          return null;
+        }
+      }
+
+      final list = box.get(_backupListKey) as List?;
+      if (list == null || list.isEmpty) return null;
+
+      final backups = list.map((item) {
+        final map = Map<String, dynamic>.from(item as Map);
+        return CloudBackupMetadata(
+          updated: map['updated'] != null
+              ? DateTime.parse(map['updated'] as String)
+              : null,
+          appCount: map['appCount'] as int? ?? 0,
+          chunkCount: map['chunkCount'] as int? ?? 1,
+          slotIndex: map['slotIndex'] as int? ?? 0,
+          firestoreSlot: map['firestoreSlot'] as int? ?? 0,
+          backupId: map['backupId'] as String?,
+        );
+      }).toList();
+
+      debugPrint('[CloudBackup] Using cached backup list (${backups.length} items, ignoreExpiration=$ignoreExpiration)');
+      return backups;
+    } catch (e) {
+      debugPrint('[CloudBackup] Get cached backup list error: $e');
+      return null;
+    }
+  }
+
+  /// Get next slot index - simple round-robin using local Hive only
+  /// No Firestore reads needed - fast and reliable
+  Future<int> _getNextSlot(String userId) async {
+    try {
+      final box = await Hive.openBox(_cacheBoxName);
+      final current = box.get(_currentSlotKey) as int? ?? -1;
+      final next = (current + 1) % _maxBackupSlots;
+      await box.put(_currentSlotKey, next);
+      debugPrint('[CloudBackup] Using slot $next (round-robin)');
+      return next;
+    } catch (e) {
+      debugPrint('[CloudBackup] Error getting next slot: $e');
+      return 0;
+    }
+  }
+
+  /// Generate deterministic backup document ID for a slot
+  String _getBackupDocId(String userId, int slot) {
+    return '${userId}_slot_$slot';
+  }
 
   /// Register a provider (app) to participate in backup.
   void registerProvider(BackupProvider provider) {
@@ -84,6 +279,9 @@ class CloudBackupService {
     required bool autoBackupEnabled,
     required bool hasCloudBackupConsent,
   }) async {
+    // Always try to sync pending backups first
+    await syncPendingBackups();
+
     if (!autoBackupEnabled) {
       debugPrint('[AutoBackup] Disabled');
       return false;
@@ -100,18 +298,22 @@ class CloudBackupService {
       return false;
     }
 
-    // Check if enough time has passed since last backup
-    final metadata = await getLastBackupMetadata();
-    if (metadata?.updated != null) {
-      final timeSinceLastBackup = DateTime.now().difference(metadata!.updated!);
-      if (timeSinceLastBackup < _autoBackupInterval) {
-        debugPrint(
-            '[AutoBackup] Skipped - last backup was ${timeSinceLastBackup.inHours}h ago');
-        return false;
-      }
-    }
-
     try {
+      // Check if enough time has passed since last backup
+      final backups = await listAvailableBackups();
+      if (backups.isNotEmpty) {
+        final mostRecent = backups.first;
+        if (mostRecent.updated != null) {
+          final timeSinceLastBackup =
+              DateTime.now().difference(mostRecent.updated!);
+          if (timeSinceLastBackup < _autoBackupInterval) {
+            debugPrint(
+                '[AutoBackup] Skipped - last backup was ${timeSinceLastBackup.inHours}h ago');
+            return false;
+          }
+        }
+      }
+
       debugPrint('[AutoBackup] Starting automatic backup...');
       await backupAll();
       debugPrint('[AutoBackup] Backup completed successfully');
@@ -122,10 +324,167 @@ class CloudBackupService {
     }
   }
 
+  /// List all available backups for current user, sorted by date (newest first).
+  /// Includes local pending backups that haven't synced yet.
+  Future<List<CloudBackupMetadata>> listAvailableBackups() async {
+    final user = AuthService.currentUser;
+    if (user == null) {
+      debugPrint('[CloudBackup] listAvailableBackups: no user');
+      return [];
+    }
+
+    // Check Hive cache first (valid for 30s after backup)
+    final cached = await _getCachedBackupList();
+    if (cached != null && cached.isNotEmpty) {
+      return cached;
+    }
+
+    // Load pending local backups (not yet synced to cloud)
+    final pendingBackups = <int, CloudBackupMetadata>{};
+    try {
+      final box = await Hive.openBox(_cacheBoxName);
+      final pendingKeys = box.keys
+          .where((k) => k.toString().startsWith(_pendingBackupPrefix))
+          .toList();
+
+      for (final key in pendingKeys) {
+        final data = box.get(key) as Map?;
+        if (data == null) continue;
+
+        final backupData = data['data'] as Map?;
+        final docId = data['docId'] as String?;
+        if (backupData == null || docId == null) continue;
+
+        final timestampStr = backupData['timestamp'] as String?;
+        final timestamp = timestampStr != null ? DateTime.tryParse(timestampStr) : null;
+        final firestoreSlot = backupData['slot'] as int? ?? 0;
+
+        pendingBackups[firestoreSlot] = CloudBackupMetadata(
+          updated: timestamp,
+          appCount: backupData['appCount'] as int? ?? 0,
+          chunkCount: 1,
+          slotIndex: 0,
+          firestoreSlot: firestoreSlot,
+          backupId: docId,
+        );
+      }
+
+      if (pendingBackups.isNotEmpty) {
+        debugPrint('[CloudBackup] Found ${pendingBackups.length} local pending backups');
+      }
+    } catch (e) {
+      debugPrint('[CloudBackup] Error reading local backups: $e');
+    }
+
+    debugPrint('[CloudBackup] Listing available backups for ${user.uid}...');
+    try {
+      // Query without orderBy to avoid requiring composite index
+      // Sort in memory instead (max 3 backups per user, so this is efficient)
+      debugPrint('[CloudBackup] Starting Firestore query...');
+      // Use default source (cache + server) - Firestore handles cache invalidation
+      final snapshot = await _firestore
+          .collection(_backupsCollection)
+          .where('userId', isEqualTo: user.uid)
+          .get()
+          .timeout(
+            const Duration(seconds: 15),
+            onTimeout: () {
+              debugPrint('[CloudBackup] listAvailableBackups timeout after 15s');
+              throw Exception('Tempo esgotado. Verifique sua conexão.');
+            },
+          );
+
+      debugPrint('[CloudBackup] Query completed, found ${snapshot.docs.length} docs');
+
+      // Build map of slot -> backup metadata
+      // Start with Firestore data, then override with pending local backups
+      final slotMap = <int, CloudBackupMetadata>{};
+
+      // Add Firestore backups
+      for (final doc in snapshot.docs) {
+        final data = doc.data();
+        DateTime? timestamp;
+        if (data['timestamp'] is Timestamp) {
+          timestamp = (data['timestamp'] as Timestamp).toDate();
+        }
+        final firestoreSlot = data['slot'] as int? ?? 0;
+        slotMap[firestoreSlot] = CloudBackupMetadata(
+          updated: timestamp,
+          appCount: data['appCount'] as int? ?? 0,
+          chunkCount: data['chunkCount'] as int? ?? 1,
+          slotIndex: 0,
+          firestoreSlot: firestoreSlot,
+          backupId: doc.id,
+        );
+      }
+
+      // Override with pending local backups (they're newer)
+      for (final entry in pendingBackups.entries) {
+        slotMap[entry.key] = entry.value;
+        debugPrint('[CloudBackup] Slot ${entry.key} using local pending backup');
+      }
+
+      // Convert to list and sort by timestamp descending (newest first)
+      final backups = slotMap.values.toList();
+      backups.sort((a, b) {
+        if (a.updated == null && b.updated == null) return 0;
+        if (a.updated == null) return 1;
+        if (b.updated == null) return -1;
+        return b.updated!.compareTo(a.updated!);
+      });
+
+      debugPrint('[CloudBackup] Returning ${backups.length} backups (${pendingBackups.length} pending)');
+
+      // Update slot indices after sorting
+      final result = backups.asMap().entries.map((entry) {
+        return CloudBackupMetadata(
+          updated: entry.value.updated,
+          appCount: entry.value.appCount,
+          chunkCount: entry.value.chunkCount,
+          slotIndex: entry.key,
+          firestoreSlot: entry.value.firestoreSlot,
+          backupId: entry.value.backupId,
+        );
+      }).take(_maxBackupSlots).toList();
+
+      // Cache the result for subsequent calls
+      await _cacheBackupList(result);
+
+      return result;
+    } catch (e) {
+      debugPrint('[CloudBackup] listAvailableBackups error: $e');
+
+      // If Firestore fails but we have pending local backups, return those
+      if (pendingBackups.isNotEmpty) {
+        debugPrint('[CloudBackup] Firestore failed, returning ${pendingBackups.length} local backups');
+        final backups = pendingBackups.values.toList();
+        backups.sort((a, b) {
+          if (a.updated == null && b.updated == null) return 0;
+          if (a.updated == null) return 1;
+          if (b.updated == null) return -1;
+          return b.updated!.compareTo(a.updated!);
+        });
+        return backups.asMap().entries.map((entry) {
+          return CloudBackupMetadata(
+            updated: entry.value.updated,
+            appCount: entry.value.appCount,
+            chunkCount: entry.value.chunkCount,
+            slotIndex: entry.key,
+            firestoreSlot: entry.value.firestoreSlot,
+            backupId: entry.value.backupId,
+          );
+        }).toList();
+      }
+
+      rethrow;
+    }
+  }
+
   /// Perform a full backup of all registered apps.
-  /// Returns the document ID of the backup or null if failed.
-  /// Automatically chunks data if it exceeds 900KB.
-  Future<String?> backupAll() async {
+  /// Creates a new backup slot, removing oldest if at max capacity.
+  /// Returns metadata about the created backup (or null on failure).
+  Future<CloudBackupMetadata?> backupAll() async {
+    debugPrint('[CloudBackup] backupAll() started');
     final user = AuthService.currentUser;
     if (user == null) {
       throw Exception('Usuário não logado');
@@ -135,75 +494,178 @@ class CloudBackupService {
       throw Exception('Backup indisponível para contas anônimas');
     }
 
+    debugPrint('[CloudBackup] Collecting data from ${_providers.length} providers...');
     final appsData = <String, dynamic>{};
 
     // Collect data from all providers
     for (final provider in _providers) {
       try {
+        debugPrint('[CloudBackup] Getting data from ${provider.key}...');
         final data = await provider.getData();
         appsData[provider.key] = data;
+        debugPrint('[CloudBackup] Got data from ${provider.key}');
       } catch (e) {
         debugPrint('Erro ao obter dados para backup de ${provider.key}: $e');
-        // Continue backing up other apps even if one fails
       }
     }
 
     try {
-      final userDocRef =
-          _firestore.collection(_backupsCollection).doc(user.uid);
+      // Use slot-based approach - no queries needed!
+      // Round-robin through slots 0, 1, 2 (overwrites oldest automatically)
+      final slot = await _getNextSlot(user.uid);
+      final newBackupId = _getBackupDocId(user.uid, slot);
+      debugPrint('[CloudBackup] Using slot $slot, doc ID: $newBackupId');
+
+      final backupDocRef =
+          _firestore.collection(_backupsCollection).doc(newBackupId);
 
       // Check size of full backup
       final jsonString = jsonEncode(appsData);
       final dataSize = utf8.encode(jsonString).length;
+      debugPrint('[CloudBackup] Data size: ${(dataSize / 1024).toStringAsFixed(1)}KB');
 
       if (dataSize <= _maxChunkSize) {
+        debugPrint('[CloudBackup] Saving single document backup...');
         // Single document backup (most common case)
-        await _deleteExistingChunks(user.uid);
-
-        await userDocRef.set({
+        final backupData = {
           'userId': user.uid,
+          'backupId': newBackupId,
+          'slot': slot,
           'version': 1,
           'timestamp': FieldValue.serverTimestamp(),
           'appCount': _providers.length,
           'chunkCount': 1,
           'chunked': false,
           'apps': appsData,
-        });
+        };
 
-        debugPrint('Backup salvo (${(dataSize / 1024).toStringAsFixed(1)}KB)');
+        // LOCAL FIRST: Save to Hive immediately (guaranteed success)
+        // This data is used for restore if cloud sync fails
+        final localBackupData = Map<String, dynamic>.from(backupData);
+        localBackupData['timestamp'] = DateTime.now().toIso8601String(); // Local timestamp
+        await _savePendingBackup(newBackupId, localBackupData);
+        debugPrint('[CloudBackup] Backup saved locally (${(dataSize / 1024).toStringAsFixed(1)}KB)');
+
+        // CLOUD SYNC: Try in background, don't block
+        backupDocRef.set(backupData).then((_) async {
+          await _removePendingBackup(newBackupId);
+          debugPrint('[CloudBackup] Backup synced to cloud');
+        }).catchError((e) {
+          debugPrint('[CloudBackup] Cloud sync failed (saved locally): $e');
+        });
       } else {
         // Need to chunk the data
-        await _saveChunkedBackup(user.uid, appsData);
+        debugPrint('[CloudBackup] Data too large, saving in chunks...');
+        await _saveChunkedBackup(user.uid, newBackupId, slot, appsData);
       }
 
-      return user.uid;
+      debugPrint('[CloudBackup] backupAll() completed successfully');
+
+      // Cache timestamp locally for instant UI display
+      final now = DateTime.now();
+      await cacheLastBackupTime(now);
+
+      // Build cache from what we know (no Firestore query needed)
+      // Get existing cache (ignore expiration) and update with new backup
+      try {
+        final existingCache = await _getCachedBackupList(ignoreExpiration: true) ?? [];
+
+        // Create new backup entry
+        final newBackup = CloudBackupMetadata(
+          updated: now,
+          appCount: _providers.length,
+          chunkCount: 1,
+          slotIndex: 0, // Will be reindexed
+          firestoreSlot: slot,
+          backupId: newBackupId,
+        );
+
+        // Remove any existing entry for this slot, add new one
+        final updatedList = existingCache
+            .where((b) => b.firestoreSlot != slot)
+            .toList();
+        updatedList.insert(0, newBackup);
+
+        // Sort by timestamp descending (newest first)
+        updatedList.sort((a, b) {
+          if (a.updated == null && b.updated == null) return 0;
+          if (a.updated == null) return 1;
+          if (b.updated == null) return -1;
+          return b.updated!.compareTo(a.updated!);
+        });
+
+        // Re-index and limit to max slots
+        final sortedBackups = updatedList.asMap().entries.map((entry) {
+          return CloudBackupMetadata(
+            updated: entry.value.updated,
+            appCount: entry.value.appCount,
+            chunkCount: entry.value.chunkCount,
+            slotIndex: entry.key,
+            firestoreSlot: entry.value.firestoreSlot,
+            backupId: entry.value.backupId,
+          );
+        }).take(_maxBackupSlots).toList();
+
+        await _cacheBackupList(sortedBackups);
+      } catch (e) {
+        debugPrint('[CloudBackup] Could not cache backup list: $e');
+      }
+
+      // Return metadata directly without another query
+      return CloudBackupMetadata(
+        updated: now,
+        appCount: _providers.length,
+        chunkCount: 1,
+        slotIndex: 0,
+      );
     } catch (e) {
-      debugPrint('Erro ao salvar backup no Firestore: $e');
+      debugPrint('[CloudBackup] Erro ao salvar backup no Firestore: $e');
       rethrow;
     }
   }
 
-  /// Delete existing chunk documents from the flat chunks collection
-  Future<void> _deleteExistingChunks(String userId) async {
-    // Query chunks by userId (flat collection, relational-style)
+  /// Delete a backup document and its chunks
+  Future<void> _deleteBackupDoc(String backupDocId) async {
+    final user = AuthService.currentUser;
+    if (user == null) return;
+
+    // Delete chunks first (must include userId in query for Firestore rules)
     final chunksSnapshot = await _firestore
         .collection(_chunksCollection)
-        .where('userId', isEqualTo: userId)
+        .where('userId', isEqualTo: user.uid)
+        .where('backupId', isEqualTo: backupDocId)
         .get();
 
     for (final doc in chunksSnapshot.docs) {
       await doc.reference.delete();
     }
+
+    // Delete main document
+    await _firestore.collection(_backupsCollection).doc(backupDocId).delete();
   }
 
   /// Save backup in multiple chunks using flat collection
   Future<void> _saveChunkedBackup(
     String userId,
+    String backupId,
+    int slot,
     Map<String, dynamic> appsData,
   ) async {
-    // Delete any existing chunks first
-    await _deleteExistingChunks(userId);
-
+    // First, delete any old chunks for this slot
+    try {
+      final oldChunks = await _firestore
+          .collection(_chunksCollection)
+          .where('userId', isEqualTo: userId)
+          .where('backupId', isEqualTo: backupId)
+          .get()
+          .timeout(const Duration(seconds: 10));
+      for (final doc in oldChunks.docs) {
+        await doc.reference.delete();
+      }
+    } catch (e) {
+      debugPrint('[CloudBackup] Could not delete old chunks: $e');
+      // Continue anyway - old chunks will be orphaned but not cause issues
+    }
     // Split apps into chunks
     final chunks = <Map<String, dynamic>>[];
     var currentChunk = <String, dynamic>{};
@@ -215,7 +677,6 @@ class CloudBackupService {
 
       if (currentChunkSize + entrySize > _maxChunkSize &&
           currentChunk.isNotEmpty) {
-        // Save current chunk and start new one
         chunks.add(currentChunk);
         currentChunk = <String, dynamic>{};
         currentChunkSize = 0;
@@ -230,10 +691,13 @@ class CloudBackupService {
       chunks.add(currentChunk);
     }
 
-    // Save metadata document in user_backups
-    final userDocRef = _firestore.collection(_backupsCollection).doc(userId);
-    await userDocRef.set({
+    // Save metadata document
+    final backupDocRef =
+        _firestore.collection(_backupsCollection).doc(backupId);
+    await backupDocRef.set({
       'userId': userId,
+      'backupId': backupId,
+      'slot': slot,
       'version': 1,
       'timestamp': FieldValue.serverTimestamp(),
       'appCount': _providers.length,
@@ -241,13 +705,12 @@ class CloudBackupService {
       'chunked': true,
     });
 
-    // Save each chunk in the flat chunks collection
-    // Document ID format: {userId}_chunk_{index}
+    // Save each chunk
     for (var i = 0; i < chunks.length; i++) {
-      final chunkDocId = '${userId}_chunk_$i';
+      final chunkDocId = '${backupId}_chunk_$i';
       await _firestore.collection(_chunksCollection).doc(chunkDocId).set({
         'userId': userId,
-        'backupId': userId,
+        'backupId': backupId,
         'index': i,
         'apps': chunks[i],
       });
@@ -256,33 +719,99 @@ class CloudBackupService {
     debugPrint('Backup salvo em ${chunks.length} chunks');
   }
 
-  /// Restore data from cloud backup.
-  Future<void> restoreAll() async {
+  /// Restore data from a specific backup slot (0 = most recent).
+  Future<void> restoreFromSlot([int slotIndex = 0]) async {
+    final backups = await listAvailableBackups();
+    if (backups.isEmpty) {
+      throw Exception('Nenhum backup encontrado na nuvem.');
+    }
+
+    if (slotIndex >= backups.length) {
+      throw Exception('Slot de backup inválido.');
+    }
+
     final user = AuthService.currentUser;
     if (user == null) {
       throw Exception('Usuário não logado');
     }
 
-    try {
-      final userDocRef =
-          _firestore.collection(_backupsCollection).doc(user.uid);
-      final snapshot = await userDocRef.get();
+    final selectedBackup = backups[slotIndex];
+    final backupId = selectedBackup.backupId;
 
-      if (!snapshot.exists) {
-        throw Exception('Nenhum backup encontrado na nuvem.');
+    debugPrint('[CloudBackup] restoreFromSlot: slotIndex=$slotIndex, backupId=$backupId');
+
+    try {
+      final docId = backupId ?? _getBackupDocId(user.uid, selectedBackup.firestoreSlot);
+      debugPrint('[CloudBackup] Reading backup by ID: $docId');
+
+      Map<String, dynamic>? backupData;
+
+      // LOCAL FIRST: Check Hive for pending backup (not yet synced to cloud)
+      try {
+        final box = await Hive.openBox(_cacheBoxName);
+        final pendingData = box.get('$_pendingBackupPrefix$docId') as Map?;
+        if (pendingData != null && pendingData['data'] != null) {
+          backupData = Map<String, dynamic>.from(pendingData['data'] as Map);
+          debugPrint('[CloudBackup] Using local pending backup');
+        }
+      } catch (e) {
+        debugPrint('[CloudBackup] Hive read error: $e');
       }
 
-      final backupData = snapshot.data()!;
+      // If no local data, try Firestore cache, then server
+      if (backupData == null) {
+        DocumentSnapshot<Map<String, dynamic>>? backupDoc;
+
+        try {
+          backupDoc = await _firestore
+              .collection(_backupsCollection)
+              .doc(docId)
+              .get(const GetOptions(source: Source.cache))
+              .timeout(const Duration(seconds: 2));
+
+          if (backupDoc.exists) {
+            debugPrint('[CloudBackup] Found backup in Firestore cache');
+            backupData = backupDoc.data();
+          }
+        } catch (_) {
+          // Cache miss - try server
+        }
+
+        if (backupData == null) {
+          debugPrint('[CloudBackup] Trying server...');
+          backupDoc = await _firestore
+              .collection(_backupsCollection)
+              .doc(docId)
+              .get()
+              .timeout(
+                const Duration(seconds: 15),
+                onTimeout: () {
+                  throw Exception('Timeout ao buscar backup');
+                },
+              );
+
+          if (backupDoc.exists) {
+            backupData = backupDoc.data();
+          }
+        }
+      }
+
+      if (backupData == null) {
+        throw Exception('Backup não encontrado.');
+      }
+
+      final actualBackupId = backupData['backupId'] as String? ?? docId;
+
       Map<String, dynamic> appsData;
 
       if (backupData['chunked'] == true) {
-        // Load chunked backup from flat collection
         appsData =
-            await _loadChunkedBackup(user.uid, backupData['chunkCount'] as int);
+            await _loadChunkedBackup(actualBackupId, backupData['chunkCount'] as int);
       } else {
-        // Single document backup
         appsData = backupData['apps'] as Map<String, dynamic>? ?? {};
       }
+
+      debugPrint('[CloudBackup] Restoring data for ${_providers.length} providers...');
 
       // Restore for each registered provider
       for (final provider in _providers) {
@@ -292,30 +821,34 @@ class CloudBackupService {
                 .restoreData(appsData[provider.key] as Map<String, dynamic>);
           } catch (e) {
             debugPrint('Erro ao restaurar dados de ${provider.key}: $e');
-            // Continue restoring others
           }
         }
       }
+
+      debugPrint('[CloudBackup] Restore completed');
     } on FirebaseException catch (e) {
       debugPrint('Erro do Firebase ao restaurar: ${e.code} - ${e.message}');
       if (e.code == 'not-found') {
         throw Exception('Nenhum backup encontrado na nuvem.');
       }
       rethrow;
-    } catch (e) {
-      rethrow;
     }
+  }
+
+  /// Restore data from cloud backup (most recent).
+  Future<void> restoreAll() async {
+    await restoreFromSlot(0);
   }
 
   /// Load chunked backup from flat chunks collection
   Future<Map<String, dynamic>> _loadChunkedBackup(
-    String userId,
+    String backupId,
     int chunkCount,
   ) async {
     final appsData = <String, dynamic>{};
 
     for (var i = 0; i < chunkCount; i++) {
-      final chunkDocId = '${userId}_chunk_$i';
+      final chunkDocId = '${backupId}_chunk_$i';
       final chunkDoc =
           await _firestore.collection(_chunksCollection).doc(chunkDocId).get();
 
@@ -332,23 +865,11 @@ class CloudBackupService {
 
   /// Get metadata of the last backup (timestamp, etc).
   Future<CloudBackupMetadata?> getLastBackupMetadata() async {
-    final user = AuthService.currentUser;
-    if (user == null) return null;
-
-    try {
-      final docRef = _firestore.collection(_backupsCollection).doc(user.uid);
-      final snapshot = await docRef.get();
-
-      if (!snapshot.exists) return null;
-
-      return CloudBackupMetadata.fromMap(snapshot.data()!);
-    } catch (e) {
-      debugPrint('Erro ao obter metadados do backup: $e');
-      return null;
-    }
+    final backups = await listAvailableBackups();
+    return backups.isNotEmpty ? backups.first : null;
   }
 
-  /// Delete the cloud backup for the current user.
+  /// Delete the cloud backup for the current user (all slots).
   Future<void> deleteBackup() async {
     final user = AuthService.currentUser;
     if (user == null) {
@@ -356,11 +877,14 @@ class CloudBackupService {
     }
 
     try {
-      // Delete chunks first (from flat collection)
-      await _deleteExistingChunks(user.uid);
+      final snapshot = await _firestore
+          .collection(_backupsCollection)
+          .where('userId', isEqualTo: user.uid)
+          .get();
 
-      // Delete main document
-      await _firestore.collection(_backupsCollection).doc(user.uid).delete();
+      for (final doc in snapshot.docs) {
+        await _deleteBackupDoc(doc.id);
+      }
     } catch (e) {
       debugPrint('Erro ao deletar backup: $e');
       rethrow;

@@ -15,24 +15,20 @@ class LocationHelper {
     required String propertyId,
     VoidCallback? onLocationUpdated,
   }) async {
-    // 1. Check if "Aggregate Metrics" (which includes Location) is consented
-    if (!AgroPrivacyStore.consentAggregateMetrics) {
-      await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ConsentScreen(
-            onCompleted: () => Navigator.pop(context),
-          ),
-        ),
-      );
+    debugPrint('[LocationHelper] checkAndUpdateLocation started');
+    // [CHANGED] Decoupled Location from Aggregate Metrics (Analytics).
+    // Location is functional for Weather, not just for stats.
+    // We proceed directly to asking the user.
+    debugPrint(
+        '[LocationHelper] checkAndUpdateLocation started (Consent check skipped)');
 
-      // If still not consented, stop.
-      if (!AgroPrivacyStore.consentAggregateMetrics) return;
+    if (!context.mounted) {
+      debugPrint('[LocationHelper] Context not mounted. Aborting.');
+      return;
     }
 
-    if (!context.mounted) return;
-
     // 2. Ask "Are you here?"
+    debugPrint('[LocationHelper] Asking "Are you here?" for prop: $propertyId');
     await _askAreYouHere(
       context: context,
       propertyId: propertyId,
@@ -47,6 +43,7 @@ class LocationHelper {
   }) async {
     final l10n = AgroLocalizations.of(context)!;
 
+    debugPrint('[LocationHelper] Showing dialog...');
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(

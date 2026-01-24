@@ -49,9 +49,13 @@ class ChuvaBackupProvider implements BackupProvider {
       );
     }).toList();
 
-    // Import using existing logic (deduplication)
+    // CLEAR existing data first (restore = replace, not merge)
+    final service = ChuvaService();
+    await service.limparTodos();
+
+    // Import backup records
     final result = await BackupService.importar(registros);
     debugPrint(
-        'Restored ${result.imported} records, ${result.duplicates} skipped.');
+        '[ChuvaBackup] Restored ${result.imported} records (cleared existing first).');
   }
 }

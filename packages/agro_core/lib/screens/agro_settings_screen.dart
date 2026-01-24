@@ -7,6 +7,8 @@ import '../services/auth_service.dart';
 import '../services/cloud_backup_service.dart';
 import '../services/data_export_service.dart';
 import '../services/user_cloud_service.dart';
+import '../privacy/agro_privacy_store.dart';
+import '../widgets/backup_restore_dialog.dart';
 import 'agro_privacy_screen.dart';
 import 'agro_about_screen.dart';
 
@@ -72,6 +74,9 @@ class AgroSettingsScreen extends StatefulWidget {
   /// Callback to reset/switch user profile
   final VoidCallback? onResetProfile;
 
+  /// Callback when backup restore is complete (to refresh main screen)
+  final VoidCallback? onRestoreComplete;
+
   const AgroSettingsScreen({
     super.key,
     this.onNavigateToAbout,
@@ -94,6 +99,7 @@ class AgroSettingsScreen extends StatefulWidget {
     this.onToggleRainAlerts,
     this.rainAlertsEnabled = false,
     this.onResetProfile,
+    this.onRestoreComplete,
   });
 
   @override
@@ -125,14 +131,38 @@ class _AgroSettingsScreenState extends State<AgroSettingsScreen> {
     return UserCloudService.instance.getCurrentUserData()?.syncEnabled ?? false;
   }
 
+  /// Format date using device locale
+  String _formatBackupDate(DateTime date) {
+    final locale = Localizations.localeOf(context).toString();
+    return DateFormat.yMd(locale).add_Hm().format(date);
+  }
+
   Future<void> _loadLastBackupInfo() async {
     if (!_isLoggedIn) return;
 
-    final metadata = await CloudBackupService.instance.getLastBackupMetadata();
-    if (metadata?.updated != null && mounted) {
+    // First, show cached value immediately (no network delay)
+    final cachedTime = await CloudBackupService.instance.getCachedLastBackupTime();
+    if (cachedTime != null && mounted) {
       setState(() {
-        _lastBackupDate = DateFormat.yMd().add_Hm().format(metadata!.updated!);
+        _lastBackupDate = _formatBackupDate(cachedTime);
       });
+      return; // Cache exists, no need to fetch from cloud
+    }
+
+    // No local cache - fetch from cloud (first login or reinstall)
+    try {
+      final backups = await CloudBackupService.instance.listAvailableBackups();
+      if (backups.isNotEmpty && backups.first.updated != null && mounted) {
+        final latestDate = backups.first.updated!;
+        // Cache it for next time
+        await CloudBackupService.instance.cacheLastBackupTime(latestDate);
+        setState(() {
+          _lastBackupDate = _formatBackupDate(latestDate);
+        });
+      }
+    } catch (e) {
+      // Silently fail - UI will show "no backup" which is acceptable
+      debugPrint('[Settings] Failed to load backup info from cloud: $e');
     }
   }
 
@@ -262,8 +292,13 @@ class _AgroSettingsScreenState extends State<AgroSettingsScreen> {
     final scaffold = ScaffoldMessenger.of(context);
 
     try {
-      await CloudBackupService.instance.backupAll();
-      await _loadLastBackupInfo();
+      final metadata = await CloudBackupService.instance.backupAll();
+      // Use returned metadata directly instead of querying again
+      if (metadata?.updated != null && mounted) {
+        setState(() {
+          _lastBackupDate = _formatBackupDate(metadata!.updated!);
+        });
+      }
       scaffold.showSnackBar(
         SnackBar(content: Text(l10n.backupCloudSuccess)),
       );
@@ -278,6 +313,7 @@ class _AgroSettingsScreenState extends State<AgroSettingsScreen> {
 
   Future<void> _handleRestore() async {
     final l10n = AgroLocalizations.of(context)!;
+    final scaffold = ScaffoldMessenger.of(context);
 
     if (!_isLoggedIn) {
       if (widget.onSignInWithGoogle != null) {
@@ -289,13 +325,62 @@ class _AgroSettingsScreenState extends State<AgroSettingsScreen> {
     }
 
     setState(() => _isBackingUp = true);
-    final scaffold = ScaffoldMessenger.of(context);
 
     try {
-      await CloudBackupService.instance.restoreAll();
+      // List available backups
+      debugPrint('[Settings] _handleRestore: listing backups...');
+      final backups = await CloudBackupService.instance.listAvailableBackups();
+      debugPrint('[Settings] _handleRestore: found ${backups.length} backups');
+
+      if (!mounted) return;
+
+      if (backups.isEmpty) {
+        setState(() => _isBackingUp = false);
+        scaffold.showSnackBar(
+          SnackBar(content: Text(l10n.backupCloudNoBackups)),
+        );
+        return;
+      }
+
+      // Stop spinner before showing dialog (otherwise it blocks interaction)
+      setState(() => _isBackingUp = false);
+
+      // Show backup selection dialog (same as during login)
+      debugPrint('[Settings] _handleRestore: showing dialog...');
+      final result = await showBackupRestoreDialog(context, backups);
+      debugPrint('[Settings] _handleRestore: dialog result = $result');
+
+      if (result == null || !result.restore || !mounted) {
+        debugPrint('[Settings] _handleRestore: user cancelled or unmounted');
+        return;
+      }
+
+      // Show spinner again during restore
+      setState(() => _isBackingUp = true);
+
+      // Restore from selected slot
+      debugPrint('[Settings] _handleRestore: restoring from slot ${result.slotIndex}...');
+      await CloudBackupService.instance.restoreFromSlot(result.slotIndex);
+
+      // Update cache with MOST RECENT backup's timestamp (not the restored one)
+      // "Last backup" means when was the last backup made, not which was restored
+      final mostRecentBackup = backups.first;
+      if (mostRecentBackup.updated != null) {
+        await CloudBackupService.instance
+            .cacheLastBackupTime(mostRecentBackup.updated!);
+        if (mounted) {
+          setState(() {
+            _lastBackupDate = _formatBackupDate(mostRecentBackup.updated!);
+          });
+        }
+      }
+
       scaffold.showSnackBar(
         SnackBar(content: Text(l10n.backupCloudRestoreSuccess)),
       );
+
+      // Notify caller to refresh data
+      widget.onRestoreComplete?.call();
     } catch (e) {
       scaffold.showSnackBar(
         SnackBar(content: Text(l10n.backupCloudRestoreError(e.toString()))),
@@ -651,8 +736,12 @@ class _AgroSettingsScreenState extends State<AgroSettingsScreen> {
                                 child: FilledButton.icon(
                                   onPressed:
                                       _isBackingUp ? null : _handleBackup,
-                                  icon: const Icon(Icons.cloud_upload),
-                                  label: Text(l10n.backupCloudNow),
+                                  icon:
+                                      const Icon(Icons.cloud_upload, size: 18),
+                                  label: Text(
+                                    l10n.backupCloudNow,
+                                    style: const TextStyle(fontSize: 13),
+                                  ),
                                 ),
                               ),
                               const SizedBox(width: 12),
@@ -660,8 +749,12 @@ class _AgroSettingsScreenState extends State<AgroSettingsScreen> {
                                 child: OutlinedButton.icon(
                                   onPressed:
                                       _isBackingUp ? null : _handleRestore,
-                                  icon: const Icon(Icons.cloud_download),
-                                  label: Text(l10n.backupCloudRestore),
+                                  icon: const Icon(Icons.cloud_download,
+                                      size: 18),
+                                  label: Text(
+                                    l10n.backupCloudRestore,
+                                    style: const TextStyle(fontSize: 13),
+                                  ),
                                 ),
                               ),
                             ],
@@ -805,7 +898,6 @@ class _AgroSettingsScreenState extends State<AgroSettingsScreen> {
   }
 }
 
-/// Widget for auto backup toggle switch
 class _AutoBackupSwitch extends StatefulWidget {
   const _AutoBackupSwitch();
 
@@ -814,7 +906,8 @@ class _AutoBackupSwitch extends StatefulWidget {
 }
 
 class _AutoBackupSwitchState extends State<_AutoBackupSwitch> {
-  late bool _autoBackupEnabled;
+  // Initialize with the synchronous getter from specific store or default true
+  bool _autoBackupEnabled = true;
 
   @override
   void initState() {
@@ -822,30 +915,19 @@ class _AutoBackupSwitchState extends State<_AutoBackupSwitch> {
     _loadSetting();
   }
 
-  Future<void> _loadSetting() async {
-    // Import dynamically to avoid circular dependency
-    final enabled = await _getAutoBackupEnabled();
+  void _loadSetting() {
+    // Use the Store if possible, or fallback to default
+    // Assuming AgroPrivacyStore has a getter for this, otherwise we use the safe default
+    // checking if we can use AgroPrivacyStore.autoBackupEnabled (it was in the file I viewed earlier)
     if (mounted) {
-      setState(() => _autoBackupEnabled = enabled);
-    }
-  }
-
-  Future<bool> _getAutoBackupEnabled() async {
-    try {
-      final box = await Hive.openBox('agro_settings');
-      return box.get('auto_backup_enabled', defaultValue: true) as bool;
-    } catch (e) {
-      return true;
+      setState(() {
+        _autoBackupEnabled = AgroPrivacyStore.autoBackupEnabled;
+      });
     }
   }
 
   Future<void> _setAutoBackupEnabled(bool value) async {
-    try {
-      final box = await Hive.openBox('agro_settings');
-      await box.put('auto_backup_enabled', value);
-    } catch (e) {
-      // Ignore
-    }
+    await AgroPrivacyStore.setAutoBackupEnabled(value);
   }
 
   @override

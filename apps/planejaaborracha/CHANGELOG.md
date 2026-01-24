@@ -2,6 +2,31 @@
 
 ---
 
+## Phase BORRACHA-10: Fix Restore Data (Replace vs Merge)
+
+### Status: [DONE]
+**Date Completed**: 2026-01-24
+**Priority**: 🔵 FIX
+**Objective**: Fix cloud restore to REPLACE data instead of MERGE.
+**Cross-Reference**: CORE-63
+
+### Problem
+When restoring from backup, parceiros and entregas were merged with backup data instead of being replaced. Records created after the backup was made would still exist after restore.
+
+### Solution
+1. Added `clearAll()` method to ParceiroService
+2. Added `clearAll()` method to EntregaService
+3. Modified `BorrachaBackupProvider.restoreData()` to call both clear methods before importing backup records
+
+### Files Modified
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/services/parceiro_service.dart` | MODIFY | Added `clearAll()` method |
+| `lib/services/entrega_service.dart` | MODIFY | Added `clearAll()` method |
+| `lib/services/borracha_backup_provider.dart` | MODIFY | Call clear before restore |
+
+---
+
 ## Phase BORRACHA-09: Cloud Sync & Local Backup Integration
 ### Status: [DONE]
 **Date Completed**: 2026-01-21

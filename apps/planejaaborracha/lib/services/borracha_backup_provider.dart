@@ -66,32 +66,35 @@ class BorrachaBackupProvider implements BackupProvider {
     await parceiroService.init();
     await entregaService.init();
 
+    // CLEAR existing data first (restore = replace, not merge)
+    await parceiroService.clearAll();
+    await entregaService.clearAll();
+
+    int parceirosImported = 0;
+    int entregasImported = 0;
+
     // Restore Parceiros
     if (data['parceiros'] != null) {
       final parceirosList = data['parceiros'] as List;
-      final parceiros = parceirosList.map((p) {
-        return Parceiro(
+      for (final p in parceirosList) {
+        final parceiro = Parceiro(
           id: p['id'] as String,
           nome: p['nome'] as String,
           percentualPadrao: (p['percentualPadrao'] as num).toDouble(),
           telefone: p['telefone'] as String?,
         );
-      }).toList();
-
-      // Import parceiros (avoiding duplicates)
-      final existingIds = parceiroService.parceiros.map((p) => p.id).toSet();
-      for (final parceiro in parceiros) {
-        if (!existingIds.contains(parceiro.id)) {
-          await parceiroService.addParceiro(parceiro);
-        }
+        await parceiroService.addParceiro(parceiro);
+        parceirosImported++;
       }
     }
 
     // Restore Entregas
     if (data['entregas'] != null) {
       final entregasList = data['entregas'] as List;
-      final entregas = entregasList.map((e) {
-        return Entrega(
+      final box = await Hive.openBox<Entrega>(EntregaService.boxName);
+
+      for (final e in entregasList) {
+        final entrega = Entrega(
           id: e['id'] as String,
           data: DateTime.parse(e['data'] as String),
           compradorId: e['compradorId'] as String?,
@@ -108,21 +111,14 @@ class BorrachaBackupProvider implements BackupProvider {
                   ))
               .toList(),
         );
-      }).toList();
-
-      // Import entregas (avoiding duplicates) - save directly to Hive box
-      final box = await Hive.openBox<Entrega>(EntregaService.boxName);
-      final existingIds = box.values.map((e) => e.id).toSet();
-      int imported = 0;
-      for (final entrega in entregas) {
-        if (!existingIds.contains(entrega.id)) {
-          await box.put(entrega.id, entrega);
-          imported++;
-        }
+        await box.put(entrega.id, entrega);
+        entregasImported++;
       }
 
-      debugPrint('BorrachaBackupProvider: Restored $imported entregas');
       await entregaService.init(); // Refresh service state
     }
+
+    debugPrint(
+        '[BorrachaBackup] Restored $parceirosImported parceiros, $entregasImported entregas (cleared existing first).');
   }
 }

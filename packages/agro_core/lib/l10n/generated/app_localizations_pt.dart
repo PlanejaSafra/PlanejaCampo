@@ -1040,7 +1040,7 @@ class AgroLocalizationsPt extends AgroLocalizations {
   String get backupCloudDescription => 'Sincronize seus dados de forma segura com sua conta Google';
 
   @override
-  String get backupCloudNow => 'Fazer Backup Agora';
+  String get backupCloudNow => 'Salvar Agora';
 
   @override
   String backupCloudLastBackup(String date) {
@@ -1051,7 +1051,7 @@ class AgroLocalizationsPt extends AgroLocalizations {
   String get backupCloudNeverDone => 'Nenhum backup realizado';
 
   @override
-  String get backupCloudRestore => 'Restaurar da Nuvem';
+  String get backupCloudRestore => 'Restaurar';
 
   @override
   String get backupCloudRestoreDesc => 'Substitui dados locais pelo backup';
@@ -1071,6 +1071,9 @@ class AgroLocalizationsPt extends AgroLocalizations {
   String backupCloudRestoreError(String error) {
     return 'Erro na restauração: $error';
   }
+
+  @override
+  String get backupCloudNoBackups => 'Nenhum backup encontrado na nuvem';
 
   @override
   String get backupCloudSignInRequired => 'Entre com Google para usar o backup na nuvem';
@@ -1134,6 +1137,23 @@ class AgroLocalizationsPt extends AgroLocalizations {
 
   @override
   String get rainRainingNow => 'Chovendo agora';
+
+  @override
+  String get rainDrizzleNow => 'Garoando agora';
+
+  @override
+  String get rainLightNow => 'Chuva fraca agora';
+
+  @override
+  String get rainModerateNow => 'Chuva moderada agora';
+
+  @override
+  String get rainHeavyNow => 'Chuva forte agora';
+
+  @override
+  String rainDrizzleIn(int minutes) {
+    return 'Garoa começa em ~$minutes min';
+  }
 
   @override
   String get rainStartingIn15 => 'Chuva começa em ~15 min';
@@ -1206,6 +1226,9 @@ class AgroLocalizationsPt extends AgroLocalizations {
   String get mapLayerRadar => 'Radar (Tempo Real)';
 
   @override
+  String get mapLayerCloud => 'Satélite (Nuvens)';
+
+  @override
   String get mapLayerCommunity => 'Comunidade (Calor)';
 
   @override
@@ -1232,6 +1255,9 @@ class AgroLocalizationsPt extends AgroLocalizations {
 
   @override
   String get radarError => 'Erro ao carregar radar';
+
+  @override
+  String get radarNoData => 'Dados não disponíveis para esta camada';
 
   @override
   String get cancelButton => 'Cancelar';
@@ -1381,4 +1407,22 @@ class AgroLocalizationsPt extends AgroLocalizations {
 
   @override
   String get autoBackupSubtitle => 'Realizado periodicamente';
+
+  @override
+  String get backupRestoreTitle => 'Backup Encontrado';
+
+  @override
+  String get backupRestoreMessage => 'Encontramos dados salvos na nuvem. Deseja restaurar?';
+
+  @override
+  String get backupMostRecent => 'Mais recente';
+
+  @override
+  String get backupSlot => 'Backup';
+
+  @override
+  String get backupRestore => 'Restaurar';
+
+  @override
+  String get backupSkip => 'Pular';
 }

@@ -1,76 +1,49 @@
 rules_version = '2';
-
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // ====================
-    // User Cloud Data (agro_core identity system)
-    // ====================
-    match /users/{userId} {
-      // Users can only read/write their own data
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+    // =========================================================================
+    // 1. COLLECTIONS PÚBLICAS (SOMENTE LEITURA PARA O APP)
+    // =========================================================================
+    // O App só lê. Quem escreve aqui é o seu Backend (Cloud Functions) via Admin SDK.
+    
+    match /rainfall_stats/{geoHash} { 
+      allow read: if request.auth != null; // Todos leem
+      allow write: if false;               // NINGUÉM escreve pelo App (Segurança Crítica)
     }
 
-    // ====================
-    // Rainfall Data Collection (Write-Only for Users)
-    // ====================
-    match /rainfall_data/{geoHash5}/records/{recordId} {
-      // Allow authenticated users to write anonymized rainfall data
+    // Outras tabelas de apoio (se existirem no futuro)
+    match /regions/{regionId} { 
+      allow read: if request.auth != null; 
+      allow write: if false; 
+    }
+
+    // =========================================================================
+    // 2. REGRA GERAL (FAIL-SAFE) - DADOS PRIVADOS
+    // =========================================================================
+    // Aplica-se a 'users', 'rainfall_data', 'properties' e qualquer nova coleção.
+    // Lógica: Se tem 'userId', o dono manda. Se não tem, ninguém acessa por aqui.
+
+    match /{collection}/{document=**} {
+      
+      // CRIAR: Obrigatório estar logado E enviar o campo 'userId' com seu próprio UID
       allow create: if request.auth != null
-                    && isValidRainfallRecord(request.resource.data)
-                    && !hasExceededDailyWriteLimit();
+                    && request.resource.data.userId == request.auth.uid;
 
-      // Deny direct reads of individual records (privacy protection)
-      allow read: if false;
-
-      // Deny updates and deletes (immutable records)
-      allow update, delete: if false;
-    }
-
-    // ====================
-    // Regional Statistics (Read-Only for Users)
-    // ====================
-    match /rainfall_stats/{geoHash} {
-      // Allow authenticated users to read aggregated statistics
+      // LER: Obrigatório estar logado E o documento ter 'userId' igual ao seu UID
       allow read: if request.auth != null
-                  && meetsKAnonymityThreshold(resource.data);
+                  && resource.data.userId == request.auth.uid;
 
-      // Deny writes (only Cloud Functions can update aggregates)
-      allow write: if false;
-    }
+      // ATUALIZAR: 
+      // 1. Dono bate com o UID
+      // 2. NÃO está tentando transferir o documento para outra pessoa (mudar o userId)
+      allow update: if request.auth != null
+                    && resource.data.userId == request.auth.uid
+                    && request.resource.data.userId == request.auth.uid;
 
-    // ====================
-    // Helper Functions
-    // ====================
-
-    // Validate rainfall record structure and data
-    function isValidRainfallRecord(data) {
-      return data.keys().hasAll(['mm', 'date', 'lat', 'lon', 'geohash5', 'geohash4', 'geohash3'])
-          && data.mm is number
-          && data.mm >= 0
-          && data.mm <= 500  // Max realistic rainfall per day
-          && data.date is timestamp
-          && data.lat is number
-          && data.lon is number
-          && data.geohash5 is string
-          && data.geohash5.size() == 5
-          && data.geohash4 is string
-          && data.geohash4.size() == 4
-          && data.geohash3 is string
-          && data.geohash3.size() == 3;
-    }
-
-    // Check if user has exceeded daily write limit (10 writes/day)
-    // Note: This is simplified. In production, use a separate rate-limiting collection.
-    function hasExceededDailyWriteLimit() {
-      // For MVP, we trust client-side rate limiting
-      // Production: Implement server-side counter using a separate collection
-      return false;
-    }
-
-    // Check if aggregate data meets K-Anonymity threshold (minimum 3 contributors)
-    function meetsKAnonymityThreshold(data) {
-      return data.count >= 3;
+      // DELETAR: Só o dono pode deletar
+      allow delete: if request.auth != null
+                    && resource.data.userId == request.auth.uid;
     }
   }
 }

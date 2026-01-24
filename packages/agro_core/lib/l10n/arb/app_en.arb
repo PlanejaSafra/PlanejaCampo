@@ -490,7 +490,7 @@
 
   "backupCloudSection": "Cloud Backup",
   "backupCloudDescription": "Securely sync your data with your Google account",
-  "backupCloudNow": "Backup Now",
+  "backupCloudNow": "Save Now",
   "backupCloudLastBackup": "Last backup: {date}",
   "@backupCloudLastBackup": {
     "placeholders": {
@@ -500,7 +500,7 @@
     }
   },
   "backupCloudNeverDone": "No backup yet",
-  "backupCloudRestore": "Restore from Cloud",
+  "backupCloudRestore": "Restore",
   "backupCloudRestoreDesc": "Replaces local data with backup",
   "backupCloudSuccess": "Backup completed successfully!",
   "backupCloudRestoreSuccess": "Data restored successfully!",
@@ -520,6 +520,7 @@
       }
     }
   },
+  "backupCloudNoBackups": "No backups found in the cloud",
   "backupCloudSignInRequired": "Sign in with Google to use cloud backup",
   "backupCloudSignInButton": "Sign in with Google",
   "backupCloudAnonymousWarning": "Create a Google account to save your data to the cloud",
@@ -545,6 +546,16 @@
 
   "rainNoRainNextHour": "No rain in the next hour",
   "rainRainingNow": "Raining now",
+  "rainDrizzleNow": "Drizzle now",
+  "rainLightNow": "Light rain now",
+  "rainModerateNow": "Moderate rain now",
+  "rainHeavyNow": "Heavy rain now",
+  "rainDrizzleIn": "Drizzle starting in ~{minutes} min",
+  "@rainDrizzleIn": {
+    "placeholders": {
+      "minutes": {"type": "int"}
+    }
+  },
   "rainStartingIn15": "Rain starting in ~15 min",
   "rainStartingIn30": "Rain starting in ~30 min",
   "rainStartingIn45": "Rain starting in ~45 min",
@@ -577,6 +588,7 @@
   "heatmapFilter7d": "7d",
   "drawerHeatmap": "Weather Map",
   "mapLayerRadar": "Radar (Real-time)",
+  "mapLayerCloud": "Satellite (Clouds)",
   "mapLayerCommunity": "Community (Heat)",
   "radarAttribution": "Radar Data by RainViewer",
   "radarPast": "Past ({time})",
@@ -599,6 +611,7 @@
   "radarSpeed": "Speed",
   "radarLoading": "Loading Radar...",
   "radarError": "Error loading radar",
+  "radarNoData": "Data not available for this layer",
 
   "cancelButton": "Cancel",
   "deleteButton": "Delete",
@@ -663,5 +676,12 @@
   "backupLocalExportSuccess": "Local backup exported successfully",
 
   "autoBackupTitle": "Automatic backup",
-  "autoBackupSubtitle": "Runs periodically"
+  "autoBackupSubtitle": "Runs periodically",
+
+  "backupRestoreTitle": "Backup Found",
+  "backupRestoreMessage": "We found data saved in the cloud. Would you like to restore it?",
+  "backupMostRecent": "Most recent",
+  "backupSlot": "Backup",
+  "backupRestore": "Restore",
+  "backupSkip": "Skip"
 }

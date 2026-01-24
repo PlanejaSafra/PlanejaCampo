@@ -147,6 +147,10 @@ class _ListaChuvasScreenState extends State<ListaChuvasScreen> {
               currentThemeMode: widget.currentThemeMode,
               preferences: widget.preferences,
               onReminderChanged: widget.onReminderChanged,
+              onRestoreComplete: () {
+                // Refresh data after restore
+                _carregarPropriedadePadrao().then((_) => _carregarDados());
+              },
               onNavigateToAbout: () {
                 Navigator.push(
                   context,
@@ -347,11 +351,11 @@ class _ListaChuvasScreenState extends State<ListaChuvasScreen> {
     final propCount = propService.getPropertyCount();
     final showPropertyName = propCount > 1 && _defaultProperty != null;
 
-    // Check talhão count for the current property
-    final talhaoCount = _defaultProperty != null
-        ? talhaoService.countByProperty(_defaultProperty!.id)
-        : 0;
-    final showTalhaoName = talhaoCount > 1;
+    // Check talhão count for the current property (used in tile generation)
+    // final talhaoCount = _defaultProperty != null
+    //    ? talhaoService.countByProperty(_defaultProperty!.id)
+    //    : 0;
+    // final showTalhaoName = talhaoCount > 1;
 
     return Scaffold(
       appBar: AppBar(

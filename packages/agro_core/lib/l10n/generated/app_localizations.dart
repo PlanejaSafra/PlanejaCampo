@@ -2108,7 +2108,7 @@ abstract class AgroLocalizations {
   /// No description provided for @backupCloudNow.
   ///
   /// In en, this message translates to:
-  /// **'Backup Now'**
+  /// **'Save Now'**
   String get backupCloudNow;
 
   /// No description provided for @backupCloudLastBackup.
@@ -2126,7 +2126,7 @@ abstract class AgroLocalizations {
   /// No description provided for @backupCloudRestore.
   ///
   /// In en, this message translates to:
-  /// **'Restore from Cloud'**
+  /// **'Restore'**
   String get backupCloudRestore;
 
   /// No description provided for @backupCloudRestoreDesc.
@@ -2158,6 +2158,12 @@ abstract class AgroLocalizations {
   /// In en, this message translates to:
   /// **'Restore error: {error}'**
   String backupCloudRestoreError(String error);
+
+  /// No description provided for @backupCloudNoBackups.
+  ///
+  /// In en, this message translates to:
+  /// **'No backups found in the cloud'**
+  String get backupCloudNoBackups;
 
   /// No description provided for @backupCloudSignInRequired.
   ///
@@ -2284,6 +2290,36 @@ abstract class AgroLocalizations {
   /// In en, this message translates to:
   /// **'Raining now'**
   String get rainRainingNow;
+
+  /// No description provided for @rainDrizzleNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Drizzle now'**
+  String get rainDrizzleNow;
+
+  /// No description provided for @rainLightNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Light rain now'**
+  String get rainLightNow;
+
+  /// No description provided for @rainModerateNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Moderate rain now'**
+  String get rainModerateNow;
+
+  /// No description provided for @rainHeavyNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Heavy rain now'**
+  String get rainHeavyNow;
+
+  /// No description provided for @rainDrizzleIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Drizzle starting in ~{minutes} min'**
+  String rainDrizzleIn(int minutes);
 
   /// No description provided for @rainStartingIn15.
   ///
@@ -2417,6 +2453,12 @@ abstract class AgroLocalizations {
   /// **'Radar (Real-time)'**
   String get mapLayerRadar;
 
+  /// No description provided for @mapLayerCloud.
+  ///
+  /// In en, this message translates to:
+  /// **'Satellite (Clouds)'**
+  String get mapLayerCloud;
+
   /// No description provided for @mapLayerCommunity.
   ///
   /// In en, this message translates to:
@@ -2464,6 +2506,12 @@ abstract class AgroLocalizations {
   /// In en, this message translates to:
   /// **'Error loading radar'**
   String get radarError;
+
+  /// No description provided for @radarNoData.
+  ///
+  /// In en, this message translates to:
+  /// **'Data not available for this layer'**
+  String get radarNoData;
 
   /// No description provided for @cancelButton.
   ///
@@ -2758,6 +2806,42 @@ abstract class AgroLocalizations {
   /// In en, this message translates to:
   /// **'Runs periodically'**
   String get autoBackupSubtitle;
+
+  /// No description provided for @backupRestoreTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup Found'**
+  String get backupRestoreTitle;
+
+  /// No description provided for @backupRestoreMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'We found data saved in the cloud. Would you like to restore it?'**
+  String get backupRestoreMessage;
+
+  /// No description provided for @backupMostRecent.
+  ///
+  /// In en, this message translates to:
+  /// **'Most recent'**
+  String get backupMostRecent;
+
+  /// No description provided for @backupSlot.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup'**
+  String get backupSlot;
+
+  /// No description provided for @backupRestore.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore'**
+  String get backupRestore;
+
+  /// No description provided for @backupSkip.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get backupSkip;
 }
 
 class _AgroLocalizationsDelegate extends LocalizationsDelegate<AgroLocalizations> {

@@ -17,6 +17,7 @@ class ConfiguracoesScreen extends StatefulWidget {
   final ThemeMode currentThemeMode;
   final UserPreferences preferences;
   final void Function(bool, TimeOfDay?)? onReminderChanged;
+  final VoidCallback? onRestoreComplete;
 
   const ConfiguracoesScreen({
     super.key,
@@ -27,6 +28,7 @@ class ConfiguracoesScreen extends StatefulWidget {
     this.currentThemeMode = ThemeMode.system,
     required this.preferences,
     this.onReminderChanged,
+    this.onRestoreComplete,
   });
 
   @override
@@ -308,6 +310,9 @@ class _ConfiguracoesScreenState extends State<ConfiguracoesScreen> {
           await BackgroundService().disableRainAlerts();
         }
       },
+
+      // Restore complete callback
+      onRestoreComplete: widget.onRestoreComplete,
     );
   }
 }

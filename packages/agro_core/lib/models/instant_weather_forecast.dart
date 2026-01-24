@@ -1,5 +1,14 @@
 import '../l10n/generated/app_localizations.dart';
 
+/// Precipitation intensity levels based on mm per 15 minutes
+enum PrecipIntensity {
+  none, // < 0.1 mm
+  drizzle, // 0.1 - 0.5 mm (garoa)
+  light, // 0.5 - 2.0 mm (chuva fraca)
+  moderate, // 2.0 - 5.0 mm (chuva moderada)
+  heavy, // > 5.0 mm (chuva forte)
+}
+
 /// Represents a specific point in time for immediate forecast (15-min intervals)
 class InstantWeatherForecast {
   final DateTime time;
@@ -16,6 +25,15 @@ class InstantWeatherForecast {
       time: DateTime.parse(isoTime),
       precipitationMm: precip.toDouble(),
     );
+  }
+
+  /// Get precipitation intensity level
+  PrecipIntensity get intensity {
+    if (precipitationMm < 0.1) return PrecipIntensity.none;
+    if (precipitationMm < 0.5) return PrecipIntensity.drizzle;
+    if (precipitationMm < 2.0) return PrecipIntensity.light;
+    if (precipitationMm < 5.0) return PrecipIntensity.moderate;
+    return PrecipIntensity.heavy;
   }
 }
 
@@ -42,21 +60,46 @@ class InstantForecastSummary {
 
     if (futurePoints.isEmpty) return '';
 
-    // Find first rain
-    int firstRainIndex = -1;
+    // Find first precipitation (any intensity)
+    int firstPrecipIndex = -1;
     for (int i = 0; i < futurePoints.length; i++) {
       if (futurePoints[i].precipitationMm >= 0.1) {
-        firstRainIndex = i;
+        firstPrecipIndex = i;
         break;
       }
     }
 
-    if (firstRainIndex == -1) return l10n.rainNoRainNextHour;
+    if (firstPrecipIndex == -1) return l10n.rainNoRainNextHour;
 
-    if (firstRainIndex == 0) return l10n.rainRainingNow;
+    final point = futurePoints[firstPrecipIndex];
+    final intensity = point.intensity;
 
-    final minutes = futurePoints[firstRainIndex].time.difference(now).inMinutes;
-    // Round to nearest 5 or 15 visually
+    // Currently precipitating (first point)
+    if (firstPrecipIndex == 0) {
+      switch (intensity) {
+        case PrecipIntensity.drizzle:
+          return l10n.rainDrizzleNow;
+        case PrecipIntensity.light:
+          return l10n.rainLightNow;
+        case PrecipIntensity.moderate:
+          return l10n.rainModerateNow;
+        case PrecipIntensity.heavy:
+          return l10n.rainHeavyNow;
+        case PrecipIntensity.none:
+          return l10n.rainNoRainNextHour;
+      }
+    }
+
+    // Precipitation starting soon
+    final minutes = point.time.difference(now).inMinutes;
+
+    // For drizzle, use specific message
+    if (intensity == PrecipIntensity.drizzle) {
+      final roundedMinutes = ((minutes / 15).round() * 15).clamp(15, 60);
+      return l10n.rainDrizzleIn(roundedMinutes);
+    }
+
+    // For rain (light+), use existing messages
     if (minutes <= 15) return l10n.rainStartingIn15;
     if (minutes <= 30) return l10n.rainStartingIn30;
     if (minutes <= 45) return l10n.rainStartingIn45;

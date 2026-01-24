@@ -17,9 +17,14 @@ class ConsentScreen extends StatefulWidget {
   /// Callback when onboarding is completed (accept or decline).
   final VoidCallback? onCompleted;
 
+  /// If true, skip the location prompt after consent.
+  /// Used when ConsentScreen is opened from LocationHelper to avoid recursion.
+  final bool skipLocationPrompt;
+
   const ConsentScreen({
     super.key,
     this.onCompleted,
+    this.skipLocationPrompt = false,
   });
 
   @override
@@ -27,14 +32,53 @@ class ConsentScreen extends StatefulWidget {
 }
 
 class _ConsentScreenState extends State<ConsentScreen> {
-  // Option 1: Backup (Default: TRUE)
-  bool _cloudBackup = true;
-  // Option 2: Social (Default: FALSE)
-  bool _socialNetwork = false;
-  // Option 3: Intelligence (Default: FALSE)
-  bool _aggregateMetrics = false;
+  // Option 1: Backup (Default: Saved or TRUE)
+  late bool _cloudBackup;
+  // Option 2: Social (Default: Saved or FALSE)
+  late bool _socialNetwork;
+  // Option 3: Intelligence (Default: Saved or FALSE)
+  late bool _aggregateMetrics;
 
   bool _isProcessing = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    final hasCompletedOnboarding = AgroPrivacyStore.isOnboardingCompleted();
+
+    debugPrint(
+        '[ConsentScreen] initState - hasCompletedOnboarding: $hasCompletedOnboarding');
+    debugPrint(
+        '[ConsentScreen] initState - skipLocationPrompt: ${widget.skipLocationPrompt}');
+    debugPrint(
+        '[ConsentScreen] initState - consentTimestamp: ${AgroPrivacyStore.consentTimestamp}');
+
+    // Determine if we should load from store or start fresh:
+    // - If opened from LocationHelper (skipLocationPrompt=true), always start fresh
+    //   This allows user to easily "Accept All" to enable location
+    // - If opened from Settings (skipLocationPrompt=false) AND onboarding completed,
+    //   load saved values so user can manage their existing choices
+    final shouldLoadFromStore =
+        hasCompletedOnboarding && !widget.skipLocationPrompt;
+
+    if (shouldLoadFromStore) {
+      // User is managing consents from settings - load their saved values
+      _cloudBackup = AgroPrivacyStore.consentCloudBackup;
+      _socialNetwork = AgroPrivacyStore.consentSocialNetwork;
+      _aggregateMetrics = AgroPrivacyStore.consentAggregateMetrics;
+      debugPrint(
+          '[ConsentScreen] initState - loaded from store: cloudBackup=$_cloudBackup, social=$_socialNetwork, aggregate=$_aggregateMetrics');
+    } else {
+      // First time user OR opened from LocationHelper - start with all unchecked
+      // This ensures "Accept All" button will call acceptAllConsents()
+      _cloudBackup = false;
+      _socialNetwork = false;
+      _aggregateMetrics = false;
+      debugPrint(
+          '[ConsentScreen] initState - starting fresh, all checkboxes unchecked');
+    }
+  }
 
   /// Check if any consent is selected
   bool get _hasAnyConsent =>
@@ -47,10 +91,16 @@ class _ConsentScreenState extends State<ConsentScreen> {
     final l10n = AgroLocalizations.of(context)!;
     setState(() => _isProcessing = true);
 
+    debugPrint(
+        '[ConsentScreen] _handlePrimaryButton - _hasAnyConsent: $_hasAnyConsent');
+    debugPrint(
+        '[ConsentScreen] _handlePrimaryButton - values: cloudBackup=$_cloudBackup, social=$_socialNetwork, aggregate=$_aggregateMetrics');
+
     try {
       // 1. Save Consents FIRST
       if (!_hasAnyConsent) {
         // Scenario A: No checkboxes marked → Accept ALL
+        debugPrint('[ConsentScreen] Scenario A: calling acceptAllConsents()');
         await AgroPrivacyStore.acceptAllConsents();
       } else {
         // Scenario B: User made manual selections
@@ -86,15 +136,15 @@ class _ConsentScreenState extends State<ConsentScreen> {
       final property =
           await PropertyService().ensureDefaultProperty(l10n: l10n);
 
-      // 3. Trigger Location Prompt (if consented)
-      // We check the store directly since we just saved it.
-      if (AgroPrivacyStore.consentAggregateMetrics) {
-        if (mounted) {
-          await LocationHelper.checkAndUpdateLocation(
-            context: context,
-            propertyId: property.id,
-          );
-        }
+      // 3. Trigger Location Prompt
+      // [CHANGED] Always ask for location (functional requirement for Weather)
+      // regardless of "analytics" consent.
+      if (mounted) {
+        await LocationHelper.checkAndUpdateLocation(
+          context: context,
+          propertyId: property.id,
+          onLocationUpdated: null, // No callback needed here
+        );
       }
 
       // 4. Request Notification Permissions (Core feature for rain alerts)

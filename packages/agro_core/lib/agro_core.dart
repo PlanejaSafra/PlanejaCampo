@@ -54,6 +54,8 @@ export 'services/talhao_service.dart';
 
 // Services (Backup)
 export 'services/cloud_backup_service.dart';
+export 'services/property_backup_provider.dart';
+export 'widgets/backup_restore_dialog.dart';
 
 // Services (LGPD Compliance)
 export 'services/data_deletion_service.dart';

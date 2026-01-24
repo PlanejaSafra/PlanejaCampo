@@ -490,7 +490,7 @@
 
   "backupCloudSection": "Backup na Nuvem",
   "backupCloudDescription": "Sincronize seus dados de forma segura com sua conta Google",
-  "backupCloudNow": "Fazer Backup Agora",
+  "backupCloudNow": "Salvar Agora",
   "backupCloudLastBackup": "Último backup: {date}",
   "@backupCloudLastBackup": {
     "placeholders": {
@@ -500,7 +500,7 @@
     }
   },
   "backupCloudNeverDone": "Nenhum backup realizado",
-  "backupCloudRestore": "Restaurar da Nuvem",
+  "backupCloudRestore": "Restaurar",
   "backupCloudRestoreDesc": "Substitui dados locais pelo backup",
   "backupCloudSuccess": "Backup realizado com sucesso!",
   "backupCloudRestoreSuccess": "Dados restaurados com sucesso!",
@@ -520,6 +520,7 @@
       }
     }
   },
+  "backupCloudNoBackups": "Nenhum backup encontrado na nuvem",
   "backupCloudSignInRequired": "Entre com Google para usar o backup na nuvem",
   "backupCloudSignInButton": "Entrar com Google",
   "backupCloudAnonymousWarning": "Crie uma conta Google para salvar seus dados na nuvem",
@@ -545,6 +546,16 @@
 
   "rainNoRainNextHour": "Sem chuva na próxima hora",
   "rainRainingNow": "Chovendo agora",
+  "rainDrizzleNow": "Garoando agora",
+  "rainLightNow": "Chuva fraca agora",
+  "rainModerateNow": "Chuva moderada agora",
+  "rainHeavyNow": "Chuva forte agora",
+  "rainDrizzleIn": "Garoa começa em ~{minutes} min",
+  "@rainDrizzleIn": {
+    "placeholders": {
+      "minutes": {"type": "int"}
+    }
+  },
   "rainStartingIn15": "Chuva começa em ~15 min",
   "rainStartingIn30": "Chuva começa em ~30 min",
   "rainStartingIn45": "Chuva começa em ~45 min",
@@ -577,6 +588,7 @@
   "heatmapFilter7d": "7d",
   "drawerHeatmap": "Mapa do Tempo",
   "mapLayerRadar": "Radar (Tempo Real)",
+  "mapLayerCloud": "Satélite (Nuvens)",
   "mapLayerCommunity": "Comunidade (Calor)",
   "radarAttribution": "Dados de Radar por RainViewer",
   "radarPast": "Passado ({time})",
@@ -599,6 +611,7 @@
   "radarSpeed": "Velocidade",
   "radarLoading": "Carregando Radar...",
   "radarError": "Erro ao carregar radar",
+  "radarNoData": "Dados não disponíveis para esta camada",
 
   "cancelButton": "Cancelar",
   "deleteButton": "Excluir",
@@ -663,5 +676,12 @@
   "backupLocalExportSuccess": "Backup local exportado com sucesso",
 
   "autoBackupTitle": "Backup automático",
-  "autoBackupSubtitle": "Realizado periodicamente"
+  "autoBackupSubtitle": "Realizado periodicamente",
+
+  "backupRestoreTitle": "Backup Encontrado",
+  "backupRestoreMessage": "Encontramos dados salvos na nuvem. Deseja restaurar?",
+  "backupMostRecent": "Mais recente",
+  "backupSlot": "Backup",
+  "backupRestore": "Restaurar",
+  "backupSkip": "Pular"
 }

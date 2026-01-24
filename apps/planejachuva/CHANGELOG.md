@@ -5,6 +5,108 @@
 
 ---
 
+## Phase CHUVA-67: Decouple Location Prompt from Analytics
+
+### Status: [DONE]
+**Date Completed**: 2026-01-24
+**Priority**: 🔵 FIX
+**Objective**: Ensure "Are you at the farm?" prompt appears regardless of "Intelligence" consent.
+**Cross-Reference**: CORE-64
+
+### Problem
+The location prompt was strictly coupled with the "Aggregate Metrics" consent. If user declined intelligence gathering, the functional feature of setting property location for weather was also blocked.
+
+### Solution
+1. Decoupled functional location Prompt from Analytics consent in `LocationHelper`.
+2. Updated `ConsentScreen` to trigger location setup unconditionally after consents are saved.
+
+### Files Modified
+| File | Action | Description |
+|------|--------|-------------|
+| `packages/agro_core/lib/utils/location_helper.dart` | MODIFY | Removed blocking consent check |
+| `packages/agro_core/lib/privacy/consent_screen.dart` | MODIFY | Always trigger location prompt |
+
+---
+
+## Phase CHUVA-66: Fix Restore Data (Replace vs Merge)
+
+### Status: [DONE]
+**Date Completed**: 2026-01-24
+**Priority**: 🔵 FIX
+**Objective**: Fix cloud restore to REPLACE data instead of MERGE, and refresh UI after restore.
+**Cross-Reference**: CORE-63
+
+### Problem
+1. When restoring from backup, rain records were merged with backup data instead of being replaced
+2. After restore, the main screen didn't refresh - still showed old data until manual navigation
+
+### Solution
+1. Added `limparTodos()` method to ChuvaService to clear all records before importing
+2. Added `onRestoreComplete` callback to refresh main screen after restore completes
+3. Modified navigation to pass the callback and reload data
+
+### Files Modified
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/services/chuva_service.dart` | MODIFY | Added `limparTodos()` method |
+| `lib/services/chuva_backup_provider.dart` | MODIFY | Call clear before restore |
+| `lib/screens/configuracoes_screen.dart` | MODIFY | Added `onRestoreComplete` parameter |
+| `lib/screens/lista_chuvas_screen.dart` | MODIFY | Pass callback to reload data after restore |
+
+---
+
+## Phase CHUVA-65: Fix Cloud Consent Restoration
+
+### Status: [DONE]
+**Date Completed**: 2026-01-23
+**Priority**: 🔵 FIX
+**Objective**: Fix incomplete consent restoration from cloud causing consents to appear unchecked after reinstall.
+**Cross-Reference**: CORE-60
+
+### Problem
+When user reinstalled the app and logged in with Google:
+1. Cloud data was fetched but only `aggregateMetrics` and `socialNetwork` were restored
+2. Legacy consents (`sharePartners`, `adsPersonalization`) were not restored
+3. `termsAccepted` and `onboardingCompleted` were not restored
+4. This caused the consent management screen to show all options as unchecked
+
+### Solution
+Updated `_initializeUserData()` in AuthGate to restore ALL consent fields from cloud, including:
+- `termsAccepted` and `onboardingCompleted` flags
+- New consent model: `cloudBackup`, `socialNetwork`, `aggregateMetrics`
+- Legacy consents: `sharePartners`, `adsPersonalization`
+
+### Files Modified
+| File | Action | Description |
+|------|--------|-------------|
+| `apps/planejachuva/lib/main.dart` | MODIFY | Restore all consent fields from cloud |
+
+---
+
+## Phase CHUVA-64: Startup Optimization & Backup Fix
+### Status: [DONE]
+**Date Started**: 2026-01-23
+**Date Completed**: 2026-01-23
+**Priority**: 🔴 CRITICAL
+**Objective**: Fix the startup delay and ensure cloud backup restoration works reliably by treating Google Login as implicit consent for backup services.
+**Cross-Reference**: N/A
+
+### Implementation Summary
+| Step | Description | Status |
+|------|-------------|--------|
+| 64.1 | Refactor `AuthGate` to support loading state (`_isLoading`) | ✅ DONE |
+| 64.2 | Optimize `_handleLoginSuccess` to show visual feedback (spinner) | ✅ DONE |
+| 64.3 | Implement implicit consent for backup (Login = Consent) | ✅ DONE |
+| 64.4 | Fetch cloud profile from Firestore on fresh install to sync other consents | ✅ DONE |
+| 64.5 | Remove redundant `consentCloudBackup` check blocking restoration | ✅ DONE |
+
+### Files Modified
+| File | Action | Description |
+|------|--------|-------------|
+| `apps/planejachuva/lib/main.dart` | MODIFY | Refactored `AuthGate`, `_handleLoginSuccess`, and `_initializeUserData` |
+| `apps/planejachuva/CHANGELOG.md` | MODIFY | Added Phase CHUVA-64 |
+
+
 ## Phase CHUVA-62: LGPD & Hybrid Privacy Architecture
 ### Status: [IN PROGRESS]
 **Date Started**: 2026-01-22

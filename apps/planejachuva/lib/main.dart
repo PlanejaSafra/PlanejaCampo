@@ -59,6 +59,8 @@ Future<void> main() async {
 
   // Initialize cloud service
   await UserCloudService.instance.init();
+  // Register backup providers (order matters: properties first, then app data)
+  CloudBackupService.instance.registerProvider(PropertyBackupProvider());
   CloudBackupService.instance.registerProvider(ChuvaBackupProvider());
 
   // Initialize property service (must be before chuva service for migration)
@@ -304,6 +306,7 @@ class AuthGate extends StatefulWidget {
 
 class _AuthGateState extends State<AuthGate> {
   bool _isInitialized = false;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -319,9 +322,11 @@ class _AuthGateState extends State<AuthGate> {
       await _initializeUserData();
     }
 
-    setState(() {
-      _isInitialized = true;
-    });
+    if (mounted) {
+      setState(() {
+        _isInitialized = true;
+      });
+    }
   }
 
   Future<void> _initializeUserData() async {
@@ -330,25 +335,72 @@ class _AuthGateState extends State<AuthGate> {
 
     // Initialize or restore cloud data
     final cloudService = UserCloudService.instance;
-    final userData = cloudService.getCurrentUserData();
+    var userData = cloudService.getCurrentUserData();
     final currentUser = AuthService.currentUser;
 
-    if (userData == null && currentUser != null) {
-      // First time: create initial cloud data
-      final consents = ConsentData(
-        termsAccepted: AgroPrivacyStore.hasAcceptedTerms(),
-        termsVersion: '1.0',
-        acceptedAt: DateTime.now(),
-        aggregateMetrics: AgroPrivacyStore.consentAggregateMetrics,
-        sharePartners: AgroPrivacyStore.consentSharePartners,
-        adsPersonalization: AgroPrivacyStore.consentAdsPersonalization,
-        consentVersion: '1.0',
-      );
+    if (currentUser != null) {
+      // 1. If no local data, try to fetch from cloud (Restore scenario)
+      if (userData == null) {
+        debugPrint('[AuthGate] No local user data. Fetching from Firestore...');
+        userData = await cloudService.fetchFromFirestore(currentUser.uid);
 
-      await cloudService.createInitialUserData(
-        uid: currentUser.uid,
-        consents: consents,
-      );
+        if (userData != null) {
+          debugPrint('[AuthGate] User data restored from cloud.');
+          // Sync ALL restored consents to local PrivacyStore
+          final consents = userData.consents;
+
+          // Restore terms accepted and onboarding status
+          if (consents.termsAccepted) {
+            await AgroPrivacyStore.setAcceptedTerms(true);
+            await AgroPrivacyStore.setOnboardingCompleted(true);
+          }
+
+          // Restore new consent model
+          if (consents.cloudBackup == true) {
+            await AgroPrivacyStore.setConsent(
+                AgroPrivacyKeys.consentCloudBackup, true);
+          }
+          if (consents.socialNetwork == true) {
+            await AgroPrivacyStore.setConsent(
+                AgroPrivacyKeys.consentSocialNetwork, true);
+          }
+          if (consents.aggregateMetrics == true) {
+            await AgroPrivacyStore.setConsent(
+                AgroPrivacyKeys.consentAggregateMetrics, true);
+          }
+
+          // Restore legacy consents
+          if (consents.sharePartners == true) {
+            await AgroPrivacyStore.setConsent(
+                AgroPrivacyKeys.consentSharePartners, true);
+          }
+          if (consents.adsPersonalization == true) {
+            await AgroPrivacyStore.setConsent(
+                AgroPrivacyKeys.consentAdsPersonalization, true);
+          }
+
+          debugPrint('[AuthGate] All consents restored from cloud');
+        }
+      }
+
+      // 2. If still no data (New user), create initial
+      if (userData == null) {
+        debugPrint('[AuthGate] Creating initial user data...');
+        final consents = ConsentData(
+          termsAccepted: AgroPrivacyStore.hasAcceptedTerms(),
+          termsVersion: '1.0',
+          acceptedAt: DateTime.now(),
+          aggregateMetrics: AgroPrivacyStore.consentAggregateMetrics,
+          sharePartners: AgroPrivacyStore.consentSharePartners,
+          adsPersonalization: AgroPrivacyStore.consentAdsPersonalization,
+          consentVersion: '1.0',
+        );
+
+        await cloudService.createInitialUserData(
+          uid: currentUser.uid,
+          consents: consents,
+        );
+      }
     }
 
     // Update last active timestamp (fire-and-forget sync)
@@ -356,37 +408,81 @@ class _AuthGateState extends State<AuthGate> {
   }
 
   Future<void> _handleLoginSuccess() async {
+    // Show spinner while preparing app
+    if (mounted) {
+      setState(() {
+        _isLoading = true;
+      });
+    }
+
     // Initialize user data after successful login
     await _initializeUserData();
 
-    // Try automatic backup (if enabled and user has consent)
-    CloudBackupService.instance.tryAutoBackup(
-      autoBackupEnabled: AgroPrivacyStore.autoBackupEnabled,
-      hasCloudBackupConsent: AgroPrivacyStore.consentCloudBackup,
-    );
-
-    // Auto-enable rain alerts if user accepted terms and is not anonymous
     final user = AuthService.currentUser;
-    if (user != null &&
-        !user.isAnonymous &&
-        AgroPrivacyStore.hasAcceptedTerms()) {
-      final isAlreadyEnabled = await BackgroundService().isRainAlertsEnabled();
-      if (!isAlreadyEnabled) {
-        await BackgroundService().enableRainAlerts();
-        debugPrint('[RainAlerts] Auto-enabled after login');
+    debugPrint(
+        '[Main] Login Success. User: ${user?.uid}, Anonymous: ${user?.isAnonymous}');
+
+    if (user != null && !user.isAnonymous) {
+      // CHUVA-64: Login implies consent for Cloud Backup (Terms of Use)
+      // Enforce this locally for UI consistency
+      if (!AgroPrivacyStore.consentCloudBackup) {
+        debugPrint('[Main] Enforcing implicit Cloud Backup consent.');
+        await AgroPrivacyStore.setConsent(
+            AgroPrivacyKeys.consentCloudBackup, true);
+      }
+
+      // Check for existing cloud backups
+      // Note: We removed the check for AgroPrivacyStore.consentCloudBackup here
+      // because authentication itself is the key for access.
+      final backups = await CloudBackupService.instance.listAvailableBackups();
+
+      if (backups.isNotEmpty && mounted) {
+        // Show restore dialog
+        // We temporarily hide loading to show the dialog cleanly?
+        // No, showBackupRestoreDialog is a separate route overlay.
+
+        final result = await showBackupRestoreDialog(context, backups);
+        if (result != null && result.restore) {
+          try {
+            await CloudBackupService.instance.restoreFromSlot(result.slotIndex);
+            debugPrint(
+                '[BackupRestore] Restored from slot ${result.slotIndex}');
+          } catch (e) {
+            debugPrint('[BackupRestore] Restore failed: $e');
+          }
+        }
+      }
+
+      // Auto-enable rain alerts if user accepted terms
+      if (AgroPrivacyStore.hasAcceptedTerms()) {
+        final isAlreadyEnabled =
+            await BackgroundService().isRainAlertsEnabled();
+        if (!isAlreadyEnabled) {
+          await BackgroundService().enableRainAlerts();
+          debugPrint('[RainAlerts] Auto-enabled after login');
+        }
       }
     }
 
-    // Refresh UI
+    // Now try automatic backup (if enabled)
+    // We pass true for consent because we just enforced it for logged users
+    CloudBackupService.instance.tryAutoBackup(
+      autoBackupEnabled: AgroPrivacyStore.autoBackupEnabled,
+      hasCloudBackupConsent: true,
+    );
+
+    // Stop loading and Refresh UI
     if (mounted) {
-      setState(() {});
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (!_isInitialized) {
-      // Show loading while checking auth status
+    // Show loading while checking auth status OR while processing login
+    if (!_isInitialized || _isLoading) {
       return const Scaffold(
         body: Center(
           child: CircularProgressIndicator(),

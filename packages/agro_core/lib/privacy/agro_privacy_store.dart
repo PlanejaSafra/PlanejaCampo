@@ -29,12 +29,15 @@ class AgroPrivacyStore {
 
   /// Check if user has accepted terms of use and privacy policy.
   static bool hasAcceptedTerms() {
-    return _safeBox.get(AgroPrivacyKeys.acceptedTerms, defaultValue: false)
+    final val = _safeBox.get(AgroPrivacyKeys.acceptedTerms, defaultValue: false)
         as bool;
+    // debugPrint('[AgroPrivacyStore] hasAcceptedTerms: $val'); // Too noisy
+    return val;
   }
 
   /// Set whether user has accepted terms.
   static Future<void> setAcceptedTerms(bool value) async {
+    debugPrint('[AgroPrivacyStore] setAcceptedTerms: $value');
     await _safeBox.put(AgroPrivacyKeys.acceptedTerms, value);
   }
 
@@ -59,10 +62,12 @@ class AgroPrivacyStore {
 
   /// Get consent for cloud backup (Option 1).
   static bool get consentCloudBackup {
-    return _safeBox.get(
+    final val = _safeBox.get(
       AgroPrivacyKeys.consentCloudBackup,
       defaultValue: false,
     ) as bool;
+    // debugPrint('[AgroPrivacyStore] get consentCloudBackup: $val');
+    return val;
   }
 
   /// Get consent for social network (Option 2).
@@ -95,7 +100,11 @@ class AgroPrivacyStore {
   static bool get canCollectAnalytics => consentAggregateMetrics;
 
   /// Check if app can use location for weather/stats (requires aggregateMetrics consent).
-  static bool get canUseLocation => consentAggregateMetrics;
+  static bool get canUseLocation {
+    final val = consentAggregateMetrics;
+    debugPrint('[AgroPrivacyStore] canUseLocation: $val');
+    return val;
+  }
 
   /// Check if app can show personalized ads (requires adsPersonalization consent).
   static bool get canShowPersonalizedAds => consentAdsPersonalization;
@@ -139,6 +148,8 @@ class AgroPrivacyStore {
   /// Accept all consents and save timestamp.
   /// Enables: Backup, Social, Intelligence.
   static Future<void> acceptAllConsents() async {
+    debugPrint('[AgroPrivacyStore] acceptAllConsents() called');
+
     await _safeBox.put(AgroPrivacyKeys.consentCloudBackup, true);
     await _safeBox.put(AgroPrivacyKeys.consentSocialNetwork, true);
     await _safeBox.put(AgroPrivacyKeys.consentAggregateMetrics, true);
@@ -152,8 +163,13 @@ class AgroPrivacyStore {
       DateTime.now().toIso8601String(),
     );
 
+    // Verify values were saved
+    debugPrint('[AgroPrivacyStore] After save - consentAggregateMetrics: ${_safeBox.get(AgroPrivacyKeys.consentAggregateMetrics)}');
+    debugPrint('[AgroPrivacyStore] After save - consentCloudBackup: ${_safeBox.get(AgroPrivacyKeys.consentCloudBackup)}');
+
     // Sync to Firestore
     await _syncConsentsToCloud();
+    debugPrint('[AgroPrivacyStore] acceptAllConsents() completed');
   }
 
   /// Reject all consents and save timestamp.
@@ -194,6 +210,7 @@ class AgroPrivacyStore {
 
   /// Set a specific consent value.
   static Future<void> setConsent(String key, bool value) async {
+    debugPrint('[AgroPrivacyStore] setConsent $key = $value');
     await _safeBox.put(key, value);
     await _safeBox.put(
       AgroPrivacyKeys.consentTimestamp,
@@ -206,10 +223,14 @@ class AgroPrivacyStore {
 
   /// Sync consents to Firestore (fire-and-forget)
   static Future<void> _syncConsentsToCloud() async {
+    debugPrint('[AgroPrivacyStore] _syncConsentsToCloud() called');
     try {
       final cloudService = UserCloudService.instance;
       final userData = cloudService.getCurrentUserData();
-      if (userData == null) return; // Not initialized yet
+      if (userData == null) {
+        debugPrint('[AgroPrivacyStore] userData is null, skipping cloud sync');
+        return; // Not initialized yet
+      }
 
       final consents = ConsentData(
         termsAccepted: hasAcceptedTerms(),
@@ -226,7 +247,9 @@ class AgroPrivacyStore {
       );
 
       await cloudService.updateConsents(consents);
+      debugPrint('[AgroPrivacyStore] Cloud sync completed');
     } catch (e) {
+      debugPrint('[AgroPrivacyStore] Cloud sync FAILED: $e');
       // Silently fail - user is offline-first
     }
   }

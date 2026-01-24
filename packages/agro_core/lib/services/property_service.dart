@@ -93,6 +93,33 @@ class PropertyService {
     return property;
   }
 
+  /// Import a property from backup (with existing ID)
+  /// Used during cloud restore to preserve original IDs
+  Future<void> importProperty(Property property) async {
+    if (_currentUserId == null) {
+      throw Exception('User not authenticated. Cannot import property.');
+    }
+
+    // Update userId to current user (in case restoring to different account)
+    final imported = Property(
+      id: property.id,
+      userId: _currentUserId!,
+      name: property.name,
+      latitude: property.latitude,
+      longitude: property.longitude,
+      isDefault: property.isDefault,
+      createdAt: property.createdAt,
+      updatedAt: property.updatedAt,
+    );
+
+    // If this is set as default, unset other defaults
+    if (imported.isDefault) {
+      await _unsetOtherDefaults();
+    }
+
+    await _box.put(imported.id, imported);
+  }
+
   /// Update an existing property
   /// The property object is already modified, just save it to Hive
   Future<void> updateProperty(Property property) async {
@@ -115,6 +142,20 @@ class PropertyService {
     }
 
     await _box.delete(id);
+  }
+
+  /// Clear all properties for the current user (used for restore).
+  Future<void> clearAllForUser() async {
+    if (_currentUserId == null) return;
+
+    final userProps = _box.values
+        .where((p) => p.userId == _currentUserId)
+        .map((p) => p.id)
+        .toList();
+
+    for (final id in userProps) {
+      await _box.delete(id);
+    }
   }
 
   /// Set a property as the default (unsets all other defaults)

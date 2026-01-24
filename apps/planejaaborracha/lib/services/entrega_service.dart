@@ -132,4 +132,12 @@ class EntregaService extends ChangeNotifier {
       return 0.0;
     }
   }
+
+  /// Clear all entregas (used for restore).
+  Future<void> clearAll() async {
+    if (_box == null) await init();
+    await _box!.clear();
+    _currentEntrega = null;
+    notifyListeners();
+  }
 }

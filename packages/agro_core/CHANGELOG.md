@@ -2,6 +2,142 @@
 
 ---
 
+## Phase CORE-63: Fix Restore Data (Replace vs Merge)
+
+### Status: [DONE]
+**Date Completed**: 2026-01-24
+**Priority**: 🔵 FIX
+**Objective**: Fix cloud restore to REPLACE data instead of MERGE, and add callback to refresh UI.
+
+### Problem
+1. When restoring from backup, existing data was merged with backup data instead of being replaced
+2. After restore, the main screen didn't refresh - showed old data until manual navigation
+
+### Solution
+1. Modified all BackupProvider implementations to clear existing data before importing:
+   - `PropertyBackupProvider`: Added `clearAllForUser()` to PropertyService
+   - `ChuvaBackupProvider`: Added `limparTodos()` to ChuvaService
+   - `BorrachaBackupProvider`: Added `clearAll()` to ParceiroService and EntregaService
+2. Added `onRestoreComplete` callback to `AgroSettingsScreen` to notify when restore finishes
+
+### Files Modified
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/services/property_service.dart` | MODIFY | Added `clearAllForUser()` method |
+| `lib/services/property_backup_provider.dart` | MODIFY | Call clear before restore |
+| `lib/screens/agro_settings_screen.dart` | MODIFY | Added `onRestoreComplete` callback |
+
+---
+
+## Phase CORE-62: Weather Map Improvements
+
+### Status: [DONE]
+**Date Completed**: 2026-01-23
+**Priority**: 🔵 FIX
+**Objective**: Fix red screen crash when selecting cloud layer and improve map UX.
+
+### Changes
+1. **Fixed Red Screen Error**: Added guard for empty frames list in `_buildRadarControls()` to prevent index out of bounds error when satellite data is unavailable
+2. **Default Map Type**: Changed default map type from satellite to normal (road map)
+3. **Reorganized Layer Buttons**: New order:
+   - Community (measured rainfall data)
+   - Radar (precipitation)
+   - Cloud (satellite infrared)
+   - Rain/Snow mode (when radar selected)
+   - Normal map (road) - now first
+   - Satellite map
+4. **Added tooltips**: All layer buttons now have proper tooltips using existing l10n strings
+
+### Implementation Summary
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 62.1 | Add empty frames guard to prevent crash | ✅ DONE |
+| 62.2 | Change default MapType to normal | ✅ DONE |
+| 62.3 | Reorganize button order | ✅ DONE |
+| 62.4 | Add radarNoData l10n string | ✅ DONE |
+
+### Files Modified
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/screens/weather_map_screen.dart` | MODIFY | Add empty check, reorder buttons, change default map |
+| `lib/l10n/arb/app_pt.arb` | MODIFY | Add radarNoData string |
+| `lib/l10n/arb/app_en.arb` | MODIFY | Add radarNoData string |
+
+---
+
+## Phase CORE-61: Fix Consent Initialization Bug
+
+### Status: [DONE]
+**Date Completed**: 2026-01-23
+**Priority**: 🔵 FIX
+**Objective**: Fix bug where "Accept All" button in ConsentScreen was not calling acceptAllConsents() due to pre-set cloudBackup value.
+
+### Problem
+When user logged in with Google:
+1. `_handleLoginSuccess()` in main.dart set `consentCloudBackup = true` before ConsentScreen
+2. `setConsent()` also updates `consentTimestamp` as a side effect
+3. ConsentScreen's initState checked `consentTimestamp != null` → thought user already made choices
+4. Loaded values from store: `cloudBackup=true, social=false, aggregate=false`
+5. This made `_hasAnyConsent = true` (checkbox already marked)
+6. Clicking "Accept All" went to Scenario B (save current values) instead of Scenario A
+7. Result: Only cloudBackup was true, all other consents stayed false
+8. Location prompt never appeared because aggregateMetrics was false
+
+### Solution
+Changed ConsentScreen's initState to use `isOnboardingCompleted()` as source of truth instead of `consentTimestamp`:
+- If `isOnboardingCompleted() == true`: User has completed consent screen before → load saved values
+- If `isOnboardingCompleted() == false`: First time user → start with all checkboxes unchecked
+
+The key insight is that `consentTimestamp` can be set by implicit consents (like cloudBackup from login), but `onboardingCompleted` is ONLY set when user actually finishes ConsentScreen.
+
+### Implementation Summary
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 61.1 | Fix initState to use isOnboardingCompleted() instead of timestamp | ✅ DONE |
+
+### Files Modified
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/privacy/consent_screen.dart` | MODIFY | Use isOnboardingCompleted() as source of truth |
+
+---
+
+## Phase CORE-60: Fix Location Prompt Recursion Bug
+
+### Status: [DONE]
+**Date Completed**: 2026-01-23
+**Priority**: 🔵 FIX
+**Objective**: Fix broken location flow where "Are you here?" dialog was not showing due to recursion between LocationHelper and ConsentScreen.
+
+### Problem
+When user clicked on location in Home without consent:
+1. LocationHelper opened ConsentScreen
+2. User accepted consents
+3. ConsentScreen called LocationHelper again (recursion)
+4. Dialog showed in wrong context, then ConsentScreen closed
+5. Original LocationHelper tried to show dialog with invalid context
+
+### Solution
+Added `skipLocationPrompt` parameter to ConsentScreen. When opened by LocationHelper, this flag prevents ConsentScreen from calling LocationHelper again, avoiding recursion.
+
+### Implementation Summary
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 60.1 | Add `skipLocationPrompt` parameter to ConsentScreen | ✅ DONE |
+| 60.2 | Update LocationHelper to pass `skipLocationPrompt: true` | ✅ DONE |
+| 60.3 | Replace `print` with `debugPrint` in LocationHelper | ✅ DONE |
+| 60.4 | Add debug logs to track consent persistence issues | ✅ DONE |
+
+### Files Modified
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/privacy/consent_screen.dart` | MODIFY | Add skipLocationPrompt parameter, add debug logs |
+| `lib/utils/location_helper.dart` | MODIFY | Pass skipLocationPrompt, fix print statements |
+| `lib/privacy/agro_privacy_store.dart` | MODIFY | Add debug logs to acceptAllConsents and syncConsentsToCloud |
+| `lib/screens/agro_privacy_screen.dart` | MODIFY | Add debug log to _loadConsents |
+
+---
+
 ## Phase CORE-59: Notification Intensity & Weather UI Polish
 ### Status: [DONE]
 **Date Completed**: 2026-01-22
