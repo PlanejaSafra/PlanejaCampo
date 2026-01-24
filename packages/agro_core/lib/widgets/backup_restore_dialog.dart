@@ -12,7 +12,8 @@ class BackupRestoreResult {
   BackupRestoreResult({required this.restore, required this.slotIndex});
 
   @override
-  String toString() => 'BackupRestoreResult(restore: $restore, slotIndex: $slotIndex)';
+  String toString() =>
+      'BackupRestoreResult(restore: $restore, slotIndex: $slotIndex)';
 }
 
 /// Shows a dialog asking user if they want to restore from an existing backup.
@@ -63,58 +64,64 @@ class _BackupRestoreDialogState extends State<_BackupRestoreDialog> {
       ),
       content: SizedBox(
         width: double.maxFinite,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              l10n.backupRestoreMessage,
-              style: theme.textTheme.bodyMedium,
-            ),
-            const SizedBox(height: 16),
-            ConstrainedBox(
-              constraints: const BoxConstraints(maxHeight: 200),
-              child: ListView.builder(
-                shrinkWrap: true,
-                itemCount: widget.backups.length,
-                itemBuilder: (context, index) {
-                  final backup = widget.backups[index];
-                  final isSelected = index == _selectedIndex;
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                l10n.backupRestoreMessage,
+                style: theme.textTheme.bodyMedium,
+              ),
+              const SizedBox(height: 16),
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxHeight: 200),
+                child: ListView.builder(
+                  physics:
+                      const NeverScrollableScrollPhysics(), // Let outer scroll view handle scrolling
+                  shrinkWrap: true,
+                  itemCount: widget.backups.length,
+                  itemBuilder: (context, index) {
+                    final backup = widget.backups[index];
+                    final isSelected = index == _selectedIndex;
 
-                  return Card(
-                    elevation: isSelected ? 4 : 1,
-                    color:
-                        isSelected ? theme.colorScheme.primaryContainer : null,
-                    child: ListTile(
-                      leading: Radio<int>(
-                        value: index,
-                        groupValue: _selectedIndex,
-                        onChanged: (value) {
-                          setState(() => _selectedIndex = value ?? 0);
+                    return Card(
+                      elevation: isSelected ? 4 : 1,
+                      color: isSelected
+                          ? theme.colorScheme.primaryContainer
+                          : null,
+                      child: ListTile(
+                        leading: Radio<int>(
+                          value: index,
+                          groupValue: _selectedIndex,
+                          onChanged: (value) {
+                            setState(() => _selectedIndex = value ?? 0);
+                          },
+                        ),
+                        title: Text(
+                          index == 0
+                              ? l10n.backupMostRecent
+                              : '${l10n.backupSlot} ${index + 1}',
+                          style: TextStyle(
+                            fontWeight: isSelected
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                          ),
+                        ),
+                        subtitle: Text(
+                          _formatDate(backup.updated, context),
+                          style: theme.textTheme.bodySmall,
+                        ),
+                        onTap: () {
+                          setState(() => _selectedIndex = index);
                         },
                       ),
-                      title: Text(
-                        index == 0
-                            ? l10n.backupMostRecent
-                            : '${l10n.backupSlot} ${index + 1}',
-                        style: TextStyle(
-                          fontWeight:
-                              isSelected ? FontWeight.bold : FontWeight.normal,
-                        ),
-                      ),
-                      subtitle: Text(
-                        _formatDate(backup.updated, context),
-                        style: theme.textTheme.bodySmall,
-                      ),
-                      onTap: () {
-                        setState(() => _selectedIndex = index);
-                      },
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
       actions: [
