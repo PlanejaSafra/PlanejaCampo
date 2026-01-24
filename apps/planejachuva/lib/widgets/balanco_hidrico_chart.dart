@@ -145,10 +145,11 @@ class _BalancoHidricoChartState extends State<BalancoHidricoChart> {
               ),
             ),
             const SizedBox(height: 8),
-            Row(
+            Wrap(
+              spacing: 16,
+              runSpacing: 8,
               children: [
                 _buildLegendItem(theme, 'Precipitação (Você)', Colors.blue),
-                const SizedBox(width: 16),
                 _buildLegendItem(
                     theme, 'Evapotranspiração (Estimada)', Colors.orange),
               ],
