@@ -156,14 +156,11 @@ class _ListaChuvasScreenState extends State<ListaChuvasScreen> {
                   context,
                   MaterialPageRoute(
                     builder: (_) => AgroAboutScreen(
-                      appName: 'Planeja Chuva',
+                      appName: 'PlanejaChuva',
                       version: widget.version,
-                      appLogoLightPath: 'assets/images/planejachuva_light.png',
-                      appLogoDarkPath: 'assets/images/planejachuva_dark.png',
-                      suiteLogoLightPath:
+                      appLogoPath: 'assets/images/planejachuva_logo.png',
+                      suiteLogoPath:
                           'packages/agro_core/assets/images/planejacampo_light.png',
-                      suiteLogoDarkPath:
-                          'packages/agro_core/assets/images/planejacampo_dark.png',
                     ),
                   ),
                 );
@@ -185,14 +182,11 @@ class _ListaChuvasScreenState extends State<ListaChuvasScreen> {
           context,
           MaterialPageRoute(
             builder: (_) => AgroAboutScreen(
-              appName: 'Planeja Chuva',
+              appName: 'PlanejaChuva',
               version: widget.version,
-              appLogoLightPath: 'assets/images/planejachuva_light.png',
-              appLogoDarkPath: 'assets/images/planejachuva_dark.png',
-              suiteLogoLightPath:
+              appLogoPath: 'assets/images/planejachuva_logo.png',
+              suiteLogoPath:
                   'packages/agro_core/assets/images/planejacampo_light.png',
-              suiteLogoDarkPath:
-                  'packages/agro_core/assets/images/planejacampo_dark.png',
             ),
           ),
         );
@@ -357,7 +351,6 @@ class _ListaChuvasScreenState extends State<ListaChuvasScreen> {
   Widget build(BuildContext context) {
     final l10n = AgroLocalizations.of(context)!;
     final propService = PropertyService();
-    final talhaoService = TalhaoService();
 
     // Determine conditional visibility
     final propCount = propService.getPropertyCount();

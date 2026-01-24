@@ -4,6 +4,12 @@ import '../l10n/generated/app_localizations.dart';
 
 /// About screen showing app information.
 class AgroAboutScreen extends StatelessWidget {
+  /// App name to display.
+  final String appName;
+
+  /// Version string to display.
+  final String? version;
+
   /// Paths to the app-specific logo assets for light and dark modes.
   final String? appLogoLightPath;
   final String? appLogoDarkPath;
