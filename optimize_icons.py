@@ -1,110 +1,162 @@
+#!/usr/bin/env python3
+"""
+Optimize app icons for RuraCamp suite.
+- Resize main icons to 1024x1024 (max needed for App Store/Play Store)
+- Generate launcher icons for Android (mipmap folders)
+- Generate iOS app icons
+"""
+
 import os
 from PIL import Image
 
-def optimize_icon(path, output_path, size=(512, 512)):
-    try:
-        if not os.path.exists(path):
-            print(f"File not found: {path}")
-            return False
-            
-        img = Image.open(path)
-        print(f"Original size: {img.size}")
-        
-        # Resize with high quality resampling
-        img = img.resize(size, Image.Resampling.LANCZOS)
-        
-        # Save optimized
-        img.save(output_path, optimize=True)
-        print(f"Saved optimized icon to {output_path}")
-        return True
-    except Exception as e:
-        print(f"Error optimizing {path}: {e}")
-        return False
+# Base directory
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-def add_padding(path, output_path, padding_factor=1.5, final_size=(1024, 1024)):
-    try:
-        if not os.path.exists(path):
-            print(f"File not found: {path}")
-            return False
-            
-        img = Image.open(path)
-        print(f"Original foreground size: {img.size}")
-        
-        # Create new canvas
-        # If original is WxH, new canvas will be (W*factor)x(H*factor)
-        # But we want the visual logical size to be 'final_size' with padding
-        
-        # Better approach:
-        # Resize the LOGO down to be smaller within the final_size canvas.
-        # Standard Adaptive Icon is 108x108 dp. The inner 72dp is the safe zone.
-        # So the content should fit within approx 66% of the full image to be safe.
-        
-        # Let's target the content being ~60% of the canvas width
-        target_content_size = int(final_size[0] * 0.60)
-        
-        # Resize original image to this target content size (keeping aspect ratio)
-        aspect = img.width / img.height
-        if aspect > 1:
-            new_w = target_content_size
-            new_h = int(target_content_size / aspect)
+# Icon paths
+ICONS = {
+    'rurarain': os.path.join(BASE_DIR, 'apps/rurarain/assets/images/rurarain-icon.png'),
+    'rurarubber': os.path.join(BASE_DIR, 'apps/rurarubber/assets/images/rurarubber-icon.png'),
+    'ruracamp': os.path.join(BASE_DIR, 'packages/agro_core/assets/images/ruracamp-icon.png'),
+}
+
+# Android mipmap sizes
+ANDROID_SIZES = {
+    'mipmap-mdpi': 48,
+    'mipmap-hdpi': 72,
+    'mipmap-xhdpi': 96,
+    'mipmap-xxhdpi': 144,
+    'mipmap-xxxhdpi': 192,
+}
+
+# iOS sizes
+IOS_SIZES = {
+    'Icon-App-20x20@1x': 20,
+    'Icon-App-20x20@2x': 40,
+    'Icon-App-20x20@3x': 60,
+    'Icon-App-29x29@1x': 29,
+    'Icon-App-29x29@2x': 58,
+    'Icon-App-29x29@3x': 87,
+    'Icon-App-40x40@1x': 40,
+    'Icon-App-40x40@2x': 80,
+    'Icon-App-40x40@3x': 120,
+    'Icon-App-60x60@2x': 120,
+    'Icon-App-60x60@3x': 180,
+    'Icon-App-76x76@1x': 76,
+    'Icon-App-76x76@2x': 152,
+    'Icon-App-83.5x83.5@2x': 167,
+    'Icon-App-1024x1024@1x': 1024,
+}
+
+def optimize_icon(input_path, output_path, target_size=1024):
+    """Resize and optimize a PNG icon."""
+    img = Image.open(input_path)
+
+    # Convert to RGBA if not already
+    if img.mode != 'RGBA':
+        img = img.convert('RGBA')
+
+    # Resize using high-quality Lanczos resampling
+    img = img.resize((target_size, target_size), Image.Resampling.LANCZOS)
+
+    # Save with optimization
+    img.save(output_path, 'PNG', optimize=True)
+
+    return os.path.getsize(output_path)
+
+def generate_android_icons(source_path, app_dir, background_color):
+    """Generate Android launcher icons from source."""
+    img = Image.open(source_path)
+
+    if img.mode != 'RGBA':
+        img = img.convert('RGBA')
+
+    for folder, size in ANDROID_SIZES.items():
+        # Create mipmap directory
+        mipmap_dir = os.path.join(app_dir, 'android/app/src/main/res', folder)
+        os.makedirs(mipmap_dir, exist_ok=True)
+
+        # Resize icon
+        resized = img.resize((size, size), Image.Resampling.LANCZOS)
+
+        # Create background and composite
+        bg = Image.new('RGBA', (size, size), background_color + (255,))
+        bg.paste(resized, (0, 0), resized)
+
+        # Convert to RGB (no alpha) for launcher icons
+        final = bg.convert('RGB')
+
+        # Save
+        output_path = os.path.join(mipmap_dir, 'ic_launcher.png')
+        final.save(output_path, 'PNG', optimize=True)
+        print(f"    {folder}/ic_launcher.png ({size}x{size})")
+
+def generate_ios_icons(source_path, app_dir, background_color):
+    """Generate iOS app icons from source."""
+    img = Image.open(source_path)
+
+    if img.mode != 'RGBA':
+        img = img.convert('RGBA')
+
+    # iOS icon directory
+    ios_dir = os.path.join(app_dir, 'ios/Runner/Assets.xcassets/AppIcon.appiconset')
+    os.makedirs(ios_dir, exist_ok=True)
+
+    for name, size in IOS_SIZES.items():
+        resized = img.resize((size, size), Image.Resampling.LANCZOS)
+
+        # iOS needs solid background
+        bg = Image.new('RGBA', (size, size), background_color + (255,))
+        bg.paste(resized, (0, 0), resized)
+        final = bg.convert('RGB')
+
+        output_path = os.path.join(ios_dir, f'{name}.png')
+        final.save(output_path, 'PNG', optimize=True)
+
+    print(f"    Generated {len(IOS_SIZES)} iOS icons")
+
+def main():
+    print("=" * 50)
+    print("RuraCamp Icon Optimization")
+    print("=" * 50)
+
+    # 1. Optimize main icons (resize to 1024x1024)
+    print("\n1. Optimizing main icons to 1024x1024...")
+    for name, path in ICONS.items():
+        if os.path.exists(path):
+            original_size = os.path.getsize(path)
+            new_size = optimize_icon(path, path, 1024)
+            reduction = (1 - new_size / original_size) * 100
+            print(f"   {name}: {original_size/1024/1024:.1f}MB -> {new_size/1024:.0f}KB ({reduction:.1f}% reduction)")
         else:
-            new_h = target_content_size
-            new_w = int(target_content_size * aspect)
-            
-        img_resized = img.resize((new_w, new_h), Image.Resampling.LANCZOS)
-        
-        # Create transparent canvas
-        canvas = Image.new('RGBA', final_size, (0, 0, 0, 0))
-        
-        # Center the resized image on canvas
-        x = (final_size[0] - new_w) // 2
-        y = (final_size[1] - new_h) // 2
-        
-        canvas.paste(img_resized, (x, y), img_resized if img_resized.mode == 'RGBA' else None)
-        
-        canvas.save(output_path, optimize=True)
-        print(f"Saved padded foreground to {output_path}")
-        return True
-    except Exception as e:
-        print(f"Error adding padding to {path}: {e}")
-        return False
+            print(f"   {name}: NOT FOUND")
 
-# Paths
-base_dir = r"c:\Users\jelui\AntiGravity\PlanejaCampo"
-borracha_assets = os.path.join(base_dir, "apps", "planejaaborracha", "assets", "images")
-chuva_assets = os.path.join(base_dir, "apps", "planejachuva", "assets", "images")
+    # 2. Generate Android launcher icons
+    print("\n2. Generating Android launcher icons...")
 
-# 1. Optimize PlanejaBorracha Main Icon (Login/In-App)
-# Input: planejaborracha-icon.png (6MB) -> Output: Same (overwrite) or new file?
-# Let's overwrite safely by renaming original first
-icon_path = os.path.join(borracha_assets, "planejaborracha-icon.png")
-icon_backup = os.path.join(borracha_assets, "planejaborracha-icon.bak.png")
+    rurarain_path = ICONS['rurarain']
+    if os.path.exists(rurarain_path):
+        print("   RuraRain (green background):")
+        generate_android_icons(rurarain_path, os.path.join(BASE_DIR, 'apps/rurarain'), (76, 175, 80))
 
-if os.path.exists(icon_path):
-    if not os.path.exists(icon_backup):
-        os.rename(icon_path, icon_backup)
-        print(f"Backed up {icon_path}")
-    
-    # Use backup as source
-    optimize_icon(icon_backup, icon_path, size=(512, 512))
+    rurarubber_path = ICONS['rurarubber']
+    if os.path.exists(rurarubber_path):
+        print("   RuraRubber (brown background):")
+        generate_android_icons(rurarubber_path, os.path.join(BASE_DIR, 'apps/rurarubber'), (121, 85, 72))
 
-# 2. Optimize PlanejaChuva Main Icon (Just in case)
-chuva_icon_path = os.path.join(chuva_assets, "planejachuva-icon.png")
-chuva_icon_backup = os.path.join(chuva_assets, "planejachuva-icon.bak.png")
+    # 3. Generate iOS icons
+    print("\n3. Generating iOS app icons...")
 
-if os.path.exists(chuva_icon_path):
-    # Check size? Just optimize to be safe
-    if not os.path.exists(chuva_icon_backup):
-        os.rename(chuva_icon_path, chuva_icon_backup)
-        print(f"Backed up {chuva_icon_path}")
-    
-    optimize_icon(chuva_icon_backup, chuva_icon_path, size=(512, 512))
+    if os.path.exists(rurarain_path):
+        print("   RuraRain:")
+        generate_ios_icons(rurarain_path, os.path.join(BASE_DIR, 'apps/rurarain'), (76, 175, 80))
 
-# 3. Create Padded Foreground for Launcher
-# Source: planejaborracha-icon-adaptive-foreground.png
-# We want to create a NEW file: planejaborracha-icon-adaptive-foreground-padded.png
-fg_path = os.path.join(borracha_assets, "planejaborracha-icon-adaptive-foreground.png")
-fg_padded_path = os.path.join(borracha_assets, "planejaborracha-icon-adaptive-foreground-padded.png")
+    if os.path.exists(rurarubber_path):
+        print("   RuraRubber:")
+        generate_ios_icons(rurarubber_path, os.path.join(BASE_DIR, 'apps/rurarubber'), (121, 85, 72))
 
-if os.path.exists(fg_path):
-    add_padding(fg_path, fg_padded_path, final_size=(1024, 1024))
+    print("\n" + "=" * 50)
+    print("Done!")
+    print("=" * 50)
+
+if __name__ == '__main__':
+    main()

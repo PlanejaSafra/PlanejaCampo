@@ -54,9 +54,7 @@ flutter:
 
   # To add assets to your package, add an assets section, like this:
   assets:
-    - assets/images/planejacampo_light.png
-    - assets/images/planejacampo_dark.png
-    - assets/images/planejacampo-icon.png
+    - assets/images/ruracamp-icon.png
   # assets:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg

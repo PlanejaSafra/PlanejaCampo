@@ -161,9 +161,9 @@ class _ListaChuvasScreenState extends State<ListaChuvasScreen> {
                       appLogoLightPath: 'assets/images/rurarain-icon.png',
                       appLogoDarkPath: 'assets/images/rurarain-icon.png',
                       suiteLogoLightPath:
-                          'packages/agro_core/assets/images/planejacampo-icon.png',
+                          'packages/agro_core/assets/images/ruracamp-icon.png',
                       suiteLogoDarkPath:
-                          'packages/agro_core/assets/images/planejacampo-icon.png',
+                          'packages/agro_core/assets/images/ruracamp-icon.png',
                     ),
                   ),
                 );
@@ -190,9 +190,9 @@ class _ListaChuvasScreenState extends State<ListaChuvasScreen> {
               appLogoLightPath: 'assets/images/rurarain-icon.png',
               appLogoDarkPath: 'assets/images/rurarain-icon.png',
               suiteLogoLightPath:
-                  'packages/agro_core/assets/images/planejacampo-icon.png',
+                  'packages/agro_core/assets/images/ruracamp-icon.png',
               suiteLogoDarkPath:
-                  'packages/agro_core/assets/images/planejacampo-icon.png',
+                  'packages/agro_core/assets/images/ruracamp-icon.png',
             ),
           ),
         );

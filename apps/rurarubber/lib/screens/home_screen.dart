@@ -111,9 +111,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     appLogoLightPath: 'assets/images/rurarubber-icon.png',
                     appLogoDarkPath: 'assets/images/rurarubber-icon.png',
                     suiteLogoLightPath:
-                        'packages/agro_core/assets/images/planejacampo-icon.png',
+                        'packages/agro_core/assets/images/ruracamp-icon.png',
                     suiteLogoDarkPath:
-                        'packages/agro_core/assets/images/planejacampo-icon.png',
+                        'packages/agro_core/assets/images/ruracamp-icon.png',
                   ),
                 ),
               );
