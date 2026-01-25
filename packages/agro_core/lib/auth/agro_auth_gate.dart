@@ -18,6 +18,8 @@ class AgroAuthGate extends StatefulWidget {
   final String appName;
   final String appDescription;
   final IconData appIcon;
+  final String? appLogoLightPath;
+  final String? appLogoDarkPath;
 
   /// Optional callback to run app-specific migrations or initialization
   /// after the user is authenticated but before showing the home screen.
@@ -29,6 +31,8 @@ class AgroAuthGate extends StatefulWidget {
     required this.appName,
     required this.appDescription,
     required this.appIcon,
+    this.appLogoLightPath,
+    this.appLogoDarkPath,
     this.onUserInitialized,
   });
 
@@ -123,6 +127,8 @@ class _AgroAuthGateState extends State<AgroAuthGate> {
         appName: widget.appName,
         appDescription: widget.appDescription,
         appIcon: widget.appIcon,
+        appLogoLightPath: widget.appLogoLightPath,
+        appLogoDarkPath: widget.appLogoDarkPath,
       );
     }
 

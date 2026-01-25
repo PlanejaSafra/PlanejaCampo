@@ -13,6 +13,8 @@ class WeatherCard extends StatefulWidget {
   final double longitude;
   final String? propertyId; // Optional, for cache keying or logging
   final VoidCallback? onLocationUpdated;
+  final String? promptMessageOverride;
+  final String? titleOverride;
 
   const WeatherCard({
     super.key,
@@ -20,6 +22,8 @@ class WeatherCard extends StatefulWidget {
     required this.longitude,
     this.propertyId,
     this.onLocationUpdated,
+    this.promptMessageOverride,
+    this.titleOverride,
   });
 
   @override
@@ -146,7 +150,9 @@ class _WeatherCardState extends State<WeatherCard> {
           // Navigate to Detail Screen
           if (_weatherData != null) {
             String? propName;
-            if (widget.propertyId != null) {
+            if (widget.titleOverride != null) {
+              propName = widget.titleOverride;
+            } else if (widget.propertyId != null) {
               final prop =
                   PropertyService().getPropertyById(widget.propertyId!);
               propName = prop?.name;
@@ -180,14 +186,36 @@ class _WeatherCardState extends State<WeatherCard> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Property Label (CORE-38 + CORE-34.5: only show if user has > 1 property)
+              // Property Label (CORE-38 + CORE-34.5: only show if user has > 1 property OR if manually overridden)
               if (widget.propertyId != null &&
-                  PropertyService().getPropertyCount() > 1)
+                  (PropertyService().getPropertyCount() > 1 ||
+                      widget.titleOverride != null))
                 FutureBuilder(
                   future: Future.value(PropertyService()
                       .getPropertyById(widget.propertyId!)
                       ?.name),
                   builder: (context, snapshot) {
+                    // If we have an override, use it directly without waiting for snapshot
+                    if (widget.titleOverride != null) {
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: Row(
+                          children: [
+                            Icon(Icons.location_on,
+                                size: 14, color: theme.colorScheme.primary),
+                            const SizedBox(width: 4),
+                            Text(
+                              l10n.weatherForecastFor(widget.titleOverride!),
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: theme.colorScheme.primary,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+
                     if (!snapshot.hasData) return const SizedBox.shrink();
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 12),
@@ -562,6 +590,7 @@ class _WeatherCardState extends State<WeatherCard> {
         widget.onLocationUpdated?.call();
         _fetchWeather();
       },
+      messageOverride: widget.promptMessageOverride,
     );
   }
 }

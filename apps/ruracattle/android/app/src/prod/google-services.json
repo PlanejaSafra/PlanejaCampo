@@ -1,0 +1,86 @@
+{
+  "project_info": {
+    "project_number": "298390927056",
+    "project_id": "ruracamp-c1f38",
+    "storage_bucket": "ruracamp-c1f38.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:298390927056:android:73f33e75bf11425c3ed0d5",
+        "android_client_info": {
+          "package_name": "com.ruracamp.cattle"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCSq414lTEQmhb3yS1HYX5if_cdS1-TYks"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:298390927056:android:1b2ee1d27df7cbe63ed0d5",
+        "android_client_info": {
+          "package_name": "com.ruracamp.fuel"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCSq414lTEQmhb3yS1HYX5if_cdS1-TYks"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:298390927056:android:1b7235eeb2941f6a3ed0d5",
+        "android_client_info": {
+          "package_name": "com.ruracamp.rain"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCSq414lTEQmhb3yS1HYX5if_cdS1-TYks"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:298390927056:android:ee917222f15733cb3ed0d5",
+        "android_client_info": {
+          "package_name": "com.ruracamp.rubber"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCSq414lTEQmhb3yS1HYX5if_cdS1-TYks"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

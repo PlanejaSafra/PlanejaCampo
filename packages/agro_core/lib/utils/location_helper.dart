@@ -14,6 +14,7 @@ class LocationHelper {
     required BuildContext context,
     required String propertyId,
     VoidCallback? onLocationUpdated,
+    String? messageOverride,
   }) async {
     debugPrint('[LocationHelper] checkAndUpdateLocation started');
     // [CHANGED] Decoupled Location from Aggregate Metrics (Analytics).
@@ -33,6 +34,7 @@ class LocationHelper {
       context: context,
       propertyId: propertyId,
       onLocationUpdated: onLocationUpdated,
+      messageOverride: messageOverride,
     );
   }
 
@@ -40,6 +42,7 @@ class LocationHelper {
     required BuildContext context,
     required String propertyId,
     VoidCallback? onLocationUpdated,
+    String? messageOverride,
   }) async {
     final l10n = AgroLocalizations.of(context)!;
 
@@ -48,7 +51,7 @@ class LocationHelper {
       context: context,
       builder: (context) => AlertDialog(
         title: Text(l10n.weatherActivateForecast),
-        content: Text(l10n.weatherActivateForecastMessage),
+        content: Text(messageOverride ?? l10n.weatherActivateForecastMessage),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),

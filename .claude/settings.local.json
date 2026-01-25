@@ -6,7 +6,12 @@
       "Bash(git push:*)",
       "Bash(flutter run:*)",
       "Bash(pushd:*)",
-      "Bash(popd:*)"
+      "Bash(popd:*)",
+      "Bash(firebase projects:list:*)",
+      "Bash(firebase apps:sdkconfig:*)"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\jelui\\AntiGravity\\PlanejaCampo\\apps\\planejachuva"
     ]
   }
 }

@@ -1,41 +1,41 @@
-# 🚜 PlanejaCampo (Monorepo)
+# 🚜 RuraCamp (Monorepo)
 
-Bem-vindo ao repositório central da suíte de aplicativos **PlanejaCampo**.
+Welcome to the central repository for the **RuraCamp** app suite.
 
-Este projeto utiliza uma arquitetura de **Monorepo** para gerenciar múltiplos micro-apps focados no agronegócio. Todos compartilham um núcleo comum de tecnologia e design (`agro_core`), mas funcionam como produtos independentes, leves e 100% offline.
-
----
-
-## 🏗️ Estrutura do Projeto
-
-    PlanejaCampo/
-    │
-    ├── apps/                          # 📱 Os Aplicativos (Produtos Finais)
-    │   ├── planeja_chuva/             # Pluviômetro Rural
-    │   ├── planeja_diesel/            # Controle de Abastecimento e Frota
-    │   ├── planeja_borracha/          # Gestão de Sangria e Preço
-    │   └── planeja_vaca/              # Calculadora de Engorda e Lucro
-    │
-    ├── packages/                      # 📦 Módulos Compartilhados
-    │   └── agro_core/                 # UI Kit, Temas, Formatadores e Utils
-    │
-    └── examples/                      # 🏛️ Referências
-        └── planeja_campo/             # Projeto legado (Monolito) para consulta
+This project uses a **Monorepo** architecture to manage multiple micro-apps focused on agriculture. All apps share a common technology and design core (`agro_core`), but function as independent, lightweight, and 100% offline products.
 
 ---
 
-## 🚀 Como Rodar um App
+## 🏗️ Project Structure
 
-Como este é um monorepo, você deve entrar na pasta do aplicativo específico que deseja trabalhar.
-**Não rode comandos na raiz.**
+    RuraCamp/
+    │
+    ├── apps/                          # 📱 Applications (Final Products)
+    │   ├── rurarain/                  # Rural Pluviometer (com.ruracamp.rain)
+    │   ├── rurarubber/                # Rubber Weighing & Market (com.ruracamp.rubber)
+    │   ├── ruracattle/                # Cattle Management (com.ruracamp.cattle)
+    │   └── rurafuel/                  # Fuel Consumption Control (com.ruracamp.fuel)
+    │
+    ├── packages/                      # 📦 Shared Modules
+    │   └── agro_core/                 # UI Kit, Themes, Formatters and Utils
+    │
+    └── examples/                      # 🏛️ References
+        └── planejacampo/              # Legacy project (Monolith) for reference
 
-### Passo a Passo
+---
 
-1. **Navegue até o app desejado:**
+## 🚀 How to Run an App
+
+Since this is a monorepo, you must enter the specific app folder you want to work with.
+**Don't run commands from the root.**
+
+### Step by Step
+
+1. **Navigate to the desired app:**
 
 ```
-cd apps/planeja_chuva
-# ou cd apps/planeja_diesel, etc.
+cd apps/rurarain
+# or cd apps/rurarubber, etc.
 ```
 
 2. **Instale as dependências:**
@@ -68,7 +68,7 @@ flutter run
 
 Cada app é um projeto Flutter completo e independente.
 
-* **Organization ID:** `br.com.planejacampo`
+* **Organization ID:** `com.ruracamp`
 * **Banco de Dados:** Hive (NoSQL local)
 * **Dependências:** apenas o necessário para aquela função específica
 
@@ -147,21 +147,21 @@ O sistema foi desenhado para funcionar na fazenda, sem sinal de internet.
 
 ## 🛠️ Comandos Úteis de Manutenção
 
-### Criar um Novo App (futuro)
+### Create a New App (future)
 
-Se precisar criar um 5º app, use o padrão de organização correto:
+If you need to create a 5th app, use the correct organization pattern:
 
 ```
 cd apps
-flutter create --org br.com.planejacampo planeja_novo_app
+flutter create --org com.ruracamp rura_new_app
 ```
 
-### Vincular o Core a um Novo App
+### Link Core to a New App
 
-Para o novo app enxergar a pasta `packages`:
+For the new app to see the `packages` folder:
 
 ```
-cd apps/planeja_novo_app
+cd apps/rura_new_app
 flutter pub add agro_core --path ../../packages/agro_core
 ```
 
@@ -176,18 +176,18 @@ flutter pub get
 
 ---
 
-## 📝 Status do Desenvolvimento
+## 📝 Development Status
 
-| App                  | Função                   | Status                      |
-| -------------------- | ------------------------ | --------------------------- |
-| **Planeja Chuva**    | Registro de Pluviometria | 🚧 Em Desenvolvimento (MVP) |
-| **Planeja Diesel**   | Abastecimento e Média    | ⏳ Aguardando                |
-| **Planeja Borracha** | Coleta e Preço Médio     | ⏳ Aguardando                |
-| **Planeja Vaca**     | Calculadora de Engorda   | ⏳ Aguardando                |
+| App            | Function                    | Status                      |
+| -------------- | --------------------------- | --------------------------- |
+| **RuraRain**   | Rainfall Recording          | ✅ MVP Ready                |
+| **RuraRubber** | Rubber Weighing & Market    | ✅ MVP Ready                |
+| **RuraCattle** | Cattle Management           | 🚧 Skeleton                 |
+| **RuraFuel**   | Fuel Consumption Control    | 🚧 Skeleton                 |
 
 ---
 
-Desenvolvido com 💚 para o Agronegócio.
+Developed with 💚 for Agriculture.
 
 
 ## 🔐 Privacidade e Consentimento (OBRIGATÓRIO em todo app)
@@ -209,7 +209,7 @@ Esse fluxo possui **duas telas**:
 
 ## 🏞️ Gerenciamento de Propriedades (Multi-Propriedade)
 
-O `agro_core` fornece um sistema completo de gerenciamento de propriedades/fazendas que é **compartilhado entre todos os apps** da suíte PlanejaSafra.
+The `agro_core` provides a complete property/farm management system that is **shared across all apps** in the RuraCamp suite.
 
 ### Características:
 
@@ -263,9 +263,9 @@ Isso vincula automaticamente todos os registros antigos à propriedade padrão, 
 
 ---
 
-### ✅ Exemplo (Planeja Chuva)
+### ✅ Example (RuraRain)
 
-No `apps/planeja_chuva/lib/main.dart`:
+In `apps/rurarain/lib/main.dart`:
 
 - inicializar Hive (`Hive.initFlutter()`)
 - chamar `AgroPrivacyStore.init()`

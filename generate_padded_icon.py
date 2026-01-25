@@ -44,8 +44,8 @@ def add_padding(input_path, output_path, padding_ratio=0.3):
         print(f"Error processing image: {e}")
 
 # Paths
-base_dir = r"c:\Users\jelui\AntiGravity\PlanejaCampo\apps\planejachuva\assets\images"
-input_icon = os.path.join(base_dir, "planejachuva-icon-dark.png")
-output_icon = os.path.join(base_dir, "planejachuva-icon-adaptive-foreground.png")
+base_dir = r"c:\Users\jelui\AntiGravity\PlanejaCampo\apps\planejaaborracha\assets\images"
+input_icon = os.path.join(base_dir, "planejaborracha-icon-dark.png")
+output_icon = os.path.join(base_dir, "planejaborracha-icon-adaptive-foreground.png")
 
-add_padding(input_icon, output_icon, padding_ratio=0.6) # 60% increase makes the logo roughly 62% of the new canvas (1/1.6), safe zone is 66%
+add_padding(input_icon, output_icon, padding_ratio=0.5) # Resize content to fit safe zone

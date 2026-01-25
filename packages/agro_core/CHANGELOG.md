@@ -2,6 +2,36 @@
 
 ---
 
+## Phase CORE-67: Profile Display in AgroDrawer
+
+### Status: [TODO]
+**Priority**: 🟢 ENHANCEMENT
+**Objective**: Display the user's selected profile type (Producer/Tapper/Buyer) in the drawer header to provide visual feedback of current context.
+
+### Problem
+After selecting a profile in RuraRubber (or future apps with profiles), users have no visual indication of their current role when viewing the drawer menu. This can cause confusion about which features are available.
+
+### Implementation Plan
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 67.1 | Add optional `profileWidget` or `profileName` parameter to `AgroDrawer` | ⏳ TODO |
+| 67.2 | Display profile badge/chip below app name in drawer header | ⏳ TODO |
+| 67.3 | Update l10n strings for profile display | ⏳ TODO |
+
+### Files to Modify
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/menu/agro_drawer.dart` | MODIFY | Add profileWidget/profileName parameter, render in header |
+| `lib/l10n/arb/app_pt.arb` | MODIFY | Add profile display strings if needed |
+| `lib/l10n/arb/app_en.arb` | MODIFY | Add profile display strings if needed |
+
+### Cross-Reference
+- RUBBER-12 (RuraRubber integration)
+
+---
+
 ## Phase CORE-65: Weather Details Enhancements (Humidity & Daily View)
 
 ### Status: [DONE]

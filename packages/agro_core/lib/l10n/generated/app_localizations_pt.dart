@@ -7,7 +7,7 @@ class AgroLocalizationsPt extends AgroLocalizations {
   AgroLocalizationsPt([String locale = 'pt']) : super(locale);
 
   @override
-  String get appName => 'PlanejaCampo';
+  String get appName => 'RuraCamp';
 
   @override
   String get continueLabel => 'CONTINUAR';
@@ -34,7 +34,7 @@ class AgroLocalizationsPt extends AgroLocalizations {
   String get termsTitle => 'Termos de Uso e Privacidade';
 
   @override
-  String get termsBodyIntro => 'Ao tocar em \"Aceitar e continuar\", você concorda com os Termos de Uso e com a Política de Privacidade dos apps PlanejaCampo.';
+  String get termsBodyIntro => 'Ao tocar em \"Aceitar e continuar\", você concorda com os Termos de Uso e com a Política de Privacidade dos apps RuraCamp.';
 
   @override
   String get termsSummaryTitle => 'Resumo do que acontece:';
@@ -55,13 +55,13 @@ class AgroLocalizationsPt extends AgroLocalizations {
   String get termsSection1Title => '1. Aceitação dos Termos';
 
   @override
-  String get termsSection1Body => 'Ao utilizar os aplicativos da família PlanejaCampo (incluindo PlanejaChuva, PlanejaBorracha, PlanejaDiesel e outros), você concorda com estes Termos de Uso. Se você não concorda com alguma parte destes termos, não deve utilizar nossos serviços.';
+  String get termsSection1Body => 'Ao utilizar os aplicativos da família RuraCamp (incluindo RuraRain, RuraRubber, RuraFuel e outros), você concorda com estes Termos de Uso. Se você não concorda com alguma parte destes termos, não deve utilizar nossos serviços.';
 
   @override
   String get termsSection2Title => '2. Descrição do Serviço';
 
   @override
-  String get termsSection2Body => 'Os aplicativos PlanejaCampo são ferramentas de gestão agrícola que permitem:\n\n• Registro e acompanhamento de dados agrícolas (chuvas, produção, etc.)\n• Gerenciamento de propriedades rurais\n• Visualização de estatísticas e métricas\n• Backup e sincronização de dados na nuvem (opcional)\n• Compartilhamento de dados agregados para pesquisa (opcional)\n• Acesso a funcionalidades de Inteligência de Mercado e Ecossistema de Negócios (opcional)';
+  String get termsSection2Body => 'Os aplicativos RuraCamp são ferramentas de gestão agrícola que permitem:\n\n• Registro e acompanhamento de dados agrícolas (chuvas, produção, etc.)\n• Gerenciamento de propriedades rurais\n• Visualização de estatísticas e métricas\n• Backup e sincronização de dados na nuvem (opcional)\n• Compartilhamento de dados agregados para pesquisa (opcional)\n• Acesso a funcionalidades de Inteligência de Mercado e Ecossistema de Negócios (opcional)';
 
   @override
   String get termsSection3Title => '3. Conta de Usuário';
@@ -97,7 +97,7 @@ class AgroLocalizationsPt extends AgroLocalizations {
   String get termsSection8Title => '8. Propriedade Intelectual';
 
   @override
-  String get termsSection8Body => 'Todo o conteúdo, design, código e funcionalidades dos aplicativos PlanejaCampo são protegidos por direitos autorais e outras leis de propriedade intelectual. Você não pode copiar, modificar ou distribuir nosso software sem autorização.';
+  String get termsSection8Body => 'Todo o conteúdo, design, código e funcionalidades dos aplicativos RuraCamp são protegidos por direitos autorais e outras leis de propriedade intelectual. Você não pode copiar, modificar ou distribuir nosso software sem autorização.';
 
   @override
   String get termsSection9Title => '9. Lei Aplicável';
@@ -121,19 +121,19 @@ class AgroLocalizationsPt extends AgroLocalizations {
   String get privacyPolicyScreenTitle => 'Política de Privacidade';
 
   @override
-  String get privacyPolicyTitle => 'Política de Privacidade - PlanejaCampo';
+  String get privacyPolicyTitle => 'Política de Privacidade - RuraCamp';
 
   @override
   String get privacyPolicyLastUpdate => 'Última atualização: Janeiro de 2026';
 
   @override
-  String get privacyPolicyFooter => '© 2026 PlanejaCampo. Todos os direitos reservados.\nEsta política está em conformidade com a LGPD (Lei nº 13.709/2018).';
+  String get privacyPolicyFooter => '© 2026 RuraCamp. Todos os direitos reservados.\nEsta política está em conformidade com a LGPD (Lei nº 13.709/2018).';
 
   @override
   String get privacySection1Title => '1. Introdução';
 
   @override
-  String get privacySection1Body => 'A PlanejaCampo valoriza sua privacidade e está comprometida em proteger seus dados pessoais. Esta Política de Privacidade explica quais dados coletamos, como os usamos e seus direitos sobre eles.';
+  String get privacySection1Body => 'A RuraCamp valoriza sua privacidade e está comprometida em proteger seus dados pessoais. Esta Política de Privacidade explica quais dados coletamos, como os usamos e seus direitos sobre eles.';
 
   @override
   String get privacySection2Title => '2. Dados que Coletamos';
@@ -205,7 +205,7 @@ class AgroLocalizationsPt extends AgroLocalizations {
   String get consentTitle => 'Configuração de Privacidade';
 
   @override
-  String get consentIntro => 'Escolha como o PlanejaCampo deve funcionar para você:';
+  String get consentIntro => 'Escolha como o RuraCamp deve funcionar para você:';
 
   @override
   String get consentOption1Title => 'Backup e Sincronização em Nuvem';
@@ -229,7 +229,7 @@ class AgroLocalizationsPt extends AgroLocalizations {
   String get consentOptionSocialLearnMore => 'Habilita o ECOSSISTEMA DIGITAL DE NEGÓCIOS. O app é uma PLATAFORMA DE CONEXÃO e não garante transações.\n\nISENÇÃO TOTAL DE RESPONSABILIDADE:\n1. SEGURANÇA FÍSICA: Não nos responsabilizamos por agressões, acidentes ou crimes ocorridos em encontros presenciais;\n2. SEGURANÇA FINANCEIRA E DIGITAL: Não nos responsabilizamos por transações bancárias, PIX, não pagamento, fraudes, golpes digitais ou phishing ocorridos dentro ou fora da plataforma;\n3. RELAÇÕES TRABALHISTAS: Não verificamos vínculos nem antecedentes.\nA responsabilidade por qualquer transação financeira ou contratação é 100% SUA.';
 
   @override
-  String get safetyWarningMessage => 'DICA DE SEGURANÇA: Ao marcar visitas presenciais, verifique as referências da pessoa e avise um familiar. O PlanejaCampo não verifica antecedentes criminais dos usuários.';
+  String get safetyWarningMessage => 'DICA DE SEGURANÇA: Ao marcar visitas presenciais, verifique as referências da pessoa e avise um familiar. O RuraCamp não verifica antecedentes criminais dos usuários.';
 
   @override
   String get consentOption3Title => 'Inteligência Agronômica e de Mercado';
@@ -247,7 +247,7 @@ class AgroLocalizationsPt extends AgroLocalizations {
   String get consentSmallNoteUnderDecline => 'Sem aceitar, você pode usar o app normalmente no modo privado (funções básicas offline).';
 
   @override
-  String get identityTitle => 'Bem-vindo ao PlanejaCampo';
+  String get identityTitle => 'Bem-vindo ao RuraCamp';
 
   @override
   String get identitySlogan => 'Gerencie sua fazenda de forma inteligente';
@@ -340,13 +340,13 @@ class AgroLocalizationsPt extends AgroLocalizations {
   String get aboutTitle => 'Sobre';
 
   @override
-  String get aboutDescription => 'Este app faz parte da suíte PlanejaCampo, projetada para ajudar produtores rurais a gerenciar suas atividades no campo.';
+  String get aboutDescription => 'Este app faz parte da suíte RuraCamp, projetada para ajudar produtores rurais a gerenciar suas atividades no campo.';
 
   @override
   String get aboutOfflineFirst => 'Offline-First por padrão: seus dados ficam no dispositivo. Funcionalidades opcionais podem sincronizar com a nuvem.';
 
   @override
-  String get aboutSuite => 'Suíte PlanejaCampo';
+  String get aboutSuite => 'Suíte RuraCamp';
 
   @override
   String get aboutVersion => 'Versão';
@@ -493,7 +493,7 @@ class AgroLocalizationsPt extends AgroLocalizations {
   String get propertyLocationUnavailable => 'Não foi possível obter sua localização';
 
   @override
-  String get chuvaAppTitle => 'Planeja Chuva';
+  String get chuvaAppTitle => 'RuraRain';
 
   @override
   String get chuvaListaVaziaTitle => 'Nenhuma chuva registrada';
@@ -669,7 +669,7 @@ class AgroLocalizationsPt extends AgroLocalizations {
 
   @override
   String chuvaShareMessage(String propertyName) {
-    return 'Chuva registrada em $propertyName! 🌧️ #PlanejaCampo';
+    return 'Chuva registrada em $propertyName! 🌧️ #RuraCamp';
   }
 
   @override
@@ -965,6 +965,9 @@ class AgroLocalizationsPt extends AgroLocalizations {
 
   @override
   String get weatherActivateForecastMessage => 'Para mostrar a previsão correta, precisamos da localização desta propriedade.\n\nVocê está na propriedade agora?';
+
+  @override
+  String get weatherActivateForecastSeringalMessage => 'Para mostrar a previsão correta, precisamos da localização deste Seringal (Local de Trabalho).\n\nVocê está lá agora?';
 
   @override
   String get weatherNotHere => 'Não, estou longe';

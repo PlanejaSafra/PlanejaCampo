@@ -172,6 +172,9 @@ class _LoginScreenState extends State<LoginScreen> {
         : (widget.appLogoLightPath ?? widget.appLogoDarkPath);
 
     final finalPath = path ?? widget._appLogoPath;
+    debugPrint('[LoginScreen] Resolved Logo Path: $finalPath');
+    debugPrint(
+        '[LoginScreen] Asset Bundle contents: (cannot list easily but checking path)');
 
     if (finalPath != null) {
       return Image.asset(

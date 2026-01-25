@@ -7,7 +7,7 @@ class AgroLocalizationsEn extends AgroLocalizations {
   AgroLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appName => 'PlanejaCampo';
+  String get appName => 'RuraCamp';
 
   @override
   String get continueLabel => 'CONTINUE';
@@ -34,7 +34,7 @@ class AgroLocalizationsEn extends AgroLocalizations {
   String get termsTitle => 'Terms of Use and Privacy';
 
   @override
-  String get termsBodyIntro => 'By tapping \"Accept and Continue\", you agree to the Terms of Use and Privacy Policy of PlanejaCampo apps.';
+  String get termsBodyIntro => 'By tapping \"Accept and Continue\", you agree to the Terms of Use and Privacy Policy of RuraCamp apps.';
 
   @override
   String get termsSummaryTitle => 'Summary of what happens:';
@@ -55,13 +55,13 @@ class AgroLocalizationsEn extends AgroLocalizations {
   String get termsSection1Title => '1. Acceptance of Terms';
 
   @override
-  String get termsSection1Body => 'By using the PlanejaCampo family of apps (including PlanejaChuva, PlanejaBorracha, PlanejaDiesel, and others), you agree to these Terms of Use. If you do not agree with any part of these terms, you must not use our services.';
+  String get termsSection1Body => 'By using the RuraCamp family of apps (including RuraRain, RuraRubber, RuraFuel, and others), you agree to these Terms of Use. If you do not agree with any part of these terms, you must not use our services.';
 
   @override
   String get termsSection2Title => '2. Service Description';
 
   @override
-  String get termsSection2Body => 'PlanejaCampo apps are agricultural management tools that allow:\n\n• Recording and tracking agricultural data (rainfall, production, etc.)\n• Managing rural properties\n• Viewing statistics and metrics\n• Cloud backup and data synchronization (optional)\n• Sharing aggregated data for research (optional)\n• Access to Market Intelligence and Business Ecosystem features (optional)';
+  String get termsSection2Body => 'RuraCamp apps are agricultural management tools that allow:\n\n• Recording and tracking agricultural data (rainfall, production, etc.)\n• Managing rural properties\n• Viewing statistics and metrics\n• Cloud backup and data synchronization (optional)\n• Sharing aggregated data for research (optional)\n• Access to Market Intelligence and Business Ecosystem features (optional)';
 
   @override
   String get termsSection3Title => '3. User Account';
@@ -97,7 +97,7 @@ class AgroLocalizationsEn extends AgroLocalizations {
   String get termsSection8Title => '8. Intellectual Property';
 
   @override
-  String get termsSection8Body => 'All content, design, code, and functionality of PlanejaCampo apps are protected by copyright and other intellectual property laws. You may not copy, modify, or distribute our software without authorization.';
+  String get termsSection8Body => 'All content, design, code, and functionality of RuraCamp apps are protected by copyright and other intellectual property laws. You may not copy, modify, or distribute our software without authorization.';
 
   @override
   String get termsSection9Title => '9. Applicable Law';
@@ -121,19 +121,19 @@ class AgroLocalizationsEn extends AgroLocalizations {
   String get privacyPolicyScreenTitle => 'Privacy Policy';
 
   @override
-  String get privacyPolicyTitle => 'Privacy Policy - PlanejaCampo';
+  String get privacyPolicyTitle => 'Privacy Policy - RuraCamp';
 
   @override
   String get privacyPolicyLastUpdate => 'Last updated: January 2026';
 
   @override
-  String get privacyPolicyFooter => '© 2026 PlanejaCampo. All rights reserved.\nThis policy complies with LGPD (Law No. 13.709/2018) and GDPR.';
+  String get privacyPolicyFooter => '© 2026 RuraCamp. All rights reserved.\nThis policy complies with LGPD (Law No. 13.709/2018) and GDPR.';
 
   @override
   String get privacySection1Title => '1. Introduction';
 
   @override
-  String get privacySection1Body => 'PlanejaCampo values your privacy and is committed to protecting your personal data. This Privacy Policy explains what data we collect, how we use it, and your rights over it.';
+  String get privacySection1Body => 'RuraCamp values your privacy and is committed to protecting your personal data. This Privacy Policy explains what data we collect, how we use it, and your rights over it.';
 
   @override
   String get privacySection2Title => '2. Data We Collect';
@@ -205,7 +205,7 @@ class AgroLocalizationsEn extends AgroLocalizations {
   String get consentTitle => 'Privacy Configuration';
 
   @override
-  String get consentIntro => 'Choose how PlanejaCampo should work for you:';
+  String get consentIntro => 'Choose how RuraCamp should work for you:';
 
   @override
   String get consentOption1Title => 'Cloud Backup & Sync';
@@ -229,7 +229,7 @@ class AgroLocalizationsEn extends AgroLocalizations {
   String get consentOptionSocialLearnMore => 'Enables the DIGITAL BUSINESS ECOSYSTEM. The app is a CONNECTION PLATFORM and does not guarantee transactions.\n\nTOTAL LIABILITY WAIVER:\n1. PHYSICAL SECURITY: We are not responsible for assaults, accidents, or crimes occurring in face-to-face meetings;\n2. FINANCIAL AND DIGITAL SECURITY: We are not responsible for bank transactions, PIX, non-payment, fraud, digital scams, or phishing occurring inside or outside the platform;\n3. LABOR RELATIONS: We do not check links or backgrounds.\nThe responsibility for any financial transaction or hiring is 100% YOURS.';
 
   @override
-  String get safetyWarningMessage => 'SAFETY TIP: When scheduling in-person visits, check the person\'s references and let a family member know. PlanejaCampo does not check users\' criminal backgrounds.';
+  String get safetyWarningMessage => 'SAFETY TIP: When scheduling in-person visits, check the person\'s references and let a family member know. RuraCamp does not check users\' criminal backgrounds.';
 
   @override
   String get consentOption3Title => 'Agronomic & Market Intelligence';
@@ -247,7 +247,7 @@ class AgroLocalizationsEn extends AgroLocalizations {
   String get consentSmallNoteUnderDecline => 'Without accepting, you can use the app normally in private mode (basic offline features).';
 
   @override
-  String get identityTitle => 'Welcome to PlanejaCampo';
+  String get identityTitle => 'Welcome to RuraCamp';
 
   @override
   String get identitySlogan => 'Manage your farm intelligently';
@@ -340,13 +340,13 @@ class AgroLocalizationsEn extends AgroLocalizations {
   String get aboutTitle => 'About';
 
   @override
-  String get aboutDescription => 'This app is part of the PlanejaCampo Suite, designed to help rural producers manage their activities in the field.';
+  String get aboutDescription => 'This app is part of the RuraCamp Suite, designed to help rural producers manage their activities in the field.';
 
   @override
   String get aboutOfflineFirst => 'Offline-First by default: your data stays on the device. Optional features may sync with the cloud.';
 
   @override
-  String get aboutSuite => 'PlanejaCampo Suite';
+  String get aboutSuite => 'RuraCamp Suite';
 
   @override
   String get aboutVersion => 'Version';
@@ -493,7 +493,7 @@ class AgroLocalizationsEn extends AgroLocalizations {
   String get propertyLocationUnavailable => 'Could not get your location';
 
   @override
-  String get chuvaAppTitle => 'Planeja Chuva';
+  String get chuvaAppTitle => 'RuraRain';
 
   @override
   String get chuvaListaVaziaTitle => 'No rainfall recorded';
@@ -669,7 +669,7 @@ class AgroLocalizationsEn extends AgroLocalizations {
 
   @override
   String chuvaShareMessage(String propertyName) {
-    return 'Rainfall recorded at $propertyName! 🌧️ #PlanejaCampo';
+    return 'Rainfall recorded at $propertyName! 🌧️ #RuraCamp';
   }
 
   @override
@@ -965,6 +965,9 @@ class AgroLocalizationsEn extends AgroLocalizations {
 
   @override
   String get weatherActivateForecastMessage => 'To show the correct forecast, we need this property\'s location.\n\nAre you at the property now?';
+
+  @override
+  String get weatherActivateForecastSeringalMessage => 'To show the correct forecast, we need the location of this Rubber Plantation (Work Site).\n\nAre you there now?';
 
   @override
   String get weatherNotHere => 'No, I\'m far away';

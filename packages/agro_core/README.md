@@ -13,7 +13,7 @@ and the Flutter guide for
 
 # Agro Core
 
-Biblioteca central de componentes, serviços e modelos reutilizáveis para a suíte de aplicativos **Agro**. O objetivo deste pacote é garantir consistência visual, comportamental e de dados entre todos os apps (PlanejaChuva, PlanejaBorracha, etc.).
+Core library of reusable components, services, and models for the **RuraCamp** app suite. This package ensures visual, behavioral, and data consistency across all apps (RuraRain, RuraRubber, RuraCattle, RuraFuel).
 
 ## Features
 

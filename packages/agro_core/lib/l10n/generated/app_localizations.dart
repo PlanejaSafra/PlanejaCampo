@@ -98,7 +98,7 @@ abstract class AgroLocalizations {
   /// No description provided for @appName.
   ///
   /// In en, this message translates to:
-  /// **'PlanejaCampo'**
+  /// **'RuraCamp'**
   String get appName;
 
   /// No description provided for @continueLabel.
@@ -152,7 +152,7 @@ abstract class AgroLocalizations {
   /// No description provided for @termsBodyIntro.
   ///
   /// In en, this message translates to:
-  /// **'By tapping \"Accept and Continue\", you agree to the Terms of Use and Privacy Policy of PlanejaCampo apps.'**
+  /// **'By tapping \"Accept and Continue\", you agree to the Terms of Use and Privacy Policy of RuraCamp apps.'**
   String get termsBodyIntro;
 
   /// No description provided for @termsSummaryTitle.
@@ -194,7 +194,7 @@ abstract class AgroLocalizations {
   /// No description provided for @termsSection1Body.
   ///
   /// In en, this message translates to:
-  /// **'By using the PlanejaCampo family of apps (including PlanejaChuva, PlanejaBorracha, PlanejaDiesel, and others), you agree to these Terms of Use. If you do not agree with any part of these terms, you must not use our services.'**
+  /// **'By using the RuraCamp family of apps (including RuraRain, RuraRubber, RuraFuel, and others), you agree to these Terms of Use. If you do not agree with any part of these terms, you must not use our services.'**
   String get termsSection1Body;
 
   /// No description provided for @termsSection2Title.
@@ -206,7 +206,7 @@ abstract class AgroLocalizations {
   /// No description provided for @termsSection2Body.
   ///
   /// In en, this message translates to:
-  /// **'PlanejaCampo apps are agricultural management tools that allow:\n\n• Recording and tracking agricultural data (rainfall, production, etc.)\n• Managing rural properties\n• Viewing statistics and metrics\n• Cloud backup and data synchronization (optional)\n• Sharing aggregated data for research (optional)\n• Access to Market Intelligence and Business Ecosystem features (optional)'**
+  /// **'RuraCamp apps are agricultural management tools that allow:\n\n• Recording and tracking agricultural data (rainfall, production, etc.)\n• Managing rural properties\n• Viewing statistics and metrics\n• Cloud backup and data synchronization (optional)\n• Sharing aggregated data for research (optional)\n• Access to Market Intelligence and Business Ecosystem features (optional)'**
   String get termsSection2Body;
 
   /// No description provided for @termsSection3Title.
@@ -278,7 +278,7 @@ abstract class AgroLocalizations {
   /// No description provided for @termsSection8Body.
   ///
   /// In en, this message translates to:
-  /// **'All content, design, code, and functionality of PlanejaCampo apps are protected by copyright and other intellectual property laws. You may not copy, modify, or distribute our software without authorization.'**
+  /// **'All content, design, code, and functionality of RuraCamp apps are protected by copyright and other intellectual property laws. You may not copy, modify, or distribute our software without authorization.'**
   String get termsSection8Body;
 
   /// No description provided for @termsSection9Title.
@@ -326,7 +326,7 @@ abstract class AgroLocalizations {
   /// No description provided for @privacyPolicyTitle.
   ///
   /// In en, this message translates to:
-  /// **'Privacy Policy - PlanejaCampo'**
+  /// **'Privacy Policy - RuraCamp'**
   String get privacyPolicyTitle;
 
   /// No description provided for @privacyPolicyLastUpdate.
@@ -338,7 +338,7 @@ abstract class AgroLocalizations {
   /// No description provided for @privacyPolicyFooter.
   ///
   /// In en, this message translates to:
-  /// **'© 2026 PlanejaCampo. All rights reserved.\nThis policy complies with LGPD (Law No. 13.709/2018) and GDPR.'**
+  /// **'© 2026 RuraCamp. All rights reserved.\nThis policy complies with LGPD (Law No. 13.709/2018) and GDPR.'**
   String get privacyPolicyFooter;
 
   /// No description provided for @privacySection1Title.
@@ -350,7 +350,7 @@ abstract class AgroLocalizations {
   /// No description provided for @privacySection1Body.
   ///
   /// In en, this message translates to:
-  /// **'PlanejaCampo values your privacy and is committed to protecting your personal data. This Privacy Policy explains what data we collect, how we use it, and your rights over it.'**
+  /// **'RuraCamp values your privacy and is committed to protecting your personal data. This Privacy Policy explains what data we collect, how we use it, and your rights over it.'**
   String get privacySection1Body;
 
   /// No description provided for @privacySection2Title.
@@ -494,7 +494,7 @@ abstract class AgroLocalizations {
   /// No description provided for @consentIntro.
   ///
   /// In en, this message translates to:
-  /// **'Choose how PlanejaCampo should work for you:'**
+  /// **'Choose how RuraCamp should work for you:'**
   String get consentIntro;
 
   /// No description provided for @consentOption1Title.
@@ -542,7 +542,7 @@ abstract class AgroLocalizations {
   /// No description provided for @safetyWarningMessage.
   ///
   /// In en, this message translates to:
-  /// **'SAFETY TIP: When scheduling in-person visits, check the person\'s references and let a family member know. PlanejaCampo does not check users\' criminal backgrounds.'**
+  /// **'SAFETY TIP: When scheduling in-person visits, check the person\'s references and let a family member know. RuraCamp does not check users\' criminal backgrounds.'**
   String get safetyWarningMessage;
 
   /// No description provided for @consentOption3Title.
@@ -578,7 +578,7 @@ abstract class AgroLocalizations {
   /// No description provided for @identityTitle.
   ///
   /// In en, this message translates to:
-  /// **'Welcome to PlanejaCampo'**
+  /// **'Welcome to RuraCamp'**
   String get identityTitle;
 
   /// No description provided for @identitySlogan.
@@ -764,7 +764,7 @@ abstract class AgroLocalizations {
   /// No description provided for @aboutDescription.
   ///
   /// In en, this message translates to:
-  /// **'This app is part of the PlanejaCampo Suite, designed to help rural producers manage their activities in the field.'**
+  /// **'This app is part of the RuraCamp Suite, designed to help rural producers manage their activities in the field.'**
   String get aboutDescription;
 
   /// No description provided for @aboutOfflineFirst.
@@ -776,7 +776,7 @@ abstract class AgroLocalizations {
   /// No description provided for @aboutSuite.
   ///
   /// In en, this message translates to:
-  /// **'PlanejaCampo Suite'**
+  /// **'RuraCamp Suite'**
   String get aboutSuite;
 
   /// No description provided for @aboutVersion.
@@ -1070,7 +1070,7 @@ abstract class AgroLocalizations {
   /// No description provided for @chuvaAppTitle.
   ///
   /// In en, this message translates to:
-  /// **'Planeja Chuva'**
+  /// **'RuraRain'**
   String get chuvaAppTitle;
 
   /// No description provided for @chuvaListaVaziaTitle.
@@ -1400,7 +1400,7 @@ abstract class AgroLocalizations {
   /// No description provided for @chuvaShareMessage.
   ///
   /// In en, this message translates to:
-  /// **'Rainfall recorded at {propertyName}! 🌧️ #PlanejaCampo'**
+  /// **'Rainfall recorded at {propertyName}! 🌧️ #RuraCamp'**
   String chuvaShareMessage(String propertyName);
 
   /// No description provided for @chuvaShareError.
@@ -1966,6 +1966,12 @@ abstract class AgroLocalizations {
   /// In en, this message translates to:
   /// **'To show the correct forecast, we need this property\'s location.\n\nAre you at the property now?'**
   String get weatherActivateForecastMessage;
+
+  /// No description provided for @weatherActivateForecastSeringalMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'To show the correct forecast, we need the location of this Rubber Plantation (Work Site).\n\nAre you there now?'**
+  String get weatherActivateForecastSeringalMessage;
 
   /// No description provided for @weatherNotHere.
   ///

@@ -1,4 +1,4 @@
-# PLANEJACAMPO — RULES (Flutter Monorepo)
+# RURACAMP — RULES (Flutter Monorepo)
 
 ## 1) Before touching anything (mandatory)
 
@@ -8,14 +8,14 @@
 
 ## 2) Monorepo structure (fixed)
 
-PlanejaCampo\
+RuraCamp\
 
 * apps\
 
-  * planeja_chuva\
-  * planeja_diesel\
-  * planeja_borracha\
-  * planeja_vaca\
+  * rurarain\      (formerly planejachuva) - com.ruracamp.rain
+  * rurarubber\    (formerly planejaaborracha) - com.ruracamp.rubber
+  * ruracattle\    (formerly planejavavaca) - com.ruracamp.cattle
+  * rurafuel\      (formerly planejadiesel) - com.ruracamp.fuel
 * packages\
 
   * agro_core\
@@ -82,17 +82,23 @@ Each project (`packages/agro_core` and each app in `apps/*`) must have its own `
 ### Monorepo CHANGELOG Structure
 
 ```
-PlanejaSafra/
+RuraCamp/
 ├── packages/
 │   └── agro_core/
 │       └── CHANGELOG.md    ← Core changes (services, widgets, privacy, l10n)
 │
 └── apps/
-    ├── planejachuva/
+    ├── rurarain/
     │   └── CHANGELOG.md    ← App-specific changes (rainfall screens, reports)
     │
-    ├── planeja_diesel/
-    │   └── CHANGELOG.md    ← App-specific changes (fuel screens, consumption)
+    ├── rurarubber/
+    │   └── CHANGELOG.md    ← App-specific changes (rubber weighing, market)
+    │
+    ├── ruracattle/
+    │   └── CHANGELOG.md    ← App-specific changes (cattle management)
+    │
+    ├── rurafuel/
+    │   └── CHANGELOG.md    ← App-specific changes (fuel consumption)
     │
     └── ...
 ```
@@ -110,19 +116,19 @@ Each project uses a **prefix** to identify phases:
 
 | Project | Prefix | Example |
 |---------|--------|---------|
-| `agro_core` | `CORE-` | `CORE-33`, `CORE-36` |
-| `planejachuva` | `CHUVA-` | `CHUVA-32`, `CHUVA-19` |
-| `planeja_diesel` | `DIESEL-` | `DIESEL-01` |
-| `planeja_borracha` | `BORRACHA-` | `BORRACHA-01` |
-| `planeja_vaca` | `VACA-` | `VACA-01` |
+| `agro_core` | `CORE-` | `CORE-33`, `CORE-70` |
+| `rurarain` | `RAIN-` | `RAIN-01` |
+| `rurarubber` | `RUBBER-` | `RUBBER-01` |
+| `ruracattle` | `CATTLE-` | `CATTLE-01` |
+| `rurafuel` | `FUEL-` | `FUEL-01` |
 
 ### Cross-Reference Example
 
 When a feature spans both core and app:
 
-**Phase CORE-33 (Cloud Backup)**:
-- `agro_core/CHANGELOG.md`: CloudBackupService, BackupProvider interface, UI in AgroSettingsScreen
-- `planejachuva/CHANGELOG.md`: CHUVA-33 - ChuvaBackupProvider implementation, registration in main.dart
+**Phase CORE-70 (Internationalization Rebranding)**:
+- `agro_core/CHANGELOG.md`: Umbrella phase documenting the PlanejaCampo → RuraCamp migration
+- `rurarain/CHANGELOG.md`: RAIN-01 - App-specific migration implementation
 
 ### Phase Structure
 
@@ -194,7 +200,7 @@ The `AgroSettingsScreen` in `agro_core` provides common settings functionality. 
 | Backup Local (Export) | `onExportLocalBackup` | App-specific JSON export |
 | Backup Local (Import) | `onImportLocalBackup` | App-specific JSON import |
 | Lembretes Diários | `onReminderChanged` | Daily notification reminders |
-| Alertas de Chuva | `onToggleRainAlerts` | Weather-based alerts (planejachuva) |
+| Alertas de Chuva | `onToggleRainAlerts` | Weather-based alerts (rurarain) |
 
 ### Usage Examples
 

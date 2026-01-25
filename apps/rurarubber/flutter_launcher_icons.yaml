@@ -1,0 +1,7 @@
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/planejaborracha-icon.png"
+  adaptive_icon_background: "#1E2A26"
+  adaptive_icon_foreground: "assets/images/planejaborracha-icon-adaptive-foreground-padded.png"
+  min_sdk_android: 21

@@ -1,7 +1,7 @@
 {
   "@@locale": "pt",
 
-  "appName": "PlanejaCampo",
+  "appName": "RuraCamp",
   "continueLabel": "CONTINUAR",
   "acceptAndContinueLabel": "ACEITAR E CONTINUAR",
   "acceptAllButton": "ACEITAR TUDO E CONTINUAR",
@@ -11,7 +11,7 @@
   "privacySettingsHint": "Você pode consultar os documentos completos em Configurações → Privacidade.",
 
   "termsTitle": "Termos de Uso e Privacidade",
-  "termsBodyIntro": "Ao tocar em \"Aceitar e continuar\", você concorda com os Termos de Uso e com a Política de Privacidade dos apps PlanejaCampo.",
+  "termsBodyIntro": "Ao tocar em \"Aceitar e continuar\", você concorda com os Termos de Uso e com a Política de Privacidade dos apps RuraCamp.",
   "termsSummaryTitle": "Resumo do que acontece:",
   "termsSummaryItem1": "Este app é uma ferramenta de apoio à decisão e cálculo. Ele fornece simulações e estimativas que NÃO substituem a avaliação profissional de um técnico ou agrônomo, e o desenvolvedor não se responsabiliza por quaisquer resultados obtidos no campo.",
   "termsSummaryItem2": "Por padrão, seus dados operacionais ficam no dispositivo (Modo Local). Se você optar por ativar Backup, Rede de Negócios ou Inteligência — mesmo como visitante — seus dados serão enviados para nossos servidores conforme descrito em cada opção.",
@@ -19,10 +19,10 @@
   "termsFooter": "Você pode consultar os documentos completos em Configurações → Privacidade.",
   
   "termsSection1Title": "1. Aceitação dos Termos",
-  "termsSection1Body": "Ao utilizar os aplicativos da família PlanejaCampo (incluindo PlanejaChuva, PlanejaBorracha, PlanejaDiesel e outros), você concorda com estes Termos de Uso. Se você não concorda com alguma parte destes termos, não deve utilizar nossos serviços.",
+  "termsSection1Body": "Ao utilizar os aplicativos da família RuraCamp (incluindo RuraRain, RuraRubber, RuraFuel e outros), você concorda com estes Termos de Uso. Se você não concorda com alguma parte destes termos, não deve utilizar nossos serviços.",
   
   "termsSection2Title": "2. Descrição do Serviço",
-  "termsSection2Body": "Os aplicativos PlanejaCampo são ferramentas de gestão agrícola que permitem:\n\n• Registro e acompanhamento de dados agrícolas (chuvas, produção, etc.)\n• Gerenciamento de propriedades rurais\n• Visualização de estatísticas e métricas\n• Backup e sincronização de dados na nuvem (opcional)\n• Compartilhamento de dados agregados para pesquisa (opcional)\n• Acesso a funcionalidades de Inteligência de Mercado e Ecossistema de Negócios (opcional)",
+  "termsSection2Body": "Os aplicativos RuraCamp são ferramentas de gestão agrícola que permitem:\n\n• Registro e acompanhamento de dados agrícolas (chuvas, produção, etc.)\n• Gerenciamento de propriedades rurais\n• Visualização de estatísticas e métricas\n• Backup e sincronização de dados na nuvem (opcional)\n• Compartilhamento de dados agregados para pesquisa (opcional)\n• Acesso a funcionalidades de Inteligência de Mercado e Ecossistema de Negócios (opcional)",
   
   "termsSection3Title": "3. Conta de Usuário",
   "termsSection3Body": "Você pode utilizar nossos aplicativos de duas formas:\n\n• Modo Visitante (Híbrido): Sem login Google. Por padrão, seus dados operacionais (tais como registros de produção, clima, operações, entre outros) ficam no dispositivo. Metadados técnicos e IDs são enviados para servidores para segurança e anúncios. **Se você optar por ativar Rede de Negócios ou Inteligência**, seus dados serão enviados para nossos servidores mesmo sem login.\n• Modo Conectado (Google): Desbloqueia o Ecossistema Completo, permitindo armazenamento seguro em nuvem, sincronização, recuperação de dados e acesso facilitado a funcionalidades de Rede e Inteligência.\n\nEm ambos os modos, você controla quais dados compartilha por meio das opções de consentimento. Você é responsável por manter a confidencialidade de sua conta e por todas as atividades que ocorram sob sua conta.",
@@ -40,7 +40,7 @@
   "termsSection7Body": "Reservamos o direito de:\n\n• Modificar ou descontinuar recursos a qualquer momento\n• Atualizar estes Termos de Uso\n• Suspender ou encerrar contas que violem os termos\n\nNotificaremos sobre mudanças significativas através do aplicativo.",
   
   "termsSection8Title": "8. Propriedade Intelectual",
-  "termsSection8Body": "Todo o conteúdo, design, código e funcionalidades dos aplicativos PlanejaCampo são protegidos por direitos autorais e outras leis de propriedade intelectual. Você não pode copiar, modificar ou distribuir nosso software sem autorização.",
+  "termsSection8Body": "Todo o conteúdo, design, código e funcionalidades dos aplicativos RuraCamp são protegidos por direitos autorais e outras leis de propriedade intelectual. Você não pode copiar, modificar ou distribuir nosso software sem autorização.",
   
   "termsSection9Title": "9. Lei Aplicável",
   "termsSection9Body": "Estes termos são regidos pelas leis do Brasil. Quaisquer disputas serão resolvidas nos tribunais competentes do Brasil.",
@@ -52,12 +52,12 @@
   "termsSection11Body": "Para questões sobre estes Termos de Uso, entre em contato através do menu Configurações > Sobre no aplicativo.",
 
   "privacyPolicyScreenTitle": "Política de Privacidade",
-  "privacyPolicyTitle": "Política de Privacidade - PlanejaCampo",
+  "privacyPolicyTitle": "Política de Privacidade - RuraCamp",
   "privacyPolicyLastUpdate": "Última atualização: Janeiro de 2026",
-  "privacyPolicyFooter": "© 2026 PlanejaCampo. Todos os direitos reservados.\nEsta política está em conformidade com a LGPD (Lei nº 13.709/2018).",
+  "privacyPolicyFooter": "© 2026 RuraCamp. Todos os direitos reservados.\nEsta política está em conformidade com a LGPD (Lei nº 13.709/2018).",
 
   "privacySection1Title": "1. Introdução",
-  "privacySection1Body": "A PlanejaCampo valoriza sua privacidade e está comprometida em proteger seus dados pessoais. Esta Política de Privacidade explica quais dados coletamos, como os usamos e seus direitos sobre eles.",
+  "privacySection1Body": "A RuraCamp valoriza sua privacidade e está comprometida em proteger seus dados pessoais. Esta Política de Privacidade explica quais dados coletamos, como os usamos e seus direitos sobre eles.",
 
   "privacySection2Title": "2. Dados que Coletamos",
   "privacySection2Body": "Para operar o Ecossistema Digital, coletamos:\n\n**Dados de Conta e Perfil:**\n• Nome, email, telefone e foto (login Google)\n• ID único de usuário e credenciais de acesso\n• Outros dados que você optar por preencher (tais como endereço, bio, qualificações, entre outros)\n\n**Dados Agronômicos e de Negócios:**\n• Dados operacionais (tais como inventário, chuvas, produção, rebanho, tarefas, entre outros)\n• Ofertas e transações (tais como compras, vendas, serviços, anúncios, entre outros)\n• Localização das propriedades (GPS) e dados geográficos\n\n**Dados Técnicos e de Comportamento:**\n• Informações do dispositivo (tais como modelo, IP, sistema operacional, entre outros)\n• Interações e uso do app (tais como cliques, navegação, tempo de uso, entre outros)",
@@ -93,7 +93,7 @@
   "privacySection12Body": "Dúvidas? Acesse Configurações > Sobre.",
 
   "consentTitle": "Configuração de Privacidade",
-  "consentIntro": "Escolha como o PlanejaCampo deve funcionar para você:",
+  "consentIntro": "Escolha como o RuraCamp deve funcionar para você:",
 
   "consentOption1Title": "Backup e Sincronização em Nuvem",
   "consentOption1Desc": "Salvar dados na nuvem para segurança e acesso em equipe.",
@@ -103,7 +103,7 @@
   "consentOption2Desc": "Habilita visualização de vagas e ofertas (Vitrine Digital).",
   "consentOption2Legal": "Esta opção ativa as funções sociais (Mercado, Vagas, Classificados, entre outras) e está disponível tanto para visitantes quanto para usuários logados. Ao ativar, você autoriza o envio, armazenamento, processamento e compartilhamento dos seus dados — incluindo, mas não se limitando a, informações de perfil, contato, localização e conteúdo de anúncios — conforme necessário para o funcionamento da plataforma e de seus parceiros. O aplicativo é apenas um facilitador de conexões.",
   "consentOptionSocialLearnMore": "Habilita o ECOSSISTEMA DIGITAL DE NEGÓCIOS. O app é uma PLATAFORMA DE CONEXÃO e não garante transações.\n\nISENÇÃO TOTAL DE RESPONSABILIDADE:\n1. SEGURANÇA FÍSICA: Não nos responsabilizamos por agressões, acidentes ou crimes ocorridos em encontros presenciais;\n2. SEGURANÇA FINANCEIRA E DIGITAL: Não nos responsabilizamos por transações bancárias, PIX, não pagamento, fraudes, golpes digitais ou phishing ocorridos dentro ou fora da plataforma;\n3. RELAÇÕES TRABALHISTAS: Não verificamos vínculos nem antecedentes.\nA responsabilidade por qualquer transação financeira ou contratação é 100% SUA.",
-  "safetyWarningMessage": "DICA DE SEGURANÇA: Ao marcar visitas presenciais, verifique as referências da pessoa e avise um familiar. O PlanejaCampo não verifica antecedentes criminais dos usuários.",
+  "safetyWarningMessage": "DICA DE SEGURANÇA: Ao marcar visitas presenciais, verifique as referências da pessoa e avise um familiar. O RuraCamp não verifica antecedentes criminais dos usuários.",
 
   "consentOption3Title": "Inteligência Agronômica e de Mercado",
   "consentOption3Desc": "Habilita mapas, médias de preços e ferramentas avançadas de sugestão técnica (adubação, manejo, clima).",
@@ -111,7 +111,7 @@
   "consentOptionIntelligenceLearnMore": "Esta opção desbloqueia as funcionalidades de inteligência coletiva e ferramentas de suporte à decisão. Em troca, seus dados anonimizados compõem nossa base.\n\nISENÇÃO TOTAL DE RESPONSABILIDADE TÉCNICA E AGRONÔMICA:\nTodas as sugestões de manejo, cálculos de adubação/calagem, indicações de defensivos, previsões de safra ou diagnósticos gerados pelo sistema são SIMULAÇÕES baseadas em algoritmos matemáticos e estatísticos.\n\nO aplicativo NÃO substitui a consultoria presencial nem a emissão de Receituário Agronômico por Engenheiro Agrônomo habilitado, conforme exigido por lei. O aplicativo NÃO se responsabiliza por:\n1. Erros de dosagem, fitotoxicidade ou ineficiência de produtos;\n2. Danos ambientais, contaminação de solo/água ou morte de culturas;\n3. Incompatibilidade química de misturas;\n4. Prejuízos decorrentes de pragas, doenças ou intempéries não previstas.\n\nA decisão de aplicar qualquer insumo ou técnica é de inteira e exclusiva responsabilidade do usuário, que assume todos os riscos técnicos, ambientais e financeiros.",
   "consentSmallNoteUnderDecline": "Sem aceitar, você pode usar o app normalmente no modo privado (funções básicas offline).",
 
-  "identityTitle": "Bem-vindo ao PlanejaCampo",
+  "identityTitle": "Bem-vindo ao RuraCamp",
   "identitySlogan": "Gerencie sua fazenda de forma inteligente",
   "identityGoogleButton": "Entrar com Google",
   "identityAnonymousButton": "Continuar como Visitante",
@@ -145,9 +145,9 @@
   "settingsManagement": "Gerenciamento",
 
   "aboutTitle": "Sobre",
-  "aboutDescription": "Este app faz parte da suíte PlanejaCampo, projetada para ajudar produtores rurais a gerenciar suas atividades no campo.",
+  "aboutDescription": "Este app faz parte da suíte RuraCamp, projetada para ajudar produtores rurais a gerenciar suas atividades no campo.",
   "aboutOfflineFirst": "Offline-First por padrão: seus dados ficam no dispositivo. Funcionalidades opcionais podem sincronizar com a nuvem.",
-  "aboutSuite": "Suíte PlanejaCampo",
+  "aboutSuite": "Suíte RuraCamp",
   "aboutVersion": "Versão",
 
   "privacyTitle": "Privacidade e Consentimentos",
@@ -199,7 +199,7 @@
   "propertyLocationPermissionDenied": "Permissão de localização negada",
   "propertyLocationUnavailable": "Não foi possível obter sua localização",
 
-  "chuvaAppTitle": "PlanejaChuva",
+  "chuvaAppTitle": "RuraRain",
   "chuvaListaVaziaTitle": "Nenhuma chuva registrada",
   "chuvaListaVaziaSubtitle": "Toque no + para registrar sua primeira chuva",
   "chuvaAdicionarTitle": "Registrar Chuva",
@@ -292,7 +292,7 @@
   "chuvaStatsTabBars": "Barras",
   "chuvaStatsTabCompare": "Comparar",
   "chuvaChartComparativeTitle": "Comparativo de Safras",
-  "chuvaShareMessage": "Chuva registrada em {propertyName}! 🌧️ #PlanejaCampo",
+  "chuvaShareMessage": "Chuva registrada em {propertyName}! 🌧️ #RuraCamp",
   "@chuvaShareMessage": {
     "placeholders": {
       "propertyName": {
@@ -451,6 +451,7 @@
   "weatherConsentRequiredDesc": "Toque para autorizar o uso de localização e ver a previsão.",
   "weatherActivateForecast": "Ativar Previsão do Tempo",
   "weatherActivateForecastMessage": "Para mostrar a previsão correta, precisamos da localização desta propriedade.\n\nVocê está na propriedade agora?",
+  "weatherActivateForecastSeringalMessage": "Para mostrar a previsão correta, precisamos da localização deste Seringal (Local de Trabalho).\n\nVocê está lá agora?",
   "weatherNotHere": "Não, estou longe",
   "weatherYesHere": "Sim, estou aqui",
   "weatherSetLocation": "Definir Localização",
