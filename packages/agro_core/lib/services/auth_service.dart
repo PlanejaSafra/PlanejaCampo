@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:google_sign_in/google_sign_in.dart';
 
 /// Authentication service for Firebase (Google Sign-In and Anonymous).
@@ -17,16 +18,24 @@ class AuthService {
   static Future<User?> signInWithGoogle() async {
     try {
       // Trigger Google Sign-In flow
+      debugPrint('[AuthService] Starting Google Sign-In flow...');
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
 
       if (googleUser == null) {
         // User canceled sign-in
+        debugPrint('[AuthService] Google Sign-In canceled by user');
         return null;
       }
 
+      debugPrint('[AuthService] Google account selected: ${googleUser.email}');
+
       // Obtain auth details from request
+      debugPrint('[AuthService] Getting authentication tokens...');
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
+
+      debugPrint(
+          '[AuthService] Got tokens - accessToken: ${googleAuth.accessToken != null ? "present" : "NULL"}, idToken: ${googleAuth.idToken != null ? "present" : "NULL"}');
 
       // Create credential
       final credential = GoogleAuthProvider.credential(
@@ -35,11 +44,16 @@ class AuthService {
       );
 
       // Sign in to Firebase with credential
+      debugPrint('[AuthService] Signing in to Firebase with credential...');
       final UserCredential userCredential =
           await _auth.signInWithCredential(credential);
 
+      debugPrint(
+          '[AuthService] Firebase sign-in SUCCESS: uid=${userCredential.user?.uid}');
       return userCredential.user;
     } catch (e) {
+      debugPrint('[AuthService] ERROR in signInWithGoogle: $e');
+      debugPrint('[AuthService] Error type: ${e.runtimeType}');
       // Re-throw for caller to handle
       rethrow;
     }

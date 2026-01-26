@@ -3,47 +3,129 @@ service cloud.firestore {
   match /databases/{database}/documents {
 
     // =========================================================================
-    // 1. COLLECTIONS PÚBLICAS (SOMENTE LEITURA PARA O APP)
+    // HELPERS
     // =========================================================================
-    // O App só lê. Quem escreve aqui é o seu Backend (Cloud Functions) via Admin SDK.
-    
-    match /rainfall_stats/{geoHash} { 
-      allow read: if request.auth != null; // Todos leem
-      allow write: if false;               // NINGUÉM escreve pelo App (Segurança Crítica)
+    function isAuth() {
+      return request.auth != null;
     }
 
-    // Outras tabelas de apoio (se existirem no futuro)
-    match /regions/{regionId} { 
-      allow read: if request.auth != null; 
-      allow write: if false; 
+    // Para colecoes com campo 'userId' (user_backups, rainfall_records, etc.)
+    function ownsDoc() {
+      return isAuth() && resource.data.userId == request.auth.uid;
+    }
+    function creatingOwnDoc() {
+      return isAuth() && request.resource.data.userId == request.auth.uid;
     }
 
     // =========================================================================
-    // 2. REGRA GERAL (FAIL-SAFE) - DADOS PRIVADOS
+    // EXCECOES NOMEADAS (colecoes que NAO seguem o contrato FarmOwnedEntity)
     // =========================================================================
-    // Aplica-se a 'users', 'rainfall_data', 'properties' e qualquer nova coleção.
-    // Lógica: Se tem 'userId', o dono manda. Se não tem, ninguém acessa por aqui.
 
-    match /{collection}/{document=**} {
-      
-      // CRIAR: Obrigatório estar logado E enviar o campo 'userId' com seu próprio UID
-      allow create: if request.auth != null
-                    && request.resource.data.userId == request.auth.uid;
+    // 1. User Profile
+    match /users/{uid} {
+      allow read, write: if isAuth() && request.auth.uid == uid;
+    }
 
-      // LER: Obrigatório estar logado E o documento ter 'userId' igual ao seu UID
-      allow read: if request.auth != null
-                  && resource.data.userId == request.auth.uid;
+    // 2. Cloud Backup (round-robin slots)
+    match /user_backups/{backupId} {
+      allow read:           if ownsDoc();
+      allow create:         if creatingOwnDoc();
+      allow update, delete: if ownsDoc();
+    }
+    match /user_backup_chunks/{chunkId} {
+      allow read:           if ownsDoc();
+      allow create:         if creatingOwnDoc();
+      allow update, delete: if ownsDoc();
+    }
 
-      // ATUALIZAR: 
-      // 1. Dono bate com o UID
-      // 2. NÃO está tentando transferir o documento para outra pessoa (mudar o userId)
-      allow update: if request.auth != null
-                    && resource.data.userId == request.auth.uid
-                    && request.resource.data.userId == request.auth.uid;
+    // 3. Rainfall (user-specific flat collection)
+    match /rainfall_records/{recordId} {
+      allow read:           if ownsDoc();
+      allow create:         if creatingOwnDoc();
+      allow update, delete: if ownsDoc();
+    }
 
-      // DELETAR: Só o dono pode deletar
-      allow delete: if request.auth != null
-                    && resource.data.userId == request.auth.uid;
+    // 4. Public read-only (Cloud Functions / Admin SDK only writes)
+    match /rainfall_stats/{document=**} {
+      allow read:  if isAuth();
+      allow write: if false;
+    }
+    match /regions/{regionId} {
+      allow read:  if isAuth();
+      allow write: if false;
+    }
+
+    // 5. Marketplace (public read, owner write/delete)
+    match /market_offers/{offerId} {
+      allow read:           if isAuth();
+      allow create:         if creatingOwnDoc();
+      allow update, delete: if ownsDoc();
+    }
+    match /job_posts/{postId} {
+      allow read:           if isAuth();
+      allow create:         if creatingOwnDoc();
+      allow update, delete: if ownsDoc();
+    }
+
+    // =========================================================================
+    // REGRA GENERICA: FarmOwnedEntity (GenericSyncService - CORE-78)
+    //
+    // Cobre TODAS as colecoes operacionais automaticamente:
+    // despesas, parceiros, recebiveis, entregas, tabelas_sangria,
+    // registros_chuva, lancamentos, centros_custo, e futuras.
+    //
+    // Contrato: documento DEVE ter { createdBy, farmId, sourceApp }
+    //
+    // PHASE 1 (atual): createdBy == auth.uid (single-user-per-farm)
+    // PHASE 2 (multi-user): trocar isCreator() por hasFarmAccess()
+    //   que consulta farms/{farmId}.members
+    // =========================================================================
+    match /{collection}/{docId} {
+
+      // Deny-list: colecoes protegidas ja tratadas acima
+      function isProtected() {
+        return collection in [
+          'users', 'user_backups', 'user_backup_chunks',
+          'rainfall_records', 'rainfall_stats', 'regions',
+          'market_offers', 'job_posts'
+        ];
+      }
+
+      // Valida contrato FarmOwnedEntity no documento existente
+      function isFarmOwned() {
+        return resource.data.keys().hasAll(['createdBy', 'farmId']);
+      }
+
+      // Valida contrato FarmOwnedEntity nos dados de criacao
+      function isValidCreate() {
+        return request.resource.data.keys().hasAll(['createdBy', 'farmId', 'sourceApp'])
+            && request.resource.data.createdBy == request.auth.uid;
+      }
+
+      // Imutabilidade estrutural (CORE-77)
+      function structuralFieldsUnchanged() {
+        return request.resource.data.farmId == resource.data.farmId
+            && request.resource.data.createdBy == resource.data.createdBy
+            && request.resource.data.sourceApp == resource.data.sourceApp;
+      }
+
+      // PHASE 1: Creator-based access (single-user-per-farm)
+      function isCreator() {
+        return resource.data.createdBy == request.auth.uid;
+      }
+
+      // PHASE 2 (futuro - descomentar quando Farm estiver no Firestore):
+      // function hasFarmAccess() {
+      //   return isCreator() ||
+      //     request.auth.uid in
+      //       get(/databases/$(database)/documents/farms/$(resource.data.farmId)).data.members;
+      // }
+
+      allow read:   if isAuth() && !isProtected() && isFarmOwned() && isCreator();
+      allow create: if isAuth() && !isProtected() && isValidCreate();
+      allow update: if isAuth() && !isProtected() && isFarmOwned() && isCreator()
+                       && structuralFieldsUnchanged();
+      allow delete: if isAuth() && !isProtected() && isFarmOwned() && isCreator();
     }
   }
 }

@@ -2,7 +2,7 @@ import 'package:agro_core/agro_core.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:flutter/foundation.dart'
-    show kIsWeb, defaultTargetPlatform, TargetPlatform;
+    show kDebugMode, kIsWeb, defaultTargetPlatform, TargetPlatform;
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -39,12 +39,13 @@ Future<void> main() async {
     await Firebase.initializeApp();
   }
 
-  // Initialize App Check
-  await FirebaseAppCheck.instance.activate(
-    androidProvider: AndroidProvider.playIntegrity,
-    appleProvider: AppleProvider.appAttest,
-    webProvider: ReCaptchaV3Provider('recaptcha-v3-site-key'),
-  );
+  // Initialize App Check (only in release builds)
+  if (!kDebugMode) {
+    await FirebaseAppCheck.instance.activate(
+      androidProvider: AndroidProvider.playIntegrity,
+      appleProvider: AppleProvider.appAttest,
+    );
+  }
 
   // Initialize Hive
   await Hive.initFlutter();
@@ -435,63 +436,71 @@ class _AuthGateState extends State<AuthGate> {
       });
     }
 
-    // Initialize user data after successful login
-    await _initializeUserData();
+    try {
+      // Initialize user data after successful login
+      await _initializeUserData();
 
-    final user = AuthService.currentUser;
-    debugPrint(
-        '[Main] Login Success. User: ${user?.uid}, Anonymous: ${user?.isAnonymous}');
+      final user = AuthService.currentUser;
+      debugPrint(
+          '[Main] Login Success. User: ${user?.uid}, Anonymous: ${user?.isAnonymous}');
 
-    if (user != null && !user.isAnonymous) {
-      // CHUVA-64: Login implies consent for Cloud Backup (Terms of Use)
-      // Enforce this locally for UI consistency
-      if (!AgroPrivacyStore.consentCloudBackup) {
-        debugPrint('[Main] Enforcing implicit Cloud Backup consent.');
-        await AgroPrivacyStore.setConsent(
-            AgroPrivacyKeys.consentCloudBackup, true);
-      }
+      if (user != null && !user.isAnonymous) {
+        // CHUVA-64: Login implies consent for Cloud Backup (Terms of Use)
+        // Enforce this locally for UI consistency
+        if (!AgroPrivacyStore.consentCloudBackup) {
+          debugPrint('[Main] Enforcing implicit Cloud Backup consent.');
+          await AgroPrivacyStore.setConsent(
+              AgroPrivacyKeys.consentCloudBackup, true);
+        }
 
-      // Check for existing cloud backups
-      // Note: We removed the check for AgroPrivacyStore.consentCloudBackup here
-      // because authentication itself is the key for access.
-      final backups = await CloudBackupService.instance.listAvailableBackups();
+        // Check for existing cloud backups
+        try {
+          final backups =
+              await CloudBackupService.instance.listAvailableBackups();
 
-      if (backups.isNotEmpty && mounted) {
-        // Show restore dialog
-        // We temporarily hide loading to show the dialog cleanly?
-        // No, showBackupRestoreDialog is a separate route overlay.
+          if (backups.isNotEmpty && mounted) {
+            final result = await showBackupRestoreDialog(context, backups);
+            if (result != null && result.restore) {
+              try {
+                await CloudBackupService.instance
+                    .restoreFromSlot(result.slotIndex);
+                debugPrint(
+                    '[BackupRestore] Restored from slot ${result.slotIndex}');
+              } catch (e) {
+                debugPrint('[BackupRestore] Restore failed: $e');
+              }
+            }
+          }
+        } catch (e) {
+          debugPrint('[Main] Cloud backup check failed (non-fatal): $e');
+        }
 
-        final result = await showBackupRestoreDialog(context, backups);
-        if (result != null && result.restore) {
+        // Auto-enable rain alerts if user accepted terms
+        if (AgroPrivacyStore.hasAcceptedTerms()) {
           try {
-            await CloudBackupService.instance.restoreFromSlot(result.slotIndex);
-            debugPrint(
-                '[BackupRestore] Restored from slot ${result.slotIndex}');
+            final isAlreadyEnabled =
+                await BackgroundService().isRainAlertsEnabled();
+            if (!isAlreadyEnabled) {
+              await BackgroundService().enableRainAlerts();
+              debugPrint('[RainAlerts] Auto-enabled after login');
+            }
           } catch (e) {
-            debugPrint('[BackupRestore] Restore failed: $e');
+            debugPrint('[Main] Rain alerts auto-enable failed (non-fatal): $e');
           }
         }
       }
 
-      // Auto-enable rain alerts if user accepted terms
-      if (AgroPrivacyStore.hasAcceptedTerms()) {
-        final isAlreadyEnabled =
-            await BackgroundService().isRainAlertsEnabled();
-        if (!isAlreadyEnabled) {
-          await BackgroundService().enableRainAlerts();
-          debugPrint('[RainAlerts] Auto-enabled after login');
-        }
-      }
+      // Now try automatic backup (if enabled)
+      CloudBackupService.instance.tryAutoBackup(
+        autoBackupEnabled: AgroPrivacyStore.autoBackupEnabled,
+        hasCloudBackupConsent: true,
+      );
+    } catch (e, stackTrace) {
+      debugPrint('[Main] ERROR in _handleLoginSuccess: $e');
+      debugPrint('[Main] Stack trace: $stackTrace');
     }
 
-    // Now try automatic backup (if enabled)
-    // We pass true for consent because we just enforced it for logged users
-    CloudBackupService.instance.tryAutoBackup(
-      autoBackupEnabled: AgroPrivacyStore.autoBackupEnabled,
-      hasCloudBackupConsent: true,
-    );
-
-    // Stop loading and Refresh UI
+    // Stop loading and Refresh UI (always, even on error)
     if (mounted) {
       setState(() {
         _isLoading = false;

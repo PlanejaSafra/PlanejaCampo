@@ -47,6 +47,7 @@ class _LoginScreenState extends State<LoginScreen> {
   String? _errorMessage;
 
   Future<void> _handleGoogleSignIn() async {
+    debugPrint('[LoginScreen] _handleGoogleSignIn started');
     setState(() {
       _isLoading = true;
       _errorMessage = null;
@@ -54,6 +55,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
     try {
       final currentUser = AuthService.currentUser;
+      debugPrint(
+          '[LoginScreen] Current user: ${currentUser?.uid}, isAnonymous: ${currentUser?.isAnonymous}');
 
       // 1. Check if we need to link (Migration: Anonymous -> Google)
       if (currentUser != null && currentUser.isAnonymous) {
@@ -65,6 +68,8 @@ class _LoginScreenState extends State<LoginScreen> {
           }
           return; // Success
         } on FirebaseAuthException catch (e) {
+          debugPrint(
+              '[LoginScreen] Link error: code=${e.code}, message=${e.message}');
           if (e.code == 'credential-already-in-use') {
             // Conflict: Account already exists.
             // We must sign into the existing account and MIGRATE local data.
@@ -77,13 +82,19 @@ class _LoginScreenState extends State<LoginScreen> {
       }
 
       // 2. Normal Sign In (No anonymous user or simple login)
+      debugPrint('[LoginScreen] Calling AuthService.signInWithGoogle()...');
       final user = await AuthService.signInWithGoogle();
+      debugPrint(
+          '[LoginScreen] signInWithGoogle returned: ${user?.uid ?? "null"}');
 
       if (user != null && mounted) {
         await AgroPrivacyStore.setAcceptedTerms(true);
         widget.onLoginSuccess();
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
+      debugPrint('[LoginScreen] ERROR during Google Sign-In: $e');
+      debugPrint('[LoginScreen] Error type: ${e.runtimeType}');
+      debugPrint('[LoginScreen] Stack trace: $stackTrace');
       if (mounted) {
         setState(() {
           _errorMessage = _getErrorMessage(e.toString());
@@ -156,9 +167,11 @@ class _LoginScreenState extends State<LoginScreen> {
   String _getErrorMessage(String error) {
     if (error.contains('network')) {
       return 'Erro de conexão. Verifique sua internet.';
-    } else if (error.contains('canceled')) {
+    } else if (error.contains('canceled') || error.contains('cancelled')) {
       return 'Login cancelado.';
     } else {
+      // Include actual error for debugging
+      debugPrint('[LoginScreen] Raw error string: $error');
       return 'Erro ao fazer login. Tente novamente.';
     }
   }

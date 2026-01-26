@@ -213,7 +213,7 @@ class _ConsentScreenState extends State<ConsentScreen> {
           ExitDialogHelper.showExitConfirmationDialog(context);
         },
         child: SafeArea(
-          child: Padding(
+          child: SingleChildScrollView(
             padding: const EdgeInsets.all(24.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -237,47 +237,39 @@ class _ConsentScreenState extends State<ConsentScreen> {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 24),
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        // Option 1: Cloud Backup
-                        _ConsentTile(
-                          title: l10n.consentOption1Title,
-                          subtitle: l10n.consentOption1Desc,
-                          legalText: l10n.consentOption1Legal,
-                          value: _cloudBackup,
-                          onChanged: (v) => setState(() {
-                            _cloudBackup = v ?? false;
-                          }),
-                        ),
-                        const SizedBox(height: 8),
+                // Option 1: Cloud Backup
+                _ConsentTile(
+                  title: l10n.consentOption1Title,
+                  subtitle: l10n.consentOption1Desc,
+                  legalText: l10n.consentOption1Legal,
+                  value: _cloudBackup,
+                  onChanged: (v) => setState(() {
+                    _cloudBackup = v ?? false;
+                  }),
+                ),
+                const SizedBox(height: 8),
 
-                        // Option 2: Business Network
-                        _ConsentTile(
-                          title: l10n.consentOption2Title,
-                          subtitle: l10n.consentOption2Desc,
-                          legalText: l10n.consentOption2Legal,
-                          value: _socialNetwork,
-                          onChanged: (v) => setState(() {
-                            _socialNetwork = v ?? false;
-                          }),
-                        ),
-                        const SizedBox(height: 8),
+                // Option 2: Business Network
+                _ConsentTile(
+                  title: l10n.consentOption2Title,
+                  subtitle: l10n.consentOption2Desc,
+                  legalText: l10n.consentOption2Legal,
+                  value: _socialNetwork,
+                  onChanged: (v) => setState(() {
+                    _socialNetwork = v ?? false;
+                  }),
+                ),
+                const SizedBox(height: 8),
 
-                        // Option 3: Intelligence
-                        _ConsentTile(
-                          title: l10n.consentOption3Title,
-                          subtitle: l10n.consentOption3Desc,
-                          legalText: l10n.consentOption3Legal,
-                          value: _aggregateMetrics,
-                          onChanged: (v) => setState(() {
-                            _aggregateMetrics = v ?? false;
-                          }),
-                        ),
-                      ],
-                    ),
-                  ),
+                // Option 3: Intelligence
+                _ConsentTile(
+                  title: l10n.consentOption3Title,
+                  subtitle: l10n.consentOption3Desc,
+                  legalText: l10n.consentOption3Legal,
+                  value: _aggregateMetrics,
+                  onChanged: (v) => setState(() {
+                    _aggregateMetrics = v ?? false;
+                  }),
                 ),
                 const SizedBox(height: 16),
                 ElevatedButton(
