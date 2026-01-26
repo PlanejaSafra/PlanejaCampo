@@ -14,6 +14,15 @@ class AgroDrawer extends StatelessWidget {
   /// Optional version text displayed below the app name.
   final String? versionText;
 
+  /// Optional profile name displayed as a chip below the version.
+  /// Use this for simple text-based profile display (e.g., "Produtor", "Sangrador").
+  final String? profileName;
+
+  /// Optional custom widget for profile display.
+  /// If provided, this takes precedence over [profileName].
+  /// Use this for complex profile indicators (e.g., colored chips, icons).
+  final Widget? profileWidget;
+
   /// Additional menu items specific to the app.
   /// These are rendered before Settings.
   final List<AgroDrawerItem> extraItems;
@@ -35,6 +44,8 @@ class AgroDrawer extends StatelessWidget {
     super.key,
     required this.appName,
     this.versionText,
+    this.profileName,
+    this.profileWidget,
     this.extraItems = const [],
     this.afterSettingsItems = const [],
     this.appLogoLightPath,
@@ -95,6 +106,33 @@ class AgroDrawer extends StatelessWidget {
                       color: theme.brightness == Brightness.dark
                           ? Colors.white.withValues(alpha: 0.8)
                           : theme.colorScheme.onPrimary.withValues(alpha: 0.8),
+                    ),
+                  ),
+                // Profile display (chip or custom widget)
+                if (profileWidget != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: profileWidget!,
+                  )
+                else if (profileName != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: Chip(
+                      label: Text(
+                        profileName!,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: theme.brightness == Brightness.dark
+                              ? Colors.white
+                              : theme.colorScheme.onPrimary,
+                        ),
+                      ),
+                      backgroundColor: theme.brightness == Brightness.dark
+                          ? Colors.white.withValues(alpha: 0.15)
+                          : Colors.white.withValues(alpha: 0.25),
+                      side: BorderSide.none,
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      visualDensity: VisualDensity.compact,
                     ),
                   ),
               ],

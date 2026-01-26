@@ -21,34 +21,76 @@
 
 ### Status: [TODO]
 **Priority**: 🔴 CRITICAL
-**Objective**: Permitir lançamento ultra-rápido de despesas com categorização básica.
+**Objective**: Permitir lançamento ultra-rápido de despesas com UX de calculadora.
 
-### UX "Vapt-Vupt"
+### UX Design Principles (3-Click Rule)
+- **Calculator-Style Interface**: Similar ao app de calculadora do celular
+- **Valor Primeiro**: Digita o valor, depois escolhe categoria
+- **2 Toques Máximo**: Valor → Categoria → Salvo!
+- **Smart Defaults**: Categoria mais usada pré-selecionada
+
+### O Fluxo "Calculadora"
+
 ```
-Abriu o app → Botão Gigante "+" → Valor → Categoria → Pronto!
+┌─────────────────────────────────────┐
+│                        R$ 0,00     │
+│                                     │
+│  [Mão de Obra] [Adubo] [Diesel]    │
+│  [Veneno] [Manut.] [Outros]        │
+│                                     │
+│  ┌─────┬─────┬─────┐               │
+│  │  7  │  8  │  9  │               │
+│  ├─────┼─────┼─────┤               │
+│  │  4  │  5  │  6  │               │
+│  ├─────┼─────┼─────┤               │
+│  │  1  │  2  │  3  │               │
+│  ├─────┼─────┼─────┤               │
+│  │  ,  │  0  │  ⌫  │               │
+│  └─────┴─────┴─────┘               │
+│                                     │
+│  [       ✓ SALVAR       ]          │
+└─────────────────────────────────────┘
 ```
+
+### UX Flow
+```
+1. Abre app → Teclado numérico GIGANTE na tela
+2. Digita valor (ex: 150)
+3. Toca na categoria (chips no topo)
+4. Toca "Salvar" → PRONTO!
+   - Feedback háptico
+   - Toast "R$ 150,00 - Diesel ✓"
+   - Tela limpa para próximo lançamento
+```
+
+### Smart Features (Invisible Complexity)
+- **Categoria Frequente**: A categoria mais usada fica pré-selecionada
+- **Valor Recente**: Sugere valores frequentes (R$ 50, R$ 100, R$ 200)
+- **Data Automática**: Sempre "hoje", sem perguntar
+- **Centro de Custo Padrão**: Usa o padrão até usuário mudar
 
 ### Implementation Plan
 
 | Sub-Phase | Description | Status |
 |-----------|-------------|--------|
 | 1.1 | **Scaffold do App**: Criar estrutura básica com Firebase, Hive, agro_core | ⏳ TODO |
-| 1.2 | **Modelo Despesa**: Entidade com valor, categoria, data, status (pago/a pagar), centro de custo | ⏳ TODO |
-| 1.3 | **Tela Principal**: Lista de despesas do mês com total | ⏳ TODO |
-| 1.4 | **Lançamento Rápido**: Bottom sheet ou tela focada em velocidade | ⏳ TODO |
-| 1.5 | **Categorias Padrão**: Mão de Obra, Adubo, Veneno, Diesel, Manutenção, Outros | ⏳ TODO |
+| 1.2 | **Modelo Despesa**: Entidade com valor, categoria, data, centroCusto | ⏳ TODO |
+| 1.3 | **Calculator Keypad**: Teclado numérico grande estilo calculadora | ⏳ TODO |
+| 1.4 | **Category Chips**: Seletor de categorias com chips coloridos | ⏳ TODO |
+| 1.5 | **Quick Save Flow**: Salvar com feedback háptico + toast | ⏳ TODO |
+| 1.6 | **Home Lista**: Lista de despesas do mês com total no topo | ⏳ TODO |
 
 ### Categorias de Despesa
 
-| Categoria | Ícone | Cor |
-|-----------|-------|-----|
-| Mão de Obra | 👷 | Blue |
-| Adubo/Fertilizante | 🌱 | Green |
-| Defensivos/Veneno | 🧪 | Purple |
-| Combustível/Diesel | ⛽ | Orange |
-| Manutenção | 🔧 | Gray |
-| Energia/Água | 💡 | Yellow |
-| Outros | 📦 | Brown |
+| Categoria | Ícone | Cor | Atalho |
+|-----------|-------|-----|--------|
+| Mão de Obra | 👷 | Blue | MO |
+| Adubo/Fertilizante | 🌱 | Green | AD |
+| Defensivos/Veneno | 🧪 | Purple | VE |
+| Combustível/Diesel | ⛽ | Orange | DI |
+| Manutenção | 🔧 | Gray | MA |
+| Energia/Água | 💡 | Yellow | EN |
+| Outros | 📦 | Brown | OU |
 
 ---
 

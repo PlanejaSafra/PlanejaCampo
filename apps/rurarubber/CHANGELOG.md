@@ -8,6 +8,191 @@
 
 > **Objetivo Estratégico**: Transformar o RuraRubber de "Calculadora de Peso" em "Gestor de Safra" completo.
 > **Futuro**: Preparar a arquitetura para integração com o futuro app **RuraCash** (Controle de Despesas da Fazenda).
+> **Multi-User**: Estrutura de dados preparada para futuro modelo fazenda-centric (ver CORE-75).
+
+---
+
+## Phase RUBBER-23: Sistema de Tabelas (D3/D4) - Opcional
+
+### Status: [TODO]
+**Priority**: 🟢 ENHANCEMENT (Feature Discovery)
+**Objective**: Permitir controle de rotação de sangria (Tabelas D3/D4) de forma opcional e progressiva.
+
+### Business Context
+- O sistema D3/D4 é a rotação de sangria (sangrar tabela diferente a cada dia)
+- Permite calcular **g/árvore** (indicador real de produtividade)
+- Mas é complexo para iniciantes → deve ser **descoberto gradualmente**
+
+### UX: Descoberta Progressiva (Não Obrigatório)
+
+**Dia 1**: Usuário pesa tudo junto, sem tabelas
+**Semana 2**: Sistema oferece: "Quer organizar por tabelas?"
+**Se aceitar**: Wizard simples configura
+
+```
+┌─────────────────────────────────────────┐
+│  Parceiro: Zé                           │
+├─────────────────────────────────────────┤
+│  Tabela: (opcional)                     │
+│  ┌─────┬─────┬─────┬─────┐             │
+│  │  1  │  2  │  3  │  4  │             │
+│  └─────┴─────┴─────┴─────┘             │
+│  [Não usar tabelas]  ← Escape fácil     │
+│                                         │
+│  [TECLADO NUMÉRICO...]                  │
+└─────────────────────────────────────────┘
+```
+
+### Funcionalidades Avançadas (Quando Ativado)
+
+| Feature | Descrição |
+|---------|-----------|
+| **g/árvore** | Calcula produtividade real (peso / nº árvores) |
+| **Alerta Sangria Enforcada** | Avisa se sangrar mesma tabela 2x seguidas |
+| **Sugestão Inteligente** | Destaca tabela provável baseado na sequência |
+| **Comparativo Tabelas** | Qual tabela produz mais? |
+
+### Modelo de Dados
+
+```dart
+class TabelaSangria {
+  String id;
+  String parceiroId;
+  int numero;           // 1, 2, 3, 4
+  int? arvoresEstimadas; // nullable - usuário pode não saber
+}
+
+class Pesagem {
+  // ... campos existentes ...
+  String? tabelaId;     // NULLABLE - tabelas são opcionais
+}
+```
+
+### Implementation Plan
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 23.1 | **Modelo TabelaSangria**: Entidade opcional vinculada ao Parceiro | ⏳ TODO |
+| 23.2 | **Feature Flag**: Controle para ativar/desativar tabelas por parceiro | ⏳ TODO |
+| 23.3 | **Wizard Configuração**: "Quantas tabelas? [3] [4] [5]" | ⏳ TODO |
+| 23.4 | **Seletor na Pesagem**: Botões opcionais com "Não usar" | ⏳ TODO |
+| 23.5 | **Cálculo g/árvore**: Analytics quando tabelas configuradas | ⏳ TODO |
+| 23.6 | **Alerta Enforcada**: Aviso de repetição de tabela | ⏳ TODO |
+| 23.7 | **Sugestão Inteligente**: Destacar próxima tabela provável | ⏳ TODO |
+
+### L10n Keys Required
+- `usarTabelas`: "Usar sistema de tabelas?"
+- `quantasTabelas`: "Quantas tabelas?"
+- `arvoresPorTabela`: "Árvores por tabela (estimado)"
+- `naoUsarTabelas`: "Não usar tabelas"
+- `tabelaSelecionada`: "Tabela {numero}"
+- `alertaEnforcada`: "Atenção: Tabela {numero} foi sangrada ontem"
+- `gramasArvore`: "g/árvore"
+- `produtividadeTabela`: "Produtividade por Tabela"
+
+---
+
+## Phase RUBBER-22: Onboarding Simplificado (3 Perguntas Máximo)
+
+### Status: [TODO]
+**Priority**: 🟡 ARCHITECTURAL (First-Time User Experience)
+**Objective**: Capturar informações essenciais no primeiro uso com mínimo de perguntas.
+
+### UX Principle: "Mais de X perguntas, ele sai do programa"
+
+Máximo **3 perguntas** no onboarding. Tudo mais é descoberto depois.
+
+### O Fluxo de Onboarding
+
+```
+┌─────────────────────────────────────────┐
+│  🌿 Bem-vindo ao RuraRubber!            │
+├─────────────────────────────────────────┤
+│                                         │
+│  1. Nome do seu seringal:               │
+│     [Seringal Santa Fé___________]      │
+│     Sugestão: "Meu Seringal"            │
+│                                         │
+│  2. Você é:                             │
+│     [👨‍🌾 Produtor]  [🪓 Sangrador]       │
+│                                         │
+│  3. Quantos sangradores você tem?       │
+│     [Só eu] [1-2] [3-5] [6+]            │
+│     (Só aparece se Produtor)            │
+│                                         │
+│         [COMEÇAR →]                     │
+└─────────────────────────────────────────┘
+```
+
+### Regras de Simplificação
+
+| Resposta | Consequência |
+|----------|--------------|
+| **"Só eu mesmo"** | Pula TODA complexidade de parceiros. Pesagem direta. |
+| **"1-2 sangradores"** | Modo simples: cadastra parceiros manualmente depois |
+| **"3-5" ou "6+"** | Oferece wizard: "Quer cadastrar agora?" (opcional) |
+| **Sangrador** | Pede nome do "Patrão" (produtor) e seringal que trabalha |
+
+### Smart Defaults
+
+- **Nome padrão**: "Meu Seringal" (pode mudar depois)
+- **Tabelas**: Desativadas por padrão (descoberta progressiva)
+- **Safra**: Criada automaticamente (Setembro atual)
+- **Parceiros**: Zero (cadastra conforme necessidade)
+
+### Preparação Multi-User (CORE-75)
+
+Mesmo no onboarding single-user, salvamos:
+
+```dart
+// Estrutura preparada para futuro
+final farm = Farm(
+  id: generateId(),
+  name: "Seringal Santa Fé",
+  ownerId: currentUserId,  // Dono = usuário atual
+  createdAt: DateTime.now(),
+);
+
+// Todos os dados vinculados à Farm, não ao User
+final pesagem = Pesagem(
+  farmId: farm.id,      // Pertence à fazenda
+  createdBy: userId,    // Quem criou (auditoria)
+  ...
+);
+```
+
+### Implementation Plan
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 22.1 | **OnboardingScreen**: Tela de boas-vindas com 3 perguntas | ⏳ TODO |
+| 22.2 | **Profile Branch**: Fluxos diferentes para Produtor vs Sangrador | ⏳ TODO |
+| 22.3 | **Skip Parceiros**: Se "Só eu", esconde menu de parceiros | ⏳ TODO |
+| 22.4 | **Smart Defaults**: Nome, Safra, configurações automáticas | ⏳ TODO |
+| 22.5 | **Farm Model**: Criar modelo Farm para preparar multi-user | ⏳ TODO |
+
+### Files to Create/Modify
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/screens/onboarding_screen.dart` | CREATE | Wizard de 3 perguntas |
+| `lib/models/farm.dart` | CREATE | Modelo Farm (preparação multi-user) |
+| `lib/services/onboarding_service.dart` | CREATE | Lógica de setup inicial |
+| `lib/main.dart` | MODIFY | Detectar first-run e mostrar onboarding |
+
+### L10n Keys Required
+- `bemVindoRuraRubber`: "Bem-vindo ao RuraRubber!"
+- `nomeSeringal`: "Nome do seu seringal"
+- `sugestaoNome`: "Meu Seringal"
+- `voceE`: "Você é:"
+- `produtor`: "Produtor"
+- `sangrador`: "Sangrador"
+- `quantosSangradores`: "Quantos sangradores você tem?"
+- `soEu`: "Só eu mesmo"
+- `umDois`: "1-2"
+- `tresCinco`: "3-5"
+- `seisMais`: "6+"
+- `comecar`: "Começar"
 
 ---
 
@@ -90,75 +275,334 @@ Para o comprador que usa o app para registrar compras de múltiplos produtores.
 
 ### Status: [TODO]
 **Priority**: 🟡 ARCHITECTURAL
-**Objective**: Permitir que produtores acompanhem valores a receber das usinas/bancas.
+**Objective**: Permitir que produtores acompanhem valores a receber das usinas/bancas com UX mínima.
 
-### Business Context
-O produtor precisa saber quando vai receber e poder controlar se o pagamento foi feito.
+### UX Design Principles (3-Click Rule)
+- **Popup Pós-Entrega**: Aparece imediatamente após salvar entrega
+- **2 Campos Apenas**: Data prevista de recebimento + Comprador (opcional)
+- **Skip fácil**: Botão "Pular" sempre disponível (não obrigatório)
+- **Baixa com 1 toque**: Swipe ou tap para marcar como recebido
 
-### O Fluxo
-1. Ao finalizar Entrega → Preenche: *Preço Combinado* + *Data Prevista de Recebimento*
-2. Sistema gera **Título a Receber** (Status: Aberto)
-3. Quando recebe, marca como "Recebido" com valor real
+### O Fluxo Simplificado
+
+```
+1. [SALVAR ENTREGA] Usuário clica "Salvar" no fechamento
+2. [POPUP AUTOMÁTICO] "Quando você vai receber?"
+   ┌─────────────────────────────────────┐
+   │  💰 Registrar Recebível?            │
+   │                                     │
+   │  Valor: R$ 2.450,00                 │
+   │  (calculado da entrega)             │
+   │                                     │
+   │  Data prevista: [__ /__ /____] 📅   │
+   │  Comprador:     [Usina X     ] ▼    │
+   │                                     │
+   │  [Pular]              [Salvar]      │
+   └─────────────────────────────────────┘
+3. [HOME SCREEN] Card resumo: "A receber: R$ X"
+4. [BAIXA] Tap no item → "Recebeu?" → Sim/Não
+```
+
+### Dashboard Card (Home Screen)
+
+```
+┌─────────────────────────────────────┐
+│ 💰 A Receber                        │
+│                                     │
+│ Esta semana:     R$ 2.450,00        │
+│ Este mês:        R$ 8.200,00        │
+│                                     │
+│ [Ver todos →]                       │
+└─────────────────────────────────────┘
+```
 
 ### Implementation Plan
 
 | Sub-Phase | Description | Status |
 |-----------|-------------|--------|
-| 18.1 | **Modelo TituloReceber**: Entidade vinculada à Entrega (valor previsto, data vencimento, status) | ⏳ TODO |
-| 18.2 | **Fluxo de Caixa Futuro**: Tela com lista ordenada por data, "A receber esta semana: R$ X" | ⏳ TODO |
-| 18.3 | **Baixa de Recebimento**: Marcar como recebido, informar valor real e data real | ⏳ TODO |
-| 18.4 | **Diferença de Pagamento**: Registrar quando usina pagou menos que o combinado | ⏳ TODO |
-| 18.5 | **Dashboard Resumo**: Card na Home "Pendente: R$ X | Recebido este mês: R$ Y" | ⏳ TODO |
+| 18.1 | **Modelo TituloReceber**: Entidade simples (entregaId, valor, dataPrevista, comprador?, status) | ⏳ TODO |
+| 18.2 | **RecebiveisService**: CRUD básico, query por status, totais por período | ⏳ TODO |
+| 18.3 | **Popup Pós-Entrega**: BottomSheet que aparece após salvar entrega | ⏳ TODO |
+| 18.4 | **Card Home**: Resumo "A Receber" com totais semanais/mensais | ⏳ TODO |
+| 18.5 | **Lista Recebíveis**: Tela simples com status visual (pendente/recebido) | ⏳ TODO |
+| 18.6 | **Baixa Rápida**: Swipe-to-complete ou tap para marcar recebido | ⏳ TODO |
 
 ### Files to Create/Modify
 
 | File | Action | Description |
 |------|--------|-------------|
-| `lib/models/titulo_receber.dart` | CREATE | Modelo TituloReceber |
-| `lib/screens/fluxo_caixa_screen.dart` | CREATE | Tela de fluxo de caixa |
-| `lib/screens/fechamento_entrega_screen.dart` | MODIFY | Adicionar campos de recebível |
-| `lib/services/titulo_receber_service.dart` | CREATE | Service para gestão de recebíveis |
+| `lib/models/titulo_receber.dart` | CREATE | Modelo TituloReceber simplificado |
+| `lib/services/recebiveis_service.dart` | CREATE | Service para gestão de recebíveis |
+| `lib/widgets/recebivel_popup.dart` | CREATE | BottomSheet pós-entrega |
+| `lib/widgets/recebiveis_card.dart` | CREATE | Card resumo para Home |
+| `lib/screens/recebiveis_screen.dart` | CREATE | Lista de recebíveis |
+| `lib/screens/fechamento_entrega_screen.dart` | MODIFY | Trigger do popup após salvar |
+| `lib/screens/home_screen.dart` | MODIFY | Adicionar RecebiveisCard |
+
+### L10n Keys Required
+- `registrarRecebivel`: "Registrar Recebível?"
+- `dataPrevistaRecebimento`: "Data prevista"
+- `compradorOpcional`: "Comprador (opcional)"
+- `pular`: "Pular"
+- `aReceberCard`: "A Receber"
+- `estaSemana`: "Esta semana"
+- `esteMes`: "Este mês"
+- `verTodos`: "Ver todos"
+- `marcarRecebido`: "Marcar como recebido"
+- `recebido`: "Recebido"
+- `pendente`: "Pendente"
 
 ---
 
-## Phase RUBBER-17: Controle de Safras (A Base do Tempo)
+## Phase RUBBER-17: Controle de Safras (Modelo Date Range)
 
 ### Status: [TODO]
 **Priority**: 🔴 CRITICAL (Pré-requisito para fases financeiras)
-**Objective**: Implementar seletor de safra global para fatiar dados por período anual.
+**Objective**: Implementar controle de safra baseado em Janela de Tempo (Date Range), não acumulador.
 
-### Business Context
-Atualmente o app é um fluxo contínuo. Para gerar relatórios anuais comparáveis, precisamos "fatiar" o tempo em safras.
+### Arquitetura: Query-Based (Não Acumulador)
 
-### O Fluxo
-1. Ao abrir o app, sistema verifica data atual e seleciona safra ativa (ex: "Safra 2025/2026")
-2. Usuário pode trocar para safras anteriores via seletor
-3. Todas as telas (Pesagem, Entregas, Financeiro) filtram automaticamente pelo período
+**Princípio Fundamental**: Não salvamos totais fixos. Salvamos pesagens individuais.
+O total é **calculado na hora** via query de banco de dados.
 
-### Definição de Safra
-- **Safra de Borracha**: Geralmente de Setembro a Agosto do ano seguinte
-- Configurável por usuário (algumas regiões diferem)
+```
+❌ ERRADO (Acumulador fixo):
+   safra.totalKg = 15400  // Se editar pesagem antiga, esse número "fura"
+
+✅ CORRETO (Query dinâmica):
+   SELECT SUM(peso) FROM pesagens
+   WHERE data >= safra.dataInicio AND data < safra.dataFim
+   // Sempre atualizado, mesmo com lançamentos retroativos
+```
+
+**Vantagem**: Se o produtor achar um papelzinho de Outubro e lançar hoje com data de Outubro,
+o sistema atualiza o relatório da safra automaticamente.
+
+### O Modelo Safra (Entidade Simples)
+
+```dart
+class Safra {
+  String id;
+  String nome;         // "Safra 2025/2026"
+  DateTime dataInicio; // 01/09/2025
+  DateTime? dataFim;   // 31/08/2026 (null = em aberto)
+  bool ativa;          // true se for a safra atual
+
+  // NOTA: totalKg e totalValor são CALCULADOS via query, não armazenados!
+}
+```
+
+### UX Design Principles
+- **Zero Configuration**: Safra inicia automaticamente em Setembro
+- **Ajuste Manual Opcional**: Usuário pode editar datas nas configurações se precisar
+- **Encerramento Simples**: Botão "Encerrar Safra" define dataFim = HOJE e cria nova safra
+
+### O Fluxo Simplificado
+
+```
+1. [PRIMEIRA VEZ] App cria "Safra Inicial" com dataInicio = 01/Set atual (ou data instalação)
+2. [DURANTE ANO] Todas as pesagens são salvas com sua data original
+3. [ENCERRAMENTO] Usuário clica "Encerrar Safra":
+   - Sistema define dataFim = HOJE
+   - Sistema cria nova safra com dataInicio = AMANHÃ
+4. [AJUSTE] Se precisar, usuário edita datas nas configurações da Safra
+```
+
+### Season Chip in Header (Home Screen)
+
+```
+┌────────────────────────────────────────┐
+│ [≡]  RuraRubber         [Safra 25/26 ▼]│
+├────────────────────────────────────────┤
+│  ┌──────────────────────────────────┐  │
+│  │ Total Fazenda: 25.000 kg         │  │
+│  │ Média Mensal:   2.500 kg         │  │
+│  └──────────────────────────────────┘  │
+│                                        │
+│  ┌──────────────────────────────────┐  │
+│  │ 👤 Zé      10.000 kg  (40%)      │  │
+│  │ 👤 Tião     8.000 kg  (32%)      │  │
+│  │ 👤 Maria    7.000 kg  (28%)      │  │
+│  └──────────────────────────────────┘  │
+└────────────────────────────────────────┘
+```
+
+### Visão Hierárquica: Fazenda > Parceiros
+
+**Cabeçalho (Total da Fazenda)**:
+- Somatório de TODOS os parceiros
+- Gráfico de barras: Média Mensal da fazenda
+
+**Lista de Parceiros**:
+- Cards ordenados por produção
+- Cada card mostra: Nome, Total Kg, % do total
+
+**Drill-Down**:
+- Clicar no parceiro → Tela exclusiva dele (ver RUBBER-21)
 
 ### Implementation Plan
 
 | Sub-Phase | Description | Status |
 |-----------|-------------|--------|
-| 17.1 | **Modelo Safra**: Criar entidade com nome, data início, data fim, status (ativa/encerrada) | ⏳ TODO |
-| 17.2 | **SafraService**: Gerenciar safras, detectar safra ativa, criar automático | ⏳ TODO |
-| 17.3 | **Seletor Global**: Widget no AppBar ou Drawer para trocar safra visualizada | ⏳ TODO |
-| 17.4 | **Filtro Automático**: Modificar queries de Entrega/Parceiro para filtrar por safra | ⏳ TODO |
-| 17.5 | **Relatório de Safra**: Painel com Total Kg, Total Recebido, Média de Preço | ⏳ TODO |
-| 17.6 | **Comparativo de Safras**: Gráfico comparando safra atual vs anterior | ⏳ TODO |
+| 17.1 | **Modelo Safra**: Entidade com nome, dataInicio, dataFim (nullable), ativa | ⏳ TODO |
+| 17.2 | **SafraService**: Query-based totals, auto-criar em Setembro, encerrar/criar nova | ⏳ TODO |
+| 17.3 | **SafraChip Widget**: Chip compacto para header com nome abreviado (ex: "25/26") | ⏳ TODO |
+| 17.4 | **SafraBottomSheet**: Lista de safras com resumo calculado dinamicamente | ⏳ TODO |
+| 17.5 | **Home Dashboard**: Visão hierárquica (Total Fazenda + Lista Parceiros) | ⏳ TODO |
+| 17.6 | **Filtro por Período**: Queries usam WHERE data BETWEEN dataInicio AND dataFim | ⏳ TODO |
+| 17.7 | **Encerramento**: Botão "Encerrar Safra" com criação automática da próxima | ⏳ TODO |
+| 17.8 | **Ajuste Manual**: Tela de configuração para editar datas se necessário | ⏳ TODO |
 
 ### Files to Create/Modify
 
 | File | Action | Description |
 |------|--------|-------------|
-| `lib/models/safra.dart` | CREATE | Modelo Safra com Hive adapter |
-| `lib/services/safra_service.dart` | CREATE | Gestão de safras |
-| `lib/widgets/safra_selector.dart` | CREATE | Widget seletor de safra |
-| `lib/screens/home_screen.dart` | MODIFY | Adicionar seletor e filtro |
-| `lib/screens/relatorio_safra_screen.dart` | CREATE | Dashboard da safra |
+| `lib/models/safra.dart` | CREATE | Modelo Safra com Hive adapter (sem totais fixos) |
+| `lib/services/safra_service.dart` | CREATE | Gestão de safras + queries dinâmicas |
+| `lib/widgets/safra_chip.dart` | CREATE | Chip compacto para header |
+| `lib/widgets/safra_bottom_sheet.dart` | CREATE | Bottom sheet com lista e estatísticas |
+| `lib/widgets/fazenda_summary_card.dart` | CREATE | Card com total da fazenda |
+| `lib/widgets/parceiro_list_card.dart` | CREATE | Lista de parceiros com % |
+| `lib/screens/home_screen.dart` | MODIFY | Dashboard hierárquico completo |
+| `lib/screens/safra_settings_screen.dart` | CREATE | Configurações da safra (ajuste datas) |
+
+### L10n Keys Required
+- `safraChipLabel`: "{ano1}/{ano2}" (ex: "25/26")
+- `totalFazenda`: "Total Fazenda"
+- `mediaMensal`: "Média Mensal"
+- `mediaQuinzenal`: "Média Quinzenal"
+- `encerrarSafra`: "Encerrar Safra"
+- `novaSafraCriada`: "Nova safra criada: {nome}"
+- `ajustarDatas`: "Ajustar Datas"
+- `dataInicio`: "Data Início"
+- `dataFim`: "Data Fim"
+- `safraAtiva`: "Safra Ativa"
+- `safrasAnteriores`: "Safras Anteriores"
+- `doTotal`: "do total"
+
+---
+
+## Phase RUBBER-21: Analytics do Parceiro (Raio-X)
+
+### Status: [TODO]
+**Priority**: 🟢 ENHANCEMENT
+**Objective**: Gráficos detalhados de produção por parceiro com comparativo de média.
+
+### Business Context
+O patrão com múltiplos sangradores precisa:
+- Ver quem está produzindo mais/menos
+- Identificar quedas de produção (pode ser doença, problema, etc.)
+- Comparar desempenho individual vs média da fazenda
+
+### O "Raio-X" do Parceiro
+
+Ao clicar no card do parceiro na Home, entra na tela de detalhes:
+
+```
+┌────────────────────────────────────────┐
+│ [←]  Zé - Sangrador                    │
+├────────────────────────────────────────┤
+│                                        │
+│  Total Safra: 10.000 kg                │
+│  Média Quinzenal: 300 kg               │
+│                                        │
+│  [15 Dias] [Mês] [Safra]  ← Seletor    │
+│                                        │
+│  ┌──────────────────────────────────┐  │
+│  │    ▓▓▓                           │  │
+│  │    ▓▓▓  ▓▓▓                      │  │
+│  │    ▓▓▓  ▓▓▓  ▓▓▓                 │  │
+│  │ ───────────────────── (média)    │  │
+│  │    1ª   2ª   1ª   2ª            │  │
+│  │   Jan  Jan  Fev  Fev            │  │
+│  └──────────────────────────────────┘  │
+│                                        │
+│  [Ver Extrato Financeiro]              │
+└────────────────────────────────────────┘
+```
+
+### Seletor de Período (3 Visões)
+
+| Visão | Eixo X | Uso |
+|-------|--------|-----|
+| **15 Dias** | 1ª Jan, 2ª Jan, 1ª Fev... | Ciclo de pagamento quinzenal |
+| **Mês** | Janeiro, Fevereiro... | Curva da safra (pico vs seca) |
+| **Safra** | Safra 24/25, Safra 25/26 | Comparativo anual |
+
+### Recurso "Comparativo Fantasma"
+
+Linha cinza clara no fundo do gráfico mostrando a **Média da Fazenda**.
+
+**Interpretação visual**:
+- Barra do Zé **acima** da linha cinza → Acima da média
+- Barra do Zé **abaixo** da linha cinza → Precisa melhorar
+
+```
+  │    ▓▓▓
+  │    ▓▓▓  ▓▓▓
+  │────░░░──░░░──░░░───── ← Média Fazenda (linha cinza)
+  │    ▓▓▓  ▓▓▓  ▓▓▓
+  │   Jan  Fev  Mar
+```
+
+### Regra de Dados Mínimos (Cold Start Problem)
+
+**Problema**: No primeiro mês, a "Média da Fazenda" pode ser instável (poucos dados).
+
+**Solução**: Só mostrar a "Linha Fantasma" quando houver dados suficientes:
+
+| Condição | Comportamento |
+|----------|---------------|
+| **< 2 parceiros ativos** | Não mostra linha fantasma (não faz sentido comparar) |
+| **< 15 dias de dados** | Não mostra linha fantasma (média instável) |
+| **≥ 2 parceiros E ≥ 15 dias** | Mostra linha fantasma normalmente |
+
+```dart
+bool shouldShowPhantomLine({
+  required int activePartners,
+  required int daysWithData,
+}) {
+  return activePartners >= 2 && daysWithData >= 15;
+}
+```
+
+**UX**: Quando a linha não aparece, o gráfico funciona normalmente - só não tem a referência de comparação.
+
+### Implementation Plan
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 21.1 | **ParceiroDetailScreen**: Tela de detalhes do parceiro | ⏳ TODO |
+| 21.2 | **Period Selector**: Botões [15 Dias] [Mês] [Safra] | ⏳ TODO |
+| 21.3 | **Bar Chart Widget**: Gráfico de barras com fl_chart | ⏳ TODO |
+| 21.4 | **Média Fantasma**: Linha de referência da média da fazenda | ⏳ TODO |
+| 21.5 | **Cold Start Guard**: Só mostrar linha fantasma se ≥2 parceiros E ≥15 dias | ⏳ TODO |
+| 21.6 | **Cálculo Médias**: Quinzenal e Mensal baseados na safra | ⏳ TODO |
+| 21.7 | **Extrato Financeiro**: Link para histórico de pagamentos do parceiro | ⏳ TODO |
+
+### Files to Create/Modify
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/screens/parceiro_detail_screen.dart` | CREATE | Tela "Raio-X" do parceiro |
+| `lib/widgets/period_selector.dart` | CREATE | Seletor [15 Dias] [Mês] [Safra] |
+| `lib/widgets/production_bar_chart.dart` | CREATE | Gráfico de barras com fl_chart |
+| `lib/services/analytics_service.dart` | CREATE | Cálculos de médias e comparativos |
+| `lib/screens/home_screen.dart` | MODIFY | Navegação para ParceiroDetailScreen |
+| `pubspec.yaml` | MODIFY | Adicionar fl_chart: ^0.68.0 |
+
+### L10n Keys Required
+- `raioXParceiro`: "Detalhes do Parceiro"
+- `totalSafra`: "Total Safra"
+- `mediaQuinzenal`: "Média Quinzenal"
+- `mediaMensal`: "Média Mensal"
+- `periodo15Dias`: "15 Dias"
+- `periodoMes`: "Mês"
+- `periodoSafra`: "Safra"
+- `acimaDaMedia`: "Acima da média"
+- `abaixoDaMedia`: "Abaixo da média"
+- `verExtratoFinanceiro`: "Ver Extrato Financeiro"
+- `mediaFazenda`: "Média Fazenda"
 
 ---
 

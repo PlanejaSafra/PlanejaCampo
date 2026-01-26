@@ -2,30 +2,156 @@
 
 ---
 
-## Phase CORE-67: Profile Display in AgroDrawer
+## Phase CORE-75: Preparação Multi-User (Farm-Centric Model)
 
 ### Status: [TODO]
+**Priority**: 🟡 ARCHITECTURAL (Futuro - Não implementar agora)
+**Objective**: Preparar estrutura de dados para futuro modelo multi-user sem implementar funcionalidade.
+
+### Contexto de Negócio
+
+**Hoje (Single-User)**:
+- Usuário = Dono da fazenda
+- Todos os dados vinculados ao `userId`
+
+**Futuro (Multi-User)**:
+- Fazenda tem múltiplos usuários (Dono, Gerente, Funcionário)
+- Dados vinculados à `farmId`, não ao `userId`
+- Gerente pode lançar pesagem que aparece no app do Dono
+
+### Mudança de Mentalidade
+
+```dart
+// ❌ ERRADO (User-Centric) - Problema se gerente sair
+class Pesagem {
+  String userId;  // Se gerente for demitido, dado some com ele
+}
+
+// ✅ CORRETO (Farm-Centric) - Preparado para futuro
+class Pesagem {
+  String farmId;     // A quem pertence o dado (fazenda)
+  String createdBy;  // Quem criou (auditoria)
+}
+```
+
+### O Que Fazer AGORA (Custo Zero)
+
+| Ação | Descrição |
+|------|-----------|
+| **Adicionar `farmId`** | Todo novo modelo deve ter `farmId` além de `userId` |
+| **`farmId = userId`** | No single-user, são iguais. Migração futura fácil. |
+| **`createdBy`** | Campo de auditoria para saber quem criou o registro |
+| **Não implementar UI** | Zero telas de convite, permissões, etc. |
+
+### Modelo Base (Preparação)
+
+```dart
+/// Modelo base para todos os dados do ecossistema RuraCamp
+abstract class FarmOwnedEntity {
+  String get id;
+  String get farmId;      // Dono do dado (fazenda)
+  String get createdBy;   // Quem criou (auditoria)
+  DateTime get createdAt;
+}
+
+/// Farm model (criado no onboarding, invisível para o usuário)
+class Farm {
+  String id;
+  String name;           // "Seringal Santa Fé"
+  String ownerId;        // Dono principal
+  DateTime createdAt;
+  // Futuro: List<FarmMember> members;
+}
+```
+
+### Implementation Plan (Preparação Apenas)
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 75.1 | **Modelo Farm**: Criar entidade básica (id, name, ownerId) | ⏳ TODO |
+| 75.2 | **FarmService**: CRUD básico, auto-criar no primeiro uso | ⏳ TODO |
+| 75.3 | **Mixin FarmOwned**: Campos farmId + createdBy para modelos | ⏳ TODO |
+| 75.4 | **Migração Modelos**: Adicionar farmId aos modelos existentes | ⏳ TODO |
+
+### Files to Create
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/models/farm.dart` | CREATE | Modelo Farm básico |
+| `lib/services/farm_service.dart` | CREATE | Gestão de fazendas (single-user por ora) |
+| `lib/models/farm_owned_entity.dart` | CREATE | Mixin/abstract para entidades com farmId |
+
+### O Que NÃO Fazer Agora
+
+- ❌ Tela de convite de membros
+- ❌ Sistema de permissões (Owner, Manager, Worker)
+- ❌ Sincronização entre dispositivos de usuários diferentes
+- ❌ UI de "Trocar de Fazenda"
+- ❌ Firestore rules para multi-tenant
+
+### Futuro (Quando Monetizar)
+
+```
+Fazenda Santa Fé
+├── Dono: João (Owner) - Vê tudo, paga assinatura
+├── Gerente: Pedro (Manager) - Lança dados, não vê financeiro
+└── Sangrador: Zé (Worker) - Só vê próprias pesagens
+```
+
+### Cross-Reference
+- RUBBER-22 (Onboarding cria Farm automaticamente)
+- Todos os apps do ecossistema devem usar farmId
+
+---
+
+## Phase CORE-67: Profile Display in AgroDrawer
+
+### Status: [DONE]
+**Date Completed**: 2026-01-25
 **Priority**: 🟢 ENHANCEMENT
 **Objective**: Display the user's selected profile type (Producer/Tapper/Buyer) in the drawer header to provide visual feedback of current context.
 
 ### Problem
 After selecting a profile in RuraRubber (or future apps with profiles), users have no visual indication of their current role when viewing the drawer menu. This can cause confusion about which features are available.
 
-### Implementation Plan
+### Implementation Summary
 
 | Sub-Phase | Description | Status |
 |-----------|-------------|--------|
-| 67.1 | Add optional `profileWidget` or `profileName` parameter to `AgroDrawer` | ⏳ TODO |
-| 67.2 | Display profile badge/chip below app name in drawer header | ⏳ TODO |
-| 67.3 | Update l10n strings for profile display | ⏳ TODO |
+| 67.1 | Add optional `profileWidget` or `profileName` parameter to `AgroDrawer` | ✅ DONE |
+| 67.2 | Display profile badge/chip below app name in drawer header | ✅ DONE |
+| 67.3 | Update l10n strings for profile display | ⏫ SKIPPED (not needed - profile name comes from app) |
 
-### Files to Modify
+### Files Modified
 
 | File | Action | Description |
 |------|--------|-------------|
-| `lib/menu/agro_drawer.dart` | MODIFY | Add profileWidget/profileName parameter, render in header |
-| `lib/l10n/arb/app_pt.arb` | MODIFY | Add profile display strings if needed |
-| `lib/l10n/arb/app_en.arb` | MODIFY | Add profile display strings if needed |
+| `lib/menu/agro_drawer.dart` | MODIFY | Added `profileName` and `profileWidget` parameters |
+
+### Usage Example
+
+```dart
+// Simple profile name (displays as chip)
+AgroDrawer(
+  appName: 'RuraRubber',
+  profileName: 'Produtor',  // Shows chip in header
+  onNavigate: _handleNavigation,
+)
+
+// Custom profile widget
+AgroDrawer(
+  appName: 'RuraRubber',
+  profileWidget: Row(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      Icon(Icons.agriculture, size: 16),
+      SizedBox(width: 4),
+      Text('Produtor'),
+    ],
+  ),
+  onNavigate: _handleNavigation,
+)
+```
 
 ### Cross-Reference
 - RUBBER-12 (RuraRubber integration)
