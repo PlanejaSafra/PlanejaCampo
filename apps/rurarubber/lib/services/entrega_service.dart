@@ -1,4 +1,5 @@
 import 'package:agro_core/agro_core.dart';
+import 'package:agro_core/services/sync/generic_sync_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:uuid/uuid.dart';
@@ -6,36 +7,77 @@ import 'package:uuid/uuid.dart';
 import '../models/entrega.dart';
 import '../models/item_entrega.dart';
 
-class EntregaService extends ChangeNotifier {
-  static const String boxName = 'entregas';
-  Box<Entrega>? _box;
+/// Service for managing deliveries (Entregas) in RuraRubber.
+/// Migrated to GenericSyncService (CORE-83).
+class EntregaService extends GenericSyncService<Entrega> {
+  static final EntregaService _instance = EntregaService._internal();
+  static EntregaService get instance => _instance;
+  EntregaService._internal();
+  factory EntregaService() => _instance;
+
+  @override
+  String get boxName => 'entregas';
+
+  @override
+  String get sourceApp => 'rurarubber';
+
+  @override
+  bool get syncEnabled => true;
+
+  @override
+  Entrega fromMap(Map<String, dynamic> map) => Entrega.fromJson(map);
+
+  @override
+  Map<String, dynamic> toMap(Entrega item) => item.toJson();
+
+  @override
+  String getId(Entrega item) => item.id;
 
   // Active session data
   Entrega? _currentEntrega;
 
+  /// All deliveries sorted by date (newest first).
   List<Entrega> get entregas {
-    final box = _box;
-    if (box == null) return [];
-    final list = box.values.toList();
+    final list = getAll();
     list.sort((a, b) => b.data.compareTo(a.data));
     return list;
   }
 
   Entrega? get currentEntrega => _currentEntrega;
 
+  @override
   Future<void> init() async {
-    if (_box != null && _box!.isOpen) return;
-    _box = await Hive.openBox<Entrega>(boxName);
+    await super.init();
+    await _migrateDataIfNeeded();
     _checkForOpenEntrega();
-    notifyListeners();
+  }
+
+  /// Migra dados antigos (Objetos) para nova estrutura
+  Future<void> _migrateDataIfNeeded() async {
+    final box = Hive.box(boxName);
+    if (box.isEmpty) return;
+
+    final firstKey = box.keys.first;
+    final firstValue = box.get(firstKey);
+
+    if (firstValue is Entrega) {
+      debugPrint('[EntregaService] Migrating data from Adapter to Map...');
+      final Map<dynamic, dynamic> rawMap = box.toMap();
+
+      for (final entry in rawMap.entries) {
+        if (entry.value is Entrega) {
+          final item = entry.value as Entrega;
+          await super.update(item.id, item);
+        }
+      }
+      debugPrint('[EntregaService] Migration completed.');
+    }
   }
 
   void _checkForOpenEntrega() {
     // Find the most recent 'Aberto' entrega
     try {
-      if (_box == null) return;
-      final openEntregas =
-          _box!.values.where((e) => e.status == 'Aberto').toList();
+      final openEntregas = getAll().where((e) => e.status == 'Aberto').toList();
       if (openEntregas.isNotEmpty) {
         // Sort by date descending
         openEntregas.sort((a, b) => b.data.compareTo(a.data));
@@ -63,18 +105,15 @@ class EntregaService extends ChangeNotifier {
 
   /// Delete a specific entrega by ID.
   Future<void> deleteEntrega(String id) async {
-    if (_box == null) await init();
-    await _box!.delete(id);
+    await super.delete(id);
     if (_currentEntrega?.id == id) {
       _currentEntrega = null;
     }
-    notifyListeners();
   }
 
   /// Get entrega by ID.
   Entrega? getEntregaById(String id) {
-    if (_box == null) return null;
-    return _box!.get(id);
+    return getById(id);
   }
 
   Future<void> addPesagem(String parceiroId, double peso) async {
@@ -102,10 +141,8 @@ class EntregaService extends ChangeNotifier {
       _currentEntrega!.itens.add(item);
     }
 
-    // Save/Update current entrega in Hive
-    if (_box == null) await init();
-    await _box!.put(_currentEntrega!.id, _currentEntrega!);
-    notifyListeners();
+    // Save/Update current entrega via GenericSyncService (triggers sync)
+    await super.update(_currentEntrega!.id, _currentEntrega!);
   }
 
   Future<void> undoLastPesagem(String parceiroId) async {
@@ -120,9 +157,7 @@ class EntregaService extends ChangeNotifier {
         if (item.pesagens.isEmpty) {
           _currentEntrega!.itens.remove(item);
         }
-        if (_box == null) await init();
-        await _box!.put(_currentEntrega!.id, _currentEntrega!);
-        notifyListeners();
+        await super.update(_currentEntrega!.id, _currentEntrega!);
       }
     } catch (e) {
       // Item not found
@@ -180,8 +215,7 @@ class EntregaService extends ChangeNotifier {
       records: entregas,
       safra: safra,
       getDate: (e) => e.data,
-      getValue: (e) =>
-          e.itens.fold<double>(0, (sum, i) => sum + i.valorTotal),
+      getValue: (e) => e.itens.fold<double>(0, (sum, i) => sum + i.valorTotal),
     );
   }
 
@@ -209,7 +243,6 @@ class EntregaService extends ChangeNotifier {
   }
 
   /// Monthly totals within a safra period (for charts).
-  /// Returns a sorted list of (year, month) → totalKg.
   List<MapEntry<DateTime, double>> totalMensalSafra(Safra safra) {
     final filtered = entregasPorSafra(safra);
     final monthly = <String, double>{};
@@ -233,7 +266,6 @@ class EntregaService extends ChangeNotifier {
   }
 
   /// Biweekly (quinzenal) totals within a safra period.
-  /// Returns sorted list of (first day of period) → totalKg.
   List<MapEntry<DateTime, double>> totalQuinzenalSafra(Safra safra) {
     final filtered = entregasPorSafra(safra);
     final biweekly = <String, double>{};
@@ -248,8 +280,7 @@ class EntregaService extends ChangeNotifier {
     final entries = biweekly.entries.map((e) {
       final parts = e.key.split('-');
       return MapEntry(
-        DateTime(int.parse(parts[0]), int.parse(parts[1]),
-            int.parse(parts[2])),
+        DateTime(int.parse(parts[0]), int.parse(parts[1]), int.parse(parts[2])),
         e.value,
       );
     }).toList()
@@ -277,8 +308,7 @@ class EntregaService extends ChangeNotifier {
     final entries = biweekly.entries.map((e) {
       final parts = e.key.split('-');
       return MapEntry(
-        DateTime(int.parse(parts[0]), int.parse(parts[1]),
-            int.parse(parts[2])),
+        DateTime(int.parse(parts[0]), int.parse(parts[1]), int.parse(parts[2])),
         e.value,
       );
     }).toList()
@@ -316,9 +346,7 @@ class EntregaService extends ChangeNotifier {
 
   /// Clear all entregas (used for restore).
   Future<void> clearAll() async {
-    if (_box == null) await init();
-    await _box!.clear();
+    await super.clearAll();
     _currentEntrega = null;
-    notifyListeners();
   }
 }

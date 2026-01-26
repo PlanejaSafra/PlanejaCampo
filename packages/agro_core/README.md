@@ -27,7 +27,10 @@ Core library of reusable components, services, and models for the **RuraCamp** a
 *   **Integrações**: Previsão do tempo (Open-Meteo), Seleção de Localização (Google Maps).
 *   **Notificações Inteligentes**: Alertas de chuva detalhados em background (Início exato, Duração, Intensidade).
 *   **Mapa do Tempo**: Visualização de radar meteorológico (RainViewer) em tempo real e mapa de calor colaborativo.
-*   **Infraestrutura Offline-First** (CORE-78): Base unificada para sincronização de dados (Hive + Firestore) com fila de operações e resolução de conflitos.
+*   **Infraestrutura Offline-First** (CORE-78): Base unificada para sincronização de dados (Hive + Firestore).
+    *   **Sync Inteligente**: Sincroniza apenas quando há Wi-Fi/Dados.
+    *   **Zero Conflito**: Uso de "Server Timestamps" para garantir a verdade dos dados.
+    *   **Alta Performance**: Índices em memória para acesso instantâneo.
 
 ## Instalação
 

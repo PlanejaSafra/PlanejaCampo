@@ -1,26 +1,72 @@
+import 'package:agro_core/agro_core.dart';
+import 'package:agro_core/services/sync/generic_sync_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:uuid/uuid.dart';
 import '../models/lancamento.dart';
 import '../models/cash_categoria.dart';
 
 /// Service for managing financial entries (expenses).
-class LancamentoService extends ChangeNotifier {
+/// Migrated to GenericSyncService (CORE-83).
+class LancamentoService extends GenericSyncService<Lancamento> {
   static final LancamentoService _instance = LancamentoService._internal();
   static LancamentoService get instance => _instance;
-  factory LancamentoService() => _instance;
   LancamentoService._internal();
+  factory LancamentoService() => _instance;
 
-  static const String _boxName = 'lancamentos';
-  late Box<Lancamento> _box;
+  @override
+  String get boxName => 'lancamentos';
 
-  /// Initialize the service.
+  @override
+  String get sourceApp => 'ruracash';
+
+  @override
+  bool get syncEnabled => true;
+
+  @override
+  Lancamento fromMap(Map<String, dynamic> map) => Lancamento.fromJson(map);
+
+  @override
+  Map<String, dynamic> toMap(Lancamento item) => item.toJson();
+
+  @override
+  String getId(Lancamento item) => item.id;
+
+  @override
   Future<void> init() async {
-    _box = await Hive.openBox<Lancamento>(_boxName);
+    await super.init();
+    await _migrateDataIfNeeded();
   }
+
+  /// Migra dados antigos (Objetos) para nova estrutura
+  Future<void> _migrateDataIfNeeded() async {
+    final box = Hive.box(boxName);
+    if (box.isEmpty) return;
+
+    final firstKey = box.keys.first;
+    final firstValue = box.get(firstKey);
+
+    if (firstValue is Lancamento) {
+      debugPrint('[LancamentoService] Migrating data from Adapter to Map...');
+      final Map<dynamic, dynamic> rawMap = box.toMap();
+
+      for (final entry in rawMap.entries) {
+        if (entry.value is Lancamento) {
+          final item = entry.value as Lancamento;
+          await super.update(item.id, item);
+        }
+      }
+      debugPrint('[LancamentoService] Migration completed.');
+    }
+  }
+
+  // ─────────────────────────────────────────────────────────────────────
+  // Read Operations
+  // ─────────────────────────────────────────────────────────────────────
 
   /// All entries sorted by date descending.
   List<Lancamento> get lancamentos {
-    final list = _box.values.toList();
+    final list = getAll();
     list.sort((a, b) => b.data.compareTo(a.data));
     return list;
   }
@@ -56,9 +102,7 @@ class LancamentoService extends ChangeNotifier {
 
   /// Entries by cost center.
   List<Lancamento> getLancamentosPorCentroCusto(String centroCustoId) {
-    return lancamentos
-        .where((l) => l.centroCustoId == centroCustoId)
-        .toList();
+    return lancamentos.where((l) => l.centroCustoId == centroCustoId).toList();
   }
 
   /// Total for the current month.
@@ -77,8 +121,7 @@ class LancamentoService extends ChangeNotifier {
     final entries = getLancamentosPorPeriodo(inicio, fim);
     final result = <CashCategoria, double>{};
     for (final entry in entries) {
-      result[entry.categoria] =
-          (result[entry.categoria] ?? 0) + entry.valor;
+      result[entry.categoria] = (result[entry.categoria] ?? 0) + entry.valor;
     }
     return result;
   }
@@ -110,15 +153,16 @@ class LancamentoService extends ChangeNotifier {
     for (final l in lancamentos) {
       counts[l.categoria] = (counts[l.categoria] ?? 0) + 1;
     }
-    return counts.entries
-        .reduce((a, b) => a.value >= b.value ? a : b)
-        .key;
+    return counts.entries.reduce((a, b) => a.value >= b.value ? a : b).key;
   }
+
+  // ─────────────────────────────────────────────────────────────────────
+  // Write Operations
+  // ─────────────────────────────────────────────────────────────────────
 
   /// Add a new entry.
   Future<Lancamento> addLancamento(Lancamento lancamento) async {
-    await _box.put(lancamento.id, lancamento);
-    notifyListeners();
+    await super.add(lancamento);
     return lancamento;
   }
 
@@ -142,25 +186,22 @@ class LancamentoService extends ChangeNotifier {
 
   /// Update an existing entry.
   Future<void> updateLancamento(Lancamento lancamento) async {
-    await _box.put(lancamento.id, lancamento);
-    notifyListeners();
+    await super.update(lancamento.id, lancamento);
   }
 
   /// Delete an entry.
   Future<void> deleteLancamento(String id) async {
-    await _box.delete(id);
-    notifyListeners();
+    await super.delete(id);
   }
 
   /// Get entry by ID.
   Lancamento? getLancamento(String id) {
-    return _box.get(id);
+    return getById(id);
   }
 
   /// Clear all entries.
   Future<void> clearAll() async {
-    await _box.clear();
-    notifyListeners();
+    await super.clearAll();
   }
 
   /// Backup helpers.
@@ -171,10 +212,9 @@ class LancamentoService extends ChangeNotifier {
   Future<void> importFromJson(List<dynamic> jsonList) async {
     for (final json in jsonList) {
       final lancamento = Lancamento.fromJson(json as Map<String, dynamic>);
-      if (!_box.containsKey(lancamento.id)) {
-        await _box.put(lancamento.id, lancamento);
+      if (getById(lancamento.id) == null) {
+        await super.add(lancamento);
       }
     }
-    notifyListeners();
   }
 }

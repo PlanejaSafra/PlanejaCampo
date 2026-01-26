@@ -1,45 +1,62 @@
 import 'package:agro_core/agro_core.dart';
+import 'package:agro_core/services/sync/generic_sync_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:uuid/uuid.dart';
-
 import '../models/despesa.dart';
 
 /// Service for managing expenses (Despesas) in RuraRubber.
-///
-/// Provides CRUD operations and safra-aware queries for the
-/// break-even cost analysis dashboard (RUBBER-20).
-///
-/// ## Usage
-/// ```dart
-/// // Initialize in main.dart
-/// await DespesaService.instance.init();
-///
-/// // Add an expense
-/// await DespesaService.instance.adicionarDespesa(
-///   valor: 1500.00,
-///   categoria: CategoriaDespesa.maoDeObra,
-///   data: DateTime.now(),
-/// );
-///
-/// // Get totals for a safra
-/// final total = DespesaService.instance.totalPorSafra(safra);
-/// ```
-class DespesaService extends ChangeNotifier {
-  static const String boxName = 'despesas';
-  Box<Despesa>? _box;
-
+/// Migrated to GenericSyncService (CORE-83).
+class DespesaService extends GenericSyncService<Despesa> {
   static final DespesaService _instance = DespesaService._internal();
   static DespesaService get instance => _instance;
   DespesaService._internal();
   factory DespesaService() => _instance;
 
-  /// Initialize the Hive box.
-  /// Must be called from main.dart AFTER adapter registration.
+  @override
+  String get boxName => 'despesas';
+
+  @override
+  String get sourceApp => 'rurarubber';
+
+  @override
+  bool get syncEnabled => true;
+
+  @override
+  Despesa fromMap(Map<String, dynamic> map) => Despesa.fromJson(map);
+
+  @override
+  Map<String, dynamic> toMap(Despesa item) => item.toJson();
+
+  @override
+  String getId(Despesa item) => item.id;
+
+  @override
   Future<void> init() async {
-    if (_box != null && _box!.isOpen) return;
-    _box = await Hive.openBox<Despesa>(boxName);
-    notifyListeners();
+    await super.init();
+    await _migrateDataIfNeeded();
+  }
+
+  /// Migra dados antigos (Objetos) para nova estrutura (Maps com Metadata)
+  Future<void> _migrateDataIfNeeded() async {
+    final box = Hive.box(boxName);
+    if (box.isEmpty) return;
+
+    final firstKey = box.keys.first;
+    final firstValue = box.get(firstKey);
+
+    if (firstValue is Despesa) {
+      debugPrint('[DespesaService] Migrating data from Adapter to Map...');
+      final Map<dynamic, dynamic> rawMap = box.toMap();
+
+      for (final entry in rawMap.entries) {
+        if (entry.value is Despesa) {
+          final item = entry.value as Despesa;
+          await super.update(item.id, item);
+        }
+      }
+      debugPrint('[DespesaService] Migration completed.');
+    }
   }
 
   // ─────────────────────────────────────────────────────────────────────
@@ -48,8 +65,7 @@ class DespesaService extends ChangeNotifier {
 
   /// All expenses sorted by date (newest first).
   List<Despesa> get despesas {
-    if (_box == null) return [];
-    final list = _box!.values.toList();
+    final list = getAll();
     list.sort((a, b) => b.data.compareTo(a.data));
     return list;
   }
@@ -81,7 +97,6 @@ class DespesaService extends ChangeNotifier {
   }
 
   /// Total expenses grouped by category within a safra.
-  /// Returns a map of [CategoriaDespesa] to total R$.
   Map<CategoriaDespesa, double> totalPorCategoria(Safra safra) {
     final filtered = despesasPorSafra(safra);
     final result = <CategoriaDespesa, double>{};
@@ -92,13 +107,11 @@ class DespesaService extends ChangeNotifier {
   }
 
   /// Monthly totals within a safra period (for trend analysis).
-  /// Returns a sorted list of (DateTime with year/month) to total R$.
   List<MapEntry<DateTime, double>> totalMensalSafra(Safra safra) {
     final filtered = despesasPorSafra(safra);
     final monthly = <String, double>{};
     for (final d in filtered) {
-      final key =
-          '${d.data.year}-${d.data.month.toString().padLeft(2, '0')}';
+      final key = '${d.data.year}-${d.data.month.toString().padLeft(2, '0')}';
       monthly[key] = (monthly[key] ?? 0) + d.valor;
     }
     final entries = monthly.entries.map((e) {
@@ -123,7 +136,6 @@ class DespesaService extends ChangeNotifier {
     required DateTime data,
     String? descricao,
   }) async {
-    if (_box == null) await init();
     final despesa = Despesa.create(
       id: const Uuid().v4(),
       valor: valor,
@@ -131,8 +143,7 @@ class DespesaService extends ChangeNotifier {
       data: data,
       descricao: descricao,
     );
-    await _box!.put(despesa.id, despesa);
-    notifyListeners();
+    await super.add(despesa);
   }
 
   /// Update an expense (replaces existing with same ID).
@@ -143,9 +154,14 @@ class DespesaService extends ChangeNotifier {
     required DateTime data,
     String? descricao,
   }) async {
-    if (_box == null) await init();
-    final existing = _box!.get(id);
+    final existing = getById(id);
     if (existing == null) return;
+
+    // Create updated copy preserving metadata not passed in arguments
+    // Despesa model uses immutable fields for metadata, but we need
+    // to preserve things like createdBy/createdAt if they aren't changing.
+    // Despesa.create generates NEW metadata. We should construct manually or copy.
+
     final updated = Despesa(
       id: existing.id,
       valor: valor,
@@ -157,21 +173,12 @@ class DespesaService extends ChangeNotifier {
       createdAt: existing.createdAt,
       sourceApp: existing.sourceApp,
     );
-    await _box!.put(id, updated);
-    notifyListeners();
+
+    await super.update(id, updated);
   }
 
   /// Delete an expense by ID.
   Future<void> deleteDespesa(String id) async {
-    if (_box == null) await init();
-    await _box!.delete(id);
-    notifyListeners();
-  }
-
-  /// Clear all expenses (used for restore).
-  Future<void> clearAll() async {
-    if (_box == null) await init();
-    await _box!.clear();
-    notifyListeners();
+    await super.delete(id);
   }
 }

@@ -12,6 +12,24 @@
 
 ---
 
+## Phase RUBBER-25: Migração para GenericSyncService
+### Status: [DONE]
+**Date Completed**: 2026-01-26
+**Priority**: 🟡 ARCHITECTURAL
+**Objective**: Migrar todos os serviços principais para `GenericSyncService`.
+**Cross-Reference**: CORE-83
+
+### Implementation Summary
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 25.1 | **DespesaService**: Migração completa com suporte a safra | ✅ DONE |
+| 25.2 | **EntregaService**: Migração com lógica complexa de pesagens | ✅ DONE |
+| 25.3 | **RecebivelService**: Migração com queries de status | ✅ DONE |
+| 25.4 | **ParceiroService**: Migração padrão CRUD | ✅ DONE |
+| 25.5 | **TabelaService**: Migração com preservação de analytics e regras de negócio | ✅ DONE |
+
+---
+
 ## Phase RUBBER-18: Gestão de Recebíveis (Visão Produtor)
 
 ### Status: [DONE]
@@ -894,7 +912,7 @@ class MarketOffer {
 ---
 
 ## Phase BORRACHA-11: UI Refactor - Weather & Navigation
-### Status: [IN PROGRESS]
+### Status: [DONE]
 **Date Started**: 2026-01-25
 **Priority**: 🟡 ENHANCEMENT
 **Objective**: Refine the Home Screen and Navigation based on user feedback to prioritize Weather context and simplify role-based access.
@@ -903,9 +921,9 @@ class MarketOffer {
 
 | Sub-Phase | Description | Status |
 |-----------|-------------|--------|
-| 11.1 | **Weather Widget Integration**: Replace "Quick Actions" grid with `WeatherCard` (from `agro_core`) to provide immediate climate context for the property/seringal. | ⏳ PENDING |
-| 11.2 | **Role-Based Navigation**: Remove "Parceiros" menu item and access for "Sangrador" profile, as they don't manage other partners. | ⏳ PENDING |
-| 11.3 | **Layout Optimization**: Keep Floating Action Button (FAB) for primary actions ("Nova Pesagem") and maintain Monthly Summary/Recent Deliveries for quick insights. | ⏳ PENDING |
+| 11.1 | **Weather Widget Integration**: Replace "Quick Actions" grid with `WeatherCard` (from `agro_core`) to provide immediate climate context for the property/seringal. | ✅ DONE |
+| 11.2 | **Role-Based Navigation**: Remove "Parceiros" menu item and access for "Sangrador" profile, as they don't manage other partners. | ✅ DONE |
+| 11.3 | **Layout Optimization**: Keep Floating Action Button (FAB) for primary actions ("Nova Pesagem") and maintain Monthly Summary/Recent Deliveries for quick insights. | ✅ DONE |
 
 ### Files to Modify
 - `lib/screens/home_screen.dart`

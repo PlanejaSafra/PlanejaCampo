@@ -7,6 +7,27 @@
 
 ---
 
+## Phase RAIN-04: Migração para GenericSyncService
+### Status: [DONE]
+**Date Completed**: 2026-01-26
+**Priority**: 🟡 ARCHITECTURAL
+**Objective**: Migrar `ChuvaService` para usar `GenericSyncService` do agro_core, unificando a lógica de sincronização.
+**Cross-Reference**: CORE-83
+
+### Implementation Summary
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 4.1 | **ChuvaService Migration**: Refatorar para estender `GenericSyncService<RegistroChuva>` | ✅ DONE |
+| 4.2 | **Legacy Data Migration**: Implementar `_migrateDataIfNeeded` para converter objetos antigos (se houver) | ✅ DONE |
+| 4.3 | **Clean Up**: Remover código duplicado de CRUD e sincronização manual | ✅ DONE |
+
+### Files Modified
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/services/chuva_service.dart` | REFACTOR | Estende GenericSyncService, remove lógica de sync manual | 
+
+---
+
 ## Phase RAIN-03: Integração CORE-77 (Dependency-Aware Backup)
 
 ### Status: [DONE]

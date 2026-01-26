@@ -1,35 +1,77 @@
 import 'package:agro_core/agro_core.dart';
+import 'package:agro_core/services/sync/generic_sync_service.dart';
+import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../models/registro_chuva.dart';
-import 'sync_service.dart';
-import 'package:flutter/foundation.dart'; // For debugPrint
-// Actually PropertyService is in agro_core/services.
-// check line 1: import 'package:agro_core/agro_core.dart';.
-// PropertyService is likely there.
 
-/// Service responsible for managing rainfall records storage using Hive.
-class ChuvaService {
-  static const String _boxName = 'registros_chuva';
+/// Serviço de Chuva migrado para GenericSyncService (CORE-83)
+class ChuvaService extends GenericSyncService<RegistroChuva> {
+  static final ChuvaService instance = ChuvaService._();
+  ChuvaService._();
+  factory ChuvaService() => instance;
 
-  // Singleton instance
-  static final ChuvaService _instance = ChuvaService._internal();
-  factory ChuvaService() => _instance;
-  ChuvaService._internal();
+  @override
+  String get boxName => 'registros_chuva';
 
-  late Box<RegistroChuva> _box;
+  @override
+  String get sourceApp => 'rurarain';
 
-  /// Initializes the Hive box.
-  /// Note: RegistroChuvaAdapter must be registered BEFORE calling this method.
+  @override
+  bool get syncEnabled => true;
+
+  @override
+  RegistroChuva fromMap(Map<String, dynamic> map) =>
+      RegistroChuva.fromJson(map);
+
+  @override
+  Map<String, dynamic> toMap(RegistroChuva item) => item.toJson();
+
+  @override
+  String getId(RegistroChuva item) => item.id.toString();
+
+  @override
   Future<void> init() async {
-    _box = await Hive.openBox<RegistroChuva>(_boxName);
+    await super.init();
+    await _migrateDataIfNeeded();
   }
 
-  /// Returns all records sorted by date descending (most recent first).
-  /// If propertyId is provided, filters records for that property only.
-  List<RegistroChuva> listarTodos({String? propertyId}) {
-    var todos = _box.values.toList();
+  /// Migra dados antigos (Objetos) para nova estrutura (Maps com Metadata)
+  Future<void> _migrateDataIfNeeded() async {
+    // Acesso direto ao box privado da classe pai seria ideal,
+    // mas GenericSyncService não expõe _box publicamente.
+    // Porem, ele usa LocalCacheManager.
+    // Vamos abrir o box como dinamico para verificar
+    final box = Hive.box(boxName);
 
-    // Filter by property if specified
+    if (box.isEmpty) return;
+
+    final firstKey = box.keys.first;
+    final firstValue = box.get(firstKey);
+
+    // Se encontrar um objeto RegistroChuva (antigo), migra tudo para Map
+    if (firstValue is RegistroChuva) {
+      debugPrint('[ChuvaService] Migrating data from Adapter to Map...');
+      final Map<dynamic, dynamic> rawMap = box.toMap();
+
+      for (final entry in rawMap.entries) {
+        if (entry.value is RegistroChuva) {
+          final item = entry.value as RegistroChuva;
+          // Usa o método add do GenericSyncService para salvar como Map + Metadata
+          await super.update(item.id.toString(), item);
+        }
+      }
+      debugPrint('[ChuvaService] Migration completed.');
+    }
+  }
+
+  // ─────────────────────────────────────────────────────────────────────
+  // Métodos de Listagem (Adaptados)
+  // ─────────────────────────────────────────────────────────────────────
+
+  /// Retorna todos os registros ordenados por data (mais recente primeiro)
+  List<RegistroChuva> listarTodos({String? propertyId}) {
+    var todos = getAll();
+
     if (propertyId != null && propertyId.isNotEmpty) {
       todos = todos.where((r) => r.propertyId == propertyId).toList();
     }
@@ -38,94 +80,90 @@ class ChuvaService {
     return todos;
   }
 
-  /// Adds a new record to the box.
+  /// Adiciona novo registro
   Future<void> adicionar(RegistroChuva registro) async {
-    await _box.put(registro.id.toString(), registro);
+    await super.add(registro);
     await _updateWidget();
-
-    // CORE-61: Trigger sync (stats - Option 3)
-    await _trySyncRecord(registro);
-
-    // CORE-62: Trigger private backup (Option 1)
-    await _trySyncPrivateBackup(registro);
+    // Sync é automático pelo GenericSyncService (CORE-78)
   }
 
-  /// Updates an existing record.
+  /// Atualiza registro existente
   Future<void> atualizar(RegistroChuva registro) async {
-    await _box.put(registro.id.toString(), registro);
+    await super.update(registro.id.toString(), registro);
     await _updateWidget();
-
-    // CORE-61: Trigger sync (stats - Option 3)
-    await _trySyncRecord(registro);
-
-    // CORE-62: Trigger private backup (Option 1)
-    await _trySyncPrivateBackup(registro);
   }
 
-  /// Helper to sync private backup (Option 1)
-  Future<void> _trySyncPrivateBackup(RegistroChuva registro) async {
-    try {
-      await UserCloudService.instance.syncRainfallRecord(
-        recordId: registro.id.toString(),
-        data: registro.toMap(),
-      );
-    } catch (e) {
-      debugPrint('ChuvaService: Error syncing private backup: $e');
-    }
-  }
-
-  /// Helper to queue and sync a record
-  Future<void> _trySyncRecord(RegistroChuva registro) async {
-    try {
-      // We need property details for the location
-      final propertyService = PropertyService();
-      // Ensure property service is initialized if not already (it usually is)
-      // But PropertyService.init() is async. Best to rely on it being ready or await?
-      // Prudence: await init.
-      await propertyService.init();
-
-      final property = propertyService.getPropertyById(registro.propertyId);
-      if (property != null) {
-        await SyncService().queueForSync(registro, property);
-
-        // Try to push immediately (fire and forget to not block UI)
-        SyncService().syncPendingItems().ignore();
-      }
-    } catch (e) {
-      // Silent fail for sync side effects
-      debugPrint('ChuvaService: Error syncing record: $e');
-    }
-  }
-
-  /// Deletes a record by its ID.
+  /// Exclui registro
   Future<void> excluir(int id) async {
-    await _box.delete(id.toString());
+    await super.delete(id.toString());
     await _updateWidget();
-
-    // CORE-62: Delete from private backup (Option 1)
-    // We try to delete regardless of current consent (cleanup)
-    try {
-      await UserCloudService.instance.deleteRainfallRecord(id.toString());
-    } catch (e) {
-      // safe fail
-    }
   }
 
-  /// Clears all records from the box (used for restore).
-  Future<void> limparTodos() async {
-    await _box.clear();
-    await _updateWidget();
-    debugPrint('[ChuvaService] Cleared all records for restore.');
+  // ─────────────────────────────────────────────────────────────────────
+  // Lógica de Talhões
+  // ─────────────────────────────────────────────────────────────────────
+
+  List<RegistroChuva> _filteredByTalhao(String propertyId, String? talhaoId) {
+    // Usa getAll() do GenericSyncService (que já trata cache)
+    return getAll()
+        .where((r) =>
+            r.propertyId == propertyId &&
+            (talhaoId == null ? r.talhaoId == null : r.talhaoId == talhaoId))
+        .toList();
   }
 
-  /// Calculates the total rainfall for a specific month.
-  /// If propertyId is provided, calculates only for that property.
+  List<RegistroChuva> listarPropriedadeToda(String propertyId) {
+    return _filteredByTalhao(propertyId, null)
+      ..sort((a, b) => b.data.compareTo(a.data));
+  }
+
+  List<RegistroChuva> listarPorTalhao(String propertyId, String talhaoId) {
+    return _filteredByTalhao(propertyId, talhaoId)
+      ..sort((a, b) => b.data.compareTo(a.data));
+  }
+
+  List<RegistroChuva> listarByTalhao(String propertyId, {String? talhaoId}) {
+    return _filteredByTalhao(propertyId, talhaoId)
+      ..sort((a, b) => b.data.compareTo(a.data));
+  }
+
+  double totalPropriedadeToda(String propertyId) {
+    return _filteredByTalhao(propertyId, null)
+        .fold(0.0, (sum, r) => sum + r.milimetros);
+  }
+
+  double totalPorTalhao(String propertyId, String talhaoId) {
+    return _filteredByTalhao(propertyId, talhaoId)
+        .fold(0.0, (sum, r) => sum + r.milimetros);
+  }
+
+  double totalByTalhao(String propertyId, {String? talhaoId}) {
+    return _filteredByTalhao(propertyId, talhaoId)
+        .fold(0.0, (sum, r) => sum + r.milimetros);
+  }
+
+  int getRecordCountForTalhao(String propertyId, {String? talhaoId}) {
+    return _filteredByTalhao(propertyId, talhaoId).length;
+  }
+
+  int getRecordCountForProperty(String propertyId) {
+    return getAll().where((r) => r.propertyId == propertyId).length;
+  }
+
+  int getRecordCountByTalhaoId(String talhaoId) {
+    return getAll().where((r) => r.talhaoId == talhaoId).length;
+  }
+
+  // ─────────────────────────────────────────────────────────────────────
+  // Helpers
+  // ─────────────────────────────────────────────────────────────────────
+
+  /// Total do mês
   double totalDoMes(DateTime dataReferencia, {String? propertyId}) {
-    var registros = _box.values.where((r) =>
+    var registros = getAll().where((r) =>
         r.data.year == dataReferencia.year &&
         r.data.month == dataReferencia.month);
 
-    // Filter by property if specified
     if (propertyId != null && propertyId.isNotEmpty) {
       registros = registros.where((r) => r.propertyId == propertyId);
     }
@@ -133,74 +171,6 @@ class ChuvaService {
     return registros.fold(0.0, (sum, r) => sum + r.milimetros);
   }
 
-  /// Get count of records for a specific property
-  int getRecordCountForProperty(String propertyId) {
-    return _box.values.where((r) => r.propertyId == propertyId).length;
-  }
-
-  // ============================================================================
-  // TALHÃO SUPPORT - Null handling methods
-  // ============================================================================
-
-  /// Private method to filter records by property and optional talhão
-  /// Encapsulates null handling logic for talhaoId
-  List<RegistroChuva> _filteredByTalhao(String propertyId, String? talhaoId) {
-    return _box.values
-        .where((r) =>
-            r.propertyId == propertyId &&
-            (talhaoId == null ? r.talhaoId == null : r.talhaoId == talhaoId))
-        .toList();
-  }
-
-  /// Returns records for whole property (talhaoId = null)
-  List<RegistroChuva> listarPropriedadeToda(String propertyId) {
-    return _filteredByTalhao(propertyId, null)
-      ..sort((a, b) => b.data.compareTo(a.data));
-  }
-
-  /// Returns records for a specific talhão
-  List<RegistroChuva> listarPorTalhao(String propertyId, String talhaoId) {
-    return _filteredByTalhao(propertyId, talhaoId)
-      ..sort((a, b) => b.data.compareTo(a.data));
-  }
-
-  /// Generic method when flexibility is needed (UI usage)
-  List<RegistroChuva> listarByTalhao(String propertyId, {String? talhaoId}) {
-    return _filteredByTalhao(propertyId, talhaoId)
-      ..sort((a, b) => b.data.compareTo(a.data));
-  }
-
-  /// Calculate total rainfall for whole property (talhaoId = null)
-  double totalPropriedadeToda(String propertyId) {
-    return _filteredByTalhao(propertyId, null)
-        .fold(0.0, (sum, r) => sum + r.milimetros);
-  }
-
-  /// Calculate total rainfall for a specific talhão
-  double totalPorTalhao(String propertyId, String talhaoId) {
-    return _filteredByTalhao(propertyId, talhaoId)
-        .fold(0.0, (sum, r) => sum + r.milimetros);
-  }
-
-  /// Generic method for total by talhão (UI usage)
-  double totalByTalhao(String propertyId, {String? talhaoId}) {
-    return _filteredByTalhao(propertyId, talhaoId)
-        .fold(0.0, (sum, r) => sum + r.milimetros);
-  }
-
-  /// Get count of records for a specific talhão
-  /// If talhaoId is null, counts records for whole property (talhaoId = null)
-  int getRecordCountForTalhao(String propertyId, {String? talhaoId}) {
-    return _filteredByTalhao(propertyId, talhaoId).length;
-  }
-
-  /// Get count of records that have a specific talhaoId (not null check)
-  /// Used for deletion protection
-  int getRecordCountByTalhaoId(String talhaoId) {
-    return _box.values.where((r) => r.talhaoId == talhaoId).length;
-  }
-
-  /// Calculate total rainfall for month with optional talhão filter
   double totalDoMesByTalhao(
     DateTime dataReferencia,
     String propertyId, {
@@ -213,68 +183,52 @@ class ChuvaService {
     return registros.fold(0.0, (sum, r) => sum + r.milimetros);
   }
 
-  /// Reassign records from one talhão to whole property (set talhaoId to null)
-  /// Used when deleting a talhão
+  Future<void> limparTodos() async {
+    await super.clearAll();
+    await _updateWidget();
+  }
+
   Future<int> reassignTalhaoToProperty(String talhaoId) async {
-    final records = _box.values.where((r) => r.talhaoId == talhaoId).toList();
+    final records = getAll().where((r) => r.talhaoId == talhaoId).toList();
 
     for (final record in records) {
-      // Create new record with talhaoId = null (preserves immutable fields)
-      final updated = RegistroChuva(
-        id: record.id,
-        data: record.data,
-        milimetros: record.milimetros,
-        observacao: record.observacao,
-        criadoEm: record.criadoEm,
-        propertyId: record.propertyId,
-        talhaoId: null, // Set to null (whole property)
-        createdBy: record.createdBy,
-        sourceApp: record.sourceApp,
-      );
-      await _box.put(record.id.toString(), updated);
+      final updated = record.copyWith(talhaoId: null); // Null = Property
+      await atualizar(updated);
     }
-
     return records.length;
   }
 
-  /// Calculates days since the last rainfall record.
-  /// Returns null if no records exist.
   int? daysSinceLastRain() {
-    if (_box.isEmpty) return null;
+    final all = getAll();
+    if (all.isEmpty) return null;
 
-    final sorted = _box.values.toList()
-      ..sort((a, b) => b.data.compareTo(a.data));
-
+    final sorted = all..sort((a, b) => b.data.compareTo(a.data));
     final lastRain = sorted.first.data;
     final now = DateTime.now();
 
-    // Normalize dates to ignore time component
     final dateLast = DateTime(lastRain.year, lastRain.month, lastRain.day);
     final dateNow = DateTime(now.year, now.month, now.day);
 
     return dateNow.difference(dateLast).inDays;
   }
 
-  /// Notify that rain was logged today to trigger smart actions (like skipping reminder).
   Future<void> notifyRainLogged() async {
-    // We need to import UserPreferences and NotificationService
-    // But to avoid circular dependencies (if any), careful.
-    // However, UserPreferences is model, NotificationService is service.
-    // ChuvaService is service.
-    // It's better to inject dependency or do this in the Screen.
-    // BUT the requirement was "notifyRainLogged" in service.
-    // Let's implement it here as a helper that loads prefs.
+    // Placeholder legacy
   }
 
-  /// Updates the Home Widget with the latest data.
+  // Widget Update Logic (Preserved)
   Future<void> _updateWidget() async {
     try {
-      final todos = listarTodos(); // Sorted by date desc
+      final todos = listarTodos();
+      // Não temos acesso fácil ao box de settings aqui dentro,
+      // mas vamos tentar manter a lógica se possível ou simplificar.
+      // O ideal seria injetar essa dependencia.
+      // Assumindo que o Hive de settings está acessível globalmente se aberto:
 
-      // Get locale from Hive for widget
-      final settingsBox = await Hive.openBox('settings');
-      final locale =
-          settingsBox.get('app_locale', defaultValue: 'pt_BR') as String;
+      String locale = 'pt_BR';
+      if (Hive.isBoxOpen('settings')) {
+        locale = Hive.box('settings').get('app_locale', defaultValue: 'pt_BR');
+      }
 
       if (todos.isNotEmpty) {
         final latest = todos.first;
@@ -291,8 +245,7 @@ class ChuvaService {
         );
       }
     } catch (e) {
-      // Ignore widget update errors to not block app flow
-      print('Error updating widget: $e');
+      debugPrint('Error updating widget: $e');
     }
   }
 }

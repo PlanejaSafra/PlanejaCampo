@@ -4,9 +4,29 @@
 
 ## Phase CORE-78: GenericSyncService - Infraestrutura Offline-First Unificada
 
-### Status: [TODO]
+### Status: [DONE]
+**Date Completed**: 2026-01-26
 **Priority**: 🔴 CRITICAL
 **Objective**: Criar classe base GenericSyncService no agro_core que encapsula toda a lógica offline-first (Hive + Firestore sync opcional), eliminando duplicação de código nos apps.
+**Implementation Details**:
+- **Offline-First**: Uso de Hive para cache local e filas de operações.
+- **Sync-Smart**: Integração com `connectivity_plus` para só sincronizar via rede ativa.
+- **Conflict-Free**: Resolução automática (Server Wins) e uso de `FieldValue.serverTimestamp()` para garantir ordem cronológica correta.
+- **Optimized**: Indexação em memória para buscas O(1) por Farm ID.
+
+- **Optimized**: Indexação em memória para buscas O(1) por Farm ID.
+
+## Phase CORE-83: Migration of App Services to GenericSyncService
+
+### Status: [TODO]
+**Priority**: 🟡 CRITICAL (Tech Debt)
+**Objective**: Migrar todos os services de dados (CRUD) dos apps RuraRain, RuraRubber, etc. para usar a nova infraestrutura `GenericSyncService`.
+
+### Services to Migrate:
+- **RuraRain**: `ChuvaService`
+- **RuraRubber**: `DespesaService`, `EntregaService`, `RecebivelService`, `ParceiroService`, `TabelaService`
+- **RuraCash**: `CentroCustoService`, `LancamentoService`
+- **Outros**: Avaliar services do RuraCattle e RuraFuel.
 
 ### Problema Resolvido
 

@@ -3,6 +3,13 @@ Seja direto e objetivo.
 Internalize CLAUDE.md, README.md, ARCHITECTURE.md e CHANGELOG.md do agro_core.
 Internalize CLAUDE.md, README.md, ARCHITECTURE.md e CHANGELOG.md do rurarain.
 
+## 2026-01-26 - Unificação de Sincronização (GenericSyncService) e Migração RuraCash
+- **AgroCore**: Refatoração do `GenericSyncService` para robustez e suporte a metadados.
+- **RuraRain**: `ChuvaService` migrado para nova arquitetura.
+- **RuraRubber**: 5 serviços migrados (`Despesa`, `Entrega`, `Recebivel`, `Parceiro`, `Tabela`).
+- **RuraCash**: Serviços financeiros (`CentroCusto`, `Lancamento`) migrados e integrados.
+- **Geral**: Padronização completa da camada de dados para `Hive` + `Firestore` em todos os apps.
+
 Analise as fases 350+ do CHANGELOG  e verifique se estão corretamente e totalmente implementadas, e aponte gaps, falhas e possíveis não implementações.
 
 Crie fase para isso.
@@ -16,4 +23,3 @@ Implementou tudo mesmo, todas as estapas desta fase, sem placeholders, sem place
 Atualizou a documentação corretamente (todos os .md que precisam ser atualizados)?
 
 Implemente todas as estapas destas fases, sem placeholders, sem placebos, sem abreviações ou simplificações, sem hardcodeds, e sem deixar GAPS.
-

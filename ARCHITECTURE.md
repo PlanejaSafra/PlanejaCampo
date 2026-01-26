@@ -310,7 +310,32 @@ graph TD
 ### 11.5. Benefícios para os Apps
 
 1. **Redução de Código**: Services caem de ~150 linhas para ~30 linhas.
-2. **Robustez**: Tratamento centralizado de erros, retries e conectividade.
-3. **Padronização**: Todos os apps comportam-se da mesma forma (Offline-First real).
-4. **Cross-App Data**: Habilita sincronização entre apps (ex: RuraRubber e RuraCash compartilhando dados via Firestore).
+2. **Sync Inteligente**: O `OfflineQueueManager` usa `connectivity_plus` para monitorar a rede. Uploads são pausados automaticamente quando offline e retomados quando o Wi-Fi/Dados volta.
+3. **Resolução de Conflitos Simplificada**: Estratégia "Server Wins" por padrão. O uso de `FieldValue.serverTimestamp()` garante que a ordem cronológica de chegada no servidor seja a fonte da verdade. manual conflict resolution was removed to simplify UX.
+
+---
+
+## 12. Análise de Decisões e Limitações (CORE-78)
+
+> **Contexto**: Implementação do `GenericSyncService` no `agro_core`.
+
+### 12.1. Acoplamento do Firestore (Phantom Coupling)
+- **Problema**: O pacote `agro_core` depende de `cloud_firestore`. Apps "Offline-Only" (como RuraCash atual) carregam a dependência binária mesmo sem usá-la.
+- **Decisão**: Aceitável em prol da padronização e reuso de código.
+- **Mitigação**:
+  - `GenericSyncService.syncEnabled` atua como feature flag.
+  - Apps que não usam sync não devem inicializar `Firebase.initializeApp()` no `main.dart`.
+  - O código de sync só é executado se a flag estiver ativa.
+
+### 12.2. Performance de Query (Hive in Memory)
+- **Problema**: `GenericSyncService.getByAttributes` e filtros realizam iteração em memória (O(N)).
+- **Impacto**: Imperceptível para o volume alvo (Pequenas/Médias propriedades, < 5.000 registros).
+- **Limite**: Pode engasgar com "Big Data" (> 50.000 itens).
+- **Plano Futuro**: Se necessário, migrar storage local para `LazyBox` ou SQLite (Drift).
+
+### 12.3. Sincronização e Relógio (Clock Skew)
+- **Problema**: Delta Sync baseia-se em timestamps gerados pelo cliente (`DateTime.now()`). Relógios desajustados podem causar perda de dados ou conflitos.
+- **Decisão**: Aceitável para o MVP e cenários onde o usuário mantém o horário automático.
+- **Plano Futuro**: Implementar `FieldValue.serverTimestamp()` do Firestore para garantir a "hora da verdade" no servidor, independente do cliente.
+
 

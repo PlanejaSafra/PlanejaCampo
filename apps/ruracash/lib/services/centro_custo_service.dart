@@ -1,45 +1,91 @@
+import 'package:agro_core/agro_core.dart';
+import 'package:agro_core/services/sync/generic_sync_service.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:uuid/uuid.dart';
 import '../models/centro_custo.dart';
 
 /// Service for managing cost centers.
-class CentroCustoService extends ChangeNotifier {
+/// Migrated to GenericSyncService (CORE-83).
+class CentroCustoService extends GenericSyncService<CentroCusto> {
   static final CentroCustoService _instance = CentroCustoService._internal();
   static CentroCustoService get instance => _instance;
-  factory CentroCustoService() => _instance;
   CentroCustoService._internal();
+  factory CentroCustoService() => _instance;
 
-  static const String _boxName = 'centros_custo';
-  late Box<CentroCusto> _box;
+  @override
+  String get boxName => 'centros_custo';
 
-  /// Initialize the service and ensure default center exists.
+  @override
+  String get sourceApp => 'ruracash';
+
+  @override
+  bool get syncEnabled => true;
+
+  @override
+  CentroCusto fromMap(Map<String, dynamic> map) => CentroCusto.fromJson(map);
+
+  @override
+  Map<String, dynamic> toMap(CentroCusto item) => item.toJson();
+
+  @override
+  String getId(CentroCusto item) => item.id;
+
+  @override
   Future<void> init() async {
-    _box = await Hive.openBox<CentroCusto>(_boxName);
+    await super.init();
+    await _migrateDataIfNeeded();
     await _ensureDefaultCentroCusto();
+  }
+
+  /// Migra dados antigos (Objetos) para nova estrutura
+  Future<void> _migrateDataIfNeeded() async {
+    final box = Hive.box(boxName);
+    if (box.isEmpty) return;
+
+    final firstKey = box.keys.first;
+    final firstValue = box.get(firstKey);
+
+    if (firstValue is CentroCusto) {
+      debugPrint('[CentroCustoService] Migrating data from Adapter to Map...');
+      final Map<dynamic, dynamic> rawMap = box.toMap();
+
+      for (final entry in rawMap.entries) {
+        if (entry.value is CentroCusto) {
+          final item = entry.value as CentroCusto;
+          await super.update(item.id, item);
+        }
+      }
+      debugPrint('[CentroCustoService] Migration completed.');
+    }
   }
 
   /// All cost centers sorted by name.
   List<CentroCusto> get centros {
-    final list = _box.values.toList();
+    final list = getAll();
     list.sort((a, b) => a.nome.compareTo(b.nome));
     return list;
   }
 
   /// Get a center by ID.
   CentroCusto? getCentroCusto(String id) {
-    return _box.get(id);
+    return getById(id);
   }
 
   /// Get the default center (first one, usually "Geral").
   CentroCusto? get defaultCentroCusto {
-    if (_box.isEmpty) return null;
-    return _box.values.first;
+    final list = centros;
+    if (list.isEmpty) return null;
+    return list.first; // Already sorted by name? "Geral" might not be first.
+    // Original implementation took first value from box.
+    // If we want "Geral" or first available:
+    return list.firstWhere((c) => c.nome == 'Geral', orElse: () => list.first);
   }
 
   /// Add a new cost center.
   Future<CentroCusto> addCentroCusto(CentroCusto centro) async {
-    await _box.put(centro.id, centro);
-    notifyListeners();
+    await super.add(centro);
     return centro;
   }
 
@@ -59,19 +105,17 @@ class CentroCustoService extends ChangeNotifier {
 
   /// Update an existing center.
   Future<void> updateCentroCusto(CentroCusto centro) async {
-    await _box.put(centro.id, centro);
-    notifyListeners();
+    await super.update(centro.id, centro);
   }
 
   /// Delete a center.
   Future<void> deleteCentroCusto(String id) async {
-    await _box.delete(id);
-    notifyListeners();
+    await super.delete(id);
   }
 
   /// Ensure at least one default center exists.
   Future<void> _ensureDefaultCentroCusto() async {
-    if (_box.isEmpty) {
+    if (getAll().isEmpty) {
       await createCentroCusto(
         nome: 'Geral',
         corValue: 0xFF607D8B,
@@ -81,8 +125,7 @@ class CentroCustoService extends ChangeNotifier {
 
   /// Clear all centers.
   Future<void> clearAll() async {
-    await _box.clear();
-    notifyListeners();
+    await super.clearAll();
   }
 
   /// Backup helpers.
@@ -93,10 +136,9 @@ class CentroCustoService extends ChangeNotifier {
   Future<void> importFromJson(List<dynamic> jsonList) async {
     for (final json in jsonList) {
       final centro = CentroCusto.fromJson(json as Map<String, dynamic>);
-      if (!_box.containsKey(centro.id)) {
-        await _box.put(centro.id, centro);
+      if (getById(centro.id) == null) {
+        await super.add(centro);
       }
     }
-    notifyListeners();
   }
 }

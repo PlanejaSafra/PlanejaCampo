@@ -1,44 +1,82 @@
+import 'package:agro_core/agro_core.dart';
+import 'package:agro_core/services/sync/generic_sync_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../models/parceiro.dart';
 
-class ParceiroService extends ChangeNotifier {
-  static const String boxName = 'parceiros';
-  Box<Parceiro>? _box;
+/// Service for managing partners (Parceiros) in RuraRubber.
+/// Migrated to GenericSyncService (CORE-83).
+class ParceiroService extends GenericSyncService<Parceiro> {
+  static final ParceiroService _instance = ParceiroService._internal();
+  static ParceiroService get instance => _instance;
+  ParceiroService._internal();
+  factory ParceiroService() => _instance;
 
-  List<Parceiro> get parceiros => _box?.values.toList() ?? [];
+  @override
+  String get boxName => 'parceiros';
 
+  @override
+  String get sourceApp => 'rurarubber';
+
+  @override
+  bool get syncEnabled => true;
+
+  @override
+  Parceiro fromMap(Map<String, dynamic> map) => Parceiro.fromJson(map);
+
+  @override
+  Map<String, dynamic> toMap(Parceiro item) => item.toJson();
+
+  @override
+  String getId(Parceiro item) => item.id;
+
+  @override
   Future<void> init() async {
-    if (_box != null && _box!.isOpen) return;
-    _box = await Hive.openBox<Parceiro>(boxName);
-    notifyListeners();
+    await super.init();
+    await _migrateDataIfNeeded();
   }
 
+  /// Migra dados antigos (Objetos) para nova estrutura
+  Future<void> _migrateDataIfNeeded() async {
+    final box = Hive.box(boxName);
+    if (box.isEmpty) return;
+
+    final firstKey = box.keys.first;
+    final firstValue = box.get(firstKey);
+
+    if (firstValue is Parceiro) {
+      debugPrint('[ParceiroService] Migrating data from Adapter to Map...');
+      final Map<dynamic, dynamic> rawMap = box.toMap();
+
+      for (final entry in rawMap.entries) {
+        if (entry.value is Parceiro) {
+          final item = entry.value as Parceiro;
+          await super.update(item.id, item);
+        }
+      }
+      debugPrint('[ParceiroService] Migration completed.');
+    }
+  }
+
+  List<Parceiro> get parceiros => getAll();
+
   Future<void> addParceiro(Parceiro parceiro) async {
-    if (_box == null) await init();
-    await _box!.put(parceiro.id, parceiro);
-    notifyListeners();
+    await super.add(parceiro);
   }
 
   Future<void> updateParceiro(Parceiro parceiro) async {
-    await parceiro.save();
-    notifyListeners();
+    await super.update(parceiro.id, parceiro);
   }
 
   Future<void> deleteParceiro(String id) async {
-    if (_box == null) return;
-    await _box!.delete(id);
-    notifyListeners();
+    await super.delete(id);
   }
 
   Parceiro? getParceiro(String id) {
-    return _box?.get(id);
+    return getById(id);
   }
 
-  /// Clear all parceiros (used for restore).
   Future<void> clearAll() async {
-    if (_box == null) await init();
-    await _box!.clear();
-    notifyListeners();
+    await super.clearAll();
   }
 }

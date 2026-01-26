@@ -1,3 +1,5 @@
+import 'package:agro_core/agro_core.dart';
+import 'package:agro_core/services/sync/generic_sync_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:uuid/uuid.dart';
@@ -5,31 +7,66 @@ import 'package:uuid/uuid.dart';
 import '../models/recebivel.dart';
 
 /// Service for managing receivables (recebíveis) in RuraRubber.
-///
-/// Provides CRUD operations, status queries, and period-based totals
-/// for tracking amounts owed by buyers after rubber deliveries.
-///
-/// See RUBBER-18 for architecture.
-class RecebivelService extends ChangeNotifier {
-  static const String boxName = 'recebiveis';
-  Box<Recebivel>? _box;
-
+/// Migrated to GenericSyncService (CORE-83).
+class RecebivelService extends GenericSyncService<Recebivel> {
   static final RecebivelService _instance = RecebivelService._internal();
   static RecebivelService get instance => _instance;
   RecebivelService._internal();
   factory RecebivelService() => _instance;
 
-  /// Initialize the Hive box for receivables.
+  @override
+  String get boxName => 'recebiveis';
+
+  @override
+  String get sourceApp => 'rurarubber';
+
+  @override
+  bool get syncEnabled => true;
+
+  @override
+  Recebivel fromMap(Map<String, dynamic> map) => Recebivel.fromJson(map);
+
+  @override
+  Map<String, dynamic> toMap(Recebivel item) => item.toJson();
+
+  @override
+  String getId(Recebivel item) => item.id;
+
+  @override
   Future<void> init() async {
-    if (_box != null && _box!.isOpen) return;
-    _box = await Hive.openBox<Recebivel>(boxName);
-    notifyListeners();
+    await super.init();
+    await _migrateDataIfNeeded();
   }
+
+  /// Migra dados antigos (Objetos) para nova estrutura
+  Future<void> _migrateDataIfNeeded() async {
+    final box = Hive.box(boxName);
+    if (box.isEmpty) return;
+
+    final firstKey = box.keys.first;
+    final firstValue = box.get(firstKey);
+
+    if (firstValue is Recebivel) {
+      debugPrint('[RecebivelService] Migrating data from Adapter to Map...');
+      final Map<dynamic, dynamic> rawMap = box.toMap();
+
+      for (final entry in rawMap.entries) {
+        if (entry.value is Recebivel) {
+          final item = entry.value as Recebivel;
+          await super.update(item.id, item);
+        }
+      }
+      debugPrint('[RecebivelService] Migration completed.');
+    }
+  }
+
+  // ─────────────────────────────────────────────────────────────────────
+  // Read Operations
+  // ─────────────────────────────────────────────────────────────────────
 
   /// All receivables sorted by expected date (ascending).
   List<Recebivel> get recebiveis {
-    if (_box == null) return [];
-    final list = _box!.values.toList();
+    final list = getAll();
     list.sort((a, b) => a.dataPrevista.compareTo(b.dataPrevista));
     return list;
   }
@@ -39,16 +76,13 @@ class RecebivelService extends ChangeNotifier {
       recebiveis.where((r) => !r.recebido).toList();
 
   /// All received (marked as paid) receivables.
-  List<Recebivel> get recebidos =>
-      recebiveis.where((r) => r.recebido).toList();
+  List<Recebivel> get recebidos => recebiveis.where((r) => r.recebido).toList();
 
   /// Total value of pending receivables.
-  double get totalPendente =>
-      pendentes.fold(0, (sum, r) => sum + r.valor);
+  double get totalPendente => pendentes.fold(0, (sum, r) => sum + r.valor);
 
   /// Total value of received receivables.
-  double get totalRecebido =>
-      recebidos.fold(0, (sum, r) => sum + r.valor);
+  double get totalRecebido => recebidos.fold(0, (sum, r) => sum + r.valor);
 
   /// Pending receivables due this week (up to end of current week).
   List<Recebivel> get vencidosEstaSemana {
@@ -85,8 +119,11 @@ class RecebivelService extends ChangeNotifier {
       vencidosEstaSemana.fold(0, (sum, r) => sum + r.valor);
 
   /// Total value of pending receivables due this month.
-  double get totalEsteMes =>
-      vencidosEsteMes.fold(0, (sum, r) => sum + r.valor);
+  double get totalEsteMes => vencidosEsteMes.fold(0, (sum, r) => sum + r.valor);
+
+  // ─────────────────────────────────────────────────────────────────────
+  // Write Operations
+  // ─────────────────────────────────────────────────────────────────────
 
   /// Create a new receivable linked to a delivery.
   Future<void> criarRecebivel({
@@ -95,7 +132,6 @@ class RecebivelService extends ChangeNotifier {
     required DateTime dataPrevista,
     String? compradorNome,
   }) async {
-    if (_box == null) await init();
     final recebivel = Recebivel.create(
       id: const Uuid().v4(),
       entregaId: entregaId,
@@ -103,19 +139,16 @@ class RecebivelService extends ChangeNotifier {
       dataPrevista: dataPrevista,
       compradorNome: compradorNome,
     );
-    await _box!.put(recebivel.id, recebivel);
-    notifyListeners();
+    await super.add(recebivel);
   }
 
   /// Mark a receivable as received (paid).
   Future<void> marcarRecebido(String id, {DateTime? dataRecebimento}) async {
-    if (_box == null) await init();
-    final recebivel = _box!.get(id);
+    final recebivel = getById(id);
     if (recebivel != null) {
       recebivel.recebido = true;
       recebivel.dataRecebimento = dataRecebimento ?? DateTime.now();
-      await recebivel.save();
-      notifyListeners();
+      await super.update(id, recebivel);
     }
   }
 
@@ -126,9 +159,9 @@ class RecebivelService extends ChangeNotifier {
     required DateTime dataPrevista,
     String? compradorNome,
   }) async {
-    if (_box == null) await init();
-    final existing = _box!.get(id);
+    final existing = getById(id);
     if (existing == null) return;
+
     final updated = Recebivel(
       id: existing.id,
       entregaId: existing.entregaId,
@@ -142,21 +175,17 @@ class RecebivelService extends ChangeNotifier {
       createdAt: existing.createdAt,
       sourceApp: existing.sourceApp,
     );
-    await _box!.put(id, updated);
-    notifyListeners();
+
+    await super.update(id, updated);
   }
 
   /// Delete a receivable by ID.
   Future<void> deleteRecebivel(String id) async {
-    if (_box == null) await init();
-    await _box!.delete(id);
-    notifyListeners();
+    await super.delete(id);
   }
 
   /// Clear all receivables (used for restore).
   Future<void> clearAll() async {
-    if (_box == null) await init();
-    await _box!.clear();
-    notifyListeners();
+    await super.clearAll();
   }
 }

@@ -420,8 +420,27 @@
   "exportDataDescription": "Download a copy of your data in a standard format to use in other services.",
   "exportDataJson": "JSON (complete)",
   "exportDataCsv": "CSV (Excel/Spreadsheets)",
-  "exportDataSuccess": "Data exported successfully!",
-  "exportDataError": "Error exporting data.",
+  "exportProcessing": "Processing...",
+  "exportSuccess": "Export successful!",
+  "exportError": "Error exporting data: {error}",
+  "exportShareSubject": "RuraCamp Data - {app}",
+
+  "syncPending": "Sync pending",
+  "syncInProgress": "Syncing...",
+  "syncComplete": "Sync complete",
+  "syncFailed": "Sync failed",
+  "syncConflict": "Conflict detected",
+  "offlineMode": "Offline mode",
+  "offlineQueueCount": "{count} pending operations",
+  "@offlineQueueCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "syncRetrying": "Retrying...",
+  "syncOfflineQueued": "Saved locally, will sync",
 
   "revokeAllButton": "Revoke All and Sign Out",
   "revokeAllTitle": "Revoke all consents?",

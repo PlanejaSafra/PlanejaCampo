@@ -1,4 +1,5 @@
 import 'package:agro_core/agro_core.dart';
+import 'package:agro_core/services/sync/generic_sync_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:uuid/uuid.dart';
@@ -6,39 +7,58 @@ import 'package:uuid/uuid.dart';
 import '../models/tabela_sangria.dart';
 
 /// Service for managing tapping tables (Tabelas de Sangria) in RuraRubber.
-///
-/// Provides CRUD operations, enforcada detection, smart table suggestion,
-/// and productivity analytics for the D3/D4 tapping rotation system.
-///
-/// ## Usage
-/// ```dart
-/// // Initialize in main.dart
-/// await TabelaService.instance.init();
-///
-/// // Create tables for a partner
-/// await TabelaService.instance.criarTabelas('parceiro-id', 4);
-///
-/// // Get suggested table
-/// final suggested = TabelaService.instance.getSuggestedTable('parceiro-id');
-/// ```
-///
-/// See RUBBER-23 for architecture.
-class TabelaService extends ChangeNotifier {
-  static const String boxName = 'tabelas_sangria';
-  Box<TabelaSangria>? _box;
-
-  // Singleton
+/// Migrated to GenericSyncService (CORE-83).
+class TabelaService extends GenericSyncService<TabelaSangria> {
   static final TabelaService _instance = TabelaService._internal();
   static TabelaService get instance => _instance;
   TabelaService._internal();
   factory TabelaService() => _instance;
 
-  /// Initialize the Hive box.
-  /// Must be called from main.dart AFTER adapter registration.
+  @override
+  String get boxName => 'tabelas_sangria';
+
+  @override
+  String get sourceApp => 'rurarubber';
+
+  @override
+  bool get syncEnabled => true;
+
+  @override
+  TabelaSangria fromMap(Map<String, dynamic> map) =>
+      TabelaSangria.fromJson(map);
+
+  @override
+  Map<String, dynamic> toMap(TabelaSangria item) => item.toJson();
+
+  @override
+  String getId(TabelaSangria item) => item.id;
+
+  @override
   Future<void> init() async {
-    if (_box != null && _box!.isOpen) return;
-    _box = await Hive.openBox<TabelaSangria>(boxName);
-    notifyListeners();
+    await super.init();
+    await _migrateDataIfNeeded();
+  }
+
+  /// Migra dados antigos (Objetos) para nova estrutura
+  Future<void> _migrateDataIfNeeded() async {
+    final box = Hive.box(boxName);
+    if (box.isEmpty) return;
+
+    final firstKey = box.keys.first;
+    final firstValue = box.get(firstKey);
+
+    if (firstValue is TabelaSangria) {
+      debugPrint('[TabelaService] Migrating data from Adapter to Map...');
+      final Map<dynamic, dynamic> rawMap = box.toMap();
+
+      for (final entry in rawMap.entries) {
+        if (entry.value is TabelaSangria) {
+          final item = entry.value as TabelaSangria;
+          await super.update(item.id, item);
+        }
+      }
+      debugPrint('[TabelaService] Migration completed.');
+    }
   }
 
   // ─────────────────────────────────────────────────────────────────────
@@ -47,31 +67,26 @@ class TabelaService extends ChangeNotifier {
 
   /// All tables sorted by numero.
   List<TabelaSangria> get tabelas {
-    if (_box == null) return [];
-    final list = _box!.values.toList();
+    final list = getAll();
     list.sort((a, b) => a.numero.compareTo(b.numero));
     return list;
   }
 
   /// Get tables for a specific partner, sorted by numero.
   List<TabelaSangria> getTabelasForParceiro(String parceiroId) {
-    if (_box == null) return [];
-    final list =
-        _box!.values.where((t) => t.parceiroId == parceiroId).toList();
+    final list = getAll().where((t) => t.parceiroId == parceiroId).toList();
     list.sort((a, b) => a.numero.compareTo(b.numero));
     return list;
   }
 
   /// Check if a partner has any tables configured.
   bool hasTabelas(String parceiroId) {
-    if (_box == null) return false;
-    return _box!.values.any((t) => t.parceiroId == parceiroId);
+    return getAll().any((t) => t.parceiroId == parceiroId);
   }
 
   /// Get a specific table by ID.
   TabelaSangria? getTabelaById(String tabelaId) {
-    if (_box == null) return null;
-    return _box!.get(tabelaId);
+    return getById(tabelaId);
   }
 
   // ─────────────────────────────────────────────────────────────────────
@@ -79,18 +94,11 @@ class TabelaService extends ChangeNotifier {
   // ─────────────────────────────────────────────────────────────────────
 
   /// Create N tables for a partner.
-  ///
-  /// [parceiroId] - The partner to create tables for.
-  /// [count] - Number of tables to create (typically 3, 4, or 5).
-  /// [arvores] - Optional list of estimated tree counts per table.
-  ///             Length must match [count] if provided.
   Future<void> criarTabelas(
     String parceiroId,
     int count, {
     List<int?>? arvores,
   }) async {
-    if (_box == null) await init();
-
     // Remove existing tables for this partner first
     await deleteTabelas(parceiroId);
 
@@ -99,55 +107,80 @@ class TabelaService extends ChangeNotifier {
         id: const Uuid().v4(),
         parceiroId: parceiroId,
         numero: i + 1,
-        arvoresEstimadas: arvores != null && i < arvores.length
-            ? arvores[i]
-            : null,
+        arvoresEstimadas:
+            arvores != null && i < arvores.length ? arvores[i] : null,
       );
-      await _box!.put(tabela.id, tabela);
+      await super.add(tabela);
     }
-    notifyListeners();
   }
 
   /// Update the estimated tree count for a specific table.
   Future<void> updateArvores(String tabelaId, int? arvores) async {
-    if (_box == null) await init();
-    final tabela = _box!.get(tabelaId);
+    final tabela = getById(tabelaId);
     if (tabela != null) {
-      tabela.arvoresEstimadas = arvores;
-      await tabela.save();
-      notifyListeners();
+      // Create updated copy manualy because copyWith doesn't handle nulls ideally for simple updates sometimes,
+      // but copyWith is fine here.
+      // BUT we need to preserve metadata!
+      // Since TabelaSangria is immutable for metadata fields in copyWith?
+      // Let's check model... yes copyWith preserves farmId, createdBy etc.
+
+      // Actually, looking at model copyWith:
+      // return TabelaSangria(..., lastTappedDate: lastTappedDate ?? this.lastTappedDate...)
+      // The issue is if we want to set something TO null.
+      // arvoresEstimadas is nullable. If updated arvores is null, copyWith (arvores ?? this.arvores) keeps existing.
+      // We need to handle explicit null set.
+      // For now assume arvores param is the new value.
+
+      // Let's create a new instance to be safe about metadata and values
+      final updated = TabelaSangria(
+        id: tabela.id,
+        parceiroId: tabela.parceiroId,
+        numero: tabela.numero,
+        arvoresEstimadas: arvores, // Direct set
+        lastTappedDate: tabela.lastTappedDate,
+        farmId: tabela.farmId,
+        createdBy: tabela.createdBy,
+        createdAt: tabela.createdAt,
+        sourceApp: tabela.sourceApp,
+      );
+
+      await super.update(tabelaId, updated);
     }
   }
 
   /// Register a tapping event for a table (updates lastTappedDate to now).
   Future<void> registrarSangria(String tabelaId) async {
-    if (_box == null) await init();
-    final tabela = _box!.get(tabelaId);
+    final tabela = getById(tabelaId);
     if (tabela != null) {
-      tabela.lastTappedDate = DateTime.now();
-      await tabela.save();
-      notifyListeners();
+      final updated = TabelaSangria(
+        id: tabela.id,
+        parceiroId: tabela.parceiroId,
+        numero: tabela.numero,
+        arvoresEstimadas: tabela.arvoresEstimadas,
+        lastTappedDate: DateTime.now(),
+        farmId: tabela.farmId,
+        createdBy: tabela.createdBy,
+        createdAt: tabela.createdAt,
+        sourceApp: tabela.sourceApp,
+      );
+      await super.update(tabelaId, updated);
     }
   }
 
   /// Delete all tables for a specific partner.
   Future<void> deleteTabelas(String parceiroId) async {
-    if (_box == null) await init();
-    final toDelete = _box!.values
+    final toDelete = getAll()
         .where((t) => t.parceiroId == parceiroId)
         .map((t) => t.id)
         .toList();
     for (final id in toDelete) {
-      await _box!.delete(id);
+      await super.delete(id);
     }
-    notifyListeners();
   }
 
   /// Clear all tables (used for restore).
   Future<void> clearAll() async {
-    if (_box == null) await init();
-    await _box!.clear();
-    notifyListeners();
+    await super.clearAll();
   }
 
   // ─────────────────────────────────────────────────────────────────────
@@ -160,7 +193,7 @@ class TabelaService extends ChangeNotifier {
   /// which damages the tree. This method returns true if the table's
   /// lastTappedDate is yesterday (comparing date only, not time).
   bool isEnforcada(String tabelaId) {
-    final tabela = _box?.get(tabelaId);
+    final tabela = getById(tabelaId);
     if (tabela == null || tabela.lastTappedDate == null) return false;
 
     final now = DateTime.now();

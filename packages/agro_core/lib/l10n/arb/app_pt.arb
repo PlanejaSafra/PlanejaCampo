@@ -420,8 +420,27 @@
   "exportDataDescription": "Baixe uma cópia dos seus dados em formato padrão para usar em outros serviços.",
   "exportDataJson": "JSON (completo)",
   "exportDataCsv": "CSV (Excel/Planilhas)",
-  "exportDataSuccess": "Dados exportados com sucesso!",
-  "exportDataError": "Erro ao exportar dados.",
+  "exportProcessing": "Processando...",
+  "exportSuccess": "Exportação concluída com sucesso!",
+  "exportError": "Erro ao exportar dados: {error}",
+  "exportShareSubject": "Dados RuraCamp - {app}",
+
+  "syncPending": "Sincronização pendente",
+  "syncInProgress": "Sincronizando...",
+  "syncComplete": "Sincronização concluída",
+  "syncFailed": "Falha na sincronização",
+  "syncConflict": "Conflito detectado",
+  "offlineMode": "Modo offline",
+  "offlineQueueCount": "{count} operações pendentes",
+  "@offlineQueueCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "syncRetrying": "Tentando novamente...",
+  "syncOfflineQueued": "Salvo localmente, será sincronizado",
 
   "revokeAllButton": "Revogar Tudo e Sair",
   "revokeAllTitle": "Revogar todos os consentimentos?",
