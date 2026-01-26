@@ -413,5 +413,27 @@
 
   "pesagemNightModeOn": "Modo noturno ativado",
   "pesagemNightModeOff": "Modo noturno desativado",
-  "tapeSwipeToDelete": "Deslize para remover"
+  "tapeSwipeToDelete": "Deslize para remover",
+
+  "editarLabel": "Editar",
+  "excluirLabel": "Excluir",
+
+  "recebivelEditTitle": "Editar Recebível",
+  "recebivelDeleteTitle": "Excluir Recebível?",
+  "recebivelDeleteMessage": "Deseja realmente excluir este recebível?",
+  "recebivelDeleted": "Recebível excluído",
+  "recebivelUpdated": "Recebível atualizado!",
+
+  "contaPagarAddButton": "Adicionar Conta",
+  "contaPagarEditTitle": "Editar Conta",
+  "contaPagarDeleteTitle": "Excluir Conta?",
+  "contaPagarDeleteMessage": "Deseja realmente excluir esta conta?",
+  "contaPagarDeleted": "Conta excluída",
+  "contaPagarUpdated": "Conta atualizada!",
+  "contaPagarSaved": "Conta salva!",
+  "contaPagarValorLabel": "Valor",
+
+  "despesaEditTitle": "Editar Despesa",
+  "despesaDeleted": "Despesa excluída",
+  "despesaUpdated": "Despesa atualizada!"
 }

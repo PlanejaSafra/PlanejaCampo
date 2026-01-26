@@ -28,6 +28,7 @@
 | 18.3 | **RecebiveisScreen**: Tela completa com summary card, lista com status chips, swipe-to-mark, empty state, FAB | ✅ DONE |
 | 18.4 | **Main.dart Integration**: Registro RecebivelAdapter, init service, provider, rota /recebiveis | ✅ DONE |
 | 18.5 | **Drawer Integration**: Item "Recebíveis" no rubber_drawer.dart e home_screen.dart | ✅ DONE |
+| 18.6 | **Edit/Delete UI**: updateRecebivel service method, _showEditRecebivelSheet, swipe-to-delete com secondaryBackground | ✅ DONE |
 
 ### Files Modified
 
@@ -268,6 +269,8 @@ To integrate in `main.dart`, update `_ProfileGatedHome` to check onboarding firs
 | 20.4 | **BreakEvenScreen**: Dashboard completo com custo/kg, margem, breakdown por categoria | ✅ DONE |
 | 20.5 | **Bottom Sheet Form**: Formulário de adição de despesa com valor, categoria, data, descrição | ✅ DONE |
 | 20.6 | **Main.dart Integration**: Registrar adapters, init service, provider, route, drawer | ✅ DONE |
+| 20.7 | **Edit UI**: updateDespesa service, tap-to-edit com _EditDespesaForm, _showEditDespesaSheet | ✅ DONE |
+| 20.8 | **Cost Trend Alert**: _buildCostTrendWarning usando l10n.breakEvenAlerta quando custos sobem >20% | ✅ DONE |
 
 ### Files Modified
 
@@ -309,6 +312,7 @@ Para o comprador que usa o app para registrar compras de múltiplos produtores.
 | 19.3 | **ContasPagarScreen**: Tela completa com summary card, lista ordenada, status chips, swipe-to-pay, batch payment | ✅ DONE |
 | 19.4 | **Main.dart Integration**: Registro de adapters Hive, init service, provider, rota /contas-pagar | ✅ DONE |
 | 19.5 | **Drawer Integration**: Item "Contas a Pagar" no rubber_drawer.dart e home_screen.dart | ✅ DONE |
+| 19.6 | **Edit/Delete/Create UI**: updateConta service, FAB _showCreateContaSheet, _showEditContaSheet, swipe-to-delete | ✅ DONE |
 
 ### Files Modified
 
@@ -327,9 +331,12 @@ Para o comprador que usa o app para registrar compras de múltiplos produtores.
 
 ## Phase RUBBER-17: Controle de Safras (Modelo Date Range)
 
-### Status: [TODO]
+### Status: [DONE]
+**Date Completed**: 2026-01-26
 **Priority**: 🔴 CRITICAL (Pré-requisito para fases financeiras)
 **Objective**: Implementar controle de safra baseado em Janela de Tempo (Date Range), não acumulador.
+
+> **Nota**: Esta fase foi implementada via CORE-76 (agro_core) e integrada no RuraRubber.
 
 ### Arquitetura: Query-Based (Não Acumulador)
 
@@ -415,13 +422,13 @@ final totalKg = await pesagemService.getTotalPorSafra(safra);
 
 | Sub-Phase | Description | Status |
 |-----------|-------------|--------|
-| 17.1 | **CORE-76 Dependency**: Aguardar/usar Safra e SafraService do agro_core | ⏳ TODO |
-| 17.2 | **SafraChip Widget**: Chip compacto para header com nome abreviado (ex: "25/26") | ⏳ TODO |
-| 17.3 | **SafraBottomSheet**: Lista de safras com resumo calculado dinamicamente | ⏳ TODO |
-| 17.4 | **Home Dashboard**: Visão hierárquica (Total Fazenda + Lista Parceiros) | ⏳ TODO |
-| 17.5 | **Filtro por Período**: Queries usam WHERE data BETWEEN dataInicio AND dataFim | ⏳ TODO |
-| 17.6 | **Encerramento**: Botão "Encerrar Safra" com criação automática da próxima | ⏳ TODO |
-| 17.7 | **Ajuste Manual**: Tela de configuração para editar datas se necessário | ⏳ TODO |
+| 17.1 | **CORE-76 Dependency**: Usar Safra e SafraService do agro_core | ✅ DONE |
+| 17.2 | **SafraChip Widget**: Chip compacto para header com nome abreviado (ex: "25/26") | ✅ DONE |
+| 17.3 | **SafraBottomSheet**: Lista de safras com resumo calculado dinamicamente | ✅ DONE |
+| 17.4 | **Home Dashboard**: Visão hierárquica (Total Fazenda + Lista Parceiros) | ✅ DONE |
+| 17.5 | **Filtro por Período**: Queries usam safra.containsDate() para filtrar registros | ✅ DONE |
+| 17.6 | **Encerramento**: SafraService.encerrarSafra() com criação automática da próxima | ✅ DONE |
+| 17.7 | **Ajuste Manual**: SafraBottomSheet permite editar datas via SafraService.updateSafra() | ✅ DONE |
 
 ### Dependências do agro_core (CORE-76)
 
@@ -431,17 +438,16 @@ final totalKg = await pesagemService.getTotalPorSafra(safra);
 | `SafraService` | CRUD + getSafraAtiva() + encerrarSafra() |
 | `SafraAdapter` | Registrar no Hive durante init |
 
-### Files to Create/Modify
+### Files Modified
 
 | File | Action | Description |
 |------|--------|-------------|
-| `lib/widgets/safra_chip.dart` | CREATE | Chip compacto para header (usa Safra do core) |
-| `lib/widgets/safra_bottom_sheet.dart` | CREATE | Bottom sheet com lista e estatísticas |
-| `lib/widgets/fazenda_summary_card.dart` | CREATE | Card com total da fazenda |
-| `lib/widgets/parceiro_list_card.dart` | CREATE | Lista de parceiros com % |
-| `lib/screens/home_screen.dart` | MODIFY | Dashboard hierárquico completo |
-| `lib/screens/safra_settings_screen.dart` | CREATE | Configurações da safra (ajuste datas) |
-| `lib/services/pesagem_service.dart` | MODIFY | Adicionar queries filtradas por safra |
+| `agro_core: models/safra.dart` | USE | Modelo Safra do core com containsDate(), shortLabel |
+| `agro_core: services/safra_service.dart` | USE | SafraService do core com ensureAtivaSafra(), encerrarSafra() |
+| `agro_core: widgets/safra_chip.dart` | USE | SafraChip widget do core |
+| `agro_core: widgets/safra_bottom_sheet.dart` | USE | SafraBottomSheet widget do core |
+| `lib/screens/home_screen.dart` | MODIFY | Dashboard hierárquico com _buildSafraSummary, _buildParceiroRanking |
+| `lib/services/entrega_service.dart` | MODIFY | Queries safra-aware: totalPesoSafra, pesoPorParceiroSafra |
 
 ### L10n Keys Required
 - `safraChipLabel`: "{ano1}/{ano2}" (ex: "25/26")

@@ -154,6 +154,15 @@ class _BreakEvenScreenState extends State<BreakEvenScreen> {
             ),
             const SizedBox(height: 24),
 
+            // ── Cost Trend Warning ──
+            _buildCostTrendWarning(
+              context,
+              l10n,
+              theme,
+              despesaService: despesaService,
+              safra: safra,
+            ),
+
             // ── Totals Summary ──
             _buildTotalsSummary(
               context,
@@ -244,6 +253,62 @@ class _BreakEvenScreenState extends State<BreakEvenScreen> {
           ),
         ),
       ],
+    );
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Cost Trend Warning
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  Widget _buildCostTrendWarning(
+    BuildContext context,
+    BorrachaLocalizations l10n,
+    ThemeData theme, {
+    required DespesaService despesaService,
+    required Safra safra,
+  }) {
+    final monthlyData = despesaService.totalMensalSafra(safra);
+    if (monthlyData.length < 2) return const SizedBox.shrink();
+
+    final currentMonth = monthlyData.last.value;
+    final previousMonth = monthlyData[monthlyData.length - 2].value;
+
+    if (previousMonth <= 0) return const SizedBox.shrink();
+
+    final percentIncrease =
+        ((currentMonth - previousMonth) / previousMonth) * 100;
+
+    if (percentIncrease <= 20) return const SizedBox.shrink();
+
+    final percentStr = percentIncrease.toStringAsFixed(0);
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 24),
+      child: Card(
+        color: Colors.amber.shade50,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: BorderSide(color: Colors.amber.shade300),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              Icon(Icons.warning_amber, color: Colors.orange.shade700, size: 32),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  l10n.breakEvenAlerta(percentStr),
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: Colors.orange.shade900,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -457,6 +522,7 @@ class _BreakEvenScreenState extends State<BreakEvenScreen> {
             child: Card(
               margin: const EdgeInsets.only(bottom: 4),
               child: ListTile(
+                onTap: () => _showEditDespesaSheet(context, despesa),
                 leading: CircleAvatar(
                   backgroundColor: color.withValues(alpha: 0.2),
                   child: Icon(
@@ -543,6 +609,28 @@ class _BreakEvenScreenState extends State<BreakEvenScreen> {
             bottom: MediaQuery.of(sheetContext).viewInsets.bottom,
           ),
           child: const _AddDespesaForm(),
+        );
+      },
+    );
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Edit Expense Bottom Sheet
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  void _showEditDespesaSheet(BuildContext context, Despesa despesa) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (sheetContext) {
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(sheetContext).viewInsets.bottom,
+          ),
+          child: _EditDespesaForm(despesa: despesa),
         );
       },
     );
@@ -729,6 +817,224 @@ class _AddDespesaFormState extends State<_AddDespesaForm> {
               // Title
               Text(
                 l10n.despesaAddButton,
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // Valor field
+              TextFormField(
+                controller: _valorController,
+                keyboardType:
+                    const TextInputType.numberWithOptions(decimal: true),
+                decoration: InputDecoration(
+                  labelText: l10n.despesaValor,
+                  prefixText: 'R\$ ',
+                  border: const OutlineInputBorder(),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return l10n.despesaValor;
+                  }
+                  final parsed =
+                      double.tryParse(value.replaceAll(',', '.'));
+                  if (parsed == null || parsed <= 0) {
+                    return l10n.despesaValor;
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 12),
+
+              // Categoria dropdown
+              DropdownButtonFormField<CategoriaDespesa>(
+                value: _selectedCategoria,
+                decoration: InputDecoration(
+                  labelText: l10n.despesaCategoria,
+                  border: const OutlineInputBorder(),
+                ),
+                items: CategoriaDespesa.values.map((cat) {
+                  return DropdownMenuItem(
+                    value: cat,
+                    child: Row(
+                      children: [
+                        Icon(
+                          _BreakEvenScreenState._getCategoryIcon(cat),
+                          color:
+                              _BreakEvenScreenState._getCategoryColor(cat),
+                          size: 20,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(_BreakEvenScreenState._getCategoryLabel(
+                            l10n, cat)),
+                      ],
+                    ),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  if (value != null) {
+                    setState(() {
+                      _selectedCategoria = value;
+                    });
+                  }
+                },
+              ),
+              const SizedBox(height: 12),
+
+              // Date picker
+              InkWell(
+                onTap: _pickDate,
+                child: InputDecorator(
+                  decoration: InputDecoration(
+                    labelText: l10n.despesaData,
+                    border: const OutlineInputBorder(),
+                    suffixIcon: const Icon(Icons.calendar_today),
+                  ),
+                  child: Text(dateFormat.format(_selectedDate)),
+                ),
+              ),
+              const SizedBox(height: 12),
+
+              // Description field (optional)
+              TextFormField(
+                controller: _descricaoController,
+                decoration: InputDecoration(
+                  labelText:
+                      '${l10n.despesaSafraTitle} (${MaterialLocalizations.of(context).modalBarrierDismissLabel})',
+                  border: const OutlineInputBorder(),
+                ),
+                maxLines: 2,
+              ),
+              const SizedBox(height: 16),
+
+              // Save button
+              FilledButton(
+                onPressed: _save,
+                child: Text(l10n.despesaSaveButton),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+// Edit Expense Form (StatefulWidget inside BottomSheet)
+// ═════════════════════════════════════════════════════════════════════════════
+
+class _EditDespesaForm extends StatefulWidget {
+  final Despesa despesa;
+
+  const _EditDespesaForm({required this.despesa});
+
+  @override
+  State<_EditDespesaForm> createState() => _EditDespesaFormState();
+}
+
+class _EditDespesaFormState extends State<_EditDespesaForm> {
+  final _formKey = GlobalKey<FormState>();
+  late final TextEditingController _valorController;
+  late final TextEditingController _descricaoController;
+  late CategoriaDespesa _selectedCategoria;
+  late DateTime _selectedDate;
+
+  @override
+  void initState() {
+    super.initState();
+    _valorController = TextEditingController(
+      text: widget.despesa.valor.toStringAsFixed(2).replaceAll('.', ','),
+    );
+    _descricaoController = TextEditingController(
+      text: widget.despesa.descricao ?? '',
+    );
+    _selectedCategoria = widget.despesa.categoria;
+    _selectedDate = widget.despesa.data;
+  }
+
+  @override
+  void dispose() {
+    _valorController.dispose();
+    _descricaoController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _pickDate() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate,
+      firstDate: DateTime(2020),
+      lastDate: DateTime.now().add(const Duration(days: 365)),
+    );
+    if (picked != null) {
+      setState(() {
+        _selectedDate = picked;
+      });
+    }
+  }
+
+  Future<void> _save() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    final valor = double.tryParse(
+      _valorController.text.replaceAll(',', '.'),
+    );
+    if (valor == null || valor <= 0) return;
+
+    await DespesaService.instance.updateDespesa(
+      id: widget.despesa.id,
+      valor: valor,
+      categoria: _selectedCategoria,
+      data: _selectedDate,
+      descricao: _descricaoController.text.isNotEmpty
+          ? _descricaoController.text
+          : null,
+    );
+
+    if (mounted) {
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(BorrachaLocalizations.of(context)!.despesaUpdated),
+        ),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = BorrachaLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final dateFormat = DateFormat('dd/MM/yyyy');
+
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Handle bar
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.onSurfaceVariant
+                        .withValues(alpha: 0.3),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // Title
+              Text(
+                l10n.despesaEditTitle,
                 style: theme.textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),

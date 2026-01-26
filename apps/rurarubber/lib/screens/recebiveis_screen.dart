@@ -180,17 +180,29 @@ class RecebiveisScreen extends StatelessWidget {
         return Dismissible(
           key: Key(recebivel.id),
           direction: isPending
-              ? DismissDirection.startToEnd
-              : DismissDirection.none,
+              ? DismissDirection.horizontal
+              : DismissDirection.endToStart,
           confirmDismiss: (direction) async {
-            if (!isPending) return false;
-            return await _showConfirmReceivedDialog(context, l10n);
+            if (direction == DismissDirection.startToEnd) {
+              if (!isPending) return false;
+              return await _showConfirmReceivedDialog(context, l10n);
+            } else {
+              // endToStart = delete
+              return await _showDeleteRecebivelDialog(context, l10n);
+            }
           },
-          onDismissed: (_) {
-            service.marcarRecebido(recebivel.id);
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(l10n.recebido)),
-            );
+          onDismissed: (direction) {
+            if (direction == DismissDirection.startToEnd) {
+              service.marcarRecebido(recebivel.id);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(l10n.recebido)),
+              );
+            } else {
+              service.deleteRecebivel(recebivel.id);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(l10n.recebivelDeleted)),
+              );
+            }
           },
           background: Container(
             alignment: Alignment.centerLeft,
@@ -200,6 +212,15 @@ class RecebiveisScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
             ),
             child: const Icon(Icons.check, color: Colors.white),
+          ),
+          secondaryBackground: Container(
+            alignment: Alignment.centerRight,
+            padding: const EdgeInsets.only(right: 20),
+            decoration: BoxDecoration(
+              color: Colors.red,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(Icons.delete, color: Colors.white),
           ),
           child: Card(
             margin: const EdgeInsets.only(bottom: 8),
@@ -256,6 +277,11 @@ class RecebiveisScreen extends StatelessWidget {
                         service,
                       )
                   : null,
+              onLongPress: () => _showEditRecebivelSheet(
+                context,
+                l10n,
+                recebivel,
+              ),
             ),
           ),
         );
@@ -347,6 +373,49 @@ class RecebiveisScreen extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+
+  /// Confirmation dialog for swipe-to-delete.
+  Future<bool?> _showDeleteRecebivelDialog(
+    BuildContext context,
+    BorrachaLocalizations l10n,
+  ) {
+    return showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.recebivelDeleteTitle),
+        content: Text(l10n.recebivelDeleteMessage),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(l10n.parceiroDeleteCancel),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: Colors.red,
+            ),
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(l10n.excluirLabel),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Bottom sheet for editing an existing receivable.
+  void _showEditRecebivelSheet(
+    BuildContext context,
+    BorrachaLocalizations l10n,
+    Recebivel recebivel,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => _EditRecebivelForm(
+        l10n: l10n,
+        recebivel: recebivel,
+      ),
     );
   }
 
@@ -590,6 +659,184 @@ class _CreateRecebivelFormState extends State<_CreateRecebivelForm> {
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(widget.l10n.recebivelSalvo)),
+      );
+    }
+  }
+}
+
+/// Form for editing an existing receivable via bottom sheet.
+class _EditRecebivelForm extends StatefulWidget {
+  final BorrachaLocalizations l10n;
+  final Recebivel recebivel;
+
+  const _EditRecebivelForm({
+    required this.l10n,
+    required this.recebivel,
+  });
+
+  @override
+  State<_EditRecebivelForm> createState() => _EditRecebivelFormState();
+}
+
+class _EditRecebivelFormState extends State<_EditRecebivelForm> {
+  final _formKey = GlobalKey<FormState>();
+  late final TextEditingController _valorController;
+  late final TextEditingController _compradorController;
+  late DateTime _dataPrevista;
+
+  @override
+  void initState() {
+    super.initState();
+    _valorController = TextEditingController(
+      text: widget.recebivel.valor.toStringAsFixed(2).replaceAll('.', ','),
+    );
+    _compradorController = TextEditingController(
+      text: widget.recebivel.compradorNome ?? '',
+    );
+    _dataPrevista = widget.recebivel.dataPrevista;
+  }
+
+  @override
+  void dispose() {
+    _valorController.dispose();
+    _compradorController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = widget.l10n;
+    final theme = Theme.of(context);
+    final dateFormat = DateFormat('dd/MM/yyyy');
+
+    return Padding(
+      padding: EdgeInsets.fromLTRB(
+        24,
+        24,
+        24,
+        MediaQuery.of(context).viewInsets.bottom + 24,
+      ),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              l10n.recebivelEditTitle,
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // Value field
+            TextFormField(
+              controller: _valorController,
+              keyboardType:
+                  const TextInputType.numberWithOptions(decimal: true),
+              decoration: InputDecoration(
+                labelText: l10n.recebivelValor,
+                prefixText: r'R$ ',
+                border: const OutlineInputBorder(),
+              ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return l10n.fechamentoPriceRequired;
+                }
+                final parsed = double.tryParse(
+                  value.replaceAll(',', '.'),
+                );
+                if (parsed == null || parsed <= 0) {
+                  return l10n.fechamentoPriceInvalid;
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 16),
+
+            // Expected date field
+            InkWell(
+              onTap: () => _selectDate(context),
+              child: InputDecorator(
+                decoration: InputDecoration(
+                  labelText: l10n.dataPrevistaRecebimento,
+                  border: const OutlineInputBorder(),
+                  suffixIcon: const Icon(Icons.calendar_today),
+                ),
+                child: Text(dateFormat.format(_dataPrevista)),
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // Buyer name (optional)
+            TextFormField(
+              controller: _compradorController,
+              decoration: InputDecoration(
+                labelText: l10n.compradorOpcional,
+                border: const OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            // Action buttons
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: Text(l10n.pular),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: FilledButton(
+                    onPressed: _updateRecebivel,
+                    child: Text(l10n.parceiroSaveButton),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _dataPrevista,
+      firstDate: DateTime.now().subtract(const Duration(days: 365)),
+      lastDate: DateTime.now().add(const Duration(days: 365 * 2)),
+    );
+    if (picked != null) {
+      setState(() {
+        _dataPrevista = picked;
+      });
+    }
+  }
+
+  Future<void> _updateRecebivel() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    final valor = double.parse(
+      _valorController.text.replaceAll(',', '.'),
+    );
+    final comprador = _compradorController.text.trim();
+
+    final service = context.read<RecebivelService>();
+    await service.updateRecebivel(
+      id: widget.recebivel.id,
+      valor: valor,
+      dataPrevista: _dataPrevista,
+      compradorNome: comprador.isNotEmpty ? comprador : null,
+    );
+
+    if (mounted) {
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(widget.l10n.recebivelUpdated)),
       );
     }
   }

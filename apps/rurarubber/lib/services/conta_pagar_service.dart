@@ -106,6 +106,33 @@ class ContaPagarService extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Update a conta a pagar (replaces existing with same ID).
+  Future<void> updateConta({
+    required String id,
+    required double valor,
+    required DateTime vencimento,
+  }) async {
+    if (_box == null) await init();
+    final existing = _box!.get(id);
+    if (existing == null) return;
+    final updated = ContaPagar(
+      id: existing.id,
+      parceiroId: existing.parceiroId,
+      entregaId: existing.entregaId,
+      valor: valor,
+      vencimento: vencimento,
+      pago: existing.pago,
+      dataPagamento: existing.dataPagamento,
+      formaPagamento: existing.formaPagamento,
+      farmId: existing.farmId,
+      createdBy: existing.createdBy,
+      createdAt: existing.createdAt,
+      sourceApp: existing.sourceApp,
+    );
+    await _box!.put(id, updated);
+    notifyListeners();
+  }
+
   /// Delete a single conta.
   Future<void> deleteConta(String id) async {
     if (_box == null) await init();

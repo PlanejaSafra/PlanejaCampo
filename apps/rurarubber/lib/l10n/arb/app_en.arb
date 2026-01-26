@@ -413,5 +413,27 @@
 
   "pesagemNightModeOn": "Night mode on",
   "pesagemNightModeOff": "Night mode off",
-  "tapeSwipeToDelete": "Swipe to remove"
+  "tapeSwipeToDelete": "Swipe to remove",
+
+  "editarLabel": "Edit",
+  "excluirLabel": "Delete",
+
+  "recebivelEditTitle": "Edit Receivable",
+  "recebivelDeleteTitle": "Delete Receivable?",
+  "recebivelDeleteMessage": "Do you really want to delete this receivable?",
+  "recebivelDeleted": "Receivable deleted",
+  "recebivelUpdated": "Receivable updated!",
+
+  "contaPagarAddButton": "Add Account",
+  "contaPagarEditTitle": "Edit Account",
+  "contaPagarDeleteTitle": "Delete Account?",
+  "contaPagarDeleteMessage": "Do you really want to delete this account?",
+  "contaPagarDeleted": "Account deleted",
+  "contaPagarUpdated": "Account updated!",
+  "contaPagarSaved": "Account saved!",
+  "contaPagarValorLabel": "Amount",
+
+  "despesaEditTitle": "Edit Expense",
+  "despesaDeleted": "Expense deleted",
+  "despesaUpdated": "Expense updated!"
 }

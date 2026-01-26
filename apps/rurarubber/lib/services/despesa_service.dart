@@ -135,6 +135,32 @@ class DespesaService extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Update an expense (replaces existing with same ID).
+  Future<void> updateDespesa({
+    required String id,
+    required double valor,
+    required CategoriaDespesa categoria,
+    required DateTime data,
+    String? descricao,
+  }) async {
+    if (_box == null) await init();
+    final existing = _box!.get(id);
+    if (existing == null) return;
+    final updated = Despesa(
+      id: existing.id,
+      valor: valor,
+      categoria: categoria,
+      data: data,
+      descricao: descricao,
+      farmId: existing.farmId,
+      createdBy: existing.createdBy,
+      createdAt: existing.createdAt,
+      sourceApp: existing.sourceApp,
+    );
+    await _box!.put(id, updated);
+    notifyListeners();
+  }
+
   /// Delete an expense by ID.
   Future<void> deleteDespesa(String id) async {
     if (_box == null) await init();

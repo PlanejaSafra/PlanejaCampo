@@ -119,6 +119,33 @@ class RecebivelService extends ChangeNotifier {
     }
   }
 
+  /// Update a receivable (replaces existing with same ID).
+  Future<void> updateRecebivel({
+    required String id,
+    required double valor,
+    required DateTime dataPrevista,
+    String? compradorNome,
+  }) async {
+    if (_box == null) await init();
+    final existing = _box!.get(id);
+    if (existing == null) return;
+    final updated = Recebivel(
+      id: existing.id,
+      entregaId: existing.entregaId,
+      valor: valor,
+      dataPrevista: dataPrevista,
+      compradorNome: compradorNome,
+      recebido: existing.recebido,
+      dataRecebimento: existing.dataRecebimento,
+      farmId: existing.farmId,
+      createdBy: existing.createdBy,
+      createdAt: existing.createdAt,
+      sourceApp: existing.sourceApp,
+    );
+    await _box!.put(id, updated);
+    notifyListeners();
+  }
+
   /// Delete a receivable by ID.
   Future<void> deleteRecebivel(String id) async {
     if (_box == null) await init();
