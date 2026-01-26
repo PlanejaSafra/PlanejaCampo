@@ -39,11 +39,10 @@ Future<void> main() async {
     await Firebase.initializeApp();
   }
 
-  // Initialize App Check (only in release builds)
+  debugPrint('[AppCheck] FORCING DEBUG PROVIDER');
   await FirebaseAppCheck.instance.activate(
-    androidProvider:
-        kDebugMode ? AndroidProvider.debug : AndroidProvider.playIntegrity,
-    appleProvider: kDebugMode ? AppleProvider.debug : AppleProvider.appAttest,
+    androidProvider: AndroidProvider.debug,
+    appleProvider: AppleProvider.debug,
   );
 
   // Initialize Hive
