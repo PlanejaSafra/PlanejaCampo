@@ -2,6 +2,479 @@
 
 ---
 
+## Phase CORE-78: GenericSyncService - Infraestrutura Offline-First Unificada
+
+### Status: [TODO]
+**Priority**: 🔴 CRITICAL
+**Objective**: Criar classe base GenericSyncService no agro_core que encapsula toda a lógica offline-first (Hive + Firestore sync opcional), eliminando duplicação de código nos apps.
+
+### Problema Resolvido
+
+Atualmente, cada app tem services duplicados (DespesaService, LancamentoService, ChuvaService) com ~150 linhas cada, todos reimplementando a mesma lógica de:
+- Inicialização de Hive Box
+- CRUD básico
+- Singleton pattern
+- ChangeNotifier
+- Backup helpers (toJson/fromJson)
+
+Com CORE-78, cada service passa a ter ~30 linhas (apenas métodos específicos do domínio), estendendo GenericSyncService que fornece toda a infraestrutura.
+
+---
+
+### Sub-Phase 78.1: Modelos de Sync
+
+**Arquivo**: `lib/services/sync/sync_models.dart`
+
+**Hive TypeIds Reservados**:
+| TypeId | Modelo |
+|--------|--------|
+| 31 | OperationPriority (enum) |
+| 32 | OperationType (enum) |
+| 33 | OfflineOperation (class) |
+
+**Enums a criar**:
+
+1. **SyncStatus** (plain Dart, não Hive)
+   - `pending` - Aguardando sync
+   - `syncing` - Em processo de sync
+   - `synced` - Sincronizado com sucesso
+   - `failed` - Falhou (vai retentar)
+   - `conflict` - Conflito detectado
+
+2. **OperationPriority** (@HiveType 31)
+   - `critical` (HiveField 0) - Deletes
+   - `high` (HiveField 1) - Creates
+   - `medium` (HiveField 2) - Updates
+   - `low` (HiveField 3) - Reads/Syncs
+
+3. **OperationType** (@HiveType 32)
+   - `create` (HiveField 0)
+   - `update` (HiveField 1)
+   - `delete` (HiveField 2)
+
+**Classes a criar**:
+
+1. **OfflineOperation** (@HiveType 33, extends HiveObject)
+   - Campos HiveField:
+     - 0: `String id` - UUID único da operação
+     - 1: `String collection` - Nome do box/coleção
+     - 2: `OperationType operationType` - Tipo da operação
+     - 3: `String docId` - ID do documento afetado
+     - 4: `Map<String, dynamic>? data` - Dados (para create/update)
+     - 5: `DateTime timestamp` - Quando foi enfileirado
+     - 6: `OperationPriority priority` - Prioridade
+     - 7: `int retryCount` - Número de tentativas
+     - 8: `String? lastError` - Último erro
+     - 9: `String? sourceApp` - App de origem
+     - 10: `String? farmId` - Fazenda (multi-farm)
+   - Métodos:
+     - `factory OfflineOperation.create(...)` - Cria com ID auto-gerado
+     - `void recordFailure(String error)` - Incrementa retry e salva erro
+     - `bool get hasExceededRetries` - Se passou de 5 tentativas
+     - `int compareTo(OfflineOperation other)` - Para ordenar fila
+
+2. **SyncMetadata** (plain Dart, não Hive)
+   - Campos:
+     - `int version` - Número de versão (incrementa a cada update)
+     - `String? hash` - Hash SHA256 dos dados
+     - `DateTime? lastSyncAt` - Último sync
+     - `SyncStatus syncStatus` - Status atual
+     - `String? lastModifiedBy` - sourceApp que modificou
+     - `String? lastModifiedDevice` - Device ID
+   - Métodos:
+     - `factory SyncMetadata.create({sourceApp, deviceId})`
+     - `SyncMetadata copyWithUpdate({...})` - Incrementa versão
+     - `Map<String, dynamic> toMap()`
+     - `factory SyncMetadata.fromMap(Map)`
+
+3. **SyncResult** (plain Dart)
+   - Campos:
+     - `bool success`
+     - `int syncedCount`
+     - `int failedCount`
+     - `int conflictCount`
+     - `String? error`
+     - `DateTime completedAt`
+   - Factories: `SyncResult.success()`, `SyncResult.failure(error)`
+
+4. **SyncableEntity** (interface abstrata)
+   - `String get id`
+   - `DateTime? get updatedAt`
+
+---
+
+### Sub-Phase 78.2: LocalCacheManager
+
+**Arquivo**: `lib/services/sync/local_cache_manager.dart`
+
+**Propósito**: Gerenciamento genérico de cache Hive. Encapsula todas as operações de leitura/escrita no cache local.
+
+**Singleton**: `LocalCacheManager.instance`
+
+**Estado interno**:
+- `Map<String, Box<Map<String, dynamic>>> _boxes` - Cache de boxes abertos
+- `Map<String, DateTime> _lastSyncTimestamps` - Último sync por coleção
+- `bool _initialized`
+
+**Métodos públicos**:
+
+1. **init()** - Abre box de metadados (`_sync_metadata`)
+2. **openBox(String boxName)** - Abre/retorna box genérico
+3. **closeBox(String boxName)** - Fecha box
+4. **readFromCache(String collection, String id)** - Lê 1 documento
+5. **readManyFromCache(String collection, List<String> ids)** - Lê N documentos
+6. **getAllFromCache(String collection)** - Lê todos
+7. **queryCache(String collection, Map<String, dynamic> filters)** - Query com filtros
+8. **updateCache(String collection, String id, Map<String, dynamic> data)** - Salva no cache
+9. **removeFromCache(String collection, String id)** - Remove do cache
+10. **clearCollection(String collection)** - Limpa toda a coleção
+11. **getLastSyncTimestamp(String collection)** - Retorna último sync
+12. **setLastSyncTimestamp(String collection, DateTime timestamp)** - Salva timestamp
+13. **getCacheStats(String collection)** - Estatísticas (count, size, lastUpdate)
+
+**Lógica de queryCache**:
+- Filtros suportados: `isEqualTo`, `isGreaterThan`, `isLessThan`
+- Itera sobre valores do box e filtra em memória
+- Retorna lista de maps que passam nos filtros
+
+---
+
+### Sub-Phase 78.3: OfflineQueueManager
+
+**Arquivo**: `lib/services/sync/offline_queue_manager.dart`
+
+**Propósito**: Gerencia fila de operações offline com prioridade. Quando online, processa a fila em ordem.
+
+**Singleton**: `OfflineQueueManager.instance`
+
+**Hive Box**: `_offline_queue` (armazena OfflineOperation)
+
+**Estado interno**:
+- `Box<OfflineOperation> _queueBox`
+- `bool _isProcessing` - Evita processamento paralelo
+- `StreamController<SyncResult> _syncResultController` - Stream de resultados
+
+**Métodos públicos**:
+
+1. **init()** - Abre box da fila
+2. **addToQueue(OfflineOperation op)** - Adiciona operação à fila
+3. **getQueue()** - Retorna todas operações ordenadas por prioridade/timestamp
+4. **getPendingCount()** - Conta operações pendentes
+5. **processQueue()** - Processa toda a fila (quando online)
+6. **processQueueBatch(int maxBatch)** - Processa até N operações
+7. **removeFromQueue(String operationId)** - Remove operação específica
+8. **clearQueue()** - Limpa toda a fila
+9. **retryFailed()** - Reprocessa operações que falharam
+10. **Stream<SyncResult> get onSyncComplete** - Stream de resultados
+
+**Lógica de processQueue**:
+1. Verifica se está online (via connectivity ou flag)
+2. Ordena fila por prioridade (critical > high > medium > low) e timestamp
+3. Para cada operação:
+   - Se create/update: envia para Firestore via `set(data, merge: true)`
+   - Se delete: envia `delete()` para Firestore
+   - Se sucesso: remove da fila
+   - Se erro: incrementa retryCount, mantém na fila
+4. Emite SyncResult no stream
+
+**Batch processing para otimização**:
+- Agrupa múltiplas operações em WriteBatch do Firestore (max 500)
+- Reduz número de round-trips
+
+---
+
+### Sub-Phase 78.4: DataIntegrityManager
+
+**Arquivo**: `lib/services/sync/data_integrity_manager.dart`
+
+**Propósito**: Validação de integridade de dados e resolução de conflitos.
+
+**Métodos estáticos** (não precisa ser singleton):
+
+1. **computeHash(Map<String, dynamic> data)** - Retorna SHA256 dos dados (excluindo `_metadata`)
+2. **hasValidHash(Map<String, dynamic> data)** - Verifica se hash em `_metadata.hash` bate
+3. **validateDataIntegrity(Map<String, dynamic> data)** - Retorna true se dados são válidos
+4. **addFullMetadata(Map<String, dynamic> data, {sourceApp, deviceId})** - Adiciona `_metadata` com hash, version, timestamp
+5. **hasConflict(String collection, String id, Map localData, Map serverData)** - Detecta conflito
+6. **resolveConflict(Map localData, Map serverData, ConflictStrategy strategy)** - Resolve conflito
+7. **hasStoredConflict(Map<String, dynamic> data)** - Verifica se há conflito não resolvido
+
+**ConflictStrategy** (enum):
+- `serverWins` - Dados do servidor prevalecem
+- `localWins` - Dados locais prevalecem
+- `merge` - Merge campo a campo (mais recente vence)
+- `manual` - Requer intervenção do usuário
+
+**Estrutura do `_metadata`** (dentro de cada documento):
+```
+_metadata: {
+  version: 3,
+  hash: "sha256...",
+  lastSyncAt: "2026-01-26T10:00:00Z",
+  syncStatus: "synced",
+  lastModifiedBy: "rurarubber",
+  lastModifiedDevice: "device-uuid-123"
+}
+```
+
+---
+
+### Sub-Phase 78.5: GenericSyncService
+
+**Arquivo**: `lib/services/sync/generic_sync_service.dart`
+
+**Propósito**: Classe base abstrata que todo service de dados deve estender. Fornece CRUD completo com sync automático.
+
+**Assinatura**:
+```
+abstract class GenericSyncService<T> extends ChangeNotifier
+```
+
+**Parâmetros do construtor**:
+- `String boxName` - Nome do Hive box
+- `bool syncEnabled` - Se usa Firestore (default: false)
+- `String? firestoreCollection` - Nome da coleção no Firestore (default: boxName)
+
+**Getters abstratos** (a ser implementado por cada service):
+- `String get sourceApp` - Identificador do app (ex: "rurarubber")
+- `T fromMap(Map<String, dynamic> map)` - Deserializa
+- `Map<String, dynamic> toMap(T item)` - Serializa
+- `String getId(T item)` - Extrai ID do item
+
+**Getters opcionais com default**:
+- `String? get farmId` - Pode retornar null para services globais
+
+**Estado interno**:
+- `Box<T>? _box`
+- `bool _initialized`
+- `Map<String, DateTime> _lastSyncScheduled` - Debounce por ID
+- `bool _isSyncing`
+
+**Métodos públicos CRUD**:
+
+1. **init()** - Abre Hive box, retorna se já inicializado
+2. **getAll()** - Lista todos os itens do box, ordenados
+3. **getById(String id)** - Busca por ID, agenda sync em background se online
+4. **add(T item)** - Adiciona item, enfileira sync se offline
+5. **update(String id, T item)** - Atualiza, enfileira sync se offline
+6. **delete(String id)** - Deleta, enfileira sync se offline
+7. **clearAll()** - Limpa tudo (usado em restore)
+
+**Métodos de sync**:
+
+8. **syncWithServer(String id)** - Sincroniza 1 documento com Firestore
+9. **syncAllWithServer({Map<String, dynamic>? filters})** - Sincroniza todos (com filtros opcionais)
+10. **forceSync()** - Força sync completo ignorando cache
+11. **scheduleSyncInBackground(String id)** - Agenda sync com debounce de 5 min
+
+**Métodos de query**:
+
+12. **getByAttributes(Map<String, dynamic> filters)** - Query local com filtros
+13. **getByFarmId(String farmId)** - Filtra por fazenda
+
+**Métodos de backup** (para CloudBackupService):
+
+14. **toJsonList()** - Exporta todos como List<Map>
+15. **importFromJson(List<dynamic> jsonList)** - Importa lista de maps
+
+**Lógica interna de add/update/delete**:
+
+```
+1. Salva no Hive local imediatamente
+2. Adiciona _metadata com hash, version, syncStatus='pending'
+3. Se syncEnabled:
+   a. Se online: tenta enviar para Firestore
+      - Sucesso: atualiza _metadata.syncStatus='synced'
+      - Erro: enfileira no OfflineQueueManager
+   b. Se offline: enfileira no OfflineQueueManager
+4. notifyListeners()
+```
+
+**Lógica de getById com background sync**:
+
+```
+1. Lê do Hive local (cache-first)
+2. Se encontrou e está online:
+   - Agenda syncInBackground com debounce
+3. Retorna dado local
+4. Background sync (após 2 segundos):
+   - Busca do Firestore
+   - Se versão diferente, atualiza cache local
+```
+
+---
+
+### Sub-Phase 78.6: SyncConfig
+
+**Arquivo**: `lib/services/sync/sync_config.dart`
+
+**Propósito**: Configuração global de sync, centralizando timeouts, retries, debounce.
+
+**Singleton**: `SyncConfig.instance`
+
+**Configurações**:
+
+| Config | Default | Descrição |
+|--------|---------|-----------|
+| `timeoutOnlineWrite` | 30s | Timeout para writes online |
+| `timeoutOnlineRead` | 20s | Timeout para reads online |
+| `timeoutOfflineWrite` | 5s | Timeout para writes offline (local) |
+| `timeoutOfflineRead` | 3s | Timeout para reads offline |
+| `maxRetries` | 5 | Máximo de tentativas antes de desistir |
+| `syncDebounceMinutes` | 5 | Debounce entre syncs do mesmo ID |
+| `batchSize` | 500 | Max operações por batch do Firestore |
+| `conflictStrategy` | serverWins | Estratégia padrão de conflitos |
+| `autoSyncOnConnect` | true | Sync automático quando reconecta |
+
+**Métodos**:
+- `configure({...})` - Atualiza configurações
+- `reset()` - Volta para defaults
+
+---
+
+### Sub-Phase 78.7: Exports e L10n
+
+**Arquivo**: `lib/agro_core.dart`
+
+Adicionar exports:
+```
+// Services (Sync Infrastructure - CORE-78)
+export 'services/sync/sync_models.dart';
+export 'services/sync/local_cache_manager.dart';
+export 'services/sync/offline_queue_manager.dart';
+export 'services/sync/data_integrity_manager.dart';
+export 'services/sync/generic_sync_service.dart';
+export 'services/sync/sync_config.dart';
+```
+
+**Strings L10n** (app_pt.arb / app_en.arb):
+
+| Key | PT | EN |
+|-----|----|----|
+| `syncPending` | Sincronização pendente | Sync pending |
+| `syncInProgress` | Sincronizando... | Syncing... |
+| `syncComplete` | Sincronização concluída | Sync complete |
+| `syncFailed` | Falha na sincronização | Sync failed |
+| `syncConflict` | Conflito detectado | Conflict detected |
+| `offlineMode` | Modo offline | Offline mode |
+| `offlineQueueCount` | {count} operações pendentes | {count} pending operations |
+| `syncRetrying` | Tentando novamente... | Retrying... |
+| `syncOfflineQueued` | Salvo localmente, será sincronizado | Saved locally, will sync |
+
+---
+
+### Files Created
+
+| File | Description |
+|------|-------------|
+| `lib/services/sync/sync_models.dart` | OfflineOperation (typeId 33), SyncMetadata, SyncStatus, OperationPriority (31), OperationType (32) |
+| `lib/services/sync/local_cache_manager.dart` | Gerenciamento de cache Hive genérico com TTL e invalidação |
+| `lib/services/sync/offline_queue_manager.dart` | Fila de operações offline com prioridade e batch processing |
+| `lib/services/sync/data_integrity_manager.dart` | Hash SHA256, conflict detection e resolution |
+| `lib/services/sync/generic_sync_service.dart` | Classe base abstrata com CRUD + sync |
+| `lib/services/sync/sync_config.dart` | Configuração global de sync |
+| `lib/services/sync/sync_models.g.dart` | GERADO via build_runner |
+
+### Files Modified
+
+| File | Changes |
+|------|---------|
+| `lib/agro_core.dart` | Export dos 6 novos arquivos de sync |
+| `lib/l10n/arb/app_pt.arb` | 9 strings de sync/offline |
+| `lib/l10n/arb/app_en.arb` | 9 strings de sync/offline |
+
+---
+
+### Dependências
+
+Verificar se já existem no pubspec.yaml do agro_core:
+- `hive_flutter` ✅ (já existe)
+- `crypto` (para SHA256) - **ADICIONAR se não existir**
+- `connectivity_plus` (para detectar online/offline) - **OPCIONAL, pode usar flag manual**
+
+---
+
+### Ordem de Implementação
+
+1. **sync_models.dart** - Não tem dependências
+2. **sync_config.dart** - Não tem dependências
+3. **local_cache_manager.dart** - Não tem dependências
+4. **data_integrity_manager.dart** - Usa crypto para hash
+5. **offline_queue_manager.dart** - Usa sync_models, local_cache_manager
+6. **generic_sync_service.dart** - Usa todos os anteriores
+7. **Rodar build_runner** para gerar sync_models.g.dart
+8. **Atualizar exports** em agro_core.dart
+9. **Adicionar L10n** strings
+
+---
+
+### Testes de Validação
+
+Após implementação, testar:
+
+1. **CRUD local** - Criar/ler/atualizar/deletar com syncEnabled=false
+2. **Offline queue** - Criar operações offline, verificar que são enfileiradas
+3. **Sync online** - Com syncEnabled=true, verificar que chega no Firestore
+4. **Delta sync** - Modificar documento no Firestore, verificar que sync traz apenas alterado
+5. **Conflito** - Modificar mesmo documento local e remoto, verificar detecção de conflito
+6. **Batch** - Enfileirar 600 operações, verificar que são processadas em 2 batches
+
+---
+
+### Cross-Reference
+
+- **CORE-77**: EnhancedBackupProvider pode ser adaptado para usar GenericSyncService
+- **CASH-03**: Será desbloqueado após esta fase (cross-app sync via Firestore)
+- **generic_service_v3.dart**: Referência original em `examples/planejacampo/lib/services/`
+
+---
+
+### Migration Guide
+
+Apps que quiserem migrar seus services existentes para GenericSyncService:
+
+**Passo 1**: Adicionar import
+```dart
+import 'package:agro_core/services/sync/generic_sync_service.dart';
+```
+
+**Passo 2**: Mudar extends
+```dart
+// ANTES
+class DespesaService extends ChangeNotifier { ... }
+
+// DEPOIS
+class DespesaService extends GenericSyncService<Despesa> { ... }
+```
+
+**Passo 3**: Implementar abstratos
+```dart
+@override
+String get sourceApp => 'rurarubber';
+
+@override
+Despesa fromMap(Map<String, dynamic> map) => Despesa.fromJson(map);
+
+@override
+Map<String, dynamic> toMap(Despesa item) => item.toJson();
+
+@override
+String getId(Despesa item) => item.id;
+```
+
+**Passo 4**: Chamar super no construtor
+```dart
+DespesaService._() : super(boxName: 'despesas', syncEnabled: false);
+```
+
+**Passo 5**: Remover boilerplate
+- Remover `Box<T>? _box`
+- Remover `init()` (usa o do pai)
+- Remover CRUD básico (usa do pai)
+- Manter apenas métodos específicos do domínio (ex: `totalPorSafra()`)
+
+---
+
 ## Phase CORE-77: Arquitetura de Backup Dependency-Aware
 
 ### Status: [DONE]

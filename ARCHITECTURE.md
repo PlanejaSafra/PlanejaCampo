@@ -254,3 +254,63 @@ Todo app deve inicializar os seguintes componentes na ordem correta:
 - [ ] Criar DeletionProvider implementando AppDeletionProvider
 - [ ] Registrar providers no CloudBackupService e DataDeletionService
 - [ ] Garantir que todas as entidades usam sourceApp = "nomedoapp"
+
+---
+
+## 11. GenericSyncService (CORE-78)
+
+> **Status**: Planejado (Aguardando Implementação)
+> **Propósito**: Infraestrutura unificada para serviços offline-first com sincronização opcional.
+
+### 11.1. Visão Geral
+
+O `GenericSyncService` é uma classe base abstrata que elimina a duplicação de códido nos serviços de dados (Repositories/Services). Ele encapsula:
+- **CRUD Local**: Operações Hive padronizadas
+- **Sync Opcional**: Sincronização automática com Firestore (se ativado)
+- **Fila Offline**: Enfileiramento de operações quando sem internet
+- **Integridade**: Validação de dados via Hash SHA256 e detecção de conflitos
+
+### 11.2. Arquitetura em Camadas
+
+```mermaid
+graph TD
+    A[App Service] -->|extends| B[GenericSyncService<T>]
+    B --> C[LocalCacheManager]
+    B --> D[OfflineQueueManager]
+    B --> E[DataIntegrityManager]
+    C -->|Leitura/Escrita| F[(Hive Local)]
+    D -->|Fila de Ops| F
+    D -->|Sync (Online)| G[(Firestore)]
+    B -->|Background Sync| G
+```
+
+### 11.3. Fluxo de Operações
+
+#### Escrita (Create/Update/Delete)
+1. **Local First**: Salva imediatamente no Hive (UI reage instantaneamente).
+2. **Metadata**: Adiciona/atualiza metadados (`version`, `hash`, `syncStatus='pending'`).
+3. **Check Conectividade**:
+   - **Offline**: Adiciona operação à `OfflineQueueManager` (persistida no Hive).
+   - **Online**: Tenta enviar para Firestore imediatamente.
+     - Sucesso: Atualiza `syncStatus='synced'`.
+     - Falha: Move para fila offline com `retryCount`.
+
+#### Leitura (Read)
+1. **Cache First**: Retorna dados do Hive imediatamente.
+2. **Background Sync** (Se online e debounced):
+   - Consulta Firestore por atualizações (`updatedAt > lastSyncAt`).
+   - Se houver mudanças, atualiza cache e notifica listeners (`notifyListeners`).
+
+### 11.4. Resolução de Conflitos
+
+- **Server-Wins** (Padrão): Se servidor tem versão mais nova, sobrescreve local.
+- **Detecção**: Baseada em `version` e `hash` do documento.
+- **Integridade**: `DataIntegrityManager` verifica hashes para garantir que dados não foram corrompidos no transporte.
+
+### 11.5. Benefícios para os Apps
+
+1. **Redução de Código**: Services caem de ~150 linhas para ~30 linhas.
+2. **Robustez**: Tratamento centralizado de erros, retries e conectividade.
+3. **Padronização**: Todos os apps comportam-se da mesma forma (Offline-First real).
+4. **Cross-App Data**: Habilita sincronização entre apps (ex: RuraRubber e RuraCash compartilhando dados via Firestore).
+
