@@ -80,7 +80,7 @@ class AgroDrawer extends StatelessWidget {
                       theme.brightness == Brightness.dark
                           ? (appLogoDarkPath ?? appLogoLightPath!)
                           : (appLogoLightPath ?? appLogoDarkPath!),
-                      height: 64,
+                      height: 80,
                       fit: BoxFit.contain,
                     ),
                   )
