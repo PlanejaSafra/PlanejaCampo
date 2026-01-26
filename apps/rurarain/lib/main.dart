@@ -39,15 +39,14 @@ Future<void> main() async {
     await Firebase.initializeApp();
   }
 
-  debugPrint('[AppCheck] kDebugMode: $kDebugMode');
-  debugPrint(
-      '[AppCheck] Using provider: ${kDebugMode ? "AndroidProvider.debug" : "AndroidProvider.playIntegrity"}');
-
-  await FirebaseAppCheck.instance.activate(
-    androidProvider:
-        kDebugMode ? AndroidProvider.debug : AndroidProvider.playIntegrity,
-    appleProvider: kDebugMode ? AppleProvider.debug : AppleProvider.appAttest,
-  );
+  // App Check: only activate in release builds.
+  // Debug builds skip App Check to avoid needing debug tokens during development.
+  if (!kDebugMode) {
+    await FirebaseAppCheck.instance.activate(
+      androidProvider: AndroidProvider.playIntegrity,
+      appleProvider: AppleProvider.appAttest,
+    );
+  }
 
   // Initialize Hive
   await Hive.initFlutter();

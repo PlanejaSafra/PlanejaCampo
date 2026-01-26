@@ -228,26 +228,30 @@ abstract class GenericSyncService<T> extends ChangeNotifier {
     await _box!.put(id, dataWithMeta);
     notifyListeners();
 
-    // 3. Sync / Queue
+    // 3. Sync / Queue (non-fatal: local save already succeeded)
     if (syncEnabled) {
-      // Cria versão para upload com marker de timestamp do servidor
-      final uploadData = Map<String, dynamic>.from(dataWithMeta);
-      final meta = Map<String, dynamic>.from(uploadData['_metadata']);
+      try {
+        // Cria versão para upload com marker de timestamp do servidor
+        final uploadData = Map<String, dynamic>.from(dataWithMeta);
+        final meta = Map<String, dynamic>.from(uploadData['_metadata']);
 
-      // O servidor vai colocar a hora real aqui
-      meta['lastSyncAt'] = kServerTimestampMarker;
-      uploadData['_metadata'] = meta;
+        // O servidor vai colocar a hora real aqui
+        meta['lastSyncAt'] = kServerTimestampMarker;
+        uploadData['_metadata'] = meta;
 
-      final op = OfflineOperation.create(
-        collection: firestoreCollection,
-        operationType: isNew ? OperationType.create : OperationType.update,
-        docId: id,
-        data: uploadData,
-        priority: isNew ? OperationPriority.high : OperationPriority.medium,
-        sourceApp: sourceApp,
-      );
+        final op = OfflineOperation.create(
+          collection: firestoreCollection,
+          operationType: isNew ? OperationType.create : OperationType.update,
+          docId: id,
+          data: uploadData,
+          priority: isNew ? OperationPriority.high : OperationPriority.medium,
+          sourceApp: sourceApp,
+        );
 
-      await OfflineQueueManager.instance.addToQueue(op);
+        await OfflineQueueManager.instance.addToQueue(op);
+      } catch (e) {
+        debugPrint('[GenericSyncService] Queue operation failed (non-fatal): $e');
+      }
     }
   }
 

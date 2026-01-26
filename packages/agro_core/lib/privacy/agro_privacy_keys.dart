@@ -35,4 +35,8 @@ class AgroPrivacyKeys {
 
   /// Whether auto backup on app start is enabled.
   static const String autoBackupEnabled = 'auto_backup_enabled';
+
+  /// Whether the property name prompt has been acknowledged by the user.
+  /// Set to true when the user confirms the property name dialog (even with default name).
+  static const String propertyNamePrompted = 'property_name_prompted';
 }

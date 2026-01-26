@@ -127,6 +127,21 @@ class AgroPrivacyStore {
     ]);
   }
 
+  // ========== PROPERTY NAME PROMPT ==========
+
+  /// Check if the user has already acknowledged the property name prompt.
+  static bool isPropertyNamePrompted() {
+    return _safeBox.get(
+      AgroPrivacyKeys.propertyNamePrompted,
+      defaultValue: false,
+    ) as bool;
+  }
+
+  /// Mark the property name prompt as acknowledged.
+  static Future<void> setPropertyNamePrompted(bool value) async {
+    await _safeBox.put(AgroPrivacyKeys.propertyNamePrompted, value);
+  }
+
   // ========== AUTO BACKUP ==========
 
   /// Check if auto backup on app start is enabled.

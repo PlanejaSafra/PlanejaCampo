@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../l10n/generated/app_localizations.dart';
+import '../privacy/agro_privacy_store.dart';
 import '../services/property_service.dart';
 
 /// Shows a dialog prompting the user to name their property.
@@ -56,7 +57,8 @@ class _PropertyNamePromptDialogState extends State<PropertyNamePromptDialog> {
   }
 
   Future<void> _save() async {
-    if (_controller.text.trim().isEmpty) return;
+    final newName = _controller.text.trim();
+    if (newName.isEmpty) return;
 
     setState(() => _isSaving = true);
 
@@ -65,9 +67,12 @@ class _PropertyNamePromptDialogState extends State<PropertyNamePromptDialog> {
       final defaultProperty = propertyService.getDefaultProperty();
 
       if (defaultProperty != null) {
-        defaultProperty.updateName(_controller.text.trim());
+        defaultProperty.updateName(newName);
         await propertyService.updateProperty(defaultProperty);
       }
+
+      // Mark as acknowledged so the prompt doesn't appear again
+      await AgroPrivacyStore.setPropertyNamePrompted(true);
 
       if (mounted) {
         Navigator.of(context).pop(true);
@@ -138,7 +143,11 @@ class _PropertyNamePromptDialogState extends State<PropertyNamePromptDialog> {
 }
 
 /// Checks if the default property has a generic name and should prompt.
+/// Returns false if the user has already acknowledged the prompt.
 bool shouldPromptForPropertyName() {
+  // If user already confirmed/saved, don't prompt again
+  if (AgroPrivacyStore.isPropertyNamePrompted()) return false;
+
   final propertyService = PropertyService();
   final defaultProperty = propertyService.getDefaultProperty();
 
