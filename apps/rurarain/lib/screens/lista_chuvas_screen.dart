@@ -397,8 +397,8 @@ class _ListaChuvasScreenState extends State<ListaChuvasScreen> {
       drawer: AgroDrawer(
         appName: 'RuraRain',
         versionText: 'v${widget.version}',
-        appLogoLightPath: 'assets/images/rurarain-icon-light-menu.png',
-        appLogoDarkPath: 'assets/images/rurarain-icon-dark-menu.png',
+        appLogoLightPath: 'assets/images/rurarain-icon.png',
+        appLogoDarkPath: 'assets/images/rurarain-icon.png',
         onNavigate: _handleDrawerNavigation,
         extraItems: [
           AgroDrawerItem(
