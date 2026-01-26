@@ -3,10 +3,59 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
+import '../models/lgpd_deletion_result.dart';
 import '../privacy/agro_privacy_store.dart';
+import 'dependency_service.dart';
+
+/// Interface for app-specific LGPD deletion logic.
+///
+/// Each app implements this to provide granular deletion capabilities:
+/// - Delete only data created by this app (sourceApp matching)
+/// - Respect cross-app dependencies via [DependencyService]
+/// - Support ownership-based deletion (farm owner vs member)
+///
+/// See CORE-77 Section 9 and Section 16 for architecture.
+abstract class AppDeletionProvider {
+  /// App identifier (e.g., "rurarubber", "rurarain")
+  String get appId;
+
+  /// Delete all data created by this app for a specific farm.
+  ///
+  /// Only deletes entities where `sourceApp == appId`.
+  /// Checks [DependencyService] before deleting — skips protected entities.
+  ///
+  /// [farmId]: The farm whose data to delete.
+  /// [userId]: The user requesting deletion (for ownership verification).
+  /// [isOwner]: Whether the user is the farm owner (full LGPD rights).
+  Future<LgpdDeletionResult> deleteAppData({
+    required String farmId,
+    required String userId,
+    required bool isOwner,
+  });
+
+  /// Delete only personal data (non-owner LGPD request).
+  ///
+  /// A non-owner (e.g., gerente, sangrador) can only request deletion
+  /// of their personal data, NOT the farm data they created.
+  /// The `createdBy` audit trail remains (it belongs to the farm owner).
+  ///
+  /// Returns what was deleted and what was retained.
+  Future<LgpdDeletionResult> deletePersonalData({
+    required String userId,
+  });
+}
 
 /// Service for LGPD-compliant data deletion (Art. 18, VI - Right to Erasure).
-/// Deletes all user data from Firestore, Firebase Auth, and local Hive boxes.
+///
+/// Supports two deletion modes:
+/// - **Full deletion** ([deleteAllUserData]): Deletes everything
+///   (account + all data). Used when user deletes their account.
+/// - **App-specific deletion** ([deleteAppDataForFarm]): Deletes only
+///   one app's data, respecting cross-app dependencies.
+/// - **Personal data only** ([deletePersonalDataOnly]): For non-owners
+///   exercising LGPD rights without affecting farm data.
+///
+/// See CORE-77 Section 9 and Section 16 for ownership rules.
 class DataDeletionService {
   DataDeletionService._();
   static final DataDeletionService instance = DataDeletionService._();
@@ -21,11 +70,104 @@ class DataDeletionService {
     'sync_queue',
   ];
 
+  /// Registered app-specific deletion providers
+  final List<AppDeletionProvider> _deletionProviders = [];
+
   /// Register additional Hive box for deletion (app-specific boxes).
   void registerHiveBox(String boxName) {
     if (!_hiveBoxNames.contains(boxName)) {
       _hiveBoxNames.add(boxName);
     }
+  }
+
+  /// Register an app-specific deletion provider.
+  void registerDeletionProvider(AppDeletionProvider provider) {
+    if (!_deletionProviders.any((p) => p.appId == provider.appId)) {
+      _deletionProviders.add(provider);
+    }
+  }
+
+  /// Delete data for a specific app in a specific farm.
+  ///
+  /// Only deletes entities where `sourceApp == appId`.
+  /// Respects cross-app dependencies (skips protected entities).
+  ///
+  /// [appId]: The app whose data to delete.
+  /// [farmId]: The farm whose data to delete.
+  /// [userId]: The user requesting deletion.
+  /// [isOwner]: Whether the user is the farm owner.
+  Future<LgpdDeletionResult> deleteAppDataForFarm({
+    required String appId,
+    required String farmId,
+    required String userId,
+    required bool isOwner,
+  }) async {
+    final provider = _deletionProviders
+        .cast<AppDeletionProvider?>()
+        .firstWhere((p) => p?.appId == appId, orElse: () => null);
+
+    if (provider == null) {
+      debugPrint('DataDeletionService: No provider registered for $appId');
+      return const LgpdDeletionResult(
+        success: false,
+        errors: ['No deletion provider registered for app'],
+      );
+    }
+
+    try {
+      final result = await provider.deleteAppData(
+        farmId: farmId,
+        userId: userId,
+        isOwner: isOwner,
+      );
+
+      // Clean up dependency manifest for this app
+      if (DependencyService.instance.isInitialized) {
+        DependencyService.instance.removeAllReferencesForApp(appId);
+      }
+
+      debugPrint('DataDeletionService: App deletion for $appId: $result');
+      return result;
+    } catch (e) {
+      debugPrint('DataDeletionService: Error deleting app data for $appId: $e');
+      return LgpdDeletionResult(
+        success: false,
+        errors: ['Deletion failed: $e'],
+      );
+    }
+  }
+
+  /// Delete only personal data for a non-owner user.
+  ///
+  /// LGPD allows any user to request deletion of their personal data.
+  /// For non-owners:
+  /// - Deletes personal profile/preferences
+  /// - Does NOT delete farm data they created (audit trail belongs to owner)
+  /// - Does NOT delete the `createdBy` field (owner's audit trail)
+  ///
+  /// See CORE-77 Section 16 for ownership rules.
+  Future<LgpdDeletionResult> deletePersonalDataOnly({
+    required String userId,
+  }) async {
+    final results = <LgpdDeletionResult>[];
+
+    for (final provider in _deletionProviders) {
+      try {
+        final result = await provider.deletePersonalData(userId: userId);
+        results.add(result);
+      } catch (e) {
+        debugPrint(
+          'DataDeletionService: Error in personal deletion for '
+          '${provider.appId}: $e',
+        );
+        results.add(LgpdDeletionResult(
+          success: false,
+          errors: ['${provider.appId}: $e'],
+        ));
+      }
+    }
+
+    return LgpdDeletionResult.merge(results);
   }
 
   /// Delete ALL user data. This action is IRREVERSIBLE.
@@ -57,10 +199,18 @@ class DataDeletionService {
       // 3. Clear all local Hive boxes
       await _clearAllLocalData();
 
-      // 4. Reset privacy store
+      // 4. Clear dependency manifests
+      if (DependencyService.instance.isInitialized) {
+        for (final provider in _deletionProviders) {
+          DependencyService.instance
+              .removeAllReferencesForApp(provider.appId);
+        }
+      }
+
+      // 5. Reset privacy store
       await AgroPrivacyStore.resetAll();
 
-      // 5. Delete Firebase Auth account (must be last - invalidates session)
+      // 6. Delete Firebase Auth account (must be last - invalidates session)
       await user.delete();
 
       debugPrint('DataDeletionService: All data deleted successfully');

@@ -47,12 +47,18 @@ class Farm extends HiveObject {
   @HiveField(6)
   String? description;
 
+  /// Subscription tier that controls farm limits.
+  /// - 'free': Max 1 farm per user (default)
+  /// - 'basic': Expanded limits (future)
+  /// - 'premium': Unlimited farms (future)
+  ///
+  /// Null means 'free' (backwards compatible with existing data).
+  @HiveField(8)
+  String? subscriptionTier;
+
   // Future fields (commented for reference):
   // @HiveField(7)
   // List<FarmMember>? members;
-  //
-  // @HiveField(8)
-  // String? subscriptionTier; // 'free', 'basic', 'premium'
 
   Farm({
     required this.id,
@@ -62,6 +68,7 @@ class Farm extends HiveObject {
     required this.updatedAt,
     this.isDefault = false,
     this.description,
+    this.subscriptionTier,
   });
 
   /// Factory for creating a new farm with auto-generated UUID
@@ -79,6 +86,7 @@ class Farm extends HiveObject {
     required String ownerId,
     bool isDefault = false,
     String? description,
+    String? subscriptionTier,
   }) {
     final now = DateTime.now();
     final uuid = const Uuid().v4();
@@ -90,6 +98,7 @@ class Farm extends HiveObject {
       updatedAt: now,
       isDefault: isDefault,
       description: description,
+      subscriptionTier: subscriptionTier,
     );
   }
 
@@ -121,6 +130,7 @@ class Farm extends HiveObject {
       'updatedAt': updatedAt.toIso8601String(),
       'isDefault': isDefault,
       'description': description,
+      if (subscriptionTier != null) 'subscriptionTier': subscriptionTier,
     };
   }
 
@@ -134,6 +144,7 @@ class Farm extends HiveObject {
       updatedAt: DateTime.parse(json['updatedAt'] as String),
       isDefault: json['isDefault'] as bool? ?? false,
       description: json['description'] as String?,
+      subscriptionTier: json['subscriptionTier'] as String?,
     );
   }
 

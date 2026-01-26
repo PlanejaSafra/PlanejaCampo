@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:uuid/uuid.dart';
+
 import '../models/entrega.dart';
 import '../models/item_entrega.dart';
 
@@ -50,13 +51,29 @@ class EntregaService extends ChangeNotifier {
   }
 
   void startNewEntrega() {
-    _currentEntrega = Entrega(
+    _currentEntrega = Entrega.create(
       id: const Uuid().v4(),
       data: DateTime.now(),
       status: 'Aberto',
       itens: [],
     );
     notifyListeners();
+  }
+
+  /// Delete a specific entrega by ID.
+  Future<void> deleteEntrega(String id) async {
+    if (_box == null) await init();
+    await _box!.delete(id);
+    if (_currentEntrega?.id == id) {
+      _currentEntrega = null;
+    }
+    notifyListeners();
+  }
+
+  /// Get entrega by ID.
+  Entrega? getEntregaById(String id) {
+    if (_box == null) return null;
+    return _box!.get(id);
   }
 
   Future<void> addPesagem(String parceiroId, double peso) async {

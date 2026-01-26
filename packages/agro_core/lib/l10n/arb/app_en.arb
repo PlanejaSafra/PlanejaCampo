@@ -719,5 +719,195 @@
   "propertyNamePromptHint": "E.g.: Green Valley Farm",
   "propertyNamePromptSuggestion": "My Property",
   "propertyNamePromptConfirm": "Confirm",
-  "propertyNamePromptSkip": "Skip"
+  "propertyNamePromptSkip": "Skip",
+
+  "restoreConfirmTitle": "Confirm Restore",
+  "restoreConfirmSubtitle": "Review the changes before proceeding",
+  "restoreWillAdd": "{count} records will be added",
+  "@restoreWillAdd": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "restoreWillDelete": "{count} records will be removed",
+  "@restoreWillDelete": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "restoreBlocked": "{count} protected records",
+  "@restoreBlocked": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "restoreConflicts": "{count} conflicts found",
+  "@restoreConflicts": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "restoreBlockedSection": "Protected items",
+  "restoreBlockedExplanation": "These items are used by other apps and will not be removed",
+  "restoreWarningsSection": "Warnings",
+  "restoreRecalculationsSection": "Recalculations needed",
+  "restoreRecalculationsExplanation": "This derived data will be recalculated after restore",
+  "restoreNoChanges": "No changes needed",
+  "restoreFarmWarning": "Backup is from a different farm",
+  "restoreConfirmButton": "Confirm Restore",
+  "restoreCancelButton": "Cancel",
+
+  "backupNotFound": "No backup found in the cloud",
+  "backupSlotInvalid": "Invalid backup slot",
+  "backupUserNotLoggedIn": "User not logged in",
+  "backupTimeout": "Timed out. Check your connection",
+  "backupAnonymousNotAllowed": "Backup unavailable for anonymous accounts",
+
+  "farmLimitReached": "Farm limit reached",
+  "farmLimitFreeDescription": "Free plan allows only 1 farm. Subscribe to a plan to create more",
+
+  "restoreNoFarmAccess": "No access to this farm",
+  "restoreNoFarmAccessExplanation": "This backup belongs to a farm you are not the owner of. Restore is not allowed",
+
+  "safraGlobal": "Crop Season",
+  "safraAtiva": "Active Season",
+  "safraChipLabel": "{startYear}/{endYear}",
+  "@safraChipLabel": {
+    "placeholders": {
+      "startYear": { "type": "String" },
+      "endYear": { "type": "String" }
+    }
+  },
+  "encerrarSafra": "Close Season",
+  "novaSafraCriada": "New season created: {nome}",
+  "@novaSafraCriada": {
+    "placeholders": {
+      "nome": { "type": "String" }
+    }
+  },
+  "safraAnterior": "Previous Seasons",
+  "safraEncerrarConfirm": "Close the season \"{nome}\" and create a new one automatically?",
+  "@safraEncerrarConfirm": {
+    "placeholders": {
+      "nome": { "type": "String" }
+    }
+  },
+  "safraEncerrada": "Closed",
+  "safraNenhuma": "No season",
+
+  "weatherNext24Hours": "Next 24 Hours",
+  "weatherNextDays": "Next Days",
+  "weatherForecastToday": "Today's Forecast",
+  "weatherForecastTomorrow": "Tomorrow's Forecast",
+  "weatherForecastForDay": "Forecast for {day}",
+  "@weatherForecastForDay": {
+    "placeholders": {
+      "day": { "type": "String" }
+    }
+  },
+  "weatherForecastDetails": "Forecast Details",
+  "weatherPrecipitation": "Precipitation",
+  "weatherWindMax": "Wind Max",
+  "weatherHourlyEvolution": "Hourly Evolution",
+  "weatherTempMaxMin": "Temp (Max/Min)",
+  "radarLegendLight": "Light",
+  "radarLegendHeavy": "Heavy",
+  "cloudLegendClear": "Clear",
+  "cloudLegendCloudy": "Cloudy",
+  "weatherTomorrow": "Tomorrow",
+  "weatherRefreshTooltip": "Refresh forecast",
+  "weatherNoForecastAvailable": "No forecast available",
+  "weatherAttribution": "Data provided by Open-Meteo.com",
+  "weatherCacheMinutes": "{count, plural, =1{Updated 1 minute ago} other{Updated {count} minutes ago}}",
+  "@weatherCacheMinutes": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "weatherCacheHours": "{count, plural, =1{Updated 1 hour ago} other{Updated {count} hours ago}}",
+  "@weatherCacheHours": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "weatherCacheDays": "{count, plural, =1{Updated 1 day ago} other{Updated {count} days ago}}",
+  "@weatherCacheDays": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "weatherCacheStale": " (stale cache)",
+  "weatherTemperature": "Temperature",
+  "weatherForecastLoadError": "Error loading forecast: {error}",
+  "@weatherForecastLoadError": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "weatherForecastRefreshError": "Error refreshing forecast: {error}",
+  "@weatherForecastRefreshError": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "regionalRequireConsent": "You need to enable data sharing in settings",
+  "regionalLoadError": "Error loading data: {error}",
+  "@regionalLoadError": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "regionalNoData": "No regional data available",
+  "regionalNoDataDesc": "Not enough data in your region yet. Keep recording and sharing your rainfall!",
+  "regionalYourRegion": "Your Region",
+  "regionalCoverageArea": "Coverage area",
+  "regionalContributors": "Contributing properties",
+  "regionalConfidenceLevel": "Confidence level",
+  "regionalLastUpdate": "Last update",
+  "regionalComparison": "Comparison (Current Month)",
+  "regionalYourProperty": "Your Property",
+  "regionalAverage": "Regional Average",
+  "regionalAboveAverage": "You are {percent}% above the regional average",
+  "@regionalAboveAverage": {
+    "placeholders": {
+      "percent": { "type": "String" }
+    }
+  },
+  "regionalBelowAverage": "You are {percent}% below the regional average",
+  "@regionalBelowAverage": {
+    "placeholders": {
+      "percent": { "type": "String" }
+    }
+  },
+  "regionalDetails": "Region Details",
+  "regionalAccumulatedTotal": "Accumulated total",
+  "regionalGeoHash": "GeoHash",
+  "regionalPrecision": "Precision",
+  "regionalCharacters": "{count} characters",
+  "@regionalCharacters": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "regionalPrivacyNote": "Your data is anonymized and aggregated. Only regional averages are shared, never individual data.",
+  "timeAgoMinutes": "{count} min ago",
+  "@timeAgoMinutes": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "timeAgoHours": "{count}h ago",
+  "@timeAgoHours": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "timeAgoDays": "{count} days ago",
+  "@timeAgoDays": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "refreshTooltip": "Refresh",
+  "dateDayMonthPattern": "MMMM d"
 }

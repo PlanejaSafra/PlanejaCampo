@@ -749,11 +749,11 @@ class _WeatherMapScreenState extends State<WeatherMapScreen>
           const SizedBox(height: 4),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: const [
-              Text('Clear',
-                  style: TextStyle(color: Colors.white70, fontSize: 10)),
-              Text('Cloudy',
-                  style: TextStyle(color: Colors.white70, fontSize: 10)),
+            children: [
+              Text(l10n.cloudLegendClear,
+                  style: const TextStyle(color: Colors.white70, fontSize: 10)),
+              Text(l10n.cloudLegendCloudy,
+                  style: const TextStyle(color: Colors.white70, fontSize: 10)),
             ],
           ),
         ],
@@ -794,11 +794,11 @@ class _WeatherMapScreenState extends State<WeatherMapScreen>
         const SizedBox(height: 4),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: const [
-            Text('Light',
-                style: TextStyle(color: Colors.white70, fontSize: 10)),
-            Text('Heavy',
-                style: TextStyle(color: Colors.white70, fontSize: 10)),
+          children: [
+            Text(l10n.radarLegendLight,
+                style: const TextStyle(color: Colors.white70, fontSize: 10)),
+            Text(l10n.radarLegendHeavy,
+                style: const TextStyle(color: Colors.white70, fontSize: 10)),
           ],
         ),
       ],

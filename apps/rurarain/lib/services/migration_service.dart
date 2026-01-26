@@ -53,7 +53,7 @@ class MigrationService {
         }
 
         if (needsMigration) {
-          // Create updated record with propertyId
+          // Create updated record with propertyId and CORE-77 fields
           final updated = RegistroChuva(
             id: record.id,
             data: record.data,
@@ -61,6 +61,8 @@ class MigrationService {
             observacao: record.observacao,
             criadoEm: record.criadoEm,
             propertyId: defaultProperty.id,
+            createdBy: record.createdBy,
+            sourceApp: record.sourceApp,
           );
           await chuvaBox.put(record.id.toString(), updated);
           migratedCount++;

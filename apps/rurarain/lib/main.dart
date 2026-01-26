@@ -17,6 +17,7 @@ import 'screens/lista_chuvas_screen.dart';
 import 'screens/weather_detail_screen.dart';
 import 'services/chuva_service.dart';
 import 'services/chuva_backup_provider.dart';
+import 'services/chuva_deletion_provider.dart';
 import 'services/migration_service.dart';
 import 'services/notification_service.dart';
 import 'services/sync_service.dart';
@@ -59,6 +60,10 @@ Future<void> main() async {
   Hive.registerAdapter(WeatherForecastAdapter());
   Hive.registerAdapter(SyncQueueItemAdapter());
 
+  // CORE-77: Register farm and dependency adapters
+  Hive.registerAdapter(FarmAdapter());
+  Hive.registerAdapter(DependencyManifestAdapter());
+
   // Initialize privacy store
   await AgroPrivacyStore.init();
 
@@ -70,6 +75,13 @@ Future<void> main() async {
   // Register backup providers (order matters: properties first, then app data)
   CloudBackupService.instance.registerProvider(PropertyBackupProvider());
   CloudBackupService.instance.registerProvider(ChuvaBackupProvider());
+
+  // CORE-77: Register LGPD deletion provider
+  DataDeletionService.instance.registerDeletionProvider(ChuvaDeletionProvider());
+
+  // CORE-77: Initialize farm and dependency services
+  await FarmService.instance.init();
+  await DependencyService.instance.init();
 
   // Initialize property service (must be before chuva service for migration)
   await PropertyService().init();

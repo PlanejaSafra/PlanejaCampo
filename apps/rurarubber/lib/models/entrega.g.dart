@@ -24,13 +24,17 @@ class EntregaAdapter extends TypeAdapter<Entrega> {
       precoUmido: fields[4] as double?,
       compradorId: fields[5] as String?,
       itens: (fields[6] as List).cast<ItemEntrega>(),
+      farmId: fields[7] as String,
+      createdBy: fields[8] as String,
+      createdAt: fields[9] as DateTime,
+      sourceApp: fields[10] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, Entrega obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(11)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -44,7 +48,15 @@ class EntregaAdapter extends TypeAdapter<Entrega> {
       ..writeByte(5)
       ..write(obj.compradorId)
       ..writeByte(6)
-      ..write(obj.itens);
+      ..write(obj.itens)
+      ..writeByte(7)
+      ..write(obj.farmId)
+      ..writeByte(8)
+      ..write(obj.createdBy)
+      ..writeByte(9)
+      ..write(obj.createdAt)
+      ..writeByte(10)
+      ..write(obj.sourceApp);
   }
 
   @override

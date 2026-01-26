@@ -21,8 +21,8 @@ class WeatherDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AgroLocalizations.of(context)!;
 
-    // Extract data
     // Extract data
     final current = weatherData['current'];
     final daily = weatherData['daily'];
@@ -41,7 +41,7 @@ class WeatherDetailScreen extends StatelessWidget {
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Previsão do Tempo'),
+            Text(l10n.weatherForecastTitle),
             if (propertyName != null)
               InkWell(
                 onTap: propertyId == null
@@ -50,17 +50,10 @@ class WeatherDetailScreen extends StatelessWidget {
                         LocationHelper.checkAndUpdateLocation(
                           context: context,
                           propertyId: propertyId!,
-                          onLocationUpdated: () {
-                            // Force reload?
-                            // WeatherService implicitly fetches on next build if we invalidate
-                            // But since this is a StatelessWidget, we can't setState.
-                            // However, if location updates, the user likely navigates back?
-                            // Or we provide visual feedback.
-                          },
+                          onLocationUpdated: () {},
                         );
                       },
                 child: Row(
-                  // Row to make tap area better and add an icon hint
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
@@ -85,7 +78,7 @@ class WeatherDetailScreen extends StatelessWidget {
         slivers: [
           // 1. Current Weather Highlight
           SliverToBoxAdapter(
-            child: _buildCurrentHeader(context, current, daily),
+            child: _buildCurrentHeader(context, current, daily, l10n),
           ),
 
           // CORE-39: Alerts Section
@@ -99,7 +92,7 @@ class WeatherDetailScreen extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Text(
-                'Próximas 24 Horas',
+                l10n.weatherNext24Hours,
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -110,7 +103,7 @@ class WeatherDetailScreen extends StatelessWidget {
           // 3. Hourly Horizontal List
           if (hourly != null)
             SliverToBoxAdapter(
-              child: _buildHourlyList(context, hourly),
+              child: _buildHourlyList(context, hourly, l10n),
             ),
 
           // 4. Daily Header
@@ -118,7 +111,7 @@ class WeatherDetailScreen extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
               child: Text(
-                'Próximos Dias',
+                l10n.weatherNextDays,
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -135,7 +128,7 @@ class WeatherDetailScreen extends StatelessWidget {
                 final actualIndex = index + 1;
 
                 if (actualIndex >= dates.length) return null;
-                return _buildDailyItem(context, daily, actualIndex);
+                return _buildDailyItem(context, daily, actualIndex, l10n);
               },
               // Subtract 1 because we are skipping today
               childCount: (daily['time'] as List).isEmpty
@@ -150,8 +143,10 @@ class WeatherDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildCurrentHeader(BuildContext context, Map current, Map daily) {
+  Widget _buildCurrentHeader(
+      BuildContext context, Map current, Map daily, AgroLocalizations l10n) {
     final theme = Theme.of(context);
+    final locale = Localizations.localeOf(context).toString();
     final temp = current['temperature_2m'];
     final code = current['weather_code'] as int;
     final max = daily['temperature_2m_max'][0]; // Today max
@@ -180,14 +175,15 @@ class WeatherDetailScreen extends StatelessWidget {
             child: Column(
               children: [
                 Text(
-                  'Previsão para Hoje',
+                  l10n.weatherForecastToday,
                   style: theme.textTheme.titleMedium?.copyWith(
                     color: theme.colorScheme.onPrimaryContainer,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 Text(
-                  DateFormat("d 'de' MMMM", 'pt_BR').format(DateTime.now()),
+                  DateFormat(l10n.dateDayMonthPattern, locale)
+                      .format(DateTime.now()),
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: theme.colorScheme.onPrimaryContainer
                         .withValues(alpha: 0.8),
@@ -210,7 +206,7 @@ class WeatherDetailScreen extends StatelessWidget {
             ),
           ),
           Text(
-            _getWeatherDescription(code),
+            _getWeatherDescription(code, l10n),
             style: theme.textTheme.titleLarge?.copyWith(
               color:
                   theme.colorScheme.onPrimaryContainer.withValues(alpha: 0.8),
@@ -284,7 +280,8 @@ class WeatherDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildHourlyList(BuildContext context, Map hourly) {
+  Widget _buildHourlyList(
+      BuildContext context, Map hourly, AgroLocalizations l10n) {
     final times = hourly['time'] as List;
     final temps = hourly['temperature_2m'] as List;
     final codes = hourly['weather_code'] as List;
@@ -292,14 +289,8 @@ class WeatherDetailScreen extends StatelessWidget {
     final windDirections = hourly['wind_direction_10m'] as List?;
     final precipitations = hourly['precipitation'] as List?;
 
-    // Open-Meteo returns huge list (7 days hourly). We only want next 24h.
-    // We need to find "now" index.
-
     final now = DateTime.now();
     final hourFormat = DateFormat('HH:mm');
-
-    // Simple filter: start from current hour, take 24.
-    // Since API returns string ISO8601, we parse.
 
     int startIndex = 0;
     for (int i = 0; i < times.length; i++) {
@@ -314,7 +305,7 @@ class WeatherDetailScreen extends StatelessWidget {
         (times.length - startIndex) > 24 ? 24 : (times.length - startIndex);
 
     return SizedBox(
-      height: 170, // Increased height for precipitation info
+      height: 170,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -345,7 +336,7 @@ class WeatherDetailScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    i == 0 ? 'Agora' : hourFormat.format(time),
+                    i == 0 ? l10n.radarPresent : hourFormat.format(time),
                     style: Theme.of(context)
                         .textTheme
                         .bodySmall
@@ -401,18 +392,19 @@ class WeatherDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDailyItem(BuildContext context, Map daily, int index) {
+  Widget _buildDailyItem(
+      BuildContext context, Map daily, int index, AgroLocalizations l10n) {
+    final locale = Localizations.localeOf(context).toString();
     final date = DateTime.parse(daily['time'][index]);
     final max = daily['temperature_2m_max'][index];
     final min = daily['temperature_2m_min'][index];
     final code = daily['weather_code'][index] as int;
-    // Some OpenMeteo versions use precipitation_sum, some precipitation_probability_max
     final rain = daily['precipitation_sum']?[index] ?? 0.0;
     // Wind (CORE-38)
     final wSpeed = daily['wind_speed_10m_max']?[index] as double? ?? 0.0;
     final wDir = daily['wind_direction_10m_dominant']?[index] as int? ?? 0;
 
-    final dateFormat = DateFormat('E, d MMM', 'pt_BR');
+    final dateFormat = DateFormat.MMMEd(locale);
 
     return InkWell(
       onTap: () {
@@ -442,7 +434,7 @@ class WeatherDetailScreen extends StatelessWidget {
           style: const TextStyle(fontWeight: FontWeight.w600),
         ),
         subtitle: Text(
-          _getWeatherDescription(code),
+          _getWeatherDescription(code, l10n),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
@@ -488,9 +480,6 @@ class WeatherDetailScreen extends StatelessWidget {
     );
   }
 
-  // --- Helper Methods (Duplicated from WeatherCard for standalone) ---
-  // Ideally these should be in a shared helper/mixin.
-
   IconData _getWeatherIcon(int code) {
     if (code == 0) return Icons.wb_sunny;
     if (code >= 1 && code <= 3) return Icons.wb_cloudy;
@@ -502,18 +491,19 @@ class WeatherDetailScreen extends StatelessWidget {
     return Icons.cloud;
   }
 
-  String _getWeatherDescription(int code) {
-    if (code == 0) return 'Céu limpo';
-    if (code >= 1 && code <= 3) return 'Parcialmente nublado';
-    if (code >= 45 && code <= 48) return 'Neblina';
-    if (code >= 51 && code <= 67) return 'Chuva fraca';
-    if (code >= 80 && code <= 82) return 'Pancadas de chuva';
-    if (code >= 95 && code <= 99) return 'Tempestade';
-    return 'Nublado';
+  String _getWeatherDescription(int code, AgroLocalizations l10n) {
+    if (code == 0) return l10n.weatherClearSky;
+    if (code >= 1 && code <= 3) return l10n.weatherPartlyCloudy;
+    if (code >= 45 && code <= 48) return l10n.weatherFog;
+    if (code >= 51 && code <= 67) return l10n.weatherLightRain;
+    if (code >= 80 && code <= 82) return l10n.weatherShowers;
+    if (code >= 95 && code <= 99) return l10n.weatherThunderstorm;
+    return l10n.weatherCloudy;
   }
 
   Widget _buildAlertsSection(BuildContext context, List<WeatherAlert> alerts) {
     final l10n = AgroLocalizations.of(context)!;
+    final locale = Localizations.localeOf(context).toString();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -569,7 +559,7 @@ class WeatherDetailScreen extends StatelessWidget {
               }
 
               final dateStr =
-                  DateFormat('E, d MMM', 'pt_BR').format(alert.date);
+                  DateFormat.MMMEd(locale).format(alert.date);
 
               return Container(
                 width: 260,

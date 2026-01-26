@@ -7,6 +7,101 @@
 
 ---
 
+## Phase RAIN-03: Integração CORE-77 (Dependency-Aware Backup)
+
+### Status: [DONE]
+**Date Completed**: 2026-01-26
+**Priority**: 🔴 CRITICAL (Arquitetura multi-app e LGPD)
+**Objective**: Integrar modelos e serviços do agro_core CORE-77 para backup dependency-aware, isolamento por sourceApp, e conformidade LGPD.
+**Cross-Reference**: CORE-77, CORE-75
+
+### Contexto
+
+O CORE-77 criou a infraestrutura no agro_core para:
+- `sourceApp`: Identificador imutável de qual app criou cada registro
+- `FarmOwnedMixin`: Campos `farmId`, `createdBy`, `createdAt`, `sourceApp`
+- `EnhancedBackupProvider`: Backup/restore em 3 fases com análise prévia
+- `DependencyService`: Rastreamento de dependências cross-app
+- `AppDeletionProvider`: LGPD delete por app com verificação de ownership
+
+Esta fase adapta o RuraRain para usar essa infraestrutura.
+
+### Regras de Ownership (LGPD)
+
+| Operação | Quem pode? | Implementação |
+|----------|------------|---------------|
+| Backup Cloud | Apenas owner | `isCurrentUserFarmOwner()` |
+| Restore Cloud | Owner: full / Member: read-only | `RestoreFarmAccess` |
+| Export LGPD | Apenas owner | `_isCurrentUserFarmOwner` |
+| Delete LGPD | Apenas owner | `AppDeletionProvider` |
+
+### Implementation Summary
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 3.1 | **RegistroChuva Update**: Adicionar `createdBy`, `sourceApp` (propertyId já existe) | ✅ DONE |
+| 3.2 | **FarmOwnedMixin**: Adaptar RegistroChuva com mixin (farmId = propertyId, createdAt = criadoEm) | ✅ DONE |
+| 3.3 | **Hive Adapters**: Atualizar HiveFields 7-8, rodar build_runner | ✅ DONE |
+| 3.4 | **EnhancedBackupProvider**: Migrar ChuvaBackupProvider com analyzeRestore, executeRestore | ✅ DONE |
+| 3.5 | **DependencyService**: Registrar FarmAdapter, DependencyManifestAdapter, inicializar services | ✅ DONE |
+| 3.6 | **Property-Farm Link**: propertyId usado como farmId via getter (decisão: Property = Farm) | ✅ DONE |
+| 3.7 | **AppDeletionProvider**: Implementar ChuvaDeletionProvider | ✅ DONE |
+| 3.8 | **Services Update**: ChuvaService, backup_service, migration_service atualizados | ✅ DONE |
+| 3.9 | **Verify & Test**: flutter analyze zero erros | ✅ DONE |
+
+### Decisão Arquitetural: Property vs Farm
+
+Adotada **Opção 1**: `propertyId` funciona como `farmId`. O FarmOwnedMixin mapeia via getter:
+- `farmId` → `propertyId`
+- `createdAt` → `criadoEm`
+- Usa mixin em vez de interface (id é int, não String)
+
+### Files Modified
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/models/registro_chuva.dart` | MODIFY | FarmOwnedMixin com createdBy (HiveField 7), sourceApp (HiveField 8); factory create(); toJson/fromJson; copyWith |
+| `lib/models/registro_chuva.g.dart` | REGENERATE | build_runner (HiveFields 7-8) |
+| `lib/services/chuva_backup_provider.dart` | REWRITE | EnhancedBackupProvider com analyzeRestore, executeRestore, recalculateAfterRestore, restoreData (legacy) |
+| `lib/services/chuva_deletion_provider.dart` | CREATE | AppDeletionProvider para LGPD delete por app com verificação de ownership |
+| `lib/services/chuva_service.dart` | MODIFY | reassignTalhaoToProperty preserva createdBy/sourceApp |
+| `lib/services/backup_service.dart` | MODIFY | Usar fromJson para RegistroChuva (suporta createdBy/sourceApp) |
+| `lib/services/migration_service.dart` | MODIFY | Preservar createdBy/sourceApp na migração |
+| `lib/screens/editar_chuva_screen.dart` | MODIFY | Preservar createdBy/sourceApp ao editar registro |
+| `lib/main.dart` | MODIFY | Registrar FarmAdapter, DependencyManifestAdapter; init FarmService, DependencyService; registrar ChuvaDeletionProvider |
+
+### Implementation Details
+
+**RegistroChuva Model** (typeId: 1):
+- Usa `FarmOwnedMixin` (não FarmOwnedEntity, pois id é int)
+- HiveFields 7-8: createdBy, sourceApp
+- Getters: `farmId` → propertyId, `createdAt` → criadoEm
+- Factory `RegistroChuva.create()` auto-preenche metadata
+- Factory `RegistroChuva.novo()` mantida como legacy (delega para create)
+- `sourceApp` sempre "rurarain" (imutável)
+
+**ChuvaBackupProvider**:
+- Implementa `EnhancedBackupProvider` com 3 fases
+- `analyzeRestore()`: Gera RestoreAction lists (toAdd/toDelete) com filtro sourceApp
+- `executeRestore()`: Deleta apenas sourceApp='rurarain', importa novos
+- `restoreData()`: Legacy, faz full replace com defaults para backups antigos
+- RestoreFarmAccess via PropertyService
+
+**ChuvaDeletionProvider**:
+- Implementa `AppDeletionProvider` para LGPD
+- `deleteAppData()`: Deleta registros rurarain da property com verificação de dependências
+- `deletePersonalData()`: Sem dados pessoais (dados pertencem à property/owner)
+
+### Notas de Implementação
+
+1. **Retrocompatibilidade**: Factory `.novo()` mantida, delega para `.create()`
+2. **Offline-first**: Hive local, metadata preenchidos na criação
+3. **sourceApp imutável**: Sempre "rurarain", nunca modificado
+4. **propertyId como farmId**: Via getter no FarmOwnedMixin
+5. **createdBy obrigatório**: Via `AuthService.currentUser?.uid`
+
+---
+
 ## Phase RAIN-02: Property Naming Onboarding
 
 ### Status: [DONE]

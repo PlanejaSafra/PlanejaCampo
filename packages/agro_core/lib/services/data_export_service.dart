@@ -7,6 +7,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../privacy/agro_privacy_store.dart';
+import 'dependency_service.dart';
+import 'farm_service.dart';
 import 'property_service.dart';
 import 'talhao_service.dart';
 
@@ -15,7 +17,12 @@ import 'talhao_service.dart';
 typedef DataExportCallback = Future<Map<String, dynamic>> Function();
 
 /// Service for LGPD-compliant data portability (Art. 18, V - Right to Data Portability).
+///
 /// Exports user data in JSON or CSV format for use in other services.
+/// Includes cross-app references and dependency information
+/// so the user knows exactly how their data is connected.
+///
+/// See CORE-77 Section 10 for multi-app export architecture.
 class DataExportService {
   DataExportService._();
   static final DataExportService instance = DataExportService._();
@@ -36,41 +43,73 @@ class DataExportService {
     _appExporters[key] = callback;
   }
 
+  /// Check if current user is the farm owner.
+  ///
+  /// Only the farm owner can export farm data (LGPD ownership rule).
+  /// Non-owners can only export their personal data via [exportPersonalDataOnly].
+  ///
+  /// See CORE-77 Section 16 for ownership rules.
+  bool get _isCurrentUserFarmOwner {
+    if (!FarmService.instance.isInitialized) return false;
+    final defaultFarm = FarmService.instance.getDefaultFarm();
+    if (defaultFarm == null) return false;
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+    return userId != null && defaultFarm.isOwner(userId);
+  }
+
   /// Export all user data as JSON (human-readable format).
+  ///
+  /// **Ownership rule**: Only the farm owner can export farm data.
+  /// Non-owners get only their personal data (consents, profile).
+  /// This applies to all export/backup/import operations.
   ///
   /// Returns the JSON string containing:
   /// - User info (id, email)
-  /// - Properties
-  /// - Field plots (talhões)
-  /// - App-specific data (registered via registerExporter)
+  /// - Farms (from FarmService) — owner only
+  /// - Properties — owner only
+  /// - Field plots (talhões) — owner only
+  /// - App-specific data — owner only
+  /// - Cross-app references (from DependencyService) — owner only
   /// - Consents
+  ///
+  /// See CORE-77 Section 10 and Section 16 for architecture.
   Future<String> exportToJson() async {
     final user = FirebaseAuth.instance.currentUser;
+    final isOwner = _isCurrentUserFarmOwner;
 
     final export = <String, dynamic>{
       'exportedAt': DateTime.now().toIso8601String(),
       'appVersion': '1.0.0',
       'format': 'json',
+      'isOwnerExport': isOwner,
       'user': {
         'id': user?.uid,
         'email': user?.email,
         'isAnonymous': user?.isAnonymous ?? true,
       },
-      'data': {
-        'properties': await _exportProperties(),
-        'field_plots': await _exportTalhoes(),
-      },
       'consents': _exportConsents(),
     };
 
-    // Add app-specific data
-    for (final entry in _appExporters.entries) {
-      try {
-        final appData = await entry.value();
-        export['data'][entry.key] = appData;
-      } catch (e) {
-        debugPrint('DataExportService: Error exporting ${entry.key}: $e');
+    // Farm data is only included for owners
+    if (isOwner) {
+      export['data'] = {
+        'farms': _exportFarms(),
+        'properties': await _exportProperties(),
+        'field_plots': await _exportTalhoes(),
+      };
+      export['crossAppReferences'] = _exportCrossAppReferences();
+
+      // Add app-specific data
+      for (final entry in _appExporters.entries) {
+        try {
+          final appData = await entry.value();
+          (export['data'] as Map<String, dynamic>)[entry.key] = appData;
+        } catch (e) {
+          debugPrint('DataExportService: Error exporting ${entry.key}: $e');
+        }
       }
+    } else {
+      export['data'] = <String, dynamic>{};
     }
 
     return const JsonEncoder.withIndent('  ').convert(export);
@@ -169,6 +208,50 @@ class DataExportService {
         'created_at': t.createdAt.toIso8601String(),
       };
     }).toList();
+  }
+
+  /// Export farms from FarmService.
+  List<Map<String, dynamic>> _exportFarms() {
+    if (!FarmService.instance.isInitialized) return [];
+
+    return FarmService.instance.getAllFarms().map((farm) => {
+      'id': farm.id,
+      'name': farm.name,
+      'ownerId': farm.ownerId,
+      'isDefault': farm.isDefault,
+      'createdAt': farm.createdAt.toIso8601String(),
+      'updatedAt': farm.updatedAt.toIso8601String(),
+      'description': farm.description,
+    }).toList();
+  }
+
+  /// Export cross-app dependency references.
+  ///
+  /// Shows which apps reference which shared entities, so the user
+  /// knows exactly how their data is connected across the ecosystem.
+  Map<String, dynamic> _exportCrossAppReferences() {
+    if (!DependencyService.instance.isInitialized) {
+      return {'available': false};
+    }
+
+    final references = <String, dynamic>{};
+
+    // Export all registered manifests
+    for (final appId in DependencyService.instance.registeredApps) {
+      final manifest = DependencyService.instance.getManifest(appId);
+      if (manifest == null) continue;
+
+      references[appId] = {
+        'updatedAt': manifest.updatedAt.toIso8601String(),
+        'references': manifest.references,
+        'totalReferences': manifest.totalReferenceCount,
+      };
+    }
+
+    return {
+      'available': true,
+      'apps': references,
+    };
   }
 
   /// Export consents state.

@@ -24,13 +24,15 @@ class RegistroChuvaAdapter extends TypeAdapter<RegistroChuva> {
       criadoEm: fields[4] as DateTime,
       propertyId: fields[5] as String,
       talhaoId: fields[6] as String?,
+      createdBy: fields[7] as String,
+      sourceApp: fields[8] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, RegistroChuva obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(9)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -44,7 +46,11 @@ class RegistroChuvaAdapter extends TypeAdapter<RegistroChuva> {
       ..writeByte(5)
       ..write(obj.propertyId)
       ..writeByte(6)
-      ..write(obj.talhaoId);
+      ..write(obj.talhaoId)
+      ..writeByte(7)
+      ..write(obj.createdBy)
+      ..writeByte(8)
+      ..write(obj.sourceApp);
   }
 
   @override

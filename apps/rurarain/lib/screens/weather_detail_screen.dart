@@ -24,7 +24,7 @@ class _WeatherDetailScreenState extends State<WeatherDetailScreen> {
   List<WeatherForecast> _forecasts = [];
   bool _isLoading = false;
   bool _hasError = false;
-  String? _errorMessage;
+  String? _errorDetail;
 
   @override
   void initState() {
@@ -55,7 +55,7 @@ class _WeatherDetailScreenState extends State<WeatherDetailScreen> {
       setState(() {
         _isLoading = false;
         _hasError = true;
-        _errorMessage = 'Erro ao carregar previsão: ${e.toString()}';
+        _errorDetail = e.toString();
       });
     }
   }
@@ -79,10 +79,11 @@ class _WeatherDetailScreenState extends State<WeatherDetailScreen> {
       });
 
       if (mounted) {
+        final l10n = AgroLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Previsão atualizada com sucesso'),
-            duration: Duration(seconds: 2),
+          SnackBar(
+            content: Text(l10n.weatherForecastUpdated),
+            duration: const Duration(seconds: 2),
           ),
         );
       }
@@ -90,23 +91,24 @@ class _WeatherDetailScreenState extends State<WeatherDetailScreen> {
       setState(() {
         _isLoading = false;
         _hasError = true;
-        _errorMessage = 'Erro ao atualizar previsão: ${e.toString()}';
+        _errorDetail = e.toString();
       });
     }
   }
 
-  String _formatDate(DateTime date) {
+  String _formatDate(DateTime date, AgroLocalizations l10n) {
+    final locale = Localizations.localeOf(context).toString();
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final tomorrow = today.add(const Duration(days: 1));
     final forecastDate = DateTime(date.year, date.month, date.day);
 
     if (forecastDate == today) {
-      return 'Hoje';
+      return l10n.chuvaHoje;
     } else if (forecastDate == tomorrow) {
-      return 'Amanhã';
+      return l10n.weatherTomorrow;
     } else {
-      return DateFormat.MMMMEEEEd('pt_BR').format(date);
+      return DateFormat.MMMMEEEEd(locale).format(date);
     }
   }
 
@@ -117,12 +119,12 @@ class _WeatherDetailScreenState extends State<WeatherDetailScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Previsão do Tempo'),
+        title: Text(l10n.weatherForecastTitle),
         actions: [
           IconButton(
             icon: Icon(_isLoading ? Icons.hourglass_empty : Icons.refresh),
             onPressed: _isLoading ? null : _refreshForecasts,
-            tooltip: 'Atualizar previsão',
+            tooltip: l10n.weatherRefreshTooltip,
           ),
         ],
       ),
@@ -152,7 +154,7 @@ class _WeatherDetailScreenState extends State<WeatherDetailScreen> {
               ),
               const SizedBox(height: 16),
               Text(
-                _errorMessage ?? 'Erro ao carregar previsão',
+                l10n.weatherForecastLoadError(_errorDetail ?? ''),
                 style: theme.textTheme.titleMedium,
                 textAlign: TextAlign.center,
               ),
@@ -160,7 +162,7 @@ class _WeatherDetailScreenState extends State<WeatherDetailScreen> {
               ElevatedButton.icon(
                 onPressed: _loadForecasts,
                 icon: const Icon(Icons.refresh),
-                label: const Text('Tentar novamente'),
+                label: Text(l10n.tryAgainButton),
               ),
             ],
           ),
@@ -181,14 +183,14 @@ class _WeatherDetailScreenState extends State<WeatherDetailScreen> {
               ),
               const SizedBox(height: 16),
               Text(
-                'Nenhuma previsão disponível',
+                l10n.weatherNoForecastAvailable,
                 style: theme.textTheme.titleMedium,
               ),
               const SizedBox(height: 16),
               ElevatedButton.icon(
                 onPressed: _loadForecasts,
                 icon: const Icon(Icons.download),
-                label: const Text('Carregar previsão'),
+                label: Text(l10n.loadForecastButton),
               ),
             ],
           ),
@@ -215,7 +217,7 @@ class _WeatherDetailScreenState extends State<WeatherDetailScreen> {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      _getCacheInfo(),
+                      _getCacheInfo(l10n),
                       style: theme.textTheme.bodySmall?.copyWith(
                         color:
                             theme.colorScheme.onSurface.withValues(alpha: 0.6),
@@ -227,13 +229,14 @@ class _WeatherDetailScreenState extends State<WeatherDetailScreen> {
             ),
           const SizedBox(height: 8),
           // Forecast cards
-          ..._forecasts.map((forecast) => _buildForecastCard(forecast, theme)),
+          ..._forecasts
+              .map((forecast) => _buildForecastCard(forecast, theme, l10n)),
           const SizedBox(height: 16),
           // Attribution
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Text(
-              'Dados fornecidos por Open-Meteo.com',
+              l10n.weatherAttribution,
               style: theme.textTheme.bodySmall?.copyWith(
                 color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
               ),
@@ -245,23 +248,24 @@ class _WeatherDetailScreenState extends State<WeatherDetailScreen> {
     );
   }
 
-  String _getCacheInfo() {
+  String _getCacheInfo(AgroLocalizations l10n) {
     if (_forecasts.isEmpty) return '';
 
     final age = DateTime.now().difference(_forecasts.first.cachedAt);
     final isValid = _forecasts.first.isCacheValid;
+    final stale = isValid ? '' : l10n.weatherCacheStale;
 
     if (age.inMinutes < 60) {
-      return 'Atualizado há ${age.inMinutes} minuto${age.inMinutes != 1 ? 's' : ''}${isValid ? '' : ' (cache antigo)'}';
+      return '${l10n.weatherCacheMinutes(age.inMinutes)}$stale';
     } else if (age.inHours < 24) {
-      return 'Atualizado há ${age.inHours} hora${age.inHours != 1 ? 's' : ''}${isValid ? '' : ' (cache antigo)'}';
+      return '${l10n.weatherCacheHours(age.inHours)}$stale';
     } else {
-      final days = age.inDays;
-      return 'Atualizado há $days dia${days != 1 ? 's' : ''}${isValid ? '' : ' (cache antigo)'}';
+      return '${l10n.weatherCacheDays(age.inDays)}$stale';
     }
   }
 
-  Widget _buildForecastCard(WeatherForecast forecast, ThemeData theme) {
+  Widget _buildForecastCard(
+      WeatherForecast forecast, ThemeData theme, AgroLocalizations l10n) {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: Padding(
@@ -282,7 +286,7 @@ class _WeatherDetailScreenState extends State<WeatherDetailScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        _formatDate(forecast.date),
+                        _formatDate(forecast.date, l10n),
                         style: theme.textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
@@ -322,7 +326,7 @@ class _WeatherDetailScreenState extends State<WeatherDetailScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Precipitação',
+                        l10n.weatherPrecipitation,
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: theme.colorScheme.onSurface
                               .withValues(alpha: 0.6),
@@ -362,7 +366,7 @@ class _WeatherDetailScreenState extends State<WeatherDetailScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Temperatura',
+                        l10n.weatherTemperature,
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: theme.colorScheme.onSurface
                               .withValues(alpha: 0.6),

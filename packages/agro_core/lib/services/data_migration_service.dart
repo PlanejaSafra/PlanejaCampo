@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 
 import '../privacy/agro_privacy_keys.dart';
 import '../privacy/agro_privacy_store.dart';
+import 'farm_service.dart';
 import 'property_service.dart';
 import 'talhao_service.dart';
 
@@ -83,10 +84,21 @@ class DataMigrationService {
 
     final errors = <String>[];
     int currentStep = 0;
-    final totalSteps = 2 + (appDataTransferCallbacks?.length ?? 0);
+    final totalSteps = 3 + (appDataTransferCallbacks?.length ?? 0);
 
     try {
-      // Step 1: Transfer Properties
+      // Step 1: Transfer Farms
+      currentStep++;
+      onProgress?.call('farms', currentStep, totalSteps);
+      try {
+        await FarmService.instance.transferData(oldUserId, newUserId);
+        debugPrint('Migration: Farms transferred successfully');
+      } catch (e) {
+        errors.add('Farms: $e');
+        debugPrint('Migration Error (Farms): $e');
+      }
+
+      // Step 2: Transfer Properties
       currentStep++;
       onProgress?.call('properties', currentStep, totalSteps);
       try {
@@ -97,7 +109,7 @@ class DataMigrationService {
         debugPrint('Migration Error (Properties): $e');
       }
 
-      // Step 2: Transfer Talhões
+      // Step 3: Transfer Talhões
       currentStep++;
       onProgress?.call('talhoes', currentStep, totalSteps);
       try {
@@ -108,7 +120,7 @@ class DataMigrationService {
         debugPrint('Migration Error (Talhões): $e');
       }
 
-      // Step 3+: App-specific data (rainfall records, etc.)
+      // Step 4+: App-specific data (rainfall records, etc.)
       if (appDataTransferCallbacks != null) {
         for (final callback in appDataTransferCallbacks) {
           currentStep++;
@@ -157,4 +169,88 @@ class MigrationResult {
     required this.message,
     this.errors = const [],
   });
+}
+
+/// Callback for migrating sourceApp on a single entity.
+///
+/// Returns true if the entity was updated, false if skipped.
+typedef SourceAppMigrator = Future<bool> Function(
+  String entityId,
+  String sourceApp,
+);
+
+/// Helper for migrating existing records to include sourceApp field.
+///
+/// When adding CORE-77 support to existing models, legacy records
+/// won't have sourceApp set. This helper provides a standardized
+/// migration pattern.
+///
+/// ## Usage in app main.dart:
+///
+/// ```dart
+/// await SourceAppMigrationHelper.migrateEntities(
+///   appId: 'rurarubber',
+///   entityType: 'pesagem',
+///   entityIds: pesagemService.getAllIds(),
+///   needsMigration: (id) => pesagemService.getById(id)?.sourceApp == null,
+///   migrate: (id, sourceApp) async {
+///     final entity = pesagemService.getById(id);
+///     if (entity != null) {
+///       entity.sourceApp = sourceApp;
+///       await entity.save();
+///       return true;
+///     }
+///     return false;
+///   },
+/// );
+/// ```
+///
+/// See CORE-77 Section 8 for migration strategy.
+class SourceAppMigrationHelper {
+  /// Migrate a batch of entities to include sourceApp.
+  ///
+  /// Only migrates entities where [needsMigration] returns true.
+  /// Returns the number of entities migrated.
+  static Future<int> migrateEntities({
+    required String appId,
+    required String entityType,
+    required List<String> entityIds,
+    required bool Function(String entityId) needsMigration,
+    required SourceAppMigrator migrate,
+    MigrationProgressCallback? onProgress,
+  }) async {
+    int migrated = 0;
+    final toMigrate = entityIds.where(needsMigration).toList();
+
+    if (toMigrate.isEmpty) {
+      debugPrint(
+        'SourceAppMigration: No $entityType records need migration',
+      );
+      return 0;
+    }
+
+    debugPrint(
+      'SourceAppMigration: Migrating ${toMigrate.length} '
+      '$entityType records to sourceApp=$appId',
+    );
+
+    for (var i = 0; i < toMigrate.length; i++) {
+      try {
+        final updated = await migrate(toMigrate[i], appId);
+        if (updated) migrated++;
+        onProgress?.call(entityType, i + 1, toMigrate.length);
+      } catch (e) {
+        debugPrint(
+          'SourceAppMigration: Error migrating $entityType '
+          '${toMigrate[i]}: $e',
+        );
+      }
+    }
+
+    debugPrint(
+      'SourceAppMigration: Migrated $migrated/${ toMigrate.length} '
+      '$entityType records',
+    );
+    return migrated;
+  }
 }

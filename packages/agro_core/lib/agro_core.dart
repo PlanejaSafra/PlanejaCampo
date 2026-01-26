@@ -46,6 +46,13 @@ export 'models/talhao.dart';
 export 'models/farm.dart';
 export 'models/farm_owned_mixin.dart';
 
+// Models (Dependency-Aware Backup - CORE-77)
+export 'models/backup_meta.dart';
+export 'models/dependency_check_result.dart';
+export 'models/dependency_manifest.dart';
+export 'models/restore_analysis.dart';
+export 'models/lgpd_deletion_result.dart';
+
 // Services (Auth & Cloud Sync)
 export 'auth/agro_auth_gate.dart';
 export 'services/auth_service.dart';
@@ -59,10 +66,22 @@ export 'services/talhao_service.dart';
 // Services (Farm - Multi-User Preparation)
 export 'services/farm_service.dart';
 
-// Services (Backup)
+// Models (Safra - Agricultural Year - CORE-76)
+export 'models/safra.dart';
+
+// Services (Safra - CORE-76)
+export 'services/safra_service.dart';
+
+// Widgets (Safra - CORE-76)
+export 'widgets/safra_chip.dart';
+export 'widgets/safra_bottom_sheet.dart';
+
+// Services (Backup & Dependency - CORE-77)
 export 'services/cloud_backup_service.dart';
+export 'services/dependency_service.dart';
 export 'services/property_backup_provider.dart';
 export 'widgets/backup_restore_dialog.dart';
+export 'widgets/restore_confirmation_dialog.dart';
 export 'widgets/property_name_prompt_dialog.dart';
 
 // Services (LGPD Compliance)
@@ -79,7 +98,6 @@ export 'screens/agro_about_screen.dart';
 export 'screens/agro_privacy_screen.dart';
 export 'screens/agro_settings_screen.dart';
 export 'screens/weather_map_screen.dart';
-export 'services/heatmap_service.dart';
 export 'services/radar_service.dart';
 export 'screens/login_screen.dart';
 export 'screens/terms_of_use_screen.dart';

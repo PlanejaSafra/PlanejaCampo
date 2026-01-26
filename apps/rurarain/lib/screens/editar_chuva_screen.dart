@@ -107,6 +107,8 @@ class _EditarChuvaScreenState extends State<EditarChuvaScreen> {
         criadoEm: widget.registro.criadoEm,
         propertyId: widget.registro.propertyId,
         talhaoId: _talhaoSelecionado,
+        createdBy: widget.registro.createdBy,
+        sourceApp: widget.registro.sourceApp,
       );
 
       await ChuvaService().atualizar(registroAtualizado);

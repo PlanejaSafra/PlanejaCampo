@@ -96,8 +96,37 @@ class FarmService {
     return _box.get(id);
   }
 
+  /// Maximum number of farms a free-tier user can own.
+  static const int freeTierMaxFarms = 1;
+
+  /// Check if the current user can create a new farm.
+  ///
+  /// Free tier: limited to [freeTierMaxFarms] (default: 1).
+  /// Paid tiers ('basic', 'premium'): unlimited.
+  ///
+  /// Returns true if the user can create another farm.
+  bool canCreateFarm() {
+    if (_currentUserId == null) return false;
+    final currentCount = getFarmCount();
+    final tier = getSubscriptionTier();
+    if (tier == 'free') return currentCount < freeTierMaxFarms;
+    return true; // paid tiers = unlimited
+  }
+
+  /// Get the subscription tier for the current user.
+  ///
+  /// Checks the default farm's subscriptionTier field.
+  /// Returns 'free' if no tier is set (default for all users).
+  String getSubscriptionTier() {
+    final farm = getDefaultFarm();
+    return farm?.subscriptionTier ?? 'free';
+  }
+
   /// Create a new farm
   /// If isDefault is true, unsets other default farms first
+  ///
+  /// Throws if the user has reached the free-tier farm limit.
+  /// Use [canCreateFarm] to check before calling.
   Future<Farm> createFarm({
     required String name,
     bool isDefault = false,
@@ -109,6 +138,13 @@ class FarmService {
 
     if (name.trim().isEmpty) {
       throw Exception('Farm name cannot be empty.');
+    }
+
+    // Check farm limit (skip for first farm / ensureDefaultFarm)
+    if (getFarmCount() > 0 && !canCreateFarm()) {
+      throw FarmLimitException(
+        'Farm limit reached. Free tier allows $freeTierMaxFarms farm(s).',
+      );
     }
 
     final farm = Farm.create(
@@ -314,4 +350,14 @@ class FarmService {
   /// }
   /// ```
   String? get defaultFarmId => getDefaultFarm()?.id;
+}
+
+/// Exception thrown when a user tries to create more farms
+/// than their subscription tier allows.
+class FarmLimitException implements Exception {
+  final String message;
+  const FarmLimitException(this.message);
+
+  @override
+  String toString() => 'FarmLimitException: $message';
 }

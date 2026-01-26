@@ -31,7 +31,7 @@ class _RegionalStatsScreenState extends State<RegionalStatsScreen> {
   RegionalStats? _regionalStats;
   bool _isLoading = false;
   bool _hasError = false;
-  String? _errorMessage;
+  String? _errorDetail;
   double? _userTotalMm;
 
   @override
@@ -45,8 +45,6 @@ class _RegionalStatsScreenState extends State<RegionalStatsScreen> {
     if (!_syncService.hasUserConsent) {
       setState(() {
         _hasError = true;
-        _errorMessage =
-            'Você precisa ativar o compartilhamento de dados nas configurações';
       });
       return;
     }
@@ -55,7 +53,6 @@ class _RegionalStatsScreenState extends State<RegionalStatsScreen> {
     if (widget.latitude == null || widget.longitude == null) {
       setState(() {
         _hasError = true;
-        _errorMessage = 'Configure a localização da propriedade primeiro';
       });
       return;
     }
@@ -89,7 +86,7 @@ class _RegionalStatsScreenState extends State<RegionalStatsScreen> {
       setState(() {
         _isLoading = false;
         _hasError = true;
-        _errorMessage = 'Erro ao carregar dados: ${e.toString()}';
+        _errorDetail = e.toString();
       });
     }
   }
@@ -101,12 +98,12 @@ class _RegionalStatsScreenState extends State<RegionalStatsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Estatísticas Regionais'),
+        title: Text(l10n.regionalStatsTitle),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: _isLoading ? null : _loadData,
-            tooltip: 'Atualizar',
+            tooltip: l10n.refreshTooltip,
           ),
         ],
       ),
@@ -123,6 +120,18 @@ class _RegionalStatsScreenState extends State<RegionalStatsScreen> {
     }
 
     if (_hasError) {
+      // Determine error message based on state
+      String errorMsg;
+      if (!_syncService.hasUserConsent) {
+        errorMsg = l10n.regionalRequireConsent;
+      } else if (widget.latitude == null || widget.longitude == null) {
+        errorMsg = l10n.configurePropertyFirst;
+      } else if (_errorDetail != null) {
+        errorMsg = l10n.regionalLoadError(_errorDetail!);
+      } else {
+        errorMsg = l10n.regionalStatsTitle;
+      }
+
       return Center(
         child: Padding(
           padding: const EdgeInsets.all(24),
@@ -136,7 +145,7 @@ class _RegionalStatsScreenState extends State<RegionalStatsScreen> {
               ),
               const SizedBox(height: 16),
               Text(
-                _errorMessage ?? 'Erro ao carregar dados',
+                errorMsg,
                 style: theme.textTheme.titleMedium,
                 textAlign: TextAlign.center,
               ),
@@ -153,13 +162,13 @@ class _RegionalStatsScreenState extends State<RegionalStatsScreen> {
                     );
                   },
                   icon: const Icon(Icons.settings),
-                  label: const Text('Ir para Configurações'),
+                  label: Text(l10n.goToSettingsButton),
                 )
               else
                 ElevatedButton.icon(
                   onPressed: _loadData,
                   icon: const Icon(Icons.refresh),
-                  label: const Text('Tentar novamente'),
+                  label: Text(l10n.tryAgainButton),
                 ),
             ],
           ),
@@ -180,13 +189,13 @@ class _RegionalStatsScreenState extends State<RegionalStatsScreen> {
               ),
               const SizedBox(height: 16),
               Text(
-                'Nenhum dado regional disponível',
+                l10n.regionalNoData,
                 style: theme.textTheme.titleMedium,
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 8),
               Text(
-                'Ainda não há dados suficientes na sua região. Continue registrando suas chuvas e compartilhando!',
+                l10n.regionalNoDataDesc,
                 style: theme.textTheme.bodyMedium,
                 textAlign: TextAlign.center,
               ),
@@ -194,7 +203,7 @@ class _RegionalStatsScreenState extends State<RegionalStatsScreen> {
               ElevatedButton.icon(
                 onPressed: _loadData,
                 icon: const Icon(Icons.refresh),
-                label: const Text('Verificar novamente'),
+                label: Text(l10n.checkAgainButton),
               ),
             ],
           ),
@@ -208,10 +217,10 @@ class _RegionalStatsScreenState extends State<RegionalStatsScreen> {
         padding: const EdgeInsets.all(16),
         children: [
           // Info card
-          _buildInfoCard(theme),
+          _buildInfoCard(theme, l10n),
           const SizedBox(height: 16),
           // Comparison card
-          _buildComparisonCard(theme),
+          _buildComparisonCard(theme, l10n),
           const SizedBox(height: 16),
           // Regional Water Balance Chart
           if (widget.latitude != null && widget.longitude != null)
@@ -222,16 +231,16 @@ class _RegionalStatsScreenState extends State<RegionalStatsScreen> {
             ),
           const SizedBox(height: 16),
           // Details card
-          _buildDetailsCard(theme),
+          _buildDetailsCard(theme, l10n),
           const SizedBox(height: 16),
           // Privacy note
-          _buildPrivacyNote(theme),
+          _buildPrivacyNote(theme, l10n),
         ],
       ),
     );
   }
 
-  Widget _buildInfoCard(ThemeData theme) {
+  Widget _buildInfoCard(ThemeData theme, AgroLocalizations l10n) {
     final stats = _regionalStats!;
 
     return Card(
@@ -248,7 +257,7 @@ class _RegionalStatsScreenState extends State<RegionalStatsScreen> {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  'Sua Região',
+                  l10n.regionalYourRegion,
                   style: theme.textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -258,29 +267,29 @@ class _RegionalStatsScreenState extends State<RegionalStatsScreen> {
             const SizedBox(height: 12),
             _buildInfoRow(
               icon: Icons.map,
-              label: 'Área de cobertura',
+              label: l10n.regionalCoverageArea,
               value: stats.getAreaDescription(),
               theme: theme,
             ),
             const SizedBox(height: 8),
             _buildInfoRow(
               icon: Icons.people,
-              label: 'Propriedades contribuindo',
+              label: l10n.regionalContributors,
               value: '${stats.contributorCount}',
               theme: theme,
             ),
             const SizedBox(height: 8),
             _buildInfoRow(
               icon: Icons.verified,
-              label: 'Nível de confiança',
+              label: l10n.regionalConfidenceLevel,
               value: stats.getConfidenceLevel(),
               theme: theme,
             ),
             const SizedBox(height: 8),
             _buildInfoRow(
               icon: Icons.update,
-              label: 'Última atualização',
-              value: _formatDate(stats.lastUpdated),
+              label: l10n.regionalLastUpdate,
+              value: _formatDate(stats.lastUpdated, l10n),
               theme: theme,
             ),
           ],
@@ -321,7 +330,7 @@ class _RegionalStatsScreenState extends State<RegionalStatsScreen> {
     );
   }
 
-  Widget _buildComparisonCard(ThemeData theme) {
+  Widget _buildComparisonCard(ThemeData theme, AgroLocalizations l10n) {
     final stats = _regionalStats!;
     final userMm = _userTotalMm ?? 0;
     final regionalMm = stats.averageMm;
@@ -342,7 +351,7 @@ class _RegionalStatsScreenState extends State<RegionalStatsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Comparação (Mês Atual)',
+              l10n.regionalComparison,
               style: theme.textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
@@ -352,7 +361,7 @@ class _RegionalStatsScreenState extends State<RegionalStatsScreen> {
               children: [
                 Expanded(
                   child: _buildStatColumn(
-                    label: 'Sua Propriedade',
+                    label: l10n.regionalYourProperty,
                     value: '${NumberFormat('#0.0', 'pt_BR').format(userMm)} mm',
                     color: theme.colorScheme.primary,
                     theme: theme,
@@ -365,7 +374,7 @@ class _RegionalStatsScreenState extends State<RegionalStatsScreen> {
                 ),
                 Expanded(
                   child: _buildStatColumn(
-                    label: 'Média Regional',
+                    label: l10n.regionalAverage,
                     value:
                         '${NumberFormat('#0.0', 'pt_BR').format(regionalMm)} mm',
                     color: theme.colorScheme.secondary,
@@ -392,8 +401,10 @@ class _RegionalStatsScreenState extends State<RegionalStatsScreen> {
                   Expanded(
                     child: Text(
                       isAboveAverage
-                          ? 'Você está ${percentDiff.abs().toStringAsFixed(1)}% acima da média regional'
-                          : 'Você está ${percentDiff.abs().toStringAsFixed(1)}% abaixo da média regional',
+                          ? l10n.regionalAboveAverage(
+                              percentDiff.abs().toStringAsFixed(1))
+                          : l10n.regionalBelowAverage(
+                              percentDiff.abs().toStringAsFixed(1)),
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: color,
                         fontWeight: FontWeight.w600,
@@ -437,7 +448,7 @@ class _RegionalStatsScreenState extends State<RegionalStatsScreen> {
     );
   }
 
-  Widget _buildDetailsCard(ThemeData theme) {
+  Widget _buildDetailsCard(ThemeData theme, AgroLocalizations l10n) {
     final stats = _regionalStats!;
 
     return Card(
@@ -447,28 +458,28 @@ class _RegionalStatsScreenState extends State<RegionalStatsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Detalhes da Região',
+              l10n.regionalDetails,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 12),
             _buildDetailRow(
-              label: 'Total acumulado',
+              label: l10n.regionalAccumulatedTotal,
               value:
                   '${NumberFormat('#0.0', 'pt_BR').format(stats.totalMm)} mm',
               theme: theme,
             ),
             const SizedBox(height: 8),
             _buildDetailRow(
-              label: 'GeoHash',
+              label: l10n.regionalGeoHash,
               value: stats.geoHash,
               theme: theme,
             ),
             const SizedBox(height: 8),
             _buildDetailRow(
-              label: 'Precisão',
-              value: '${stats.geoHashPrecision} caracteres',
+              label: l10n.regionalPrecision,
+              value: l10n.regionalCharacters(stats.geoHashPrecision),
               theme: theme,
             ),
           ],
@@ -501,7 +512,7 @@ class _RegionalStatsScreenState extends State<RegionalStatsScreen> {
     );
   }
 
-  Widget _buildPrivacyNote(ThemeData theme) {
+  Widget _buildPrivacyNote(ThemeData theme, AgroLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -519,7 +530,7 @@ class _RegionalStatsScreenState extends State<RegionalStatsScreen> {
           const SizedBox(width: 8),
           Expanded(
             child: Text(
-              'Seus dados são anonimizados e agregados. Apenas médias regionais são compartilhadas, nunca dados individuais.',
+              l10n.regionalPrivacyNote,
               style: theme.textTheme.bodySmall?.copyWith(
                 color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
               ),
@@ -530,18 +541,19 @@ class _RegionalStatsScreenState extends State<RegionalStatsScreen> {
     );
   }
 
-  String _formatDate(DateTime date) {
+  String _formatDate(DateTime date, AgroLocalizations l10n) {
+    final locale = Localizations.localeOf(context).toString();
     final now = DateTime.now();
     final difference = now.difference(date);
 
     if (difference.inMinutes < 60) {
-      return 'Há ${difference.inMinutes} min';
+      return l10n.timeAgoMinutes(difference.inMinutes);
     } else if (difference.inHours < 24) {
-      return 'Há ${difference.inHours}h';
+      return l10n.timeAgoHours(difference.inHours);
     } else if (difference.inDays < 7) {
-      return 'Há ${difference.inDays} dias';
+      return l10n.timeAgoDays(difference.inDays);
     } else {
-      return DateFormat.yMMMd('pt_BR').format(date);
+      return DateFormat.yMMMd(locale).format(date);
     }
   }
 }

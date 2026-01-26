@@ -37,4 +37,28 @@ class ItemEntrega extends HiveObject {
     pesagens.add(peso);
     calcularPesoTotal();
   }
+
+  /// Convert to JSON for backup/export
+  Map<String, dynamic> toJson() {
+    return {
+      'parceiroId': parceiroId,
+      'pesagens': pesagens,
+      'pesoTotal': pesoTotal,
+      'valorTotal': valorTotal,
+      'descontos': descontos,
+    };
+  }
+
+  /// Create from JSON (backup/import)
+  factory ItemEntrega.fromJson(Map<String, dynamic> json) {
+    return ItemEntrega(
+      parceiroId: json['parceiroId'] as String,
+      pesagens: (json['pesagens'] as List<dynamic>)
+          .map((e) => (e as num).toDouble())
+          .toList(),
+      pesoTotal: (json['pesoTotal'] as num).toDouble(),
+      valorTotal: (json['valorTotal'] as num?)?.toDouble() ?? 0.0,
+      descontos: (json['descontos'] as num?)?.toDouble() ?? 0.0,
+    );
+  }
 }

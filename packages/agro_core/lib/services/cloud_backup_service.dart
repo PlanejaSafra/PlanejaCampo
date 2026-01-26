@@ -5,6 +5,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
+import '../models/backup_meta.dart';
+import '../models/restore_analysis.dart';
 import 'auth_service.dart';
 
 /// Interface for apps to provide their data for backup.
@@ -17,6 +19,70 @@ abstract class BackupProvider {
 
   /// Restores data from the provided JSON Map.
   Future<void> restoreData(Map<String, dynamic> data);
+}
+
+/// Enhanced backup provider with dependency-aware 3-phase restore.
+///
+/// Apps implement this instead of [BackupProvider] to get:
+/// - **Phase 1 (Analysis)**: Examine backup data, produce [RestoreAnalysis]
+/// - **Phase 2 (Confirmation)**: User reviews the analysis via dialog
+/// - **Phase 3 (Execution)**: Apply approved changes + recalculate
+///
+/// For backwards compatibility, [restoreData] calls all 3 phases
+/// automatically (skipping user confirmation). Use [CloudBackupService]'s
+/// [prepareRestore] + [executeRestoreSession] for the full 3-phase flow.
+///
+/// See CORE-77 for full architecture.
+abstract class EnhancedBackupProvider extends BackupProvider {
+  /// App identifier (e.g., "rurarubber", "rurarain")
+  String get appId;
+
+  /// Schema version for migration compatibility checks
+  int get schemaVersion => 1;
+
+  /// Build [BackupMeta] describing this provider's current state.
+  /// Included in the backup data for restore-time validation.
+  BackupMeta buildMeta();
+
+  /// Phase 1: Analyze backup data without modifying anything.
+  ///
+  /// Returns a [RestoreAnalysis] describing what will happen:
+  /// - Entities to add (in backup, not local)
+  /// - Entities to delete (local, not in backup, same sourceApp)
+  /// - Blocked deletions (cross-app dependencies)
+  /// - Conflicts (different data in both)
+  /// - Warnings and recalculation needs
+  Future<RestoreAnalysis> analyzeRestore(Map<String, dynamic> data);
+
+  /// Phase 3: Execute the restore after user confirmation.
+  ///
+  /// Only modifies data as described in [analysis].
+  /// Blocked items are skipped. Conflicts use backup version.
+  Future<void> executeRestore(
+    Map<String, dynamic> data,
+    RestoreAnalysis analysis,
+  );
+
+  /// Phase 3b: Recalculate derived data after restore.
+  ///
+  /// Each app implements its own recalculation logic
+  /// (e.g., partner balances, production totals).
+  /// Returns [RecalculationResult.empty] if nothing to recalculate.
+  Future<RecalculationResult> recalculateAfterRestore() async {
+    return RecalculationResult.empty();
+  }
+
+  /// Backwards-compatible restore: runs all 3 phases automatically.
+  ///
+  /// Used by the existing [CloudBackupService.restoreFromSlot] flow.
+  /// For the full 3-phase flow with user confirmation, use
+  /// [CloudBackupService.prepareRestore] + [executeRestoreSession].
+  @override
+  Future<void> restoreData(Map<String, dynamic> data) async {
+    final analysis = await analyzeRestore(data);
+    await executeRestore(data, analysis);
+    await recalculateAfterRestore();
+  }
 }
 
 /// Metadata about a cloud backup.
@@ -52,6 +118,56 @@ class CloudBackupMetadata {
       backupId: map['backupId'] as String?,
     );
   }
+}
+
+/// Holds the state of a pending restore operation (3-phase flow).
+///
+/// Created by [CloudBackupService.prepareRestore] during Phase 1.
+/// Passed to [CloudBackupService.executeRestoreSession] after user
+/// confirms via [RestoreConfirmationDialog].
+///
+/// See CORE-77 Section 5 for full architecture.
+class RestoreSession {
+  /// The raw backup data loaded from cloud/local storage
+  final Map<String, dynamic> appsData;
+
+  /// Analysis results per provider key
+  final Map<String, RestoreAnalysis> analyses;
+
+  /// Providers that support enhanced restore (have analysis)
+  final List<EnhancedBackupProvider> enhancedProviders;
+
+  /// Providers that only support basic restore (no analysis)
+  final List<BackupProvider> basicProviders;
+
+  /// The backup slot this session was loaded from
+  final int slotIndex;
+
+  RestoreSession({
+    required this.appsData,
+    required this.analyses,
+    required this.enhancedProviders,
+    required this.basicProviders,
+    required this.slotIndex,
+  });
+
+  /// Whether any provider has blocked deletions
+  bool get hasBlocked => analyses.values.any((a) => a.hasBlocked);
+
+  /// Whether any provider has warnings
+  bool get hasWarnings => analyses.values.any((a) => a.hasWarnings);
+
+  /// Total entities to add across all providers
+  int get totalAdds =>
+      analyses.values.fold(0, (total, a) => total + a.addCount);
+
+  /// Total entities to delete across all providers
+  int get totalDeletes =>
+      analyses.values.fold(0, (total, a) => total + a.deleteCount);
+
+  /// Total blocked deletions across all providers
+  int get totalBlocked =>
+      analyses.values.fold(0, (total, a) => total + a.blockedCount);
 }
 
 /// Service that manages cloud backups for all PlanejaCampo apps.
@@ -719,97 +835,208 @@ class CloudBackupService {
     debugPrint('Backup salvo em ${chunks.length} chunks');
   }
 
-  /// Restore data from a specific backup slot (0 = most recent).
-  Future<void> restoreFromSlot([int slotIndex = 0]) async {
+  /// Load backup apps data from a specific slot.
+  ///
+  /// Handles local Hive cache, Firestore cache, and server fallback.
+  /// Also handles chunked backups transparently.
+  Future<Map<String, dynamic>> _loadBackupData(int slotIndex) async {
     final backups = await listAvailableBackups();
     if (backups.isEmpty) {
-      throw Exception('Nenhum backup encontrado na nuvem.');
+      throw BackupNotFoundException();
     }
 
     if (slotIndex >= backups.length) {
-      throw Exception('Slot de backup inválido.');
+      throw BackupSlotInvalidException();
     }
 
     final user = AuthService.currentUser;
     if (user == null) {
-      throw Exception('Usuário não logado');
+      throw BackupUserNotLoggedInException();
     }
 
     final selectedBackup = backups[slotIndex];
     final backupId = selectedBackup.backupId;
 
-    debugPrint('[CloudBackup] restoreFromSlot: slotIndex=$slotIndex, backupId=$backupId');
+    debugPrint('[CloudBackup] _loadBackupData: slotIndex=$slotIndex, backupId=$backupId');
 
+    final docId = backupId ?? _getBackupDocId(user.uid, selectedBackup.firestoreSlot);
+    debugPrint('[CloudBackup] Reading backup by ID: $docId');
+
+    Map<String, dynamic>? backupData;
+
+    // LOCAL FIRST: Check Hive for pending backup (not yet synced to cloud)
     try {
-      final docId = backupId ?? _getBackupDocId(user.uid, selectedBackup.firestoreSlot);
-      debugPrint('[CloudBackup] Reading backup by ID: $docId');
+      final box = await Hive.openBox(_cacheBoxName);
+      final pendingData = box.get('$_pendingBackupPrefix$docId') as Map?;
+      if (pendingData != null && pendingData['data'] != null) {
+        backupData = Map<String, dynamic>.from(pendingData['data'] as Map);
+        debugPrint('[CloudBackup] Using local pending backup');
+      }
+    } catch (e) {
+      debugPrint('[CloudBackup] Hive read error: $e');
+    }
 
-      Map<String, dynamic>? backupData;
+    // If no local data, try Firestore cache, then server
+    if (backupData == null) {
+      DocumentSnapshot<Map<String, dynamic>>? backupDoc;
 
-      // LOCAL FIRST: Check Hive for pending backup (not yet synced to cloud)
       try {
-        final box = await Hive.openBox(_cacheBoxName);
-        final pendingData = box.get('$_pendingBackupPrefix$docId') as Map?;
-        if (pendingData != null && pendingData['data'] != null) {
-          backupData = Map<String, dynamic>.from(pendingData['data'] as Map);
-          debugPrint('[CloudBackup] Using local pending backup');
+        backupDoc = await _firestore
+            .collection(_backupsCollection)
+            .doc(docId)
+            .get(const GetOptions(source: Source.cache))
+            .timeout(const Duration(seconds: 2));
+
+        if (backupDoc.exists) {
+          debugPrint('[CloudBackup] Found backup in Firestore cache');
+          backupData = backupDoc.data();
         }
-      } catch (e) {
-        debugPrint('[CloudBackup] Hive read error: $e');
+      } catch (_) {
+        // Cache miss - try server
       }
 
-      // If no local data, try Firestore cache, then server
       if (backupData == null) {
-        DocumentSnapshot<Map<String, dynamic>>? backupDoc;
+        debugPrint('[CloudBackup] Trying server...');
+        backupDoc = await _firestore
+            .collection(_backupsCollection)
+            .doc(docId)
+            .get()
+            .timeout(
+              const Duration(seconds: 15),
+              onTimeout: () {
+                throw BackupTimeoutException();
+              },
+            );
 
+        if (backupDoc.exists) {
+          backupData = backupDoc.data();
+        }
+      }
+    }
+
+    if (backupData == null) {
+      throw BackupNotFoundException();
+    }
+
+    final actualBackupId = backupData['backupId'] as String? ?? docId;
+
+    if (backupData['chunked'] == true) {
+      return await _loadChunkedBackup(
+        actualBackupId,
+        backupData['chunkCount'] as int,
+      );
+    } else {
+      return backupData['apps'] as Map<String, dynamic>? ?? {};
+    }
+  }
+
+  /// Phase 1: Prepare a restore by loading and analyzing backup data.
+  ///
+  /// Returns a [RestoreSession] containing:
+  /// - Loaded backup data
+  /// - [RestoreAnalysis] for each [EnhancedBackupProvider]
+  /// - Separated lists of enhanced vs basic providers
+  ///
+  /// Show the session's analyses to the user via RestoreConfirmationDialog,
+  /// then call [executeRestoreSession] to apply.
+  ///
+  /// Basic [BackupProvider]s are included but have no analysis
+  /// (they restore directly during [executeRestoreSession]).
+  Future<RestoreSession> prepareRestore([int slotIndex = 0]) async {
+    final appsData = await _loadBackupData(slotIndex);
+
+    final analyses = <String, RestoreAnalysis>{};
+    final enhanced = <EnhancedBackupProvider>[];
+    final basic = <BackupProvider>[];
+
+    for (final provider in _providers) {
+      if (provider is EnhancedBackupProvider &&
+          appsData.containsKey(provider.key)) {
+        enhanced.add(provider);
         try {
-          backupDoc = await _firestore
-              .collection(_backupsCollection)
-              .doc(docId)
-              .get(const GetOptions(source: Source.cache))
-              .timeout(const Duration(seconds: 2));
-
-          if (backupDoc.exists) {
-            debugPrint('[CloudBackup] Found backup in Firestore cache');
-            backupData = backupDoc.data();
-          }
-        } catch (_) {
-          // Cache miss - try server
+          final analysis = await provider.analyzeRestore(
+            appsData[provider.key] as Map<String, dynamic>,
+          );
+          analyses[provider.key] = analysis;
+        } catch (e) {
+          debugPrint('[CloudBackup] Analysis failed for ${provider.key}: $e');
+          // Create empty analysis so restore can still proceed
+          analyses[provider.key] = RestoreAnalysis(
+            meta: provider.buildMeta(),
+            warnings: ['Analysis failed: $e'],
+          );
         }
-
-        if (backupData == null) {
-          debugPrint('[CloudBackup] Trying server...');
-          backupDoc = await _firestore
-              .collection(_backupsCollection)
-              .doc(docId)
-              .get()
-              .timeout(
-                const Duration(seconds: 15),
-                onTimeout: () {
-                  throw Exception('Timeout ao buscar backup');
-                },
-              );
-
-          if (backupDoc.exists) {
-            backupData = backupDoc.data();
-          }
-        }
-      }
-
-      if (backupData == null) {
-        throw Exception('Backup não encontrado.');
-      }
-
-      final actualBackupId = backupData['backupId'] as String? ?? docId;
-
-      Map<String, dynamic> appsData;
-
-      if (backupData['chunked'] == true) {
-        appsData =
-            await _loadChunkedBackup(actualBackupId, backupData['chunkCount'] as int);
       } else {
-        appsData = backupData['apps'] as Map<String, dynamic>? ?? {};
+        basic.add(provider);
       }
+    }
+
+    return RestoreSession(
+      appsData: appsData,
+      analyses: analyses,
+      enhancedProviders: enhanced,
+      basicProviders: basic,
+      slotIndex: slotIndex,
+    );
+  }
+
+  /// Phase 3: Execute a prepared restore after user confirmation.
+  ///
+  /// Call this after showing RestoreConfirmationDialog with the session.
+  /// - [EnhancedBackupProvider]s use [executeRestore] + [recalculateAfterRestore]
+  /// - Basic [BackupProvider]s use [restoreData] directly
+  Future<Map<String, RecalculationResult>> executeRestoreSession(
+    RestoreSession session,
+  ) async {
+    final results = <String, RecalculationResult>{};
+
+    // Execute enhanced providers (with analysis)
+    for (final provider in session.enhancedProviders) {
+      if (!session.appsData.containsKey(provider.key)) continue;
+
+      final analysis = session.analyses[provider.key];
+      if (analysis == null) continue;
+
+      try {
+        await provider.executeRestore(
+          session.appsData[provider.key] as Map<String, dynamic>,
+          analysis,
+        );
+        final recalc = await provider.recalculateAfterRestore();
+        results[provider.key] = recalc;
+      } catch (e) {
+        debugPrint('[CloudBackup] Restore failed for ${provider.key}: $e');
+        results[provider.key] = RecalculationResult(
+          success: false,
+          details: ['Restore failed: $e'],
+        );
+      }
+    }
+
+    // Execute basic providers (no analysis)
+    for (final provider in session.basicProviders) {
+      if (!session.appsData.containsKey(provider.key)) continue;
+      try {
+        await provider.restoreData(
+          session.appsData[provider.key] as Map<String, dynamic>,
+        );
+      } catch (e) {
+        debugPrint('[CloudBackup] Restore failed for ${provider.key}: $e');
+      }
+    }
+
+    debugPrint('[CloudBackup] Restore session completed');
+    return results;
+  }
+
+  /// Restore data from a specific backup slot (0 = most recent).
+  ///
+  /// This is the legacy restore flow that restores all providers directly.
+  /// For the 3-phase flow with user confirmation, use
+  /// [prepareRestore] + [executeRestoreSession].
+  Future<void> restoreFromSlot([int slotIndex = 0]) async {
+    try {
+      final appsData = await _loadBackupData(slotIndex);
 
       debugPrint('[CloudBackup] Restoring data for ${_providers.length} providers...');
 
@@ -829,7 +1056,7 @@ class CloudBackupService {
     } on FirebaseException catch (e) {
       debugPrint('Erro do Firebase ao restaurar: ${e.code} - ${e.message}');
       if (e.code == 'not-found') {
-        throw Exception('Nenhum backup encontrado na nuvem.');
+        throw BackupNotFoundException();
       }
       rethrow;
     }
@@ -890,4 +1117,40 @@ class CloudBackupService {
       rethrow;
     }
   }
+}
+
+// ---------------------------------------------------------------------------
+// Typed exceptions for backup operations.
+//
+// Frontend maps these to l10n strings (no hardcoded user-visible messages).
+// ---------------------------------------------------------------------------
+
+/// Thrown when no backup is found in cloud storage.
+class BackupNotFoundException implements Exception {
+  @override
+  String toString() => 'BackupNotFoundException';
+}
+
+/// Thrown when the requested backup slot index is invalid.
+class BackupSlotInvalidException implements Exception {
+  @override
+  String toString() => 'BackupSlotInvalidException';
+}
+
+/// Thrown when the user is not logged in during a backup operation.
+class BackupUserNotLoggedInException implements Exception {
+  @override
+  String toString() => 'BackupUserNotLoggedInException';
+}
+
+/// Thrown when a backup operation times out.
+class BackupTimeoutException implements Exception {
+  @override
+  String toString() => 'BackupTimeoutException';
+}
+
+/// Thrown when backup is unavailable for anonymous accounts.
+class BackupAnonymousException implements Exception {
+  @override
+  String toString() => 'BackupAnonymousException';
 }

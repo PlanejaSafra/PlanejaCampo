@@ -3040,6 +3040,504 @@ abstract class AgroLocalizations {
   /// In en, this message translates to:
   /// **'Skip'**
   String get propertyNamePromptSkip;
+
+  /// No description provided for @restoreConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Restore'**
+  String get restoreConfirmTitle;
+
+  /// No description provided for @restoreConfirmSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Review the changes before proceeding'**
+  String get restoreConfirmSubtitle;
+
+  /// No description provided for @restoreWillAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} records will be added'**
+  String restoreWillAdd(int count);
+
+  /// No description provided for @restoreWillDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} records will be removed'**
+  String restoreWillDelete(int count);
+
+  /// No description provided for @restoreBlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} protected records'**
+  String restoreBlocked(int count);
+
+  /// No description provided for @restoreConflicts.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} conflicts found'**
+  String restoreConflicts(int count);
+
+  /// No description provided for @restoreBlockedSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Protected items'**
+  String get restoreBlockedSection;
+
+  /// No description provided for @restoreBlockedExplanation.
+  ///
+  /// In en, this message translates to:
+  /// **'These items are used by other apps and will not be removed'**
+  String get restoreBlockedExplanation;
+
+  /// No description provided for @restoreWarningsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Warnings'**
+  String get restoreWarningsSection;
+
+  /// No description provided for @restoreRecalculationsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Recalculations needed'**
+  String get restoreRecalculationsSection;
+
+  /// No description provided for @restoreRecalculationsExplanation.
+  ///
+  /// In en, this message translates to:
+  /// **'This derived data will be recalculated after restore'**
+  String get restoreRecalculationsExplanation;
+
+  /// No description provided for @restoreNoChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'No changes needed'**
+  String get restoreNoChanges;
+
+  /// No description provided for @restoreFarmWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup is from a different farm'**
+  String get restoreFarmWarning;
+
+  /// No description provided for @restoreConfirmButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Restore'**
+  String get restoreConfirmButton;
+
+  /// No description provided for @restoreCancelButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get restoreCancelButton;
+
+  /// No description provided for @backupNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No backup found in the cloud'**
+  String get backupNotFound;
+
+  /// No description provided for @backupSlotInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid backup slot'**
+  String get backupSlotInvalid;
+
+  /// No description provided for @backupUserNotLoggedIn.
+  ///
+  /// In en, this message translates to:
+  /// **'User not logged in'**
+  String get backupUserNotLoggedIn;
+
+  /// No description provided for @backupTimeout.
+  ///
+  /// In en, this message translates to:
+  /// **'Timed out. Check your connection'**
+  String get backupTimeout;
+
+  /// No description provided for @backupAnonymousNotAllowed.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup unavailable for anonymous accounts'**
+  String get backupAnonymousNotAllowed;
+
+  /// No description provided for @farmLimitReached.
+  ///
+  /// In en, this message translates to:
+  /// **'Farm limit reached'**
+  String get farmLimitReached;
+
+  /// No description provided for @farmLimitFreeDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Free plan allows only 1 farm. Subscribe to a plan to create more'**
+  String get farmLimitFreeDescription;
+
+  /// No description provided for @restoreNoFarmAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'No access to this farm'**
+  String get restoreNoFarmAccess;
+
+  /// No description provided for @restoreNoFarmAccessExplanation.
+  ///
+  /// In en, this message translates to:
+  /// **'This backup belongs to a farm you are not the owner of. Restore is not allowed'**
+  String get restoreNoFarmAccessExplanation;
+
+  /// No description provided for @safraGlobal.
+  ///
+  /// In en, this message translates to:
+  /// **'Crop Season'**
+  String get safraGlobal;
+
+  /// No description provided for @safraAtiva.
+  ///
+  /// In en, this message translates to:
+  /// **'Active Season'**
+  String get safraAtiva;
+
+  /// No description provided for @safraChipLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{startYear}/{endYear}'**
+  String safraChipLabel(String startYear, String endYear);
+
+  /// No description provided for @encerrarSafra.
+  ///
+  /// In en, this message translates to:
+  /// **'Close Season'**
+  String get encerrarSafra;
+
+  /// No description provided for @novaSafraCriada.
+  ///
+  /// In en, this message translates to:
+  /// **'New season created: {nome}'**
+  String novaSafraCriada(String nome);
+
+  /// No description provided for @safraAnterior.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous Seasons'**
+  String get safraAnterior;
+
+  /// No description provided for @safraEncerrarConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Close the season \"{nome}\" and create a new one automatically?'**
+  String safraEncerrarConfirm(String nome);
+
+  /// No description provided for @safraEncerrada.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed'**
+  String get safraEncerrada;
+
+  /// No description provided for @safraNenhuma.
+  ///
+  /// In en, this message translates to:
+  /// **'No season'**
+  String get safraNenhuma;
+
+  /// No description provided for @weatherNext24Hours.
+  ///
+  /// In en, this message translates to:
+  /// **'Next 24 Hours'**
+  String get weatherNext24Hours;
+
+  /// No description provided for @weatherNextDays.
+  ///
+  /// In en, this message translates to:
+  /// **'Next Days'**
+  String get weatherNextDays;
+
+  /// No description provided for @weatherForecastToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s Forecast'**
+  String get weatherForecastToday;
+
+  /// No description provided for @weatherForecastTomorrow.
+  ///
+  /// In en, this message translates to:
+  /// **'Tomorrow\'s Forecast'**
+  String get weatherForecastTomorrow;
+
+  /// No description provided for @weatherForecastForDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Forecast for {day}'**
+  String weatherForecastForDay(String day);
+
+  /// No description provided for @weatherForecastDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Forecast Details'**
+  String get weatherForecastDetails;
+
+  /// No description provided for @weatherPrecipitation.
+  ///
+  /// In en, this message translates to:
+  /// **'Precipitation'**
+  String get weatherPrecipitation;
+
+  /// No description provided for @weatherWindMax.
+  ///
+  /// In en, this message translates to:
+  /// **'Wind Max'**
+  String get weatherWindMax;
+
+  /// No description provided for @weatherHourlyEvolution.
+  ///
+  /// In en, this message translates to:
+  /// **'Hourly Evolution'**
+  String get weatherHourlyEvolution;
+
+  /// No description provided for @weatherTempMaxMin.
+  ///
+  /// In en, this message translates to:
+  /// **'Temp (Max/Min)'**
+  String get weatherTempMaxMin;
+
+  /// No description provided for @radarLegendLight.
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get radarLegendLight;
+
+  /// No description provided for @radarLegendHeavy.
+  ///
+  /// In en, this message translates to:
+  /// **'Heavy'**
+  String get radarLegendHeavy;
+
+  /// No description provided for @cloudLegendClear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get cloudLegendClear;
+
+  /// No description provided for @cloudLegendCloudy.
+  ///
+  /// In en, this message translates to:
+  /// **'Cloudy'**
+  String get cloudLegendCloudy;
+
+  /// No description provided for @weatherTomorrow.
+  ///
+  /// In en, this message translates to:
+  /// **'Tomorrow'**
+  String get weatherTomorrow;
+
+  /// No description provided for @weatherRefreshTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh forecast'**
+  String get weatherRefreshTooltip;
+
+  /// No description provided for @weatherNoForecastAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No forecast available'**
+  String get weatherNoForecastAvailable;
+
+  /// No description provided for @weatherAttribution.
+  ///
+  /// In en, this message translates to:
+  /// **'Data provided by Open-Meteo.com'**
+  String get weatherAttribution;
+
+  /// No description provided for @weatherCacheMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Updated 1 minute ago} other{Updated {count} minutes ago}}'**
+  String weatherCacheMinutes(int count);
+
+  /// No description provided for @weatherCacheHours.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Updated 1 hour ago} other{Updated {count} hours ago}}'**
+  String weatherCacheHours(int count);
+
+  /// No description provided for @weatherCacheDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Updated 1 day ago} other{Updated {count} days ago}}'**
+  String weatherCacheDays(int count);
+
+  /// No description provided for @weatherCacheStale.
+  ///
+  /// In en, this message translates to:
+  /// **' (stale cache)'**
+  String get weatherCacheStale;
+
+  /// No description provided for @weatherTemperature.
+  ///
+  /// In en, this message translates to:
+  /// **'Temperature'**
+  String get weatherTemperature;
+
+  /// No description provided for @weatherForecastLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading forecast: {error}'**
+  String weatherForecastLoadError(String error);
+
+  /// No description provided for @weatherForecastRefreshError.
+  ///
+  /// In en, this message translates to:
+  /// **'Error refreshing forecast: {error}'**
+  String weatherForecastRefreshError(String error);
+
+  /// No description provided for @regionalRequireConsent.
+  ///
+  /// In en, this message translates to:
+  /// **'You need to enable data sharing in settings'**
+  String get regionalRequireConsent;
+
+  /// No description provided for @regionalLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading data: {error}'**
+  String regionalLoadError(String error);
+
+  /// No description provided for @regionalNoData.
+  ///
+  /// In en, this message translates to:
+  /// **'No regional data available'**
+  String get regionalNoData;
+
+  /// No description provided for @regionalNoDataDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Not enough data in your region yet. Keep recording and sharing your rainfall!'**
+  String get regionalNoDataDesc;
+
+  /// No description provided for @regionalYourRegion.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Region'**
+  String get regionalYourRegion;
+
+  /// No description provided for @regionalCoverageArea.
+  ///
+  /// In en, this message translates to:
+  /// **'Coverage area'**
+  String get regionalCoverageArea;
+
+  /// No description provided for @regionalContributors.
+  ///
+  /// In en, this message translates to:
+  /// **'Contributing properties'**
+  String get regionalContributors;
+
+  /// No description provided for @regionalConfidenceLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'Confidence level'**
+  String get regionalConfidenceLevel;
+
+  /// No description provided for @regionalLastUpdate.
+  ///
+  /// In en, this message translates to:
+  /// **'Last update'**
+  String get regionalLastUpdate;
+
+  /// No description provided for @regionalComparison.
+  ///
+  /// In en, this message translates to:
+  /// **'Comparison (Current Month)'**
+  String get regionalComparison;
+
+  /// No description provided for @regionalYourProperty.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Property'**
+  String get regionalYourProperty;
+
+  /// No description provided for @regionalAverage.
+  ///
+  /// In en, this message translates to:
+  /// **'Regional Average'**
+  String get regionalAverage;
+
+  /// No description provided for @regionalAboveAverage.
+  ///
+  /// In en, this message translates to:
+  /// **'You are {percent}% above the regional average'**
+  String regionalAboveAverage(String percent);
+
+  /// No description provided for @regionalBelowAverage.
+  ///
+  /// In en, this message translates to:
+  /// **'You are {percent}% below the regional average'**
+  String regionalBelowAverage(String percent);
+
+  /// No description provided for @regionalDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Region Details'**
+  String get regionalDetails;
+
+  /// No description provided for @regionalAccumulatedTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Accumulated total'**
+  String get regionalAccumulatedTotal;
+
+  /// No description provided for @regionalGeoHash.
+  ///
+  /// In en, this message translates to:
+  /// **'GeoHash'**
+  String get regionalGeoHash;
+
+  /// No description provided for @regionalPrecision.
+  ///
+  /// In en, this message translates to:
+  /// **'Precision'**
+  String get regionalPrecision;
+
+  /// No description provided for @regionalCharacters.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} characters'**
+  String regionalCharacters(int count);
+
+  /// No description provided for @regionalPrivacyNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Your data is anonymized and aggregated. Only regional averages are shared, never individual data.'**
+  String get regionalPrivacyNote;
+
+  /// No description provided for @timeAgoMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} min ago'**
+  String timeAgoMinutes(int count);
+
+  /// No description provided for @timeAgoHours.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}h ago'**
+  String timeAgoHours(int count);
+
+  /// No description provided for @timeAgoDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} days ago'**
+  String timeAgoDays(int count);
+
+  /// No description provided for @refreshTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh'**
+  String get refreshTooltip;
+
+  /// No description provided for @dateDayMonthPattern.
+  ///
+  /// In en, this message translates to:
+  /// **'MMMM d'**
+  String get dateDayMonthPattern;
 }
 
 class _AgroLocalizationsDelegate extends LocalizationsDelegate<AgroLocalizations> {

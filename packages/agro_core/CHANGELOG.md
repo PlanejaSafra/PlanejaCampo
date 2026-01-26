@@ -164,9 +164,60 @@ class AppBackupProvider implements BackupProvider {
 
 ## Phase CORE-77: Arquitetura de Backup Dependency-Aware
 
-### Status: [TODO]
+### Status: [DONE]
+**Date Completed**: 2026-01-26
 **Priority**: 🔴 CRITICAL (Pré-requisito para multi-user e integridade de dados)
 **Objective**: Arquitetura de backup/restore que protege integridade cross-app, verifica dependências antes de deletar, e prepara para multi-user.
+
+### Implementation Summary (agro_core infrastructure)
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 77.1 | sourceApp no FarmOwnedMixin (nullable, retrocompat) | ✅ DONE |
+| 77.2 | DependencyService + DependencyManifest (Hive typeId 30) | ✅ DONE |
+| 77.3 | RestoreAnalysis + RestoreFarmAccess (ownership check) | ✅ DONE |
+| 77.4 | BackupMeta model (plain Dart) | ✅ DONE |
+| 77.5 | EnhancedBackupProvider (3-phase restore) | ✅ DONE |
+| 77.6 | RestoreConfirmationDialog (l10n, farm access block) | ✅ DONE |
+| 77.7 | CloudBackupService refactor (_loadBackupData, prepareRestore, executeRestoreSession) | ✅ DONE |
+| 77.8 | SourceAppMigrationHelper + Farm transfer | ✅ DONE |
+| 77.9 | LGPD Delete multi-app (AppDeletionProvider, ownership) | ✅ DONE |
+| 77.10 | LGPD Export (farms, crossAppReferences, owner-only) | ✅ DONE |
+| 77.11 | Farm Limit (subscriptionTier, FarmLimitException) | ✅ DONE |
+
+### App Integration (see app-specific CHANGELOGs)
+
+| App | Phase | Status |
+|-----|-------|--------|
+| RuraRubber | RUBBER-24 | ⏳ TODO |
+| RuraRain | RAIN-03 | ⏳ TODO |
+
+### Files Created
+
+| File | Description |
+|------|-------------|
+| `lib/models/backup_meta.dart` | Backup metadata (appId, farmId, scope, schema) |
+| `lib/models/dependency_check_result.dart` | Cross-app dependency check result |
+| `lib/models/dependency_manifest.dart` | Hive-persisted dependency manifest (typeId: 30) |
+| `lib/models/restore_analysis.dart` | 3-phase restore analysis + RestoreFarmAccess |
+| `lib/models/lgpd_deletion_result.dart` | LGPD deletion operation result |
+| `lib/services/dependency_service.dart` | Cross-app dependency service (live + manifest) |
+| `lib/widgets/restore_confirmation_dialog.dart` | Restore confirmation UI with farm access block |
+
+### Files Modified
+
+| File | Changes |
+|------|---------|
+| `lib/models/farm_owned_mixin.dart` | Added sourceApp (nullable), extension methods |
+| `lib/models/farm.dart` | Added subscriptionTier (HiveField 8) |
+| `lib/services/farm_service.dart` | Added canCreateFarm(), FarmLimitException |
+| `lib/services/cloud_backup_service.dart` | Added EnhancedBackupProvider, RestoreSession, prepareRestore(), executeRestoreSession(), typed exceptions |
+| `lib/services/data_deletion_service.dart` | Added AppDeletionProvider, deleteAppDataForFarm(), deletePersonalDataOnly() |
+| `lib/services/data_export_service.dart` | Added farms, crossAppReferences, owner-only export |
+| `lib/services/data_migration_service.dart` | Added Farm transfer, SourceAppMigrationHelper |
+| `lib/agro_core.dart` | Added all new exports |
+| `lib/l10n/arb/app_pt.arb` | Added 20+ restore/backup/farm l10n strings |
+| `lib/l10n/arb/app_en.arb` | Added 20+ restore/backup/farm l10n strings |
 
 ---
 
@@ -1182,7 +1233,8 @@ Future<LgpdResult> handleLgpdDelete(String userId) async {
 
 ## Phase CORE-76: Safra Global + Ciclos de Cultura (Suporte RuraCrop)
 
-### Status: [TODO]
+### Status: [DONE]
+**Date Completed**: 2026-01-26
 **Priority**: 🟡 ARCHITECTURAL (Futuro - RuraCrop)
 **Objective**: Implementar modelo de Safra como "Ano Agrícola" global e Ciclos para agricultura anual.
 
@@ -1208,85 +1260,64 @@ Safra Global (agro_core)
 | **Safra** | Todos os apps | Ano agrícola (Set-Ago), janela de tempo |
 | **Ciclo** | Apenas RuraCrop | Instância de cultura em um talhão |
 
-### Modelo de Dados
-
-```dart
-/// Safra Global - Ano Agrícola (agro_core)
-@HiveType(typeId: 21)
-class Safra {
-  @HiveField(0)
-  String id;
-
-  @HiveField(1)
-  String farmId;           // UUID da Farm
-
-  @HiveField(2)
-  String nome;             // "Safra 2025/2026"
-
-  @HiveField(3)
-  DateTime dataInicio;     // 01/09/2025
-
-  @HiveField(4)
-  DateTime? dataFim;       // 31/08/2026 (null = em aberto)
-
-  @HiveField(5)
-  bool ativa;              // true se for a safra atual
-
-  // NOTA: Totais são CALCULADOS via query, não armazenados!
-  // Cada app calcula seus totais com WHERE data BETWEEN inicio AND fim
-}
-```
-
 ### Arquitetura: Query-Based (Não Acumulador)
 
-**Princípio**: Não salvamos totais fixos. Salvamos registros individuais.
-O total é **calculado na hora** via query.
+Totais são CALCULADOS via query, NUNCA armazenados. Cada app calcula seus totais filtrando registros pelo período da safra.
 
-```dart
-// ✅ CORRETO - Query dinâmica por período
-Future<double> getTotalKg(String safraId) async {
-  final safra = await getSafra(safraId);
-  return pesagens
-      .where((p) => p.data >= safra.dataInicio && p.data < safra.dataFim)
-      .fold(0.0, (sum, p) => sum + p.peso);
-}
-
-// ❌ ERRADO - Total fixo que "fura" se editar pesagem antiga
-// safra.totalKg = 15400;
-```
-
-### Implementation Plan
+### Implementation Summary
 
 | Sub-Phase | Description | Status |
 |-----------|-------------|--------|
-| 76.1 | **Modelo Safra**: Entidade com Hive adapter (typeId: 21) | ⏳ TODO |
-| 76.2 | **SafraService**: CRUD + auto-criar em Setembro + getAtiva() | ⏳ TODO |
-| 76.3 | **SafraChip Widget**: Chip compacto para header ("25/26") | ⏳ TODO |
-| 76.4 | **Encerrar Safra**: Define dataFim e cria nova automaticamente | ⏳ TODO |
-| 76.5 | **Query Helpers**: Métodos para filtrar por período da safra | ⏳ TODO |
+| 76.1 | **Modelo Safra**: Entidade com Hive adapter (typeId: 21) + 7 campos (id, farmId, nome, dataInicio, dataFim, ativa, createdAt) + shortLabel, containsDate(), toJson/fromJson, agriculturalStartYear(), generateName() | ✅ DONE |
+| 76.2 | **SafraService**: Singleton com CRUD completo, auto-criação baseada em mês corrente (Set=novo ano), ensureAtivaSafra(), deactivation guard, backup helpers (export/import), clearAllForFarm() | ✅ DONE |
+| 76.3 | **SafraChip Widget**: ActionChip compacto mostrando "25/26" com ícone de calendário, tooltip com nome completo, abre SafraBottomSheet ao tocar | ✅ DONE |
+| 76.4 | **Encerrar Safra**: SafraBottomSheet com confirmação via AlertDialog, encerrarSafra() define dataFim (31/08 23:59:59) e cria próxima safra automaticamente, callback onSafraChanged | ✅ DONE |
+| 76.5 | **Query Helpers**: filterBySafra<T>(), sumBySafra<T>(), countBySafra<T>() genéricos via getDate/getValue extractors, getSafraForDate() | ✅ DONE |
 
-### Files to Create
+### Files Created
 
 | File | Action | Description |
 |------|--------|-------------|
-| `lib/models/safra.dart` | CREATE | Modelo Safra com Hive adapter |
-| `lib/services/safra_service.dart` | CREATE | Gestão de safras |
-| `lib/widgets/safra_chip.dart` | CREATE | Chip para header |
-| `lib/widgets/safra_bottom_sheet.dart` | CREATE | Seletor de safra |
+| `lib/models/safra.dart` | CREATE | Modelo Safra @HiveType(typeId: 21) com 7 HiveFields, factory create(), shortLabel, containsDate(), encerrar(), toJson/fromJson, helpers estáticos |
+| `lib/models/safra.g.dart` | GENERATE | Hive TypeAdapter gerado via build_runner |
+| `lib/services/safra_service.dart` | CREATE | SafraService singleton com CRUD, ensureAtivaSafra, encerrarSafra, query helpers genéricos, backup helpers, SafraNotFoundException |
+| `lib/widgets/safra_chip.dart` | CREATE | SafraChip widget (ActionChip compacto "25/26") com integração SafraBottomSheet |
+| `lib/widgets/safra_bottom_sheet.dart` | CREATE | Bottom sheet com safra ativa, safras anteriores, confirmação de encerramento, _SafraTile interno |
 
-### L10n Keys Required
-- `safraGlobal`: "Safra"
-- `safraAtiva`: "Safra Ativa"
-- `safraChipLabel`: "{ano1}/{ano2}"
-- `encerrarSafra`: "Encerrar Safra"
-- `novaSafraCriada`: "Nova safra criada: {nome}"
-- `safraAnterior`: "Safras Anteriores"
+### Files Modified
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/agro_core.dart` | MODIFY | Adicionados 4 exports (safra.dart, safra_service.dart, safra_chip.dart, safra_bottom_sheet.dart) |
+| `lib/l10n/arb/app_pt.arb` | MODIFY | 9 chaves adicionadas (safraGlobal, safraAtiva, safraChipLabel, encerrarSafra, novaSafraCriada, safraAnterior, safraEncerrarConfirm, safraEncerrada, safraNenhuma) |
+| `lib/l10n/arb/app_en.arb` | MODIFY | 9 chaves adicionadas (traduções em inglês) |
+| `lib/l10n/generated/app_localizations.dart` | REGENERATE | Gerado via flutter gen-l10n |
+| `lib/l10n/generated/app_localizations_pt.dart` | REGENERATE | Gerado via flutter gen-l10n |
+| `lib/l10n/generated/app_localizations_en.dart` | REGENERATE | Gerado via flutter gen-l10n |
+
+### L10n Keys Added
+- `safraGlobal`: "Safra" / "Crop Season"
+- `safraAtiva`: "Safra Ativa" / "Active Season"
+- `safraChipLabel`: "{startYear}/{endYear}" (com placeholders)
+- `encerrarSafra`: "Encerrar Safra" / "Close Season"
+- `novaSafraCriada`: "Nova safra criada: {nome}" / "New season created: {nome}"
+- `safraAnterior`: "Safras Anteriores" / "Previous Seasons"
+- `safraEncerrarConfirm`: Mensagem de confirmação com placeholder {nome}
+- `safraEncerrada`: "Encerrada" / "Closed"
+- `safraNenhuma`: "Nenhuma safra" / "No season"
 
 ### Cross-Reference
 - **RUBBER-17**: Usa Safra para controle de produção
 - **CROP-01**: Ciclos vinculados à Safra
 - **CASH-04**: DRE por Safra
 - **CATTLE-XX**: Movimentações por Safra
+
+### How Apps Should Integrate (Future Work)
+1. Register `SafraAdapter` in main.dart: `Hive.registerAdapter(SafraAdapter())`
+2. Initialize: `await SafraService.instance.init()`
+3. Ensure active safra: `await SafraService.instance.ensureAtivaSafra(farmId: farmId)`
+4. Add `SafraChip(farmId: farmId)` to AppBar actions
+5. Use query helpers to filter records by safra period
 
 ---
 

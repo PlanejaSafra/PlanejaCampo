@@ -116,32 +116,28 @@ mixin FarmOwnedMixin {
   /// When this record was created.
   DateTime get createdAt;
 
-  // ═══════════════════════════════════════════════════════════════════════════
-  // PLANNED: sourceApp (CORE-77)
-  // ═══════════════════════════════════════════════════════════════════════════
-  //
-  // The app that created this record. IMMUTABLE after creation.
-  // Essential for:
-  // - Backup isolation: Each app only touches its own data
-  // - Cross-app data: Despesas geradas pelo RuraRubber vs manuais do RuraCash
-  // - Restore safety: DELETE WHERE sourceApp = thisApp (não afeta outros apps)
-  // - LGPD delete: Each app deletes only its own movements
-  //
-  // Values: "rurarubber", "rurarain", "ruracrop", "ruracash", etc.
-  //
-  // IMMUTABILITY RULE: sourceApp NEVER changes after creation.
-  // If another app edits a record, sourceApp stays the same.
-  // Use optional lastModifiedByApp for edit tracking.
-  //
-  // UNCOMMENT when implementing CORE-77:
-  // String get sourceApp;
-  // ═══════════════════════════════════════════════════════════════════════════
+  /// The app that created this record. IMMUTABLE after creation.
+  ///
+  /// Essential for:
+  /// - Backup isolation: Each app only touches its own data
+  /// - Cross-app data: Despesas geradas pelo RuraRubber vs manuais do RuraCash
+  /// - Restore safety: DELETE WHERE sourceApp = thisApp
+  /// - LGPD delete: Each app deletes only its own movements
+  ///
+  /// Values: "rurarubber", "rurarain", "ruracrop", "ruracash", etc.
+  ///
+  /// Returns null for legacy records that predate CORE-77.
+  /// After migration, all records will have a non-null value.
+  ///
+  /// IMMUTABILITY RULE: sourceApp NEVER changes after creation.
+  /// If another app edits a record, sourceApp stays the same.
+  String? get sourceApp => null;
 }
 
 /// Abstract class for entities that belong to a farm.
 ///
 /// Use this instead of the mixin when you need a common base type
-/// for polymorphism (e.g., List<FarmOwnedEntity>).
+/// for polymorphism (e.g., `List<FarmOwnedEntity>`).
 ///
 /// Example:
 /// ```dart
@@ -166,8 +162,9 @@ abstract class FarmOwnedEntity {
   /// When this record was created
   DateTime get createdAt;
 
-  // PLANNED: sourceApp (CORE-77) - IMMUTABLE after creation
-  // String get sourceApp;
+  /// The app that created this record. IMMUTABLE after creation.
+  /// Returns null for legacy records that predate CORE-77.
+  String? get sourceApp => null;
 }
 
 /// Helper extension for FarmOwnedMixin
@@ -178,14 +175,15 @@ extension FarmOwnedExtension on FarmOwnedMixin {
   /// Check if this entity was created by a specific user
   bool wasCreatedBy(String userId) => createdBy == userId;
 
-  // PLANNED: sourceApp methods (CORE-77)
-  //
-  // /// Check if this entity was created by a specific app
-  // bool wasCreatedByApp(String appId) => sourceApp == appId;
-  //
-  // /// Check if this entity can be deleted by a specific app
-  // /// Only the app that created the entity can delete it
-  // bool canBeDeletedBy(String appId) => sourceApp == appId;
+  /// Check if this entity was created by a specific app.
+  /// Returns false for legacy records without sourceApp.
+  bool wasCreatedByApp(String appId) => sourceApp == appId;
+
+  /// Check if this entity can be deleted by a specific app.
+  /// Only the app that created the entity can delete it.
+  /// Legacy records (sourceApp == null) can be deleted by any app.
+  bool canBeDeletedBy(String appId) =>
+      sourceApp == null || sourceApp == appId;
 }
 
 /// Helper class for creating farm-owned entities.

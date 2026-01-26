@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../l10n/generated/app_localizations.dart';
 
 class WeatherDayDetailScreen extends StatelessWidget {
   final DateTime date;
@@ -20,6 +21,8 @@ class WeatherDayDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AgroLocalizations.of(context)!;
+    final locale = Localizations.localeOf(context).toString();
 
     // Logic for relative date label
     String dateLabel;
@@ -29,26 +32,26 @@ class WeatherDayDetailScreen extends StatelessWidget {
     final diff = checkDate.difference(today).inDays;
 
     if (diff == 0) {
-      dateLabel = 'Previsão para Hoje';
+      dateLabel = l10n.weatherForecastToday;
     } else if (diff == 1) {
-      dateLabel = 'Previsão para Amanhã';
+      dateLabel = l10n.weatherForecastTomorrow;
     } else {
-      final weekday = DateFormat('EEEE', 'pt_BR').format(date);
+      final weekday = DateFormat.EEEE(locale).format(date);
       // Capitalize first letter
       final capitalized =
           weekday.replaceFirst(weekday[0], weekday[0].toUpperCase());
-      dateLabel = 'Previsão para $capitalized';
+      dateLabel = l10n.weatherForecastForDay(capitalized);
     }
 
     // Secondary date label (e.g. 25 jan)
-    final dateSuffix = DateFormat("d 'de' MMMM", 'pt_BR').format(date);
+    final dateSuffix = DateFormat(l10n.dateDayMonthPattern, locale).format(date);
 
     return Scaffold(
       appBar: AppBar(
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Detalhes da Previsão'),
+            Text(l10n.weatherForecastDetails),
             if (propertyName != null)
               Text(
                 propertyName!,
@@ -62,17 +65,17 @@ class WeatherDayDetailScreen extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            _buildDailySummary(context, dateLabel, dateSuffix),
+            _buildDailySummary(context, dateLabel, dateSuffix, l10n),
             const SizedBox(height: 24),
-            if (hourlyData != null) _buildHourlyList(context),
+            if (hourlyData != null) _buildHourlyList(context, l10n),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildDailySummary(
-      BuildContext context, String dateLabel, String dateSuffix) {
+  Widget _buildDailySummary(BuildContext context, String dateLabel,
+      String dateSuffix, AgroLocalizations l10n) {
     final theme = Theme.of(context);
 
     final max = dailyData['temperature_2m_max'][dailyIndex];
@@ -127,7 +130,7 @@ class WeatherDayDetailScreen extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            _getWeatherDescription(code),
+            _getWeatherDescription(code, l10n),
             style: theme.textTheme.headlineSmall?.copyWith(
               color: theme.colorScheme.onPrimaryContainer,
               fontWeight: FontWeight.bold,
@@ -139,10 +142,9 @@ class WeatherDayDetailScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               _buildStatItem(
-                  context, Icons.thermostat, '$max° / $min°', 'Temp (Max/Min)'),
-              _buildStatItem(context, Icons.water_drop, '${rain}mm',
-                  'Precipitação' // TODO: l10n
-                  ),
+                  context, Icons.thermostat, '$max° / $min°', l10n.weatherTempMaxMin),
+              _buildStatItem(
+                  context, Icons.water_drop, '${rain}mm', l10n.weatherPrecipitation),
             ],
           ),
           const SizedBox(height: 16),
@@ -153,10 +155,9 @@ class WeatherDayDetailScreen extends StatelessWidget {
                 context,
                 Icons.air,
                 '${windSpeed.round()} km/h',
-                'Vento Max',
+                l10n.weatherWindMax,
                 iconRotation: (windDir * 3.14159 / 180),
               ),
-              // We could add Probability if available, but daily prob is tricky in Open-Meteo
             ],
           ),
         ],
@@ -202,7 +203,7 @@ class WeatherDayDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildHourlyList(BuildContext context) {
+  Widget _buildHourlyList(BuildContext context, AgroLocalizations l10n) {
     if (hourlyData == null) return const SizedBox.shrink();
 
     final times = hourlyData!['time'] as List;
@@ -211,10 +212,6 @@ class WeatherDayDetailScreen extends StatelessWidget {
     final precipitations = hourlyData!['precipitation'] as List?;
     final winds = hourlyData!['wind_speed_10m'] as List?;
     final windDirections = hourlyData!['wind_direction_10m'] as List?;
-
-    // Filter for this specific date
-    // API times are ISO strings: "2023-10-25T00:00"
-    // We want all hours where time matches our date (Year-Month-Day)
 
     final dayStr = DateFormat('yyyy-MM-dd').format(date);
     final dayIndices = <int>[];
@@ -235,7 +232,7 @@ class WeatherDayDetailScreen extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           child: Text(
-            'Evolução Horária', // TODO: L10n
+            l10n.weatherHourlyEvolution,
             style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
             ),
@@ -336,13 +333,13 @@ class WeatherDayDetailScreen extends StatelessWidget {
     return Icons.cloud;
   }
 
-  String _getWeatherDescription(int code) {
-    if (code == 0) return 'Céu limpo';
-    if (code >= 1 && code <= 3) return 'Parcialmente nublado';
-    if (code >= 45 && code <= 48) return 'Neblina';
-    if (code >= 51 && code <= 67) return 'Chuva fraca';
-    if (code >= 80 && code <= 82) return 'Pancadas de chuva';
-    if (code >= 95 && code <= 99) return 'Tempestade';
-    return 'Nublado';
+  String _getWeatherDescription(int code, AgroLocalizations l10n) {
+    if (code == 0) return l10n.weatherClearSky;
+    if (code >= 1 && code <= 3) return l10n.weatherPartlyCloudy;
+    if (code >= 45 && code <= 48) return l10n.weatherFog;
+    if (code >= 51 && code <= 67) return l10n.weatherLightRain;
+    if (code >= 80 && code <= 82) return l10n.weatherShowers;
+    if (code >= 95 && code <= 99) return l10n.weatherThunderstorm;
+    return l10n.weatherCloudy;
   }
 }

@@ -12,6 +12,103 @@
 
 ---
 
+## Phase RUBBER-24: Integração CORE-77 (Dependency-Aware Backup)
+
+### Status: [DONE]
+**Date Completed**: 2026-01-26
+**Priority**: 🔴 CRITICAL (Arquitetura multi-app e LGPD)
+**Objective**: Integrar modelos e serviços do agro_core CORE-77 para backup dependency-aware, isolamento por sourceApp, e conformidade LGPD.
+**Cross-Reference**: CORE-77, CORE-75
+
+### Contexto
+
+O CORE-77 criou a infraestrutura no agro_core para:
+- `sourceApp`: Identificador imutável de qual app criou cada registro
+- `FarmOwnedMixin`: Campos `farmId`, `createdBy`, `createdAt`, `sourceApp`
+- `EnhancedBackupProvider`: Backup/restore em 3 fases com análise prévia
+- `DependencyService`: Rastreamento de dependências cross-app
+- `AppDeletionProvider`: LGPD delete por app com verificação de ownership
+
+Esta fase adapta o RuraRubber para usar essa infraestrutura.
+
+### Regras de Ownership (LGPD)
+
+| Operação | Quem pode? | Implementação |
+|----------|------------|---------------|
+| Backup Cloud | Apenas owner | `isCurrentUserFarmOwner()` |
+| Restore Cloud | Owner: full / Member: read-only | `RestoreFarmAccess` |
+| Export LGPD | Apenas owner | `_isCurrentUserFarmOwner` |
+| Delete LGPD | Apenas owner | `AppDeletionProvider` |
+
+### Implementation Summary
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 24.1 | **Models Update**: Adicionar `farmId`, `createdBy`, `createdAt`, `sourceApp` a Parceiro e Entrega | ✅ DONE |
+| 24.2 | **FarmOwnedEntity**: Implementar interface em Parceiro e Entrega | ✅ DONE |
+| 24.3 | **Hive Adapters**: Atualizar HiveFields, rodar build_runner | ✅ DONE |
+| 24.4 | **EnhancedBackupProvider**: Migrar BorrachaBackupProvider para EnhancedBackupProvider | ✅ DONE |
+| 24.5 | **DependencyService**: Registrar no main.dart, inicializar | ✅ DONE |
+| 24.6 | **FarmService Integration**: Registrar FarmAdapter, inicializar FarmService | ✅ DONE |
+| 24.7 | **AppDeletionProvider**: Implementar BorrachaDeletionProvider | ✅ DONE |
+| 24.8 | **Services Update**: Filtrar por farmId e sourceApp via backup/deletion providers | ✅ DONE |
+| 24.9 | **Verify & Test**: Rodar flutter analyze, corrigir erros | ✅ DONE |
+
+### Files Modified
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/models/parceiro.dart` | MODIFY | Implementa FarmOwnedEntity com farmId, createdBy, createdAt, sourceApp; factory Parceiro.create(); toJson/fromJson |
+| `lib/models/parceiro.g.dart` | REGENERATE | build_runner (HiveFields 6-9) |
+| `lib/models/entrega.dart` | MODIFY | Implementa FarmOwnedEntity; factory Entrega.create(); toJson/fromJson |
+| `lib/models/entrega.g.dart` | REGENERATE | build_runner (HiveFields 7-10) |
+| `lib/models/item_entrega.dart` | MODIFY | Adicionado toJson/fromJson para serialização |
+| `lib/services/borracha_backup_provider.dart` | REWRITE | EnhancedBackupProvider com analyzeRestore, executeRestore, recalculateAfterRestore |
+| `lib/services/borracha_deletion_provider.dart` | CREATE | AppDeletionProvider para LGPD delete por app |
+| `lib/services/entrega_service.dart` | MODIFY | Adicionado Entrega.create(), deleteEntrega(), getEntregaById() |
+| `lib/services/parceiro_service.dart` | UNCHANGED | Já suportava novo modelo via Parceiro.create() |
+| `lib/services/backup_service.dart` | MODIFY | Usar fromJson para Parceiro/Entrega |
+| `lib/services/pdf_service.dart` | MODIFY | Usar Parceiro.create() para placeholder |
+| `lib/screens/parceiro_form_screen.dart` | MODIFY | Usar Parceiro.create() ao criar novo |
+| `lib/main.dart` | MODIFY | Registrar FarmAdapter, DependencyManifestAdapter; init FarmService, DependencyService; registrar BorrachaDeletionProvider |
+
+### Implementation Details
+
+**Parceiro Model** (typeId: 0):
+- Implementa `FarmOwnedEntity` interface
+- HiveFields 6-9: farmId, createdBy, createdAt, sourceApp
+- Factory `Parceiro.create()` auto-preenche metadata via FarmService/AuthService
+- `sourceApp` sempre "rurarubber" (imutável)
+
+**Entrega Model** (typeId: 2):
+- Implementa `FarmOwnedEntity` interface
+- HiveFields 7-10: farmId, createdBy, createdAt, sourceApp
+- Factory `Entrega.create()` auto-preenche metadata
+
+**BorrachaBackupProvider**:
+- Implementa `EnhancedBackupProvider` com 3 fases:
+  1. `analyzeRestore()`: Analisa backup vs local, verifica ownership
+  2. `executeRestore()`: Limpa apenas sourceApp='rurarubber', importa novos
+  3. `recalculateAfterRestore()`: Recalcula dependências (opcional)
+- RestoreFarmAccess: owner/member/noAccess
+- Preserva dados de outros apps durante restore
+
+**BorrachaDeletionProvider**:
+- Implementa `AppDeletionProvider` para LGPD
+- `deleteAppData()`: Deleta todos dados rurarubber da farm
+- `deletePersonalData()`: Deleta dados pessoais com verificação ownership
+- Retorna `LgpdDeletionResult` com contagens e erros
+
+### Notas de Implementação
+
+1. **Retrocompatibilidade**: Models usam factory `.create()` para novos registros
+2. **Offline-first**: Hive local, metadata preenchidos na criação
+3. **sourceApp imutável**: Sempre "rurarubber", nunca modificado
+4. **farmId obrigatório**: Via `FarmService.instance.defaultFarmId`
+5. **createdBy obrigatório**: Via `AuthService.currentUser?.uid`
+
+---
+
 ## Phase RUBBER-23: Sistema de Tabelas (D3/D4) - Opcional
 
 ### Status: [TODO]

@@ -7,7 +7,6 @@ import 'package:share_plus/share_plus.dart';
 
 import '../models/parceiro.dart';
 import '../models/entrega.dart';
-import '../models/item_entrega.dart';
 import '../services/parceiro_service.dart';
 import '../services/entrega_service.dart';
 
@@ -105,34 +104,12 @@ class BackupService {
       }
 
       final parceiros = (data['parceiros'] as List?)
-              ?.map((p) => Parceiro(
-                    id: p['id'] as String,
-                    nome: p['nome'] as String,
-                    percentualPadrao: (p['percentualPadrao'] as num).toDouble(),
-                    telefone: p['telefone'] as String?,
-                  ))
+              ?.map((p) => Parceiro.fromJson(p as Map<String, dynamic>))
               .toList() ??
           [];
 
       final entregas = (data['entregas'] as List?)
-              ?.map((e) => Entrega(
-                    id: e['id'] as String,
-                    data: DateTime.parse(e['data'] as String),
-                    compradorId: e['compradorId'] as String?,
-                    status: e['status'] as String,
-                    itens: (e['itens'] as List)
-                        .map((item) => ItemEntrega(
-                              parceiroId: item['parceiroId'] as String,
-                              pesagens: (item['pesagens'] as List)
-                                  .map((p) => (p as num).toDouble())
-                                  .toList(),
-                              pesoTotal: (item['pesoTotal'] as num).toDouble(),
-                              valorTotal:
-                                  (item['valorTotal'] as num).toDouble(),
-                              descontos: (item['descontos'] as num?)?.toDouble() ?? 0.0,
-                            ))
-                        .toList(),
-                  ))
+              ?.map((e) => Entrega.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [];
 

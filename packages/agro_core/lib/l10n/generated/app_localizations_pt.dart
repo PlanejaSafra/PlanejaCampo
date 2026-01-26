@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1524,4 +1526,311 @@ class AgroLocalizationsPt extends AgroLocalizations {
 
   @override
   String get propertyNamePromptSkip => 'Pular';
+
+  @override
+  String get restoreConfirmTitle => 'Confirmar Restauração';
+
+  @override
+  String get restoreConfirmSubtitle => 'Revise as alterações antes de prosseguir';
+
+  @override
+  String restoreWillAdd(int count) {
+    return '$count registros serão adicionados';
+  }
+
+  @override
+  String restoreWillDelete(int count) {
+    return '$count registros serão removidos';
+  }
+
+  @override
+  String restoreBlocked(int count) {
+    return '$count registros protegidos';
+  }
+
+  @override
+  String restoreConflicts(int count) {
+    return '$count conflitos encontrados';
+  }
+
+  @override
+  String get restoreBlockedSection => 'Itens protegidos';
+
+  @override
+  String get restoreBlockedExplanation => 'Estes itens são usados por outros apps e não serão removidos';
+
+  @override
+  String get restoreWarningsSection => 'Avisos';
+
+  @override
+  String get restoreRecalculationsSection => 'Recálculos necessários';
+
+  @override
+  String get restoreRecalculationsExplanation => 'Estes dados derivados serão recalculados após a restauração';
+
+  @override
+  String get restoreNoChanges => 'Nenhuma alteração necessária';
+
+  @override
+  String get restoreFarmWarning => 'Backup de fazenda diferente da atual';
+
+  @override
+  String get restoreConfirmButton => 'Confirmar Restauração';
+
+  @override
+  String get restoreCancelButton => 'Cancelar';
+
+  @override
+  String get backupNotFound => 'Nenhum backup encontrado na nuvem';
+
+  @override
+  String get backupSlotInvalid => 'Slot de backup inválido';
+
+  @override
+  String get backupUserNotLoggedIn => 'Usuário não logado';
+
+  @override
+  String get backupTimeout => 'Tempo esgotado. Verifique sua conexão';
+
+  @override
+  String get backupAnonymousNotAllowed => 'Backup indisponível para contas anônimas';
+
+  @override
+  String get farmLimitReached => 'Limite de fazendas atingido';
+
+  @override
+  String get farmLimitFreeDescription => 'O plano gratuito permite apenas 1 fazenda. Assine um plano para criar mais';
+
+  @override
+  String get restoreNoFarmAccess => 'Sem acesso a esta fazenda';
+
+  @override
+  String get restoreNoFarmAccessExplanation => 'Este backup pertence a uma fazenda da qual você não é proprietário. A restauração não é permitida';
+
+  @override
+  String get safraGlobal => 'Safra';
+
+  @override
+  String get safraAtiva => 'Safra Ativa';
+
+  @override
+  String safraChipLabel(String startYear, String endYear) {
+    return '$startYear/$endYear';
+  }
+
+  @override
+  String get encerrarSafra => 'Encerrar Safra';
+
+  @override
+  String novaSafraCriada(String nome) {
+    return 'Nova safra criada: $nome';
+  }
+
+  @override
+  String get safraAnterior => 'Safras Anteriores';
+
+  @override
+  String safraEncerrarConfirm(String nome) {
+    return 'Deseja encerrar a safra \"$nome\" e criar uma nova automaticamente?';
+  }
+
+  @override
+  String get safraEncerrada => 'Encerrada';
+
+  @override
+  String get safraNenhuma => 'Nenhuma safra';
+
+  @override
+  String get weatherNext24Hours => 'Próximas 24 Horas';
+
+  @override
+  String get weatherNextDays => 'Próximos Dias';
+
+  @override
+  String get weatherForecastToday => 'Previsão para Hoje';
+
+  @override
+  String get weatherForecastTomorrow => 'Previsão para Amanhã';
+
+  @override
+  String weatherForecastForDay(String day) {
+    return 'Previsão para $day';
+  }
+
+  @override
+  String get weatherForecastDetails => 'Detalhes da Previsão';
+
+  @override
+  String get weatherPrecipitation => 'Precipitação';
+
+  @override
+  String get weatherWindMax => 'Vento Max';
+
+  @override
+  String get weatherHourlyEvolution => 'Evolução Horária';
+
+  @override
+  String get weatherTempMaxMin => 'Temp (Max/Min)';
+
+  @override
+  String get radarLegendLight => 'Leve';
+
+  @override
+  String get radarLegendHeavy => 'Intensa';
+
+  @override
+  String get cloudLegendClear => 'Limpo';
+
+  @override
+  String get cloudLegendCloudy => 'Nublado';
+
+  @override
+  String get weatherTomorrow => 'Amanhã';
+
+  @override
+  String get weatherRefreshTooltip => 'Atualizar previsão';
+
+  @override
+  String get weatherNoForecastAvailable => 'Nenhuma previsão disponível';
+
+  @override
+  String get weatherAttribution => 'Dados fornecidos por Open-Meteo.com';
+
+  @override
+  String weatherCacheMinutes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Atualizado há $count minutos',
+      one: 'Atualizado há 1 minuto',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String weatherCacheHours(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Atualizado há $count horas',
+      one: 'Atualizado há 1 hora',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String weatherCacheDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Atualizado há $count dias',
+      one: 'Atualizado há 1 dia',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get weatherCacheStale => ' (cache antigo)';
+
+  @override
+  String get weatherTemperature => 'Temperatura';
+
+  @override
+  String weatherForecastLoadError(String error) {
+    return 'Erro ao carregar previsão: $error';
+  }
+
+  @override
+  String weatherForecastRefreshError(String error) {
+    return 'Erro ao atualizar previsão: $error';
+  }
+
+  @override
+  String get regionalRequireConsent => 'Você precisa ativar o compartilhamento de dados nas configurações';
+
+  @override
+  String regionalLoadError(String error) {
+    return 'Erro ao carregar dados: $error';
+  }
+
+  @override
+  String get regionalNoData => 'Nenhum dado regional disponível';
+
+  @override
+  String get regionalNoDataDesc => 'Ainda não há dados suficientes na sua região. Continue registrando suas chuvas e compartilhando!';
+
+  @override
+  String get regionalYourRegion => 'Sua Região';
+
+  @override
+  String get regionalCoverageArea => 'Área de cobertura';
+
+  @override
+  String get regionalContributors => 'Propriedades contribuindo';
+
+  @override
+  String get regionalConfidenceLevel => 'Nível de confiança';
+
+  @override
+  String get regionalLastUpdate => 'Última atualização';
+
+  @override
+  String get regionalComparison => 'Comparação (Mês Atual)';
+
+  @override
+  String get regionalYourProperty => 'Sua Propriedade';
+
+  @override
+  String get regionalAverage => 'Média Regional';
+
+  @override
+  String regionalAboveAverage(String percent) {
+    return 'Você está $percent% acima da média regional';
+  }
+
+  @override
+  String regionalBelowAverage(String percent) {
+    return 'Você está $percent% abaixo da média regional';
+  }
+
+  @override
+  String get regionalDetails => 'Detalhes da Região';
+
+  @override
+  String get regionalAccumulatedTotal => 'Total acumulado';
+
+  @override
+  String get regionalGeoHash => 'GeoHash';
+
+  @override
+  String get regionalPrecision => 'Precisão';
+
+  @override
+  String regionalCharacters(int count) {
+    return '$count caracteres';
+  }
+
+  @override
+  String get regionalPrivacyNote => 'Seus dados são anonimizados e agregados. Apenas médias regionais são compartilhadas, nunca dados individuais.';
+
+  @override
+  String timeAgoMinutes(int count) {
+    return 'Há $count min';
+  }
+
+  @override
+  String timeAgoHours(int count) {
+    return 'Há ${count}h';
+  }
+
+  @override
+  String timeAgoDays(int count) {
+    return 'Há $count dias';
+  }
+
+  @override
+  String get refreshTooltip => 'Atualizar';
+
+  @override
+  String get dateDayMonthPattern => 'd \'de\' MMMM';
 }

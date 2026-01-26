@@ -19,6 +19,7 @@ import 'services/entrega_service.dart';
 import 'services/user_profile_service.dart';
 import 'services/backup_service.dart';
 import 'services/borracha_backup_provider.dart';
+import 'services/borracha_deletion_provider.dart';
 import 'screens/parceiros_list_screen.dart';
 import 'screens/pesagem_screen.dart';
 import 'screens/mercado_screen.dart';
@@ -48,6 +49,9 @@ Future<void> main() async {
   Hive.registerAdapter(TalhaoAdapter());
   Hive.registerAdapter(UserProfileTypeAdapter());
   Hive.registerAdapter(UserProfileAdapter());
+  // CORE-77 / RUBBER-24: Farm and Dependency adapters
+  Hive.registerAdapter(FarmAdapter());
+  Hive.registerAdapter(DependencyManifestAdapter());
 
   // Initialize Firebase
   // Initialize Firebase
@@ -86,6 +90,20 @@ Future<void> main() async {
     debugPrint('TalhaoService initialization failed: $e');
   }
 
+  // CORE-77 / RUBBER-24: Initialize FarmService
+  try {
+    await FarmService.instance.init();
+  } catch (e) {
+    debugPrint('FarmService initialization failed: $e');
+  }
+
+  // CORE-77 / RUBBER-24: Initialize DependencyService
+  try {
+    await DependencyService.instance.init();
+  } catch (e) {
+    debugPrint('DependencyService initialization failed: $e');
+  }
+
   // Initialize UserProfileService
   try {
     await UserProfileService.instance.init();
@@ -105,6 +123,14 @@ Future<void> main() async {
     CloudBackupService.instance.registerProvider(BorrachaBackupProvider());
   } catch (e) {
     debugPrint('Failed to register BorrachaBackupProvider: $e');
+  }
+
+  // CORE-77 / RUBBER-24: Register deletion provider for LGPD
+  try {
+    DataDeletionService.instance
+        .registerDeletionProvider(BorrachaDeletionProvider());
+  } catch (e) {
+    debugPrint('Failed to register BorrachaDeletionProvider: $e');
   }
 
   runApp(const RuraRubberApp());

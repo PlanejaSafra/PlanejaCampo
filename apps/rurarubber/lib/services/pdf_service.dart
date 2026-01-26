@@ -39,7 +39,7 @@ class PdfService {
                 data: entrega.itens.map((item) {
                   final parceiro = parceiros.firstWhere(
                       (p) => p.id == item.parceiroId,
-                      orElse: () => Parceiro(
+                      orElse: () => Parceiro.create(
                           id: '?', nome: 'Desconhecido', percentualPadrao: 0));
 
                   final valorTotal = item.pesoTotal * precoPorKg;

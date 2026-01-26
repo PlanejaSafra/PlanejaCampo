@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1524,4 +1526,311 @@ class AgroLocalizationsEn extends AgroLocalizations {
 
   @override
   String get propertyNamePromptSkip => 'Skip';
+
+  @override
+  String get restoreConfirmTitle => 'Confirm Restore';
+
+  @override
+  String get restoreConfirmSubtitle => 'Review the changes before proceeding';
+
+  @override
+  String restoreWillAdd(int count) {
+    return '$count records will be added';
+  }
+
+  @override
+  String restoreWillDelete(int count) {
+    return '$count records will be removed';
+  }
+
+  @override
+  String restoreBlocked(int count) {
+    return '$count protected records';
+  }
+
+  @override
+  String restoreConflicts(int count) {
+    return '$count conflicts found';
+  }
+
+  @override
+  String get restoreBlockedSection => 'Protected items';
+
+  @override
+  String get restoreBlockedExplanation => 'These items are used by other apps and will not be removed';
+
+  @override
+  String get restoreWarningsSection => 'Warnings';
+
+  @override
+  String get restoreRecalculationsSection => 'Recalculations needed';
+
+  @override
+  String get restoreRecalculationsExplanation => 'This derived data will be recalculated after restore';
+
+  @override
+  String get restoreNoChanges => 'No changes needed';
+
+  @override
+  String get restoreFarmWarning => 'Backup is from a different farm';
+
+  @override
+  String get restoreConfirmButton => 'Confirm Restore';
+
+  @override
+  String get restoreCancelButton => 'Cancel';
+
+  @override
+  String get backupNotFound => 'No backup found in the cloud';
+
+  @override
+  String get backupSlotInvalid => 'Invalid backup slot';
+
+  @override
+  String get backupUserNotLoggedIn => 'User not logged in';
+
+  @override
+  String get backupTimeout => 'Timed out. Check your connection';
+
+  @override
+  String get backupAnonymousNotAllowed => 'Backup unavailable for anonymous accounts';
+
+  @override
+  String get farmLimitReached => 'Farm limit reached';
+
+  @override
+  String get farmLimitFreeDescription => 'Free plan allows only 1 farm. Subscribe to a plan to create more';
+
+  @override
+  String get restoreNoFarmAccess => 'No access to this farm';
+
+  @override
+  String get restoreNoFarmAccessExplanation => 'This backup belongs to a farm you are not the owner of. Restore is not allowed';
+
+  @override
+  String get safraGlobal => 'Crop Season';
+
+  @override
+  String get safraAtiva => 'Active Season';
+
+  @override
+  String safraChipLabel(String startYear, String endYear) {
+    return '$startYear/$endYear';
+  }
+
+  @override
+  String get encerrarSafra => 'Close Season';
+
+  @override
+  String novaSafraCriada(String nome) {
+    return 'New season created: $nome';
+  }
+
+  @override
+  String get safraAnterior => 'Previous Seasons';
+
+  @override
+  String safraEncerrarConfirm(String nome) {
+    return 'Close the season \"$nome\" and create a new one automatically?';
+  }
+
+  @override
+  String get safraEncerrada => 'Closed';
+
+  @override
+  String get safraNenhuma => 'No season';
+
+  @override
+  String get weatherNext24Hours => 'Next 24 Hours';
+
+  @override
+  String get weatherNextDays => 'Next Days';
+
+  @override
+  String get weatherForecastToday => 'Today\'s Forecast';
+
+  @override
+  String get weatherForecastTomorrow => 'Tomorrow\'s Forecast';
+
+  @override
+  String weatherForecastForDay(String day) {
+    return 'Forecast for $day';
+  }
+
+  @override
+  String get weatherForecastDetails => 'Forecast Details';
+
+  @override
+  String get weatherPrecipitation => 'Precipitation';
+
+  @override
+  String get weatherWindMax => 'Wind Max';
+
+  @override
+  String get weatherHourlyEvolution => 'Hourly Evolution';
+
+  @override
+  String get weatherTempMaxMin => 'Temp (Max/Min)';
+
+  @override
+  String get radarLegendLight => 'Light';
+
+  @override
+  String get radarLegendHeavy => 'Heavy';
+
+  @override
+  String get cloudLegendClear => 'Clear';
+
+  @override
+  String get cloudLegendCloudy => 'Cloudy';
+
+  @override
+  String get weatherTomorrow => 'Tomorrow';
+
+  @override
+  String get weatherRefreshTooltip => 'Refresh forecast';
+
+  @override
+  String get weatherNoForecastAvailable => 'No forecast available';
+
+  @override
+  String get weatherAttribution => 'Data provided by Open-Meteo.com';
+
+  @override
+  String weatherCacheMinutes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Updated $count minutes ago',
+      one: 'Updated 1 minute ago',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String weatherCacheHours(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Updated $count hours ago',
+      one: 'Updated 1 hour ago',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String weatherCacheDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Updated $count days ago',
+      one: 'Updated 1 day ago',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get weatherCacheStale => ' (stale cache)';
+
+  @override
+  String get weatherTemperature => 'Temperature';
+
+  @override
+  String weatherForecastLoadError(String error) {
+    return 'Error loading forecast: $error';
+  }
+
+  @override
+  String weatherForecastRefreshError(String error) {
+    return 'Error refreshing forecast: $error';
+  }
+
+  @override
+  String get regionalRequireConsent => 'You need to enable data sharing in settings';
+
+  @override
+  String regionalLoadError(String error) {
+    return 'Error loading data: $error';
+  }
+
+  @override
+  String get regionalNoData => 'No regional data available';
+
+  @override
+  String get regionalNoDataDesc => 'Not enough data in your region yet. Keep recording and sharing your rainfall!';
+
+  @override
+  String get regionalYourRegion => 'Your Region';
+
+  @override
+  String get regionalCoverageArea => 'Coverage area';
+
+  @override
+  String get regionalContributors => 'Contributing properties';
+
+  @override
+  String get regionalConfidenceLevel => 'Confidence level';
+
+  @override
+  String get regionalLastUpdate => 'Last update';
+
+  @override
+  String get regionalComparison => 'Comparison (Current Month)';
+
+  @override
+  String get regionalYourProperty => 'Your Property';
+
+  @override
+  String get regionalAverage => 'Regional Average';
+
+  @override
+  String regionalAboveAverage(String percent) {
+    return 'You are $percent% above the regional average';
+  }
+
+  @override
+  String regionalBelowAverage(String percent) {
+    return 'You are $percent% below the regional average';
+  }
+
+  @override
+  String get regionalDetails => 'Region Details';
+
+  @override
+  String get regionalAccumulatedTotal => 'Accumulated total';
+
+  @override
+  String get regionalGeoHash => 'GeoHash';
+
+  @override
+  String get regionalPrecision => 'Precision';
+
+  @override
+  String regionalCharacters(int count) {
+    return '$count characters';
+  }
+
+  @override
+  String get regionalPrivacyNote => 'Your data is anonymized and aggregated. Only regional averages are shared, never individual data.';
+
+  @override
+  String timeAgoMinutes(int count) {
+    return '$count min ago';
+  }
+
+  @override
+  String timeAgoHours(int count) {
+    return '${count}h ago';
+  }
+
+  @override
+  String timeAgoDays(int count) {
+    return '$count days ago';
+  }
+
+  @override
+  String get refreshTooltip => 'Refresh';
+
+  @override
+  String get dateDayMonthPattern => 'MMMM d';
 }

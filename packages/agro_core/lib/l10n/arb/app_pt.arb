@@ -719,5 +719,195 @@
   "propertyNamePromptHint": "Ex: Fazenda São João",
   "propertyNamePromptSuggestion": "Minha Propriedade",
   "propertyNamePromptConfirm": "Confirmar",
-  "propertyNamePromptSkip": "Pular"
+  "propertyNamePromptSkip": "Pular",
+
+  "restoreConfirmTitle": "Confirmar Restauração",
+  "restoreConfirmSubtitle": "Revise as alterações antes de prosseguir",
+  "restoreWillAdd": "{count} registros serão adicionados",
+  "@restoreWillAdd": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "restoreWillDelete": "{count} registros serão removidos",
+  "@restoreWillDelete": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "restoreBlocked": "{count} registros protegidos",
+  "@restoreBlocked": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "restoreConflicts": "{count} conflitos encontrados",
+  "@restoreConflicts": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "restoreBlockedSection": "Itens protegidos",
+  "restoreBlockedExplanation": "Estes itens são usados por outros apps e não serão removidos",
+  "restoreWarningsSection": "Avisos",
+  "restoreRecalculationsSection": "Recálculos necessários",
+  "restoreRecalculationsExplanation": "Estes dados derivados serão recalculados após a restauração",
+  "restoreNoChanges": "Nenhuma alteração necessária",
+  "restoreFarmWarning": "Backup de fazenda diferente da atual",
+  "restoreConfirmButton": "Confirmar Restauração",
+  "restoreCancelButton": "Cancelar",
+
+  "backupNotFound": "Nenhum backup encontrado na nuvem",
+  "backupSlotInvalid": "Slot de backup inválido",
+  "backupUserNotLoggedIn": "Usuário não logado",
+  "backupTimeout": "Tempo esgotado. Verifique sua conexão",
+  "backupAnonymousNotAllowed": "Backup indisponível para contas anônimas",
+
+  "farmLimitReached": "Limite de fazendas atingido",
+  "farmLimitFreeDescription": "O plano gratuito permite apenas 1 fazenda. Assine um plano para criar mais",
+
+  "restoreNoFarmAccess": "Sem acesso a esta fazenda",
+  "restoreNoFarmAccessExplanation": "Este backup pertence a uma fazenda da qual você não é proprietário. A restauração não é permitida",
+
+  "safraGlobal": "Safra",
+  "safraAtiva": "Safra Ativa",
+  "safraChipLabel": "{startYear}/{endYear}",
+  "@safraChipLabel": {
+    "placeholders": {
+      "startYear": { "type": "String" },
+      "endYear": { "type": "String" }
+    }
+  },
+  "encerrarSafra": "Encerrar Safra",
+  "novaSafraCriada": "Nova safra criada: {nome}",
+  "@novaSafraCriada": {
+    "placeholders": {
+      "nome": { "type": "String" }
+    }
+  },
+  "safraAnterior": "Safras Anteriores",
+  "safraEncerrarConfirm": "Deseja encerrar a safra \"{nome}\" e criar uma nova automaticamente?",
+  "@safraEncerrarConfirm": {
+    "placeholders": {
+      "nome": { "type": "String" }
+    }
+  },
+  "safraEncerrada": "Encerrada",
+  "safraNenhuma": "Nenhuma safra",
+
+  "weatherNext24Hours": "Próximas 24 Horas",
+  "weatherNextDays": "Próximos Dias",
+  "weatherForecastToday": "Previsão para Hoje",
+  "weatherForecastTomorrow": "Previsão para Amanhã",
+  "weatherForecastForDay": "Previsão para {day}",
+  "@weatherForecastForDay": {
+    "placeholders": {
+      "day": { "type": "String" }
+    }
+  },
+  "weatherForecastDetails": "Detalhes da Previsão",
+  "weatherPrecipitation": "Precipitação",
+  "weatherWindMax": "Vento Max",
+  "weatherHourlyEvolution": "Evolução Horária",
+  "weatherTempMaxMin": "Temp (Max/Min)",
+  "radarLegendLight": "Leve",
+  "radarLegendHeavy": "Intensa",
+  "cloudLegendClear": "Limpo",
+  "cloudLegendCloudy": "Nublado",
+  "weatherTomorrow": "Amanhã",
+  "weatherRefreshTooltip": "Atualizar previsão",
+  "weatherNoForecastAvailable": "Nenhuma previsão disponível",
+  "weatherAttribution": "Dados fornecidos por Open-Meteo.com",
+  "weatherCacheMinutes": "{count, plural, =1{Atualizado há 1 minuto} other{Atualizado há {count} minutos}}",
+  "@weatherCacheMinutes": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "weatherCacheHours": "{count, plural, =1{Atualizado há 1 hora} other{Atualizado há {count} horas}}",
+  "@weatherCacheHours": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "weatherCacheDays": "{count, plural, =1{Atualizado há 1 dia} other{Atualizado há {count} dias}}",
+  "@weatherCacheDays": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "weatherCacheStale": " (cache antigo)",
+  "weatherTemperature": "Temperatura",
+  "weatherForecastLoadError": "Erro ao carregar previsão: {error}",
+  "@weatherForecastLoadError": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "weatherForecastRefreshError": "Erro ao atualizar previsão: {error}",
+  "@weatherForecastRefreshError": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "regionalRequireConsent": "Você precisa ativar o compartilhamento de dados nas configurações",
+  "regionalLoadError": "Erro ao carregar dados: {error}",
+  "@regionalLoadError": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "regionalNoData": "Nenhum dado regional disponível",
+  "regionalNoDataDesc": "Ainda não há dados suficientes na sua região. Continue registrando suas chuvas e compartilhando!",
+  "regionalYourRegion": "Sua Região",
+  "regionalCoverageArea": "Área de cobertura",
+  "regionalContributors": "Propriedades contribuindo",
+  "regionalConfidenceLevel": "Nível de confiança",
+  "regionalLastUpdate": "Última atualização",
+  "regionalComparison": "Comparação (Mês Atual)",
+  "regionalYourProperty": "Sua Propriedade",
+  "regionalAverage": "Média Regional",
+  "regionalAboveAverage": "Você está {percent}% acima da média regional",
+  "@regionalAboveAverage": {
+    "placeholders": {
+      "percent": { "type": "String" }
+    }
+  },
+  "regionalBelowAverage": "Você está {percent}% abaixo da média regional",
+  "@regionalBelowAverage": {
+    "placeholders": {
+      "percent": { "type": "String" }
+    }
+  },
+  "regionalDetails": "Detalhes da Região",
+  "regionalAccumulatedTotal": "Total acumulado",
+  "regionalGeoHash": "GeoHash",
+  "regionalPrecision": "Precisão",
+  "regionalCharacters": "{count} caracteres",
+  "@regionalCharacters": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "regionalPrivacyNote": "Seus dados são anonimizados e agregados. Apenas médias regionais são compartilhadas, nunca dados individuais.",
+  "timeAgoMinutes": "Há {count} min",
+  "@timeAgoMinutes": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "timeAgoHours": "Há {count}h",
+  "@timeAgoHours": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "timeAgoDays": "Há {count} dias",
+  "@timeAgoDays": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "refreshTooltip": "Atualizar",
+  "dateDayMonthPattern": "d 'de' MMMM"
 }

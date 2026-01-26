@@ -69,8 +69,8 @@ class _ParceiroFormScreenState extends State<ParceiroFormScreen> {
         await service.updateParceiro(parceiro);
       }
     } else {
-      // Create
-      final newParceiro = Parceiro(
+      // Create (uses Parceiro.create with auto-filled farmId/createdBy/createdAt)
+      final newParceiro = Parceiro.create(
         id: const Uuid().v4(),
         nome: nome,
         percentualPadrao: percentual,

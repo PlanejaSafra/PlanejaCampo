@@ -219,7 +219,7 @@ class ChuvaService {
     final records = _box.values.where((r) => r.talhaoId == talhaoId).toList();
 
     for (final record in records) {
-      // Create new record with talhaoId = null
+      // Create new record with talhaoId = null (preserves immutable fields)
       final updated = RegistroChuva(
         id: record.id,
         data: record.data,
@@ -228,6 +228,8 @@ class ChuvaService {
         criadoEm: record.criadoEm,
         propertyId: record.propertyId,
         talhaoId: null, // Set to null (whole property)
+        createdBy: record.createdBy,
+        sourceApp: record.sourceApp,
       );
       await _box.put(record.id.toString(), updated);
     }

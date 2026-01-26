@@ -83,14 +83,17 @@ class BackupService {
         // Use propertyId from backup if available, otherwise use default
         final propertyId = r['propertyId'] as String? ?? defaultPropertyId;
 
-        return RegistroChuva(
-          id: r['id'] as int,
-          data: DateTime.parse(r['data'] as String),
-          milimetros: (r['milimetros'] as num).toDouble(),
-          observacao: r['observacao'] as String?,
-          criadoEm: DateTime.parse(r['criadoEm'] as String),
-          propertyId: propertyId,
-        );
+        return RegistroChuva.fromJson({
+          'id': r['id'] as int,
+          'data': r['data'] as String,
+          'milimetros': (r['milimetros'] as num).toDouble(),
+          'observacao': r['observacao'] as String?,
+          'criadoEm': r['criadoEm'] as String,
+          'propertyId': propertyId,
+          'talhaoId': r['talhaoId'] as String?,
+          'createdBy': r['createdBy'] as String? ?? '',
+          'sourceApp': r['sourceApp'] as String? ?? 'rurarain',
+        });
       }).toList();
     } catch (e) {
       throw Exception('Erro ao processar backup: $e');
