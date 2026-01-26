@@ -60,7 +60,9 @@ class SyncConfig {
   }
 }
 
+/// Estratégia de resolução de conflitos entre dados locais e remotos
+enum ConflictStrategy {
   serverWins, // Dados do servidor prevalecem (default)
   localWins, // Dados locais prevalecem
-  merge // Merge campo a campo (data mais recente vence)
+  merge, // Merge campo a campo (data mais recente vence)
 }

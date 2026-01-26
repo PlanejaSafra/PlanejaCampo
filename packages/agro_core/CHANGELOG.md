@@ -14,23 +14,30 @@
 - **Conflict-Free**: Resolução automática (Server Wins) e uso de `FieldValue.serverTimestamp()` para garantir ordem cronológica correta.
 - **Optimized**: Indexação em memória para buscas O(1) por Farm ID.
 
-- **Optimized**: Indexação em memória para buscas O(1) por Farm ID.
-
 ## Phase CORE-83: Migration of App Services to GenericSyncService
 
-### Status: [TODO]
+### Status: [DONE]
+**Date Completed**: 2026-01-26
 **Priority**: 🟡 CRITICAL (Tech Debt)
 **Objective**: Migrar todos os services de dados (CRUD) dos apps RuraRain, RuraRubber, etc. para usar a nova infraestrutura `GenericSyncService`.
 
-### Services to Migrate:
-- **RuraRain**: `ChuvaService`
-- **RuraRubber**: `DespesaService`, `EntregaService`, `RecebivelService`, `ParceiroService`, `TabelaService`
-- **RuraCash**: `CentroCustoService`, `LancamentoService`
-- **Outros**: Avaliar services do RuraCattle e RuraFuel.
+### Services Migrated
+
+| App | Service | Status |
+|-----|---------|--------|
+| **RuraRain** | `ChuvaService` → `GenericSyncService<RegistroChuva>` | ✅ DONE (RAIN-04) |
+| **RuraRubber** | `DespesaService` → `GenericSyncService<Despesa>` | ✅ DONE (RUBBER-25.1) |
+| **RuraRubber** | `EntregaService` → `GenericSyncService<Entrega>` | ✅ DONE (RUBBER-25.2) |
+| **RuraRubber** | `RecebivelService` → `GenericSyncService<Recebivel>` | ✅ DONE (RUBBER-25.3) |
+| **RuraRubber** | `ParceiroService` → `GenericSyncService<Parceiro>` | ✅ DONE (RUBBER-25.4) |
+| **RuraRubber** | `TabelaService` → `GenericSyncService<TabelaSangria>` | ✅ DONE (RUBBER-25.5) |
+| **RuraCash** | `CentroCustoService` → `GenericSyncService<CentroCusto>` | ✅ DONE |
+| **RuraCash** | `LancamentoService` → `GenericSyncService<Lancamento>` | ✅ DONE |
+| **Outros** | RuraCattle, RuraFuel | ⏳ TODO (apps ainda não criados) |
 
 ### Problema Resolvido
 
-Atualmente, cada app tem services duplicados (DespesaService, LancamentoService, ChuvaService) com ~150 linhas cada, todos reimplementando a mesma lógica de:
+Cada app tinha services duplicados (DespesaService, LancamentoService, ChuvaService) com ~150 linhas cada, todos reimplementando a mesma lógica de:
 - Inicialização de Hive Box
 - CRUD básico
 - Singleton pattern
@@ -38,6 +45,11 @@ Atualmente, cada app tem services duplicados (DespesaService, LancamentoService,
 - Backup helpers (toJson/fromJson)
 
 Com CORE-78, cada service passa a ter ~30 linhas (apenas métodos específicos do domínio), estendendo GenericSyncService que fornece toda a infraestrutura.
+
+### Cross-Reference
+- RUBBER-25: Migração dos 5 services do RuraRubber
+- RAIN-04: Migração do ChuvaService
+- RuraCash v1.1.0: Migração de CentroCustoService e LancamentoService
 
 ---
 
