@@ -4,6 +4,181 @@
 
 ---
 
+## 🚀 ROADMAP: Evolução Financeira RuraRubber
+
+> **Objetivo Estratégico**: Transformar o RuraRubber de "Calculadora de Peso" em "Gestor de Safra" completo.
+> **Futuro**: Preparar a arquitetura para integração com o futuro app **RuraCash** (Controle de Despesas da Fazenda).
+
+---
+
+## Phase RUBBER-20: Break-even Dinâmico (Funcionalidade Avassaladora)
+
+### Status: [TODO]
+**Priority**: 🔴 CRITICAL (Diferencial Competitivo)
+**Objective**: Mostrar o custo de produção por Kg em tempo real, calculando margem de lucro automaticamente.
+
+### O Problema
+O produtor sabe por quanto vende (R$ 8,00/kg), mas raramente sabe quanto **custou** produzir aquele kg, considerando que a produção varia mês a mês.
+
+### A Solução
+Cruzar dados de Produção (Kg) com dados de Despesa (lançados manualmente ou importados do RuraCash).
+
+### O Dashboard Mágico
+```
+"Sua produção custou R$ 3,45 por Kg nesta safra."
+"Margem de Lucro Atual: 58%"
+```
+
+### Implementation Plan
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 20.1 | **Modelo DespesaSafra**: Criar entidade para despesas associadas à safra (valor, categoria, data) | ⏳ TODO |
+| 20.2 | **Tela Lançamento Rápido**: Input simples de despesa mensal (ou importar do RuraCash futuro) | ⏳ TODO |
+| 20.3 | **Cálculo Break-even**: Fórmula (Total Despesas / Total Kg Produzido) = Custo/Kg | ⏳ TODO |
+| 20.4 | **Dashboard Margem**: Card na Home mostrando Custo/Kg vs Preço Médio de Venda | ⏳ TODO |
+| 20.5 | **Alertas Inteligentes**: "Atenção: seu custo subiu 12% este mês" | ⏳ TODO |
+
+### Categorias de Despesa (Sugeridas)
+- Mão de Obra (sangradores, diaristas)
+- Adubos e Fertilizantes
+- Defensivos
+- Combustível/Diesel
+- Manutenção de Equipamentos
+- Outros
+
+### Cross-Reference
+- RURACASH-01 (Futuro app de despesas - integração via API)
+
+---
+
+## Phase RUBBER-19: Gestão de Pagamentos (Visão Comprador)
+
+### Status: [TODO]
+**Priority**: 🟡 ARCHITECTURAL
+**Objective**: Permitir que Compradores (Usinas/Bancas) gerenciem pagamentos a produtores.
+
+### Business Context
+Para o comprador que usa o app para registrar compras de múltiplos produtores.
+
+### O Fluxo
+1. Comprador registra entrada de borracha → Gera **Obrigação de Pagamento**
+2. Sistema calcula valor baseado no contrato
+3. Painel "Contas a Pagar" mostra todos os produtores pendentes
+
+### Implementation Plan
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 19.1 | **Modelo ContaPagar**: Entidade vinculada à Entrega (produtor, valor, vencimento, status) | ⏳ TODO |
+| 19.2 | **Tela Contas a Pagar**: Lista ordenada por vencimento, com filtros | ⏳ TODO |
+| 19.3 | **Baixa em Lote**: Selecionar múltiplos produtores e marcar "Pago via PIX/TED" | ⏳ TODO |
+| 19.4 | **Relatório de Compras**: Volume total comprado vs Valor pago, por Safra | ⏳ TODO |
+| 19.5 | **Notificação de Vencimento**: Alerta 2 dias antes do pagamento | ⏳ TODO |
+
+### Files to Create/Modify
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/models/conta_pagar.dart` | CREATE | Modelo ContaPagar |
+| `lib/screens/contas_pagar_screen.dart` | CREATE | Tela de gestão de pagamentos |
+| `lib/services/conta_pagar_service.dart` | CREATE | Service para CRUD e cálculos |
+
+---
+
+## Phase RUBBER-18: Gestão de Recebíveis (Visão Produtor)
+
+### Status: [TODO]
+**Priority**: 🟡 ARCHITECTURAL
+**Objective**: Permitir que produtores acompanhem valores a receber das usinas/bancas.
+
+### Business Context
+O produtor precisa saber quando vai receber e poder controlar se o pagamento foi feito.
+
+### O Fluxo
+1. Ao finalizar Entrega → Preenche: *Preço Combinado* + *Data Prevista de Recebimento*
+2. Sistema gera **Título a Receber** (Status: Aberto)
+3. Quando recebe, marca como "Recebido" com valor real
+
+### Implementation Plan
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 18.1 | **Modelo TituloReceber**: Entidade vinculada à Entrega (valor previsto, data vencimento, status) | ⏳ TODO |
+| 18.2 | **Fluxo de Caixa Futuro**: Tela com lista ordenada por data, "A receber esta semana: R$ X" | ⏳ TODO |
+| 18.3 | **Baixa de Recebimento**: Marcar como recebido, informar valor real e data real | ⏳ TODO |
+| 18.4 | **Diferença de Pagamento**: Registrar quando usina pagou menos que o combinado | ⏳ TODO |
+| 18.5 | **Dashboard Resumo**: Card na Home "Pendente: R$ X | Recebido este mês: R$ Y" | ⏳ TODO |
+
+### Files to Create/Modify
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/models/titulo_receber.dart` | CREATE | Modelo TituloReceber |
+| `lib/screens/fluxo_caixa_screen.dart` | CREATE | Tela de fluxo de caixa |
+| `lib/screens/fechamento_entrega_screen.dart` | MODIFY | Adicionar campos de recebível |
+| `lib/services/titulo_receber_service.dart` | CREATE | Service para gestão de recebíveis |
+
+---
+
+## Phase RUBBER-17: Controle de Safras (A Base do Tempo)
+
+### Status: [TODO]
+**Priority**: 🔴 CRITICAL (Pré-requisito para fases financeiras)
+**Objective**: Implementar seletor de safra global para fatiar dados por período anual.
+
+### Business Context
+Atualmente o app é um fluxo contínuo. Para gerar relatórios anuais comparáveis, precisamos "fatiar" o tempo em safras.
+
+### O Fluxo
+1. Ao abrir o app, sistema verifica data atual e seleciona safra ativa (ex: "Safra 2025/2026")
+2. Usuário pode trocar para safras anteriores via seletor
+3. Todas as telas (Pesagem, Entregas, Financeiro) filtram automaticamente pelo período
+
+### Definição de Safra
+- **Safra de Borracha**: Geralmente de Setembro a Agosto do ano seguinte
+- Configurável por usuário (algumas regiões diferem)
+
+### Implementation Plan
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 17.1 | **Modelo Safra**: Criar entidade com nome, data início, data fim, status (ativa/encerrada) | ⏳ TODO |
+| 17.2 | **SafraService**: Gerenciar safras, detectar safra ativa, criar automático | ⏳ TODO |
+| 17.3 | **Seletor Global**: Widget no AppBar ou Drawer para trocar safra visualizada | ⏳ TODO |
+| 17.4 | **Filtro Automático**: Modificar queries de Entrega/Parceiro para filtrar por safra | ⏳ TODO |
+| 17.5 | **Relatório de Safra**: Painel com Total Kg, Total Recebido, Média de Preço | ⏳ TODO |
+| 17.6 | **Comparativo de Safras**: Gráfico comparando safra atual vs anterior | ⏳ TODO |
+
+### Files to Create/Modify
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/models/safra.dart` | CREATE | Modelo Safra com Hive adapter |
+| `lib/services/safra_service.dart` | CREATE | Gestão de safras |
+| `lib/widgets/safra_selector.dart` | CREATE | Widget seletor de safra |
+| `lib/screens/home_screen.dart` | MODIFY | Adicionar seletor e filtro |
+| `lib/screens/relatorio_safra_screen.dart` | CREATE | Dashboard da safra |
+
+---
+
+## Phase RUBBER-16: Melhorias UX Pesagem
+
+### Status: [TODO]
+**Priority**: 🟢 ENHANCEMENT
+**Objective**: Pequenas melhorias na experiência de pesagem baseadas em feedback.
+
+### Implementation Plan
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 16.1 | **Gestos de Swipe**: Deslizar para desfazer última pesagem | ⏳ TODO |
+| 16.2 | **Feedback Sonoro**: Som de confirmação ao adicionar peso | ⏳ TODO |
+| 16.3 | **Modo Noturno Pesagem**: Tela mais escura para uso à noite | ⏳ TODO |
+| 16.4 | **Atalho Valores Frequentes**: Botões +50, +100, +150 kg | ⏳ TODO |
+
+---
+
 ## Phase RUBBER-15: Job Classifieds (Vagas e Disponibilidade)
 
 ### Status: [DONE]
