@@ -689,5 +689,12 @@
   "exitAppTitle": "Exit App",
   "exitAppMessage": "Do you really want to exit the app?",
   "exitAppConfirm": "Yes, exit",
-  "exitAppCancel": "No, back"
+  "exitAppCancel": "No, back",
+
+  "propertyNamePromptTitle": "Name Your Property",
+  "propertyNamePromptMessage": "Give your property a name for easy identification.",
+  "propertyNamePromptHint": "E.g.: Green Valley Farm",
+  "propertyNamePromptSuggestion": "My Property",
+  "propertyNamePromptConfirm": "Confirm",
+  "propertyNamePromptSkip": "Skip"
 }

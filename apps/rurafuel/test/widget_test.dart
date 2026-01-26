@@ -8,7 +8,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:planejadiesel/main.dart';
+import 'package:rurafuel/main.dart';
 
 void main() {
   testWidgets('App smoke test', (WidgetTester tester) async {

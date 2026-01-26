@@ -514,14 +514,64 @@ class _AuthGateState extends State<AuthGate> {
 
     // User is signed in, show main app
     return AgroOnboardingGate(
-      home: ListaChuvasScreen(
-        onChangeLocale: widget.onChangeLocale,
-        onChangeThemeMode: widget.onChangeThemeMode,
-        currentLocale: widget.currentLocale,
-        currentThemeMode: widget.currentThemeMode,
-        preferences: widget.preferences,
-        onReminderChanged: widget.onReminderChanged,
+      home: _PropertyNameGate(
+        child: ListaChuvasScreen(
+          onChangeLocale: widget.onChangeLocale,
+          onChangeThemeMode: widget.onChangeThemeMode,
+          currentLocale: widget.currentLocale,
+          currentThemeMode: widget.currentThemeMode,
+          preferences: widget.preferences,
+          onReminderChanged: widget.onReminderChanged,
+        ),
       ),
     );
+  }
+}
+
+/// Gate that prompts for property name if using generic default name.
+class _PropertyNameGate extends StatefulWidget {
+  final Widget child;
+
+  const _PropertyNameGate({required this.child});
+
+  @override
+  State<_PropertyNameGate> createState() => _PropertyNameGateState();
+}
+
+class _PropertyNameGateState extends State<_PropertyNameGate> {
+  bool _hasChecked = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Defer check to after first frame to ensure context is ready
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkAndPrompt();
+    });
+  }
+
+  Future<void> _checkAndPrompt() async {
+    if (_hasChecked) return;
+
+    if (shouldPromptForPropertyName()) {
+      final defaultProperty = PropertyService().getDefaultProperty();
+      if (defaultProperty != null && mounted) {
+        await showPropertyNamePromptDialog(
+          context,
+          currentName: defaultProperty.name,
+        );
+      }
+    }
+
+    if (mounted) {
+      setState(() {
+        _hasChecked = true;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return widget.child;
   }
 }

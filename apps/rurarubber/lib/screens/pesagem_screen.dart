@@ -9,6 +9,7 @@ import '../services/parceiro_service.dart';
 import '../services/entrega_service.dart';
 import '../widgets/big_calculator_keypad.dart';
 import '../widgets/tape_view_widget.dart';
+import '../widgets/weight_card_widget.dart';
 
 class PesagemScreen extends StatefulWidget {
   const PesagemScreen({super.key});
@@ -229,6 +230,28 @@ class _PesagemScreenState extends State<PesagemScreen> {
                           entries: currentWeighings,
                           onDeleteLast: () => entregaService
                               .undoLastPesagem(_selectedParceiroId!),
+                          onShare: currentWeighings.isEmpty
+                              ? null
+                              : () {
+                                  final parceiro = parceiros.firstWhere(
+                                    (p) => p.id == _selectedParceiroId,
+                                  );
+                                  final total = currentWeighings.fold(
+                                      0.0, (sum, e) => sum + e);
+                                  // Get property name from PropertyService
+                                  final propertyName =
+                                      PropertyService().getDefaultProperty()?.name ??
+                                          l10n.unknownPartner;
+
+                                  showShareWeightDialog(
+                                    context,
+                                    partnerName: parceiro.nome,
+                                    totalWeight: total,
+                                    propertyName: propertyName,
+                                    date: DateTime.now(),
+                                    weighings: currentWeighings,
+                                  );
+                                },
                         ),
                       ),
                       const SizedBox(height: 8),

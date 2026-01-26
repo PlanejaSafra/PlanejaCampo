@@ -4,11 +4,13 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 class TapeViewWidget extends StatelessWidget {
   final List<double> entries;
   final VoidCallback? onDeleteLast;
+  final VoidCallback? onShare;
 
   const TapeViewWidget({
     super.key,
     required this.entries,
     this.onDeleteLast,
+    this.onShare,
   });
 
   @override
@@ -40,11 +42,24 @@ class TapeViewWidget extends StatelessWidget {
                     color: Colors.grey,
                   ),
                 ),
-                if (entries.isNotEmpty && onDeleteLast != null)
-                  InkWell(
-                    onTap: onDeleteLast,
-                    child: const Icon(Icons.undo, size: 16, color: Colors.grey),
-                  ),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (entries.isNotEmpty && onShare != null)
+                      InkWell(
+                        onTap: onShare,
+                        child: const Padding(
+                          padding: EdgeInsets.only(right: 12),
+                          child: Icon(Icons.share, size: 18, color: Colors.green),
+                        ),
+                      ),
+                    if (entries.isNotEmpty && onDeleteLast != null)
+                      InkWell(
+                        onTap: onDeleteLast,
+                        child: const Icon(Icons.undo, size: 16, color: Colors.grey),
+                      ),
+                  ],
+                ),
               ],
             ),
           ),

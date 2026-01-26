@@ -7,7 +7,7 @@
 
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:planejaborracha/main.dart';
+import 'package:rurarubber/main.dart';
 
 void main() {
   testWidgets('App smoke test', (WidgetTester tester) async {

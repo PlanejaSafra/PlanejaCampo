@@ -87,6 +87,9 @@ class _HomeScreenState extends State<HomeScreen> {
             case 'entregas':
               Navigator.pushNamed(context, '/entregas');
               break;
+            case 'jobs':
+              Navigator.pushNamed(context, '/jobs');
+              break;
             case 'settings':
               Navigator.pushNamed(context, '/settings').then((_) {
                 // Refresh in case property changed in settings
@@ -136,6 +139,8 @@ class _HomeScreenState extends State<HomeScreen> {
               icon: Icons.history, title: l10n.drawerEntregas, key: 'entregas'),
           AgroDrawerItem(
               icon: Icons.store, title: l10n.drawerMercado, key: 'mercado'),
+          AgroDrawerItem(
+              icon: Icons.work_outline, title: l10n.jobsTitle, key: 'jobs'),
         ],
       ),
       body: RefreshIndicator(

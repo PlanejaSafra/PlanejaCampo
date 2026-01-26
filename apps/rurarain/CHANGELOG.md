@@ -9,7 +9,8 @@
 
 ## Phase RAIN-02: Property Naming Onboarding
 
-### Status: [TODO]
+### Status: [DONE]
+**Date Completed**: 2026-01-25
 **Priority**: 🟢 ENHANCEMENT
 **Objective**: Prompt users to enter a meaningful property name during initial setup instead of using the default "Minha Propriedade".
 
@@ -20,19 +21,20 @@ Currently, when a user first opens the app, the default property is automaticall
 
 | Sub-Phase | Description | Status |
 |-----------|-------------|--------|
-| 2.1 | Create `PropertyNamePromptDialog` widget in RuraRain | ⏳ TODO |
-| 2.2 | Trigger prompt after consent screen if default property has generic name | ⏳ TODO |
-| 2.3 | Update property name via `PropertyService.updateProperty()` | ⏳ TODO |
-| 2.4 | Add l10n strings for property naming dialog | ⏳ TODO |
+| 2.1 | Create `PropertyNamePromptDialog` widget in agro_core (reusable) | ✅ DONE |
+| 2.2 | Trigger prompt after consent screen if default property has generic name | ✅ DONE |
+| 2.3 | Update property name via `PropertyService.updateProperty()` | ✅ DONE |
+| 2.4 | Add l10n strings for property naming dialog | ✅ DONE |
 
-### Files to Modify
+### Files Modified
 
 | File | Action | Description |
 |------|--------|-------------|
-| `lib/main.dart` | MODIFY | Add check for default property name, show prompt if generic |
-| `lib/widgets/property_name_dialog.dart` | CREATE | Dialog to enter property name |
-| `lib/l10n/arb/app_pt.arb` | MODIFY | Add property naming strings |
-| `lib/l10n/arb/app_en.arb` | MODIFY | Add property naming strings |
+| `packages/agro_core/lib/widgets/property_name_prompt_dialog.dart` | CREATE | Reusable dialog widget with shouldPromptForPropertyName() helper |
+| `packages/agro_core/lib/agro_core.dart` | MODIFY | Export property_name_prompt_dialog.dart |
+| `packages/agro_core/lib/l10n/arb/app_pt.arb` | MODIFY | Add 6 property naming strings |
+| `packages/agro_core/lib/l10n/arb/app_en.arb` | MODIFY | Add 6 property naming strings |
+| `apps/rurarain/lib/main.dart` | MODIFY | Add _PropertyNameGate wrapper after AgroOnboardingGate |
 
 ### UX Flow
 ```
@@ -42,6 +44,7 @@ Consent Screen → "Accept" → Location Prompt → Property Name Prompt → Hom
 
 ### Cross-Reference
 - RUBBER-12.6 (Similar feature for RuraRubber with profile-specific naming)
+- Widget created in agro_core for reuse across all apps
 
 ---
 

@@ -4,6 +4,165 @@
 
 ---
 
+## Phase RUBBER-15: Job Classifieds (Vagas e Disponibilidade)
+
+### Status: [DONE]
+**Date Completed**: 2026-01-25
+**Priority**: 🟢 ENHANCEMENT
+**Objective**: Permitir que Sangradores publiquem disponibilidade para trabalho e Produtores publiquem vagas em seus seringais.
+
+### Business Context
+- **Sangradores** podem postar "Estou disponível para trabalho na região X"
+- **Produtores** podem postar "Preciso de sangrador para meu seringal"
+- Ambos podem se conectar via WhatsApp
+- Diferente de ofertas de compra/venda - são anúncios de mão de obra
+
+### Implementation Plan
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 15.1 | **Model JobPost**: Criar modelo Firestore para anúncios de vagas/disponibilidade | ✅ DONE |
+| 15.2 | **JobListScreen**: Tela de listagem de vagas/disponibilidades com filtro por região | ✅ DONE |
+| 15.3 | **CreateJobScreen**: Formulário para criar anúncio (tipo, região, descrição, contato) | ✅ DONE |
+| 15.4 | **WhatsApp Integration**: Botão de contato direto via WhatsApp | ✅ DONE |
+| 15.5 | **Profile-based UI**: Sangrador vê vagas, Produtor vê sangradores disponíveis | ✅ DONE |
+| 15.6 | **L10n Strings**: Adicionar todas as strings em pt-BR e en | ✅ DONE |
+| 15.7 | **Routes & Navigation**: Adicionar rotas /jobs e /criar-vaga ao main.dart | ✅ DONE |
+| 15.8 | **Drawer Integration**: Adicionar item Jobs ao drawer de todas as telas | ✅ DONE |
+
+### Data Model: JobPost (Firestore)
+
+```dart
+enum JobType { offeringWork, seekingWork }
+
+class JobPost {
+  String id;
+  String userId;
+  String userName;
+  JobType type; // offeringWork (Produtor) | seekingWork (Sangrador)
+  List<String> regions;
+  String description;
+  String contactPhone;
+  double? offeredPercentage; // % oferecido ao sangrador
+  int? treesCount; // árvores em sangria
+  String? municipality; // município
+  DateTime createdAt;
+  DateTime validUntil;
+
+  bool get isExpiringSoon => daysRemaining <= 2;
+  int get daysRemaining => validUntil.difference(DateTime.now()).inDays;
+}
+```
+
+### Files Modified
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/models/job_post.dart` | CREATE | Modelo JobPost com enum JobType, fromFirestore, toFirestore |
+| `lib/screens/job_list_screen.dart` | CREATE | Lista com TabBar (Vagas/Disponíveis), filtro região, WhatsApp |
+| `lib/screens/criar_vaga_screen.dart` | CREATE | Formulário com seletor de tipo, campos condicionais |
+| `lib/l10n/arb/app_pt.arb` | MODIFY | 35+ novas strings para jobs |
+| `lib/l10n/arb/app_en.arb` | MODIFY | 35+ novas strings para jobs |
+| `lib/main.dart` | MODIFY | Rotas /jobs e /criar-vaga |
+
+---
+
+## Phase RUBBER-14: Sell Offers (Ofertas de Venda - Produtor)
+
+### Status: [DONE]
+**Date Completed**: 2026-01-25
+**Priority**: 🟡 ARCHITECTURAL
+**Objective**: Permitir que Produtores publiquem ofertas de venda de borracha ("Tenho X kg disponível"), complementando o Mercado que atualmente só tem ofertas de compra.
+
+### Business Context
+- Atualmente o Mercado só mostra **ofertas de COMPRA** (compradores postam preços)
+- Esta fase adiciona **ofertas de VENDA** (produtores postam disponibilidade)
+- Compradores podem ver o que está disponível na região
+- Sistema bidirecional de matchmaking
+
+### Implementation Plan
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 14.1 | **Extend MarketOffer Model**: Adicionar campo `offerType` (buy/sell), municipality, treesInTapping, estimatedWeight | ✅ DONE |
+| 14.2 | **Update CriarOfertaScreen**: Suportar tipo de oferta (buy/sell) com campos específicos | ✅ DONE |
+| 14.3 | **Update MercadoScreen**: Tabs para Compras vs Vendas, exibição de campos extras | ✅ DONE |
+| 14.4 | **Price Negotiable**: Para ofertas de venda, preço é opcional ("preço a combinar") | ✅ DONE |
+| 14.5 | **Expiration Warning**: Alerta visual quando oferta está próxima de vencer (2 dias) | ✅ DONE |
+| 14.6 | **WhatsApp Message**: Mensagem contextual diferente para ofertas de venda | ✅ DONE |
+| 14.7 | **L10n Strings**: 25+ novas strings em pt-BR e en | ✅ DONE |
+
+### Extended MarketOffer Model
+
+```dart
+enum OfferType { buy, sell }
+
+class MarketOffer {
+  // ... existing fields ...
+  OfferType offerType; // buy (comprador) or sell (produtor)
+  double? priceDrc; // NOW NULLABLE for "preço a combinar"
+  double? availableKg; // quantidade disponível (para sell)
+  String? municipality; // município
+  int? treesInTapping; // árvores em sangria
+  double? estimatedWeight; // peso estimado
+
+  bool get isPriceNegotiable => priceDrc == null && priceWet == null;
+  bool get isExpiringSoon => daysRemaining <= 2;
+}
+```
+
+### Files Modified
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/models/market_offer.dart` | MODIFY | Added OfferType enum, nullable prices, municipality, treesInTapping, estimatedWeight, expiration helpers |
+| `lib/screens/criar_oferta_screen.dart` | MODIFY | Buy/sell type selector, production details section, optional prices for sell |
+| `lib/screens/mercado_screen.dart` | MODIFY | TabBar for buy/sell filtering, expiration warning badge, municipality/trees/weight display |
+| `lib/l10n/arb/app_pt.arb` | MODIFY | 25+ new localized strings |
+| `lib/l10n/arb/app_en.arb` | MODIFY | 25+ new localized strings |
+
+---
+
+## Phase RUBBER-13: Social Sharing (Compartilhamento de Peso)
+
+### Status: [DONE]
+**Date Completed**: 2026-01-25
+**Priority**: 🔵 FIX
+**Objective**: Permitir compartilhamento rápido do peso atual via WhatsApp com visual atraente (card de imagem), além do PDF já existente.
+
+### Business Context
+- Atualmente só existe PDF de fechamento completo
+- Usuários querem compartilhar peso rapidamente durante a pesagem
+- Similar ao "Rain Card" do RuraRain - imagem visual para redes sociais
+- Usa compartilhamento nativo do sistema (igual PIX receipt)
+
+### Implementation Plan
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 13.1 | **ShareService**: Serviço centralizado de compartilhamento (captura widget como imagem, share_plus) | ✅ DONE |
+| 13.2 | **WeightCardWidget**: Widget visual do card de peso com gradiente verde | ✅ DONE |
+| 13.3 | **ImageGenerator**: RepaintBoundary + toImage para converter widget em PNG | ✅ DONE |
+| 13.4 | **showShareWeightDialog**: Dialog que auto-compartilha via nativo do sistema | ✅ DONE |
+| 13.5 | **Share Button on TapeView**: Botão de compartilhar no total acumulado (quando há pesagens) | ✅ DONE |
+| 13.6 | **L10n Strings**: Strings de compartilhamento em pt-BR e en | ✅ DONE |
+
+### Files Modified
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/services/share_service.dart` | CREATE | captureWidgetAsImage, shareImage, shareText, generateQuickShareText |
+| `lib/widgets/weight_card_widget.dart` | CREATE | WeightCardWidget, showShareWeightDialog function |
+| `lib/screens/pesagem_screen.dart` | MODIFY | Added onShare callback to TapeViewWidget |
+| `lib/widgets/tape_view_widget.dart` | MODIFY | Added onShare callback, share icon button |
+| `lib/l10n/arb/app_pt.arb` | MODIFY | shareTitle, shareAsImage, shareAsText, shareWeightButton, etc. |
+| `lib/l10n/arb/app_en.arb` | MODIFY | English translations for share strings |
+
+### Dependencies
+- `share_plus: ^10.1.4` - From agro_core (native system share like PIX receipt)
+
+---
+
 ## Phase RUBBER-12: Profile UX & Navigation Fixes
 
 ### Status: [TODO]

@@ -4,16 +4,16 @@ import 'package:agro_core/agro_core.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:intl/intl.dart';
-import '../models/market_offer.dart';
+import '../models/job_post.dart';
 
-class MercadoScreen extends StatefulWidget {
-  const MercadoScreen({super.key});
+class JobListScreen extends StatefulWidget {
+  const JobListScreen({super.key});
 
   @override
-  State<MercadoScreen> createState() => _MercadoScreenState();
+  State<JobListScreen> createState() => _JobListScreenState();
 }
 
-class _MercadoScreenState extends State<MercadoScreen>
+class _JobListScreenState extends State<JobListScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final String _userRegion = "Rio Preto";
@@ -35,17 +35,17 @@ class _MercadoScreenState extends State<MercadoScreen>
     final l10n = BorrachaLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.mercadoTitle),
+        title: Text(l10n.jobsTitle),
         bottom: TabBar(
           controller: _tabController,
           tabs: [
             Tab(
-              icon: const Icon(Icons.shopping_cart),
-              text: l10n.mercadoTabBuy,
+              icon: const Icon(Icons.work),
+              text: l10n.jobsTabOffering,
             ),
             Tab(
-              icon: const Icon(Icons.sell),
-              text: l10n.mercadoTabSell,
+              icon: const Icon(Icons.person_search),
+              text: l10n.jobsTabSeeking,
             ),
           ],
         ),
@@ -71,6 +71,9 @@ class _MercadoScreenState extends State<MercadoScreen>
               break;
             case 'mercado':
               Navigator.pushReplacementNamed(context, '/mercado');
+              break;
+            case 'jobs':
+              // Already here
               break;
             case 'settings':
               Navigator.pushNamed(context, '/settings');
@@ -101,6 +104,8 @@ class _MercadoScreenState extends State<MercadoScreen>
               icon: Icons.people, title: l10n.drawerParceiros, key: 'parceiros'),
           AgroDrawerItem(
               icon: Icons.store, title: l10n.drawerMercado, key: 'mercado'),
+          AgroDrawerItem(
+              icon: Icons.work_outline, title: l10n.jobsTitle, key: 'jobs'),
         ],
       ),
       body: Column(
@@ -108,10 +113,10 @@ class _MercadoScreenState extends State<MercadoScreen>
           // Filter Header
           Container(
             padding: const EdgeInsets.all(16),
-            color: Colors.green[50],
+            color: Colors.orange[50],
             child: Row(
               children: [
-                const Icon(Icons.location_on, color: Colors.green),
+                const Icon(Icons.location_on, color: Colors.orange),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
@@ -119,9 +124,6 @@ class _MercadoScreenState extends State<MercadoScreen>
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),
-                TextButton(
-                    onPressed: _showLocationFilterInfo,
-                    child: Text(l10n.mercadoChangeLocation)),
               ],
             ),
           ),
@@ -131,10 +133,10 @@ class _MercadoScreenState extends State<MercadoScreen>
             child: TabBarView(
               controller: _tabController,
               children: [
-                // Buy offers tab (compradores querendo comprar)
-                _buildOffersList(OfferType.buy),
-                // Sell offers tab (produtores querendo vender)
-                _buildOffersList(OfferType.sell),
+                // Vagas (produtores oferecendo trabalho)
+                _buildJobsList(JobType.offeringWork),
+                // Disponíveis (sangradores procurando trabalho)
+                _buildJobsList(JobType.seekingWork),
               ],
             ),
           ),
@@ -142,26 +144,30 @@ class _MercadoScreenState extends State<MercadoScreen>
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          Navigator.pushNamed(context, '/criar-oferta');
+          Navigator.pushNamed(context, '/criar-vaga');
         },
-        label: Text(l10n.criarOfertaTitle),
+        label: Text(l10n.jobsCreateButton),
         icon: const Icon(Icons.add),
+        backgroundColor: Colors.orange,
       ),
     );
   }
 
-  Widget _buildOffersList(OfferType offerType) {
+  Widget _buildJobsList(JobType jobType) {
+    final typeString =
+        jobType == JobType.offeringWork ? 'offeringWork' : 'seekingWork';
+
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
-          .collection('market_offers')
-          .where('validUntil', isGreaterThan: Timestamp.fromDate(DateTime.now()))
-          .where('offerType', isEqualTo: offerType == OfferType.sell ? 'sell' : 'buy')
+          .collection('job_posts')
+          .where('validUntil',
+              isGreaterThan: Timestamp.fromDate(DateTime.now()))
+          .where('type', isEqualTo: typeString)
           .orderBy('validUntil', descending: false)
           .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
-          // Try without offerType filter for backwards compatibility
-          return _buildOffersListFallback(offerType);
+          return _buildJobsListFallback(jobType);
         }
 
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -171,27 +177,28 @@ class _MercadoScreenState extends State<MercadoScreen>
         final docs = snapshot.data?.docs ?? [];
 
         if (docs.isEmpty) {
-          return _buildEmptyState(offerType);
+          return _buildEmptyState(jobType);
         }
 
         return ListView.builder(
           padding: const EdgeInsets.all(16),
           itemCount: docs.length,
           itemBuilder: (context, index) {
-            final offer = MarketOffer.fromFirestore(docs[index]);
-            return _buildOfferCard(offer);
+            final job = JobPost.fromFirestore(docs[index]);
+            return _buildJobCard(job);
           },
         );
       },
     );
   }
 
-  // Fallback for existing data without offerType field
-  Widget _buildOffersListFallback(OfferType offerType) {
+  // Fallback for when index doesn't exist
+  Widget _buildJobsListFallback(JobType jobType) {
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
-          .collection('market_offers')
-          .where('validUntil', isGreaterThan: Timestamp.fromDate(DateTime.now()))
+          .collection('job_posts')
+          .where('validUntil',
+              isGreaterThan: Timestamp.fromDate(DateTime.now()))
           .orderBy('validUntil', descending: false)
           .snapshots(),
       builder: (context, snapshot) {
@@ -206,62 +213,66 @@ class _MercadoScreenState extends State<MercadoScreen>
 
         final docs = snapshot.data?.docs ?? [];
 
-        // Filter client-side by offerType (default to 'buy' for old records)
         final filteredDocs = docs.where((doc) {
           final data = doc.data() as Map<String, dynamic>;
-          final type = data['offerType'] ?? 'buy';
-          return type == (offerType == OfferType.sell ? 'sell' : 'buy');
+          final type = data['type'] ?? 'seekingWork';
+          return type ==
+              (jobType == JobType.offeringWork ? 'offeringWork' : 'seekingWork');
         }).toList();
 
         if (filteredDocs.isEmpty) {
-          return _buildEmptyState(offerType);
+          return _buildEmptyState(jobType);
         }
 
         return ListView.builder(
           padding: const EdgeInsets.all(16),
           itemCount: filteredDocs.length,
           itemBuilder: (context, index) {
-            final offer = MarketOffer.fromFirestore(filteredDocs[index]);
-            return _buildOfferCard(offer);
+            final job = JobPost.fromFirestore(filteredDocs[index]);
+            return _buildJobCard(job);
           },
         );
       },
     );
   }
 
-  Widget _buildEmptyState(OfferType offerType) {
+  Widget _buildEmptyState(JobType jobType) {
     final l10n = BorrachaLocalizations.of(context)!;
-    final isSell = offerType == OfferType.sell;
+    final isOffering = jobType == JobType.offeringWork;
 
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
-            isSell ? Icons.inventory_2_outlined : Icons.shopping_bag_outlined,
+            isOffering ? Icons.work_off : Icons.person_off,
             size: 64,
             color: Colors.grey,
           ),
           const SizedBox(height: 16),
           Text(
-            isSell ? l10n.mercadoNoSellOffers : l10n.mercadoNoOffers,
+            isOffering ? l10n.jobsNoOffering : l10n.jobsNoSeeking,
             style: const TextStyle(fontSize: 16, color: Colors.grey),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 8),
-          TextButton(
-            onPressed: _showNotifyMeInfo,
-            child: Text(l10n.mercadoNotifyButton),
-          )
+          const SizedBox(height: 24),
+          ElevatedButton.icon(
+            onPressed: () => Navigator.pushNamed(context, '/criar-vaga'),
+            icon: const Icon(Icons.add),
+            label: Text(l10n.jobsCreateButton),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.orange,
+              foregroundColor: Colors.white,
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildOfferCard(MarketOffer offer) {
+  Widget _buildJobCard(JobPost job) {
     final l10n = BorrachaLocalizations.of(context)!;
-    final currency = NumberFormat.simpleCurrency(locale: 'pt_BR');
-    final isSellOffer = offer.offerType == OfferType.sell;
+    final isOffering = job.type == JobType.offeringWork;
 
     return CustomCard(
       child: Padding(
@@ -275,7 +286,7 @@ class _MercadoScreenState extends State<MercadoScreen>
               children: [
                 Expanded(
                   child: Text(
-                    offer.userName,
+                    job.userName,
                     style: const TextStyle(
                         fontWeight: FontWeight.bold, fontSize: 16),
                   ),
@@ -284,7 +295,7 @@ class _MercadoScreenState extends State<MercadoScreen>
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     // Expiration warning
-                    if (offer.isExpiringSoon)
+                    if (job.isExpiringSoon)
                       Container(
                         margin: const EdgeInsets.only(right: 8),
                         padding: const EdgeInsets.symmetric(
@@ -300,19 +311,19 @@ class _MercadoScreenState extends State<MercadoScreen>
                                 size: 14, color: Colors.orange),
                             const SizedBox(width: 4),
                             Text(
-                              l10n.mercadoExpiringDays(offer.daysRemaining),
+                              l10n.mercadoExpiringDays(job.daysRemaining),
                               style: const TextStyle(
                                   fontSize: 11, color: Colors.orange),
                             ),
                           ],
                         ),
                       ),
-                    // Offer type badge
+                    // Job type badge
                     Chip(
                       label: Text(
-                          isSellOffer ? l10n.mercadoSellerRole : l10n.mercadoBuyerRole),
+                          isOffering ? l10n.jobsRoleProducer : l10n.jobsRoleTapper),
                       backgroundColor:
-                          isSellOffer ? Colors.green[100] : Colors.blue[100],
+                          isOffering ? Colors.blue[100] : Colors.green[100],
                       padding: EdgeInsets.zero,
                       visualDensity: VisualDensity.compact,
                     ),
@@ -322,14 +333,14 @@ class _MercadoScreenState extends State<MercadoScreen>
             ),
             const SizedBox(height: 12),
 
-            // Municipality for sell offers
-            if (isSellOffer && offer.municipality != null && offer.municipality!.isNotEmpty) ...[
+            // Municipality
+            if (job.municipality != null && job.municipality!.isNotEmpty) ...[
               Row(
                 children: [
                   Icon(Icons.location_city, size: 16, color: Colors.grey[600]),
                   const SizedBox(width: 4),
                   Text(
-                    offer.municipality!,
+                    job.municipality!,
                     style: TextStyle(fontSize: 14, color: Colors.grey[700]),
                   ),
                 ],
@@ -337,32 +348,42 @@ class _MercadoScreenState extends State<MercadoScreen>
               const SizedBox(height: 8),
             ],
 
-            // Production info for sell offers (trees and estimated weight)
-            if (isSellOffer && (offer.treesInTapping != null || offer.estimatedWeight != null)) ...[
+            // Job details (for offering work)
+            if (isOffering) ...[
               Wrap(
                 spacing: 16,
                 runSpacing: 8,
                 children: [
-                  if (offer.treesInTapping != null)
+                  if (job.offeredPercentage != null)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: Colors.green[50],
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.green.shade200),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.percent, size: 16, color: Colors.green),
+                          const SizedBox(width: 4),
+                          Text(
+                            '${job.offeredPercentage!.toStringAsFixed(0)}% ${l10n.jobsPercentageLabel}',
+                            style: const TextStyle(
+                                fontWeight: FontWeight.bold, color: Colors.green),
+                          ),
+                        ],
+                      ),
+                    ),
+                  if (job.treesCount != null)
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(Icons.park, size: 16, color: Colors.green[700]),
                         const SizedBox(width: 4),
                         Text(
-                          '${offer.treesInTapping} ${l10n.mercadoTreesLabel}',
-                          style: TextStyle(fontSize: 13, color: Colors.grey[700]),
-                        ),
-                      ],
-                    ),
-                  if (offer.estimatedWeight != null)
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.inventory, size: 16, color: Colors.blue[700]),
-                        const SizedBox(width: 4),
-                        Text(
-                          '${offer.estimatedWeight!.toStringAsFixed(0)} kg ${l10n.mercadoEstimatedLabel}',
+                          '${job.treesCount} ${l10n.mercadoTreesLabel}',
                           style: TextStyle(fontSize: 13, color: Colors.grey[700]),
                         ),
                       ],
@@ -372,78 +393,13 @@ class _MercadoScreenState extends State<MercadoScreen>
               const SizedBox(height: 12),
             ],
 
-            // Available quantity for sell offers
-            if (isSellOffer && offer.availableKg != null) ...[
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                decoration: BoxDecoration(
-                  color: Colors.green[50],
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.green.shade200),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(Icons.scale, size: 18, color: Colors.green),
-                    const SizedBox(width: 8),
-                    Text(
-                      '${offer.availableKg!.toStringAsFixed(0)} kg ${l10n.mercadoAvailable}',
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold, color: Colors.green),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 12),
-            ],
-
-            // Price section
-            if (offer.isPriceNegotiable)
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.amber[50],
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.amber.shade200),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.handshake, color: Colors.amber),
-                    const SizedBox(width: 8),
-                    Text(
-                      l10n.mercadoPriceNegotiable,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.amber[800],
-                        fontSize: 16,
-                      ),
-                    ),
-                  ],
-                ),
-              )
-            else
-              Row(
-                children: [
-                  if (offer.priceDrc != null)
-                    _buildPriceBox(l10n.mercadoOfferDrc,
-                        currency.format(offer.priceDrc), true),
-                  if (offer.priceDrc != null && offer.priceWet != null)
-                    const SizedBox(width: 12),
-                  if (offer.priceWet != null)
-                    _buildPriceBox(l10n.mercadoOfferWet,
-                        currency.format(offer.priceWet), offer.priceDrc == null),
-                ],
-              ),
-            const SizedBox(height: 12),
             const Divider(),
 
-            // Conditions
+            // Description
             Text(
-              offer.conditions,
+              job.description,
               style: TextStyle(color: Colors.grey[600], fontSize: 13),
-              maxLines: 2,
+              maxLines: 3,
               overflow: TextOverflow.ellipsis,
             ),
 
@@ -454,7 +410,7 @@ class _MercadoScreenState extends State<MercadoScreen>
                 Icon(Icons.calendar_today, size: 14, color: Colors.grey[500]),
                 const SizedBox(width: 4),
                 Text(
-                  '${l10n.mercadoOfferValidUntil}: ${DateFormat('dd/MM/yyyy').format(offer.validUntil)}',
+                  '${l10n.mercadoOfferValidUntil}: ${DateFormat('dd/MM/yyyy').format(job.validUntil)}',
                   style: TextStyle(fontSize: 12, color: Colors.grey[500]),
                 ),
               ],
@@ -464,13 +420,13 @@ class _MercadoScreenState extends State<MercadoScreen>
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
-                label: Text(l10n.mercadoOfferInterested),
+                label: Text(l10n.jobsContactButton),
                 icon: const Icon(Icons.chat),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
+                  backgroundColor: Colors.orange,
                   foregroundColor: Colors.white,
                 ),
-                onPressed: () => _launchWhatsApp(offer),
+                onPressed: () => _launchWhatsApp(job),
               ),
             ),
           ],
@@ -479,70 +435,15 @@ class _MercadoScreenState extends State<MercadoScreen>
     );
   }
 
-  Widget _buildPriceBox(String label, String price, bool highlight) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: highlight ? Colors.green[50] : Colors.grey[50],
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(
-              color: highlight ? Colors.green.shade200 : Colors.grey.shade300),
-        ),
-        child: Column(
-          children: [
-            Text(label,
-                style: const TextStyle(fontSize: 12, color: Colors.grey)),
-            Text(
-              price,
-              style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                  color: highlight ? Colors.green[800] : Colors.black87),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _showLocationFilterInfo() {
+  Future<void> _launchWhatsApp(JobPost job) async {
     final l10n = BorrachaLocalizations.of(context)!;
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.marketLocationFilterTitle),
-        content: Text(l10n.marketLocationFilterMessage),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
-          ),
-        ],
-      ),
-    );
-  }
+    final phone = job.contactPhone.replaceAll(RegExp(r'[^\d]'), '');
 
-  void _showNotifyMeInfo() {
-    final l10n = BorrachaLocalizations.of(context)!;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(l10n.notificationsComingSoon),
-        duration: const Duration(seconds: 3),
-      ),
-    );
-  }
-
-  Future<void> _launchWhatsApp(MarketOffer offer) async {
-    final l10n = BorrachaLocalizations.of(context)!;
-    final phone = offer.contactPhone.replaceAll(RegExp(r'[^\d]'), '');
-
-    // Different message based on offer type
     String text;
-    if (offer.offerType == OfferType.sell) {
-      text = l10n.marketWhatsappMessageSell(offer.userName, _userRegion);
+    if (job.type == JobType.offeringWork) {
+      text = l10n.jobsWhatsappMessageOffering(job.userName, _userRegion);
     } else {
-      text = l10n.marketWhatsappMessage(offer.userName, _userRegion);
+      text = l10n.jobsWhatsappMessageSeeking(job.userName, _userRegion);
     }
 
     final url =

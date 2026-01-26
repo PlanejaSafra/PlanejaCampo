@@ -689,5 +689,12 @@
   "exitAppTitle": "Sair do Aplicativo",
   "exitAppMessage": "Deseja mesmo sair do aplicativo?",
   "exitAppConfirm": "Sim, sair",
-  "exitAppCancel": "Não, voltar"
+  "exitAppCancel": "Não, voltar",
+
+  "propertyNamePromptTitle": "Nomeie sua Propriedade",
+  "propertyNamePromptMessage": "Dê um nome para sua propriedade para facilitar a identificação.",
+  "propertyNamePromptHint": "Ex: Fazenda São João",
+  "propertyNamePromptSuggestion": "Minha Propriedade",
+  "propertyNamePromptConfirm": "Confirmar",
+  "propertyNamePromptSkip": "Pular"
 }

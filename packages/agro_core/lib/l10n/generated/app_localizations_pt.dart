@@ -1440,4 +1440,22 @@ class AgroLocalizationsPt extends AgroLocalizations {
 
   @override
   String get exitAppCancel => 'Não, voltar';
+
+  @override
+  String get propertyNamePromptTitle => 'Nomeie sua Propriedade';
+
+  @override
+  String get propertyNamePromptMessage => 'Dê um nome para sua propriedade para facilitar a identificação.';
+
+  @override
+  String get propertyNamePromptHint => 'Ex: Fazenda São João';
+
+  @override
+  String get propertyNamePromptSuggestion => 'Minha Propriedade';
+
+  @override
+  String get propertyNamePromptConfirm => 'Confirmar';
+
+  @override
+  String get propertyNamePromptSkip => 'Pular';
 }

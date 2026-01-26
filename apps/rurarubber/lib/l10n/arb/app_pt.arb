@@ -167,5 +167,112 @@
   "totalLabel": "Total",
   "currencySymbol": "R$",
   
-  "drawerHome": "Início"
+  "drawerHome": "Início",
+
+  "shareTitle": "Compartilhar Peso",
+  "shareAsImage": "Imagem",
+  "shareAsText": "Texto",
+  "shareWeightButton": "Compartilhar",
+  "shareWeightSuccess": "Compartilhado com sucesso!",
+  "shareWeightError": "Erro ao compartilhar",
+
+  "mercadoTabBuy": "Compras",
+  "mercadoTabSell": "Vendas",
+  "mercadoNoSellOffers": "Nenhuma oferta de venda disponível no momento.",
+  "mercadoSellerRole": "Vendedor",
+  "mercadoAvailable": "disponível",
+  "mercadoPriceNegotiable": "Preço a combinar",
+  "mercadoExpiringDays": "{days, plural, =0{Vence hoje} =1{Vence amanhã} other{Vence em {days} dias}}",
+  "@mercadoExpiringDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "marketWhatsappMessageSell": "Olá, vi sua oferta de venda no RuraRubber ({sellerName}). Tenho interesse e estou na região de {region}.",
+  "@marketWhatsappMessageSell": {
+    "placeholders": {
+      "sellerName": {"type": "String"},
+      "region": {"type": "String"}
+    }
+  },
+
+  "criarOfertaTypeLabel": "Tipo de Oferta",
+  "criarOfertaTypeBuy": "Quero Comprar",
+  "criarOfertaTypeSell": "Quero Vender",
+  "criarOfertaAvailableKg": "Quantidade Disponível (kg)",
+  "criarOfertaAvailableKgHint": "Ex: 500",
+  "criarOfertaAvailableKgInvalid": "Quantidade inválida",
+  "criarOfertaPriceOptional": "Preço (opcional - deixe vazio para 'a combinar')",
+  "criarOfertaValidityDays": "Validade (dias)",
+  "criarOfertaValidityDaysHint": "Ex: 7, 14, 30",
+  "criarOfertaValidityInvalid": "Validade inválida (1-90 dias)",
+  "criarOfertaNameLabel": "Seu Nome / Nome da Empresa",
+  "criarOfertaNameRequired": "Nome é obrigatório",
+
+  "criarOfertaMunicipality": "Município",
+  "criarOfertaMunicipalityHint": "Ex: São José do Rio Preto",
+  "criarOfertaTreesInTapping": "Árvores em Sangria",
+  "criarOfertaTreesInTappingHint": "Ex: 5000",
+  "criarOfertaTreesInTappingInvalid": "Quantidade inválida",
+  "criarOfertaEstimatedWeight": "Peso Estimado (kg)",
+  "criarOfertaEstimatedWeightHint": "Ex: 2000",
+  "criarOfertaProductionDetails": "Detalhes da Produção",
+
+  "mercadoTreesLabel": "árvores em sangria",
+  "mercadoEstimatedLabel": "estimado",
+
+  "jobsTitle": "Vagas e Disponibilidade",
+  "jobsTabOffering": "Vagas",
+  "jobsTabSeeking": "Disponíveis",
+  "jobsCreateButton": "Criar Anúncio",
+  "jobsNoOffering": "Nenhuma vaga publicada no momento.\nSeja o primeiro a anunciar!",
+  "jobsNoSeeking": "Nenhum sangrador disponível no momento.\nVolte mais tarde!",
+  "jobsRoleProducer": "Produtor",
+  "jobsRoleTapper": "Sangrador",
+  "jobsPercentageLabel": "oferecido",
+  "jobsContactButton": "Entrar em Contato",
+  "jobsWhatsappMessageOffering": "Olá {userName}, vi sua vaga no RuraRubber. Estou na região de {region} e tenho interesse!",
+  "@jobsWhatsappMessageOffering": {
+    "placeholders": {
+      "userName": {"type": "String"},
+      "region": {"type": "String"}
+    }
+  },
+  "jobsWhatsappMessageSeeking": "Olá {userName}, vi sua disponibilidade no RuraRubber. Tenho um seringal na região de {region} e gostaria de conversar!",
+  "@jobsWhatsappMessageSeeking": {
+    "placeholders": {
+      "userName": {"type": "String"},
+      "region": {"type": "String"}
+    }
+  },
+
+  "criarVagaTitle": "Criar Anúncio",
+  "criarVagaTypeLabel": "Tipo de Anúncio",
+  "criarVagaTypeOffering": "Ofereço Trabalho",
+  "criarVagaTypeOfferingDesc": "Sou produtor e preciso de sangrador",
+  "criarVagaTypeSeeking": "Procuro Trabalho",
+  "criarVagaTypeSeekingDesc": "Sou sangrador e estou disponível",
+  "criarVagaNameLabel": "Seu Nome",
+  "criarVagaNameRequired": "Nome é obrigatório",
+  "criarVagaPhoneLabel": "Telefone para Contato",
+  "criarVagaPhoneRequired": "Telefone é obrigatório",
+  "criarVagaMunicipalityLabel": "Município",
+  "criarVagaMunicipalityHint": "Ex: São José do Rio Preto",
+  "criarVagaDescriptionLabel": "Descrição",
+  "criarVagaDescriptionHint": "Descreva detalhes da vaga ou sua experiência...",
+  "criarVagaDescriptionRequired": "Descrição é obrigatória",
+  "criarVagaPercentageLabel": "Percentual Oferecido (%)",
+  "criarVagaPercentageHint": "Ex: 50",
+  "criarVagaTreesLabel": "Árvores em Sangria",
+  "criarVagaTreesHint": "Ex: 5000",
+  "criarVagaValidityLabel": "Validade (dias)",
+  "criarVagaValidityHint": "Ex: 30",
+  "criarVagaValidityInvalid": "Validade inválida (1-90 dias)",
+  "criarVagaPublishButton": "Publicar Anúncio",
+  "criarVagaPublishing": "Publicando...",
+  "criarVagaSuccess": "Anúncio publicado com sucesso!",
+  "criarVagaError": "Erro ao publicar anúncio",
+  "criarVagaJobDetails": "Detalhes da Vaga"
 }

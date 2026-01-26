@@ -26,6 +26,8 @@ import 'screens/criar_oferta_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/profile_selection_screen.dart';
 import 'screens/lista_entregas_screen.dart';
+import 'screens/job_list_screen.dart';
+import 'screens/criar_vaga_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -148,6 +150,8 @@ class RuraRubberApp extends StatelessWidget {
           '/mercado': (context) => const MercadoScreen(),
           '/criar-oferta': (context) => const CriarOfertaScreen(),
           '/entregas': (context) => const ListaEntregasScreen(),
+          '/jobs': (context) => const JobListScreen(),
+          '/criar-vaga': (context) => const CriarVagaScreen(),
           '/settings': (context) => AgroSettingsScreen(
                 onExportLocalBackup: () => _handleExportLocalBackup(context),
                 onImportLocalBackup: () => _handleImportLocalBackup(context),

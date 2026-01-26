@@ -161,5 +161,112 @@
   "totalLabel": "Total",
   "currencySymbol": "R$",
 
-  "drawerHome": "Home"
+  "drawerHome": "Home",
+
+  "shareTitle": "Share Weight",
+  "shareAsImage": "Image",
+  "shareAsText": "Text",
+  "shareWeightButton": "Share",
+  "shareWeightSuccess": "Shared successfully!",
+  "shareWeightError": "Error sharing",
+
+  "mercadoTabBuy": "Buy Offers",
+  "mercadoTabSell": "Sell Offers",
+  "mercadoNoSellOffers": "No sell offers available at the moment.",
+  "mercadoSellerRole": "Seller",
+  "mercadoAvailable": "available",
+  "mercadoPriceNegotiable": "Price negotiable",
+  "mercadoExpiringDays": "{days, plural, =0{Expires today} =1{Expires tomorrow} other{Expires in {days} days}}",
+  "@mercadoExpiringDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "marketWhatsappMessageSell": "Hello, I saw your sell offer on RuraRubber ({sellerName}). I'm interested and located in {region}.",
+  "@marketWhatsappMessageSell": {
+    "placeholders": {
+      "sellerName": {"type": "String"},
+      "region": {"type": "String"}
+    }
+  },
+
+  "criarOfertaTypeLabel": "Offer Type",
+  "criarOfertaTypeBuy": "I want to Buy",
+  "criarOfertaTypeSell": "I want to Sell",
+  "criarOfertaAvailableKg": "Available Quantity (kg)",
+  "criarOfertaAvailableKgHint": "E.g.: 500",
+  "criarOfertaAvailableKgInvalid": "Invalid quantity",
+  "criarOfertaPriceOptional": "Price (optional - leave empty for 'negotiable')",
+  "criarOfertaValidityDays": "Validity (days)",
+  "criarOfertaValidityDaysHint": "E.g.: 7, 14, 30",
+  "criarOfertaValidityInvalid": "Invalid validity (1-90 days)",
+  "criarOfertaNameLabel": "Your Name / Company Name",
+  "criarOfertaNameRequired": "Name is required",
+
+  "criarOfertaMunicipality": "Municipality",
+  "criarOfertaMunicipalityHint": "E.g.: São José do Rio Preto",
+  "criarOfertaTreesInTapping": "Trees in Tapping",
+  "criarOfertaTreesInTappingHint": "E.g.: 5000",
+  "criarOfertaTreesInTappingInvalid": "Invalid quantity",
+  "criarOfertaEstimatedWeight": "Estimated Weight (kg)",
+  "criarOfertaEstimatedWeightHint": "E.g.: 2000",
+  "criarOfertaProductionDetails": "Production Details",
+
+  "mercadoTreesLabel": "trees in tapping",
+  "mercadoEstimatedLabel": "estimated",
+
+  "jobsTitle": "Jobs & Availability",
+  "jobsTabOffering": "Job Offers",
+  "jobsTabSeeking": "Available",
+  "jobsCreateButton": "Create Post",
+  "jobsNoOffering": "No job offers posted yet.\nBe the first to post!",
+  "jobsNoSeeking": "No tappers available at the moment.\nCheck back later!",
+  "jobsRoleProducer": "Producer",
+  "jobsRoleTapper": "Tapper",
+  "jobsPercentageLabel": "offered",
+  "jobsContactButton": "Contact",
+  "jobsWhatsappMessageOffering": "Hello {userName}, I saw your job offer on RuraRubber. I'm in the {region} region and I'm interested!",
+  "@jobsWhatsappMessageOffering": {
+    "placeholders": {
+      "userName": {"type": "String"},
+      "region": {"type": "String"}
+    }
+  },
+  "jobsWhatsappMessageSeeking": "Hello {userName}, I saw your availability on RuraRubber. I have a plantation in the {region} region and would like to talk!",
+  "@jobsWhatsappMessageSeeking": {
+    "placeholders": {
+      "userName": {"type": "String"},
+      "region": {"type": "String"}
+    }
+  },
+
+  "criarVagaTitle": "Create Post",
+  "criarVagaTypeLabel": "Post Type",
+  "criarVagaTypeOffering": "Offering Work",
+  "criarVagaTypeOfferingDesc": "I'm a producer looking for a tapper",
+  "criarVagaTypeSeeking": "Seeking Work",
+  "criarVagaTypeSeekingDesc": "I'm a tapper and available",
+  "criarVagaNameLabel": "Your Name",
+  "criarVagaNameRequired": "Name is required",
+  "criarVagaPhoneLabel": "Contact Phone",
+  "criarVagaPhoneRequired": "Phone is required",
+  "criarVagaMunicipalityLabel": "Municipality",
+  "criarVagaMunicipalityHint": "E.g.: São José do Rio Preto",
+  "criarVagaDescriptionLabel": "Description",
+  "criarVagaDescriptionHint": "Describe job details or your experience...",
+  "criarVagaDescriptionRequired": "Description is required",
+  "criarVagaPercentageLabel": "Offered Percentage (%)",
+  "criarVagaPercentageHint": "E.g.: 50",
+  "criarVagaTreesLabel": "Trees in Tapping",
+  "criarVagaTreesHint": "E.g.: 5000",
+  "criarVagaValidityLabel": "Validity (days)",
+  "criarVagaValidityHint": "E.g.: 30",
+  "criarVagaValidityInvalid": "Invalid validity (1-90 days)",
+  "criarVagaPublishButton": "Publish Post",
+  "criarVagaPublishing": "Publishing...",
+  "criarVagaSuccess": "Post published successfully!",
+  "criarVagaError": "Error publishing post",
+  "criarVagaJobDetails": "Job Details"
 }

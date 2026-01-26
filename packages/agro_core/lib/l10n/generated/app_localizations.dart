@@ -2872,6 +2872,42 @@ abstract class AgroLocalizations {
   /// In en, this message translates to:
   /// **'No, back'**
   String get exitAppCancel;
+
+  /// No description provided for @propertyNamePromptTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Name Your Property'**
+  String get propertyNamePromptTitle;
+
+  /// No description provided for @propertyNamePromptMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Give your property a name for easy identification.'**
+  String get propertyNamePromptMessage;
+
+  /// No description provided for @propertyNamePromptHint.
+  ///
+  /// In en, this message translates to:
+  /// **'E.g.: Green Valley Farm'**
+  String get propertyNamePromptHint;
+
+  /// No description provided for @propertyNamePromptSuggestion.
+  ///
+  /// In en, this message translates to:
+  /// **'My Property'**
+  String get propertyNamePromptSuggestion;
+
+  /// No description provided for @propertyNamePromptConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get propertyNamePromptConfirm;
+
+  /// No description provided for @propertyNamePromptSkip.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get propertyNamePromptSkip;
 }
 
 class _AgroLocalizationsDelegate extends LocalizationsDelegate<AgroLocalizations> {
