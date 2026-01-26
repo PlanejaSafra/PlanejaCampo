@@ -493,6 +493,72 @@ class AgroLocalizationsEn extends AgroLocalizations {
   String get propertyLocationUnavailable => 'Could not get your location';
 
   @override
+  String get farmDefaultName => 'My Farm';
+
+  @override
+  String get farmTitle => 'Farms';
+
+  @override
+  String get farmAdd => 'Add Farm';
+
+  @override
+  String get farmEdit => 'Edit Farm';
+
+  @override
+  String get farmName => 'Farm Name';
+
+  @override
+  String get farmNameHint => 'Ex: Santa Fe Rubber Farm';
+
+  @override
+  String get farmDescription => 'Description (optional)';
+
+  @override
+  String get farmDescriptionHint => 'Ex: Rubber farm with 500 trees';
+
+  @override
+  String get farmSetAsDefault => 'Set as default';
+
+  @override
+  String get farmIsDefault => 'Default farm';
+
+  @override
+  String get farmDefaultBadge => 'Default';
+
+  @override
+  String get farmDelete => 'Delete Farm';
+
+  @override
+  String get farmDeleteConfirm => 'Are you sure you want to delete this farm? All associated data will be lost.';
+
+  @override
+  String get farmDeleted => 'Farm deleted';
+
+  @override
+  String get farmCannotDeleteDefault => 'Cannot delete the default farm. Set another farm as default first.';
+
+  @override
+  String get farmCannotDeleteLast => 'Cannot delete the only farm.';
+
+  @override
+  String get farmNoFarms => 'No farms registered';
+
+  @override
+  String get farmSaved => 'Farm saved!';
+
+  @override
+  String get farmUpdated => 'Farm updated!';
+
+  @override
+  String get farmNameRequired => 'Enter farm name';
+
+  @override
+  String get farmNameTooShort => 'Name too short (minimum 2 characters)';
+
+  @override
+  String get farmNameExists => 'A farm with this name already exists';
+
+  @override
   String get chuvaAppTitle => 'RuraRain';
 
   @override

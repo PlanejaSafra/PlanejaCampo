@@ -493,6 +493,72 @@ class AgroLocalizationsPt extends AgroLocalizations {
   String get propertyLocationUnavailable => 'Não foi possível obter sua localização';
 
   @override
+  String get farmDefaultName => 'Minha Fazenda';
+
+  @override
+  String get farmTitle => 'Fazendas';
+
+  @override
+  String get farmAdd => 'Adicionar Fazenda';
+
+  @override
+  String get farmEdit => 'Editar Fazenda';
+
+  @override
+  String get farmName => 'Nome da Fazenda';
+
+  @override
+  String get farmNameHint => 'Ex: Seringal Santa Fé';
+
+  @override
+  String get farmDescription => 'Descrição (opcional)';
+
+  @override
+  String get farmDescriptionHint => 'Ex: Seringal com 500 árvores';
+
+  @override
+  String get farmSetAsDefault => 'Definir como padrão';
+
+  @override
+  String get farmIsDefault => 'Fazenda padrão';
+
+  @override
+  String get farmDefaultBadge => 'Padrão';
+
+  @override
+  String get farmDelete => 'Excluir Fazenda';
+
+  @override
+  String get farmDeleteConfirm => 'Tem certeza que deseja excluir esta fazenda? Todos os dados associados serão perdidos.';
+
+  @override
+  String get farmDeleted => 'Fazenda excluída';
+
+  @override
+  String get farmCannotDeleteDefault => 'Não é possível excluir a fazenda padrão. Defina outra fazenda como padrão primeiro.';
+
+  @override
+  String get farmCannotDeleteLast => 'Não é possível excluir a única fazenda.';
+
+  @override
+  String get farmNoFarms => 'Nenhuma fazenda cadastrada';
+
+  @override
+  String get farmSaved => 'Fazenda salva!';
+
+  @override
+  String get farmUpdated => 'Fazenda atualizada!';
+
+  @override
+  String get farmNameRequired => 'Digite o nome da fazenda';
+
+  @override
+  String get farmNameTooShort => 'Nome muito curto (mínimo 2 caracteres)';
+
+  @override
+  String get farmNameExists => 'Já existe uma fazenda com este nome';
+
+  @override
   String get chuvaAppTitle => 'RuraRain';
 
   @override

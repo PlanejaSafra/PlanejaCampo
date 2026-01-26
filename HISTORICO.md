@@ -1,7 +1,7 @@
 Não seja prolixo.
 Seja direto e objetivo.
 Internalize CLAUDE.md, README.md, ARCHITECTURE.md e CHANGELOG.md do agro_core.
-Internalize CLAUDE.md, README.md, ARCHITECTURE.md e CHANGELOG.md do planejachuva.
+Internalize CLAUDE.md, README.md, ARCHITECTURE.md e CHANGELOG.md do rurarain.
 
 Analise as fases 350+ do CHANGELOG  e verifique se estão corretamente e totalmente implementadas, e aponte gaps, falhas e possíveis não implementações.
 

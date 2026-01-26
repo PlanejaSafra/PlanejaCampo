@@ -199,15 +199,29 @@ RuraCash (Despesas por Centro) ──► RuraRubber (Custo/Kg)
 ## Dependências
 
 ### De agro_core
-- AuthService (login compartilhado)
-- PropertyService (propriedades)
-- CloudBackupService (backup)
-- AgroTheme (visual consistente)
-- L10n (internacionalização)
+- `AuthService` (login compartilhado)
+- `PropertyService` (propriedades)
+- `FarmService` (CORE-75) - Farm-centric model
+- `SafraService` (CORE-76) - Janela temporal da safra
+- `CloudBackupService` (backup)
+- `AgroTheme` (visual consistente)
+- `L10n` (internacionalização)
 
 ### De Firebase
 - Firestore (sincronização entre apps)
 - Cloud Functions (triggers de integração)
+
+---
+
+## Cross-Reference
+
+| App | Integração |
+|-----|------------|
+| **RuraRubber** | Recebe entregas → Gera receitas no RuraCash |
+| **RuraCattle** | Recebe vendas → Gera receitas no RuraCash |
+| **RuraCrop** | Operações de campo → Gera despesas por talhão/ciclo |
+| **CORE-75** | Farm model para dados vinculados à fazenda |
+| **CORE-76** | Safra para DRE por período
 
 ---
 
@@ -223,29 +237,35 @@ RuraCash (Despesas por Centro) ──► RuraRubber (Custo/Kg)
 
 ## Notas Técnicas
 
-### Arquitetura de Dados
+### Arquitetura de Dados (Farm-Centric - CORE-75)
 
 ```dart
-// Despesa (Hive + Firestore)
-class Despesa {
+// Despesa (Hive + Backup) - Farm-Centric Model
+class Despesa with FarmOwnedMixin {
   String id;
-  String userId;
+  String farmId;        // UUID da Farm (CORE-75)
+  String createdBy;     // userId de quem criou
+  DateTime createdAt;
+
   double valor;
   String categoria;
   String centroCusto;
   DateTime data;
   bool pago;
   String? observacao;
-  String? safraId; // Vinculação com safra
+  String? safraId;      // Vinculação com safra (CORE-76)
+  String? cicloId;      // Vinculação com ciclo de cultura (RuraCrop)
+  String? talhaoId;     // Vinculação com talhão (se aplicável)
 }
 
 // CentroCusto
 class CentroCusto {
   String id;
+  String farmId;        // Farm-centric
   String nome;
   String icone;
   String cor;
-  String? appVinculado; // 'rurarubber', 'ruracattle', null
+  String? appVinculado; // 'rurarubber', 'ruracattle', 'ruracrop', null
 }
 ```
 

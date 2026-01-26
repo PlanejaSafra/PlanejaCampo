@@ -1067,6 +1067,138 @@ abstract class AgroLocalizations {
   /// **'Could not get your location'**
   String get propertyLocationUnavailable;
 
+  /// No description provided for @farmDefaultName.
+  ///
+  /// In en, this message translates to:
+  /// **'My Farm'**
+  String get farmDefaultName;
+
+  /// No description provided for @farmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Farms'**
+  String get farmTitle;
+
+  /// No description provided for @farmAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Farm'**
+  String get farmAdd;
+
+  /// No description provided for @farmEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Farm'**
+  String get farmEdit;
+
+  /// No description provided for @farmName.
+  ///
+  /// In en, this message translates to:
+  /// **'Farm Name'**
+  String get farmName;
+
+  /// No description provided for @farmNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Ex: Santa Fe Rubber Farm'**
+  String get farmNameHint;
+
+  /// No description provided for @farmDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Description (optional)'**
+  String get farmDescription;
+
+  /// No description provided for @farmDescriptionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Ex: Rubber farm with 500 trees'**
+  String get farmDescriptionHint;
+
+  /// No description provided for @farmSetAsDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Set as default'**
+  String get farmSetAsDefault;
+
+  /// No description provided for @farmIsDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Default farm'**
+  String get farmIsDefault;
+
+  /// No description provided for @farmDefaultBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Default'**
+  String get farmDefaultBadge;
+
+  /// No description provided for @farmDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Farm'**
+  String get farmDelete;
+
+  /// No description provided for @farmDeleteConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this farm? All associated data will be lost.'**
+  String get farmDeleteConfirm;
+
+  /// No description provided for @farmDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Farm deleted'**
+  String get farmDeleted;
+
+  /// No description provided for @farmCannotDeleteDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot delete the default farm. Set another farm as default first.'**
+  String get farmCannotDeleteDefault;
+
+  /// No description provided for @farmCannotDeleteLast.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot delete the only farm.'**
+  String get farmCannotDeleteLast;
+
+  /// No description provided for @farmNoFarms.
+  ///
+  /// In en, this message translates to:
+  /// **'No farms registered'**
+  String get farmNoFarms;
+
+  /// No description provided for @farmSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Farm saved!'**
+  String get farmSaved;
+
+  /// No description provided for @farmUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Farm updated!'**
+  String get farmUpdated;
+
+  /// No description provided for @farmNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter farm name'**
+  String get farmNameRequired;
+
+  /// No description provided for @farmNameTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Name too short (minimum 2 characters)'**
+  String get farmNameTooShort;
+
+  /// No description provided for @farmNameExists.
+  ///
+  /// In en, this message translates to:
+  /// **'A farm with this name already exists'**
+  String get farmNameExists;
+
   /// No description provided for @chuvaAppTitle.
   ///
   /// In en, this message translates to:

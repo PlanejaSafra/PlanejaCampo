@@ -140,22 +140,24 @@ Máximo **3 perguntas** no onboarding. Tudo mais é descoberto depois.
 - **Safra**: Criada automaticamente (Setembro atual)
 - **Parceiros**: Zero (cadastra conforme necessidade)
 
-### Preparação Multi-User (CORE-75)
+### Preparação Multi-User (CORE-75) ✅
 
-Mesmo no onboarding single-user, salvamos:
+> **Nota:** O modelo Farm já foi implementado no `agro_core` (CORE-75 DONE).
+> Use `FarmService.instance.ensureDefaultFarm()` no onboarding.
 
 ```dart
-// Estrutura preparada para futuro
-final farm = Farm(
-  id: generateId(),
-  name: "Seringal Santa Fé",
-  ownerId: currentUserId,  // Dono = usuário atual
-  createdAt: DateTime.now(),
+// Usar FarmService do agro_core (já implementado!)
+import 'package:agro_core/agro_core.dart';
+
+// No onboarding, criar Farm com o nome informado pelo usuário
+final farm = await FarmService.instance.createFarm(
+  name: "Seringal Santa Fé",  // Nome digitado pelo usuário
+  isDefault: true,
 );
 
 // Todos os dados vinculados à Farm, não ao User
 final pesagem = Pesagem(
-  farmId: farm.id,      // Pertence à fazenda
+  farmId: farm.id,      // UUID: "farm-a1b2c3d4-..."
   createdBy: userId,    // Quem criou (auditoria)
   ...
 );
@@ -169,16 +171,23 @@ final pesagem = Pesagem(
 | 22.2 | **Profile Branch**: Fluxos diferentes para Produtor vs Sangrador | ⏳ TODO |
 | 22.3 | **Skip Parceiros**: Se "Só eu", esconde menu de parceiros | ⏳ TODO |
 | 22.4 | **Smart Defaults**: Nome, Safra, configurações automáticas | ⏳ TODO |
-| 22.5 | **Farm Model**: Criar modelo Farm para preparar multi-user | ⏳ TODO |
+| 22.5 | **Farm Integration**: Usar FarmService.ensureDefaultFarm() do agro_core | ⏳ TODO |
 
 ### Files to Create/Modify
 
 | File | Action | Description |
 |------|--------|-------------|
 | `lib/screens/onboarding_screen.dart` | CREATE | Wizard de 3 perguntas |
-| `lib/models/farm.dart` | CREATE | Modelo Farm (preparação multi-user) |
-| `lib/services/onboarding_service.dart` | CREATE | Lógica de setup inicial |
-| `lib/main.dart` | MODIFY | Detectar first-run e mostrar onboarding |
+| `lib/services/onboarding_service.dart` | CREATE | Lógica de setup inicial (usa FarmService) |
+| `lib/main.dart` | MODIFY | Detectar first-run, init FarmService, mostrar onboarding |
+
+### Dependências do agro_core
+
+| Componente | Uso |
+|------------|-----|
+| `FarmService` | Criar/gerenciar Farm do usuário |
+| `FarmAdapter` | Registrar no Hive durante init |
+| `Farm` | Modelo com UUID-based farmId |
 
 ### L10n Keys Required
 - `bemVindoRuraRubber`: "Bem-vindo ao RuraRubber!"
@@ -378,18 +387,18 @@ O total é **calculado na hora** via query de banco de dados.
 **Vantagem**: Se o produtor achar um papelzinho de Outubro e lançar hoje com data de Outubro,
 o sistema atualiza o relatório da safra automaticamente.
 
-### O Modelo Safra (Entidade Simples)
+### O Modelo Safra (agro_core - CORE-76)
+
+> **Nota:** O modelo Safra será implementado no `agro_core` (CORE-76) para ser compartilhado
+> por todos os apps (RuraRubber, RuraCrop, RuraCattle, RuraCash).
 
 ```dart
-class Safra {
-  String id;
-  String nome;         // "Safra 2025/2026"
-  DateTime dataInicio; // 01/09/2025
-  DateTime? dataFim;   // 31/08/2026 (null = em aberto)
-  bool ativa;          // true se for a safra atual
+// Usar Safra e SafraService do agro_core
+import 'package:agro_core/agro_core.dart';
 
-  // NOTA: totalKg e totalValor são CALCULADOS via query, não armazenados!
-}
+// No RuraRubber, apenas adiciona farmId nas queries
+final safra = await SafraService.instance.getSafraAtiva();
+final totalKg = await pesagemService.getTotalPorSafra(safra);
 ```
 
 ### UX Design Principles
@@ -444,27 +453,33 @@ class Safra {
 
 | Sub-Phase | Description | Status |
 |-----------|-------------|--------|
-| 17.1 | **Modelo Safra**: Entidade com nome, dataInicio, dataFim (nullable), ativa | ⏳ TODO |
-| 17.2 | **SafraService**: Query-based totals, auto-criar em Setembro, encerrar/criar nova | ⏳ TODO |
-| 17.3 | **SafraChip Widget**: Chip compacto para header com nome abreviado (ex: "25/26") | ⏳ TODO |
-| 17.4 | **SafraBottomSheet**: Lista de safras com resumo calculado dinamicamente | ⏳ TODO |
-| 17.5 | **Home Dashboard**: Visão hierárquica (Total Fazenda + Lista Parceiros) | ⏳ TODO |
-| 17.6 | **Filtro por Período**: Queries usam WHERE data BETWEEN dataInicio AND dataFim | ⏳ TODO |
-| 17.7 | **Encerramento**: Botão "Encerrar Safra" com criação automática da próxima | ⏳ TODO |
-| 17.8 | **Ajuste Manual**: Tela de configuração para editar datas se necessário | ⏳ TODO |
+| 17.1 | **CORE-76 Dependency**: Aguardar/usar Safra e SafraService do agro_core | ⏳ TODO |
+| 17.2 | **SafraChip Widget**: Chip compacto para header com nome abreviado (ex: "25/26") | ⏳ TODO |
+| 17.3 | **SafraBottomSheet**: Lista de safras com resumo calculado dinamicamente | ⏳ TODO |
+| 17.4 | **Home Dashboard**: Visão hierárquica (Total Fazenda + Lista Parceiros) | ⏳ TODO |
+| 17.5 | **Filtro por Período**: Queries usam WHERE data BETWEEN dataInicio AND dataFim | ⏳ TODO |
+| 17.6 | **Encerramento**: Botão "Encerrar Safra" com criação automática da próxima | ⏳ TODO |
+| 17.7 | **Ajuste Manual**: Tela de configuração para editar datas se necessário | ⏳ TODO |
+
+### Dependências do agro_core (CORE-76)
+
+| Componente | Uso |
+|------------|-----|
+| `Safra` | Modelo com dataInicio, dataFim, ativa |
+| `SafraService` | CRUD + getSafraAtiva() + encerrarSafra() |
+| `SafraAdapter` | Registrar no Hive durante init |
 
 ### Files to Create/Modify
 
 | File | Action | Description |
 |------|--------|-------------|
-| `lib/models/safra.dart` | CREATE | Modelo Safra com Hive adapter (sem totais fixos) |
-| `lib/services/safra_service.dart` | CREATE | Gestão de safras + queries dinâmicas |
-| `lib/widgets/safra_chip.dart` | CREATE | Chip compacto para header |
+| `lib/widgets/safra_chip.dart` | CREATE | Chip compacto para header (usa Safra do core) |
 | `lib/widgets/safra_bottom_sheet.dart` | CREATE | Bottom sheet com lista e estatísticas |
 | `lib/widgets/fazenda_summary_card.dart` | CREATE | Card com total da fazenda |
 | `lib/widgets/parceiro_list_card.dart` | CREATE | Lista de parceiros com % |
 | `lib/screens/home_screen.dart` | MODIFY | Dashboard hierárquico completo |
 | `lib/screens/safra_settings_screen.dart` | CREATE | Configurações da safra (ajuste datas) |
+| `lib/services/pesagem_service.dart` | MODIFY | Adicionar queries filtradas por safra |
 
 ### L10n Keys Required
 - `safraChipLabel`: "{ano1}/{ano2}" (ex: "25/26")

@@ -12,6 +12,8 @@ RuraCamp\
 
 * apps\
 
+* apps\
+
   * rurarain\      (formerly planejachuva) - com.ruracamp.rain
   * rurarubber\    (formerly planejaaborracha) - com.ruracamp.rubber
   * ruracattle\    (formerly planejavavaca) - com.ruracamp.cattle

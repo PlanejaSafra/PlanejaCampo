@@ -4,9 +4,10 @@
 
 ## Phase CORE-75: Preparação Multi-User (Farm-Centric Model)
 
-### Status: [TODO]
-**Priority**: 🟡 ARCHITECTURAL (Futuro - Não implementar agora)
-**Objective**: Preparar estrutura de dados para futuro modelo multi-user sem implementar funcionalidade.
+### Status: [DONE]
+**Date Completed**: 2026-01-25
+**Priority**: 🟡 ARCHITECTURAL
+**Objective**: Preparar estrutura de dados para futuro modelo multi-user sem implementar UI de convites/permissões.
 
 ### Contexto de Negócio
 
@@ -34,52 +35,89 @@ class Pesagem {
 }
 ```
 
-### O Que Fazer AGORA (Custo Zero)
+### Decisões de Arquitetura
 
-| Ação | Descrição |
-|------|-----------|
-| **Adicionar `farmId`** | Todo novo modelo deve ter `farmId` além de `userId` |
-| **`farmId = userId`** | No single-user, são iguais. Migração futura fácil. |
-| **`createdBy`** | Campo de auditoria para saber quem criou o registro |
-| **Não implementar UI** | Zero telas de convite, permissões, etc. |
-
-### Modelo Base (Preparação)
+#### 1. UUID Independente para farmId
 
 ```dart
-/// Modelo base para todos os dados do ecossistema RuraCamp
-abstract class FarmOwnedEntity {
-  String get id;
-  String get farmId;      // Dono do dado (fazenda)
-  String get createdBy;   // Quem criou (auditoria)
-  DateTime get createdAt;
+// ❌ ERRADO - pode confundir e limita a 1 fazenda por usuário
+farmId: userId,
+
+// ✅ CORRETO - UUID independente
+farmId: "farm-${uuid.v4()}", // ex: "farm-a1b2c3d4-..."
+ownerId: userId,             // Dono da fazenda
+```
+
+**Por que UUID separado?**
+- Permite múltiplas fazendas por usuário no futuro
+- Evita confusão entre conceitos (usuário ≠ fazenda)
+- Preparado para transferência de propriedade
+
+#### 2. Farm no BackupProvider
+
+A entidade Farm DEVE ser incluída no backup/restore:
+- Sem a Farm, os dados ficam órfãos (farmId aponta para nada)
+- BackupProvider deve exportar/importar farms junto com dados
+
+#### 3. Firestore Não Impactado
+
+- Farm é armazenada localmente (Hive) como Property
+- Backup manual (CloudBackupService) inclui Farm no JSON
+- Zero mudanças em Firestore collections ou rules
+
+### Modelo Base
+
+```dart
+/// Farm model (criado automaticamente, invisível para o usuário)
+@HiveType(typeId: 20)
+class Farm {
+  @HiveField(0)
+  String id;            // UUID: "farm-a1b2c3d4-..."
+
+  @HiveField(1)
+  String name;          // "Seringal Santa Fé"
+
+  @HiveField(2)
+  String ownerId;       // userId do dono principal
+
+  @HiveField(3)
+  DateTime createdAt;
+
+  @HiveField(4)
+  bool isDefault;       // Farm padrão do usuário
+
+  // Futuro: List<FarmMember> members;
 }
 
-/// Farm model (criado no onboarding, invisível para o usuário)
-class Farm {
-  String id;
-  String name;           // "Seringal Santa Fé"
-  String ownerId;        // Dono principal
-  DateTime createdAt;
-  // Futuro: List<FarmMember> members;
+/// Mixin para entidades que pertencem a uma fazenda
+mixin FarmOwnedMixin {
+  String get farmId;      // UUID da fazenda
+  String get createdBy;   // userId de quem criou
+  DateTime get createdAt;
 }
 ```
 
-### Implementation Plan (Preparação Apenas)
+### Implementation Plan
 
 | Sub-Phase | Description | Status |
 |-----------|-------------|--------|
-| 75.1 | **Modelo Farm**: Criar entidade básica (id, name, ownerId) | ⏳ TODO |
-| 75.2 | **FarmService**: CRUD básico, auto-criar no primeiro uso | ⏳ TODO |
-| 75.3 | **Mixin FarmOwned**: Campos farmId + createdBy para modelos | ⏳ TODO |
-| 75.4 | **Migração Modelos**: Adicionar farmId aos modelos existentes | ⏳ TODO |
+| 75.1 | **Modelo Farm**: Criar entidade com Hive adapter (typeId: 20) | ✅ DONE |
+| 75.2 | **FarmService**: CRUD + auto-criar no primeiro uso + getDefaultFarm() | ✅ DONE |
+| 75.3 | **Mixin FarmOwned**: Campos farmId + createdBy para modelos | ✅ DONE |
+| 75.4 | **L10n Strings**: Adicionar strings para Farm (PT-BR + EN) | ✅ DONE |
+| 75.5 | **Export**: Atualizar agro_core.dart | ✅ DONE |
 
-### Files to Create
+### Files to Create/Modify
 
 | File | Action | Description |
 |------|--------|-------------|
-| `lib/models/farm.dart` | CREATE | Modelo Farm básico |
-| `lib/services/farm_service.dart` | CREATE | Gestão de fazendas (single-user por ora) |
-| `lib/models/farm_owned_entity.dart` | CREATE | Mixin/abstract para entidades com farmId |
+| `lib/models/farm.dart` | CREATE | Modelo Farm com Hive adapter |
+| `lib/models/farm.g.dart` | GENERATE | Hive adapter gerado |
+| `lib/services/farm_service.dart` | CREATE | Gestão de fazendas |
+| `lib/models/farm_owned_mixin.dart` | CREATE | Mixin para entidades com farmId |
+| `lib/l10n/arb/app_pt.arb` | MODIFY | Strings PT-BR |
+| `lib/l10n/arb/app_en.arb` | MODIFY | Strings EN |
+| `lib/agro_core.dart` | MODIFY | Exports |
 
 ### O Que NÃO Fazer Agora
 
@@ -88,19 +126,1167 @@ class Farm {
 - ❌ Sincronização entre dispositivos de usuários diferentes
 - ❌ UI de "Trocar de Fazenda"
 - ❌ Firestore rules para multi-tenant
+- ❌ Migrar modelos existentes (fazer quando necessário)
 
-### Futuro (Quando Monetizar)
+### Integração com BackupProvider
 
-```
-Fazenda Santa Fé
-├── Dono: João (Owner) - Vê tudo, paga assinatura
-├── Gerente: Pedro (Manager) - Lança dados, não vê financeiro
-└── Sangrador: Zé (Worker) - Só vê próprias pesagens
+Apps que implementam BackupProvider devem incluir Farm:
+
+```dart
+class AppBackupProvider implements BackupProvider {
+  @override
+  Future<Map<String, dynamic>> export(String userId) async {
+    final farms = await FarmService.instance.getFarmsForUser(userId);
+    return {
+      'farms': farms.map((f) => f.toJson()).toList(),
+      // ... outros dados
+    };
+  }
+
+  @override
+  Future<void> import(String userId, Map<String, dynamic> data) async {
+    // Importar farms PRIMEIRO (os dados dependem delas)
+    if (data['farms'] != null) {
+      await FarmService.instance.importFarms(data['farms']);
+    }
+    // ... importar outros dados
+  }
+}
 ```
 
 ### Cross-Reference
 - RUBBER-22 (Onboarding cria Farm automaticamente)
 - Todos os apps do ecossistema devem usar farmId
+- PropertyBackupProvider deve incluir Farm
+- CORE-77 (Arquitetura de Backup)
+
+---
+
+## Phase CORE-77: Arquitetura de Backup Dependency-Aware
+
+### Status: [TODO]
+**Priority**: 🔴 CRITICAL (Pré-requisito para multi-user e integridade de dados)
+**Objective**: Arquitetura de backup/restore que protege integridade cross-app, verifica dependências antes de deletar, e prepara para multi-user.
+
+---
+
+### 1. O Problema Central
+
+```
+CENÁRIO REAL (Single-User, Multi-App):
+
+Timeline:
+├─ Jan: User faz backup do RuraRubber (Talhão A, B)
+├─ Fev: Cria Talhão C no RuraCrop
+├─ Fev: Lança Despesa de Fertilizante no Talhão C (RuraCash)
+├─ Fev: RuraRubber auto-cria despesa de frete (vai pro RuraCash)
+├─ Mar: User faz RESTORE do backup de Janeiro
+│
+└─ ❓ PROBLEMAS:
+   1. Talhão C não existe no backup → Deleta? Mas tem despesa!
+   2. Despesa de frete criada pelo RuraRubber → Deleta do RuraCash?
+   3. Despesa manual do RuraCash → Não toca? Como diferenciar?
+   4. Se não deletar nada → Lixo órfão, dados duplicados
+   5. Se deletar tudo → Perde trabalho de outros apps
+```
+
+```
+CENÁRIO FUTURO (Multi-User):
+
+Farm: "Seringal Santa Fé"
+├── Owner: João
+├── Gerente: Pedro (faz pesagens, entregas)
+└── Funcionário: Zé (só pesagens)
+
+Pedro faz backup → restaura → O que acontece com dados do Zé?
+Se sourceApp = "rurarubber" para TODOS, restore do Pedro deleta dados do Zé!
+```
+
+---
+
+### 2. Princípio Fundamental: Ownership Explícito
+
+**Toda entidade DEVE saber sua origem para permitir operações seguras.**
+
+#### 2.1 FarmOwnedMixin (Atualizado)
+
+```dart
+/// Mixin para TODAS as entidades do ecossistema
+/// Permite rastreabilidade completa de origem
+mixin FarmOwnedMixin {
+  /// UUID da fazenda dona dos dados
+  String get farmId;
+
+  /// userId de quem criou o registro
+  String get createdBy;
+
+  /// Quando foi criado
+  DateTime get createdAt;
+
+  /// NOVO: App que criou o registro
+  /// Valores: "rurarubber", "rurarain", "ruracrop", "ruracash", etc.
+  /// Permite restore cirúrgico por app de origem
+  String get sourceApp;
+}
+```
+
+#### 2.2 Por que `sourceApp` é Essencial
+
+```dart
+// CENÁRIO: Despesa pode ser criada por múltiplos apps
+
+// Despesa criada manualmente no RuraCash
+Despesa(
+  id: "desp-001",
+  descricao: "Fertilizante",
+  sourceApp: "ruracash",  // ← Origem
+  createdBy: "user-joao",
+)
+
+// Despesa criada automaticamente pelo RuraRubber (ao fechar entrega)
+Despesa(
+  id: "desp-002",
+  descricao: "Frete Entrega #45",
+  sourceApp: "rurarubber",  // ← Origem diferente!
+  createdBy: "user-joao",
+)
+
+// RESTORE do RuraRubber:
+// DELETE FROM despesas WHERE sourceApp = "rurarubber"
+// ✅ Deleta desp-002 (criada pelo rubber)
+// ✅ Mantém desp-001 (criada pelo cash)
+```
+
+---
+
+### 3. Arquitetura em Camadas (Layers)
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    BACKUP LAYERS                                 │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  LAYER 0: Farm (IMUTÁVEL)                                       │
+│  ├─ Nunca sobrescreve no restore                                │
+│  ├─ Só cria se não existir                                      │
+│  └─ Razão: É a raiz de todos os dados                           │
+│                                                                 │
+│  LAYER 1: Estruturas Compartilhadas (APPEND-ONLY)               │
+│  ├─ Entidades: Property, Talhão, Parceiro, Cultura              │
+│  ├─ Cada uma tem sourceApp (quem criou)                         │
+│  ├─ Restore: CRIA novos, NUNCA deleta existentes                │
+│  ├─ Deleção: Só se NÃO tiver dependências em outros apps        │
+│  └─ Razão: Múltiplos apps referenciam essas estruturas          │
+│                                                                 │
+│  LAYER 2: Movimentações (REPLACE por sourceApp + scope)         │
+│  ├─ Entidades: Pesagem, Entrega, Chuva, Despesa, Ciclo          │
+│  ├─ Cada uma tem sourceApp + createdBy                          │
+│  ├─ Restore scope "personal":                                   │
+│  │   DELETE WHERE sourceApp = X AND createdBy = user            │
+│  ├─ Restore scope "full" (owner only):                          │
+│  │   DELETE WHERE sourceApp = X                                 │
+│  └─ Razão: Isolamento por app E por usuário                     │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+### 4. Dependency-Aware Operations
+
+#### 4.1 O que são Dependências Cross-App?
+
+```
+Talhão "Seringal Norte" (criado pelo RuraRubber)
+├── Referenciado por:
+│   ├── RuraRubber: 45 pesagens
+│   ├── RuraRain: 12 registros de chuva
+│   ├── RuraCrop: 2 ciclos de cultura
+│   └── RuraCash: 8 despesas vinculadas
+│
+└── REGRA: Só pode ser deletado se TODAS as referências forem zero
+           OU se o usuário confirmar cascata (com aviso explícito)
+```
+
+#### 4.2 DependencyService (Interface)
+
+```dart
+/// Service que conhece todas as referências cross-app
+/// Registrado no init de cada app
+class DependencyService {
+  static final _instance = DependencyService._();
+  static DependencyService get instance => _instance;
+
+  final _registry = <String, List<DependencyChecker>>{};
+
+  /// Cada app registra suas dependências no init
+  /// Ex: RuraRubber registra que Pesagem depende de Talhão
+  void registerDependency(DependencyChecker checker) {
+    _registry.putIfAbsent(checker.targetType, () => []).add(checker);
+  }
+
+  /// Verifica se entidade pode ser deletada
+  /// Retorna mapa de bloqueadores: {appId: [motivos]}
+  Future<DependencyCheckResult> canDelete({
+    required String entityType,  // "talhao", "parceiro", "property"
+    required String entityId,
+    required String requestingApp, // App que quer deletar
+  }) async {
+    final blockers = <String, List<String>>{};
+
+    for (final checker in _registry[entityType] ?? []) {
+      // Não bloqueia a si mesmo
+      if (checker.sourceApp == requestingApp) continue;
+
+      final count = await checker.countReferences(entityId);
+      if (count > 0) {
+        blockers[checker.sourceApp] = [
+          '${count} ${checker.referenceDescription}',
+        ];
+      }
+    }
+
+    return DependencyCheckResult(
+      canDelete: blockers.isEmpty,
+      blockers: blockers,
+    );
+  }
+}
+
+/// Registrado por cada app
+class DependencyChecker {
+  final String sourceApp;           // "rurarubber"
+  final String sourceType;          // "pesagem"
+  final String targetType;          // "talhao"
+  final String referenceDescription; // "pesagens registradas"
+  final Future<int> Function(String targetId) countReferences;
+}
+```
+
+#### 4.3 Exemplo de Registro (cada app no init)
+
+```dart
+// RuraRubber registra no main.dart
+DependencyService.instance.registerDependency(
+  DependencyChecker(
+    sourceApp: 'rurarubber',
+    sourceType: 'pesagem',
+    targetType: 'talhao',
+    referenceDescription: 'pesagens registradas',
+    countReferences: (talhaoId) async {
+      final pesagens = await PesagemService.instance.getByTalhao(talhaoId);
+      return pesagens.length;
+    },
+  ),
+);
+
+// RuraRain registra
+DependencyService.instance.registerDependency(
+  DependencyChecker(
+    sourceApp: 'rurarain',
+    sourceType: 'chuva',
+    targetType: 'talhao',
+    referenceDescription: 'registros de chuva',
+    countReferences: (talhaoId) async {
+      final chuvas = await ChuvaService.instance.getByTalhao(talhaoId);
+      return chuvas.length;
+    },
+  ),
+);
+```
+
+---
+
+### 5. Restore em 3 Fases
+
+O restore NUNCA é automático. Sempre passa por análise e confirmação.
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│           FASE 1: ANÁLISE (Read-Only, Sem Modificações)         │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  1. Lê arquivo de backup                                        │
+│  2. Valida _meta (appId, farmId, schemaVersion)                 │
+│  3. Compara com estado atual do banco                           │
+│  4. Para cada entidade, determina:                              │
+│     ├─ ADICIONAR: Existe no backup, não existe local           │
+│     ├─ MANTER: Existe em ambos, sem conflito                   │
+│     ├─ DELETAR: Não existe no backup, existe local             │
+│     │   └─ Verifica dependências antes de marcar               │
+│     └─ CONFLITO: Existe em ambos com dados diferentes          │
+│  5. Gera RestoreAnalysis com todas as operações planejadas     │
+│                                                                 │
+│  OUTPUT: RestoreAnalysis {                                      │
+│    toAdd: [...],                                                │
+│    toDelete: [...],                                             │
+│    blocked: {...},  // Não pode deletar por dependências        │
+│    conflicts: [...],                                            │
+│    warnings: [...],                                             │
+│    recalculations: [...],  // Saldos a recalcular              │
+│  }                                                              │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────┐
+│           FASE 2: CONFIRMAÇÃO (UI com Relatório Detalhado)      │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  ┌───────────────────────────────────────────────────────────┐  │
+│  │  📋 Relatório de Restore - RuraRubber                     │  │
+│  │                                                           │  │
+│  │  Backup: 25/01/2026 às 10:30                              │  │
+│  │  Farm: Seringal Santa Fé                                  │  │
+│  │                                                           │  │
+│  │  ────────────────────────────────────────────────────────│  │
+│  │                                                           │  │
+│  │  ✅ SERÁ RESTAURADO:                                      │  │
+│  │  ├─ 45 pesagens                                           │  │
+│  │  ├─ 12 entregas                                           │  │
+│  │  └─ 3 parceiros                                           │  │
+│  │                                                           │  │
+│  │  🗑️ SERÁ REMOVIDO (dados posteriores ao backup):          │  │
+│  │  ├─ 3 pesagens (criadas após 25/01)                       │  │
+│  │  └─ 1 entrega (criada após 25/01)                         │  │
+│  │                                                           │  │
+│  │  ⚠️ NÃO SERÁ REMOVIDO (dependências em outros apps):      │  │
+│  │  ├─ Talhão "Seringal Norte"                               │  │
+│  │  │   └─ RuraCash: 5 despesas vinculadas                   │  │
+│  │  │   └─ RuraRain: 8 registros de chuva                    │  │
+│  │  └─ Parceiro "João Silva"                                 │  │
+│  │      └─ RuraCash: 2 pagamentos registrados                │  │
+│  │                                                           │  │
+│  │  ℹ️ SALDOS A RECALCULAR APÓS RESTORE:                     │  │
+│  │  ├─ Total de produção por período                         │  │
+│  │  └─ Saldo devedor com parceiros                           │  │
+│  │                                                           │  │
+│  │  ────────────────────────────────────────────────────────│  │
+│  │                                                           │  │
+│  │  ⚠️ Esta operação NÃO pode ser desfeita.                  │  │
+│  │                                                           │  │
+│  │            [Cancelar]         [Confirmar Restore]         │  │
+│  └───────────────────────────────────────────────────────────┘  │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────┐
+│           FASE 3: EXECUÇÃO (Transacional)                       │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  try {                                                          │
+│    // 1. Inicia transação (ou simula com rollback manual)       │
+│    BEGIN_TRANSACTION                                            │
+│                                                                 │
+│    // 2. Layer 0: Farm (imutável)                               │
+│    if (farm não existe) {                                       │
+│      criar farm do backup                                       │
+│    }                                                            │
+│    // NÃO sobrescreve se já existe                              │
+│                                                                 │
+│    // 3. Layer 1: Estruturas (append-only)                      │
+│    for (estrutura in backup.estruturas) {                       │
+│      if (não existe local) {                                    │
+│        criar estrutura                                          │
+│      }                                                          │
+│      // NÃO atualiza nem deleta existentes                      │
+│    }                                                            │
+│                                                                 │
+│    // 4. Layer 2: Movimentações (replace por sourceApp)         │
+│    // Deleta APENAS dados permitidos pela análise               │
+│    for (item in analysis.toDelete) {                            │
+│      if (item NOT IN analysis.blocked) {                        │
+│        deletar item                                             │
+│      }                                                          │
+│    }                                                            │
+│                                                                 │
+│    // 5. Importa dados do backup                                │
+│    for (item in backup.movimentacoes) {                         │
+│      inserir ou atualizar item                                  │
+│    }                                                            │
+│                                                                 │
+│    // 6. Dispara recálculo de saldos                            │
+│    await backupProvider.recalculateAfterRestore()               │
+│                                                                 │
+│    COMMIT                                                       │
+│                                                                 │
+│  } catch (error) {                                              │
+│    ROLLBACK                                                     │
+│    throw RestoreError(error)                                    │
+│  }                                                              │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+### 6. Recálculo de Saldos Pós-Restore
+
+Alguns dados derivados precisam ser recalculados após o restore.
+
+#### 6.1 Princípio: Query-Based é Preferível
+
+```dart
+// ✅ PREFERÍVEL: Totais calculados via query (nunca ficam "furados")
+Future<double> getTotalProducao(String safraId) async {
+  final safra = await getSafra(safraId);
+  return pesagens
+      .where((p) => p.data >= safra.dataInicio && p.data < safra.dataFim)
+      .fold(0.0, (sum, p) => sum + p.peso);
+}
+
+// ❌ EVITAR: Totais armazenados (podem ficar inconsistentes)
+// safra.totalKg = 15400; // Se editar pesagem antiga, "fura"
+```
+
+#### 6.2 Quando Recálculo é Necessário
+
+Alguns cenários exigem saldos pré-calculados por performance:
+
+| Dado | Motivo | Recálculo Após Restore |
+|------|--------|------------------------|
+| Saldo com Parceiros | Evita somar milhares de pesagens | `recalcularSaldoParceiros()` |
+| Posição de Caixa | Snapshot diário para relatórios | `recalcularPosicaoCaixa()` |
+| Estoque em Barracão | Entradas - Saídas acumuladas | `recalcularEstoque()` |
+
+#### 6.3 Interface BackupProvider (com recálculo)
+
+```dart
+abstract class BackupProvider {
+  String get appId;
+  int get schemaVersion;
+
+  Future<Map<String, dynamic>> export({...});
+  Future<RestoreAnalysis> analyzeRestore({...});
+  Future<void> executeRestore(RestoreAnalysis analysis);
+
+  /// Chamado APÓS restore bem-sucedido
+  /// Cada app implementa seu recálculo específico
+  Future<RecalculationResult> recalculateAfterRestore();
+}
+
+// Exemplo: RuraRubber
+class BorrachaBackupProvider implements BackupProvider {
+  @override
+  Future<RecalculationResult> recalculateAfterRestore() async {
+    final results = <String>[];
+
+    // Recalcula saldo com cada parceiro
+    final parceiros = await ParceiroService.instance.getAll();
+    for (final p in parceiros) {
+      final saldo = await _recalcularSaldo(p.id);
+      results.add('${p.nome}: R\$ ${saldo.toStringAsFixed(2)}');
+    }
+
+    // Recalcula totais por safra
+    await _recalcularTotaisSafra();
+
+    return RecalculationResult(success: true, details: results);
+  }
+}
+```
+
+---
+
+### 7. Estrutura do JSON de Backup
+
+```json
+{
+  "_meta": {
+    "appId": "rurarubber",
+    "appVersion": "1.2.0",
+    "backupType": "app",
+    "backupScope": "personal",
+    "farmId": "farm-abc123",
+    "userId": "user-xyz789",
+    "createdAt": "2026-01-25T10:30:00Z",
+    "schemaVersion": 2
+  },
+
+  "farm": {
+    "id": "farm-abc123",
+    "name": "Seringal Santa Fé",
+    "ownerId": "user-xyz789",
+    "createdAt": "2025-09-01T00:00:00Z"
+  },
+
+  "sharedStructures": {
+    "properties": [
+      {
+        "id": "prop-001",
+        "name": "Fazenda Principal",
+        "sourceApp": "rurarubber",
+        "createdBy": "user-xyz789"
+      }
+    ],
+    "talhoes": [
+      {
+        "id": "tal-001",
+        "name": "Seringal Norte",
+        "propertyId": "prop-001",
+        "sourceApp": "rurarubber",
+        "createdBy": "user-xyz789"
+      }
+    ],
+    "parceiros": [
+      {
+        "id": "parc-001",
+        "nome": "João Sangrador",
+        "sourceApp": "rurarubber",
+        "createdBy": "user-xyz789"
+      }
+    ]
+  },
+
+  "appData": {
+    "pesagens": [
+      {
+        "id": "pes-001",
+        "data": "2026-01-20",
+        "peso": 45.5,
+        "talhaoId": "tal-001",
+        "parceiroId": "parc-001",
+        "farmId": "farm-abc123",
+        "sourceApp": "rurarubber",
+        "createdBy": "user-xyz789",
+        "createdAt": "2026-01-20T08:30:00Z"
+      }
+    ],
+    "entregas": [...],
+    "despesasGeradas": [
+      {
+        "id": "desp-rubber-001",
+        "descricao": "Frete Entrega #45",
+        "sourceApp": "rurarubber",
+        "targetApp": "ruracash"
+      }
+    ]
+  }
+}
+```
+
+---
+
+### 8. Regras de Restore (Resumo)
+
+| Camada | Entidades | Operação no Restore | Deleção |
+|--------|-----------|---------------------|---------|
+| **Layer 0** | Farm | Cria se não existe, NUNCA sobrescreve | NUNCA |
+| **Layer 1** | Property, Talhão, Parceiro | Cria novos, NUNCA deleta | Só se sem dependências |
+| **Layer 2** | Pesagem, Entrega, Chuva, Despesa | Replace por sourceApp + scope | Permitido |
+
+| Scope | Quem Pode | O Que Deleta |
+|-------|-----------|--------------|
+| `personal` | Qualquer membro | `WHERE sourceApp = X AND createdBy = user` |
+| `full` | Owner apenas | `WHERE sourceApp = X` |
+
+---
+
+### 9. Cenários de Teste (Validação da Arquitetura)
+
+#### 9.1 Single-User, Multi-App
+
+```
+SETUP:
+├─ User tem RuraRubber + RuraRain + RuraCash
+├─ Talhão "Norte" criado no RuraRubber
+├─ Chuvas registradas no RuraRain para Talhão "Norte"
+├─ Despesas manuais no RuraCash
+
+TESTE: Restore do RuraRubber (backup antigo)
+├─ ✅ Pesagens do RuraRubber: SUBSTITUÍDAS
+├─ ✅ Chuvas do RuraRain: INTOCADAS (outro app)
+├─ ✅ Despesas manuais do RuraCash: INTOCADAS (sourceApp diferente)
+├─ ✅ Despesas geradas pelo RuraRubber: DELETADAS (sourceApp = rurarubber)
+└─ ✅ Talhão "Norte": MANTIDO (tem dependências no RuraRain)
+```
+
+#### 9.2 Multi-User
+
+```
+SETUP:
+├─ Farm: Seringal Santa Fé
+├─ Owner: João
+├─ Gerente: Pedro (cria pesagens)
+├─ Funcionário: Zé (cria pesagens)
+
+TESTE: Pedro faz restore (scope: personal)
+├─ ✅ Pesagens de Pedro: SUBSTITUÍDAS
+├─ ✅ Pesagens de Zé: INTOCADAS (createdBy diferente)
+├─ ✅ Pesagens de João: INTOCADAS (createdBy diferente)
+
+TESTE: João faz restore (scope: full, como Owner)
+├─ ✅ Pesagens de TODOS: SUBSTITUÍDAS
+├─ ⚠️ Aviso: "Isso afetará dados de Pedro e Zé"
+```
+
+#### 9.3 Estrutura Órfã
+
+```
+SETUP:
+├─ Backup de Janeiro tem Talhão X
+├─ Talhão X foi DELETADO em Fevereiro
+├─ Março: Restore do backup de Janeiro
+
+RESULTADO:
+├─ Pesagens do Talhão X no backup → NÃO importadas
+├─ ⚠️ Warning: "5 pesagens ignoradas (talhão não existe)"
+├─ Opção: "Recriar Talhão X?" [Sim] [Não]
+```
+
+---
+
+### 10. Implementation Plan
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 77.1 | **sourceApp no FarmOwnedMixin**: Adicionar campo obrigatório | ⏳ TODO |
+| 77.2 | **DependencyService**: Interface + registro de dependências | ⏳ TODO |
+| 77.3 | **RestoreAnalysis Model**: Estrutura de análise pré-restore | ⏳ TODO |
+| 77.4 | **BackupMeta Model**: Metadados do backup com appId | ⏳ TODO |
+| 77.5 | **BackupProvider Interface**: Atualizar com analyzeRestore() | ⏳ TODO |
+| 77.6 | **RestoreConfirmationDialog**: UI com relatório detalhado | ⏳ TODO |
+| 77.7 | **Recálculo de Saldos**: Interface + implementação por app | ⏳ TODO |
+| 77.8 | **Migração**: Adicionar sourceApp a entidades existentes | ⏳ TODO |
+| 77.9 | **LGPD Delete**: Atualizar DataDeletionService para multi-app | ⏳ TODO |
+| 77.10 | **LGPD Export**: Atualizar DataExportService com referências | ⏳ TODO |
+
+---
+
+### 11. Files to Create/Modify
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/models/farm_owned_mixin.dart` | MODIFY | Adicionar sourceApp |
+| `lib/models/backup_meta.dart` | CREATE | Metadados do backup |
+| `lib/models/restore_analysis.dart` | CREATE | Resultado da análise |
+| `lib/models/dependency_check_result.dart` | CREATE | Resultado de verificação |
+| `lib/services/dependency_service.dart` | CREATE | Registro e verificação |
+| `lib/services/backup_provider.dart` | MODIFY | Nova interface completa |
+| `lib/services/cloud_backup_service.dart` | MODIFY | Fluxo em 3 fases |
+| `lib/services/data_deletion_service.dart` | MODIFY | LGPD delete multi-app |
+| `lib/services/data_export_service.dart` | MODIFY | LGPD export com referências |
+| `lib/widgets/restore_confirmation_dialog.dart` | CREATE | UI de confirmação |
+| `lib/widgets/deletion_result_dialog.dart` | CREATE | UI resultado LGPD delete |
+| `lib/l10n/arb/*.arb` | MODIFY | Strings para UI |
+
+---
+
+### 12. Perguntas de Design Respondidas
+
+| Pergunta | Resposta |
+|----------|----------|
+| Backup de um app afeta outros? | **NÃO** - cada app só toca dados WHERE sourceApp = próprio |
+| Farm é sobrescrita no restore? | **NÃO** - Layer 0 é imutável |
+| Estruturas (Talhão, Parceiro) são deletadas? | **SÓ SE** não tiverem dependências em outros apps |
+| Despesas geradas pelo RuraRubber são deletadas? | **SIM** - sourceApp = "rurarubber" |
+| Despesas manuais do RuraCash são afetadas? | **NÃO** - sourceApp = "ruracash" |
+| Gerente pode fazer backup full? | **NÃO** - só Owner tem scope "full" |
+| Como saber o que será afetado? | **Fase 1 (Análise)** + **Fase 2 (Confirmação com relatório)** |
+| E se o backup tiver estrutura que foi deletada? | **Warning** + opção de recriar |
+| Saldos ficam inconsistentes após restore? | **NÃO** - recalculateAfterRestore() é chamado |
+| LGPD Delete pode ser bloqueado? | **NÃO** - direito legal prevalece, apenas informa o que foi mantido |
+| Quando Farm é deletada? | **Quando último app** com dados for deletado |
+| LGPD Export leva dados de outros apps? | **NÃO** - só referências (id + nome) |
+
+---
+
+### 13. LGPD: Deleção e Exportação (Diferenças do Restore)
+
+#### 13.1 LGPD vs Restore: Regras Diferentes
+
+| Operação | Objetivo | Pode Bloquear? | Razão |
+|----------|----------|----------------|-------|
+| **Restore** | Conveniência do usuário | ✅ SIM | Protege integridade |
+| **LGPD Delete** | Direito Legal (Art. 18, VI) | ❌ NÃO | Lei > Técnica |
+| **LGPD Export** | Direito Legal (Art. 18, V) | ❌ NÃO | Deve exportar TUDO |
+
+**Princípio**: LGPD SEMPRE executa. Restore pode ser bloqueado.
+
+#### 13.2 LGPD Delete (Direito ao Esquecimento)
+
+```dart
+/// Regras de deleção LGPD por camada
+class LgpdDeletionRules {
+
+  // Layer 2: Movimentações - SEMPRE deleta (são dados do usuário)
+  // Não verifica dependências - direito legal prevalece
+  await deleteMovements(appId, userId, farmId);
+
+  // Layer 1: Estruturas - Deleta SE não tiver referência em OUTRO app
+  // Se tiver, deixa para o outro app limpar depois
+  for (final estrutura in structures) {
+    final deps = await checkDependencies(estrutura);
+    if (deps.onlyFromThisApp || deps.none) {
+      await delete(estrutura);
+    } else {
+      // NÃO bloqueia, apenas mantém e informa
+      result.kept.add(estrutura);
+    }
+  }
+
+  // Layer 0: Farm - Deleta SE é o último app com dados
+  if (!hasDataFromOtherApps(farmId)) {
+    await deleteFarm(farmId);
+  }
+}
+```
+
+#### 13.3 Cascata de Deleção (Último App)
+
+```
+User deleta apps na ordem: RuraRubber → RuraCash → RuraRain (último)
+
+Após deletar RuraRubber:
+├─ Pesagens, Entregas: DELETADAS
+├─ Talhão Norte: MANTIDO (RuraRain usa)
+└─ Farm: MANTIDA (RuraRain tem dados)
+
+Após deletar RuraCash:
+├─ Despesas manuais: DELETADAS
+├─ Talhão Norte: MANTIDO (RuraRain usa)
+└─ Farm: MANTIDA (RuraRain tem dados)
+
+Após deletar RuraRain (último):
+├─ Chuvas: DELETADAS
+├─ Talhão Norte: DELETADO (ninguém mais usa)
+└─ Farm: DELETADA (ninguém mais tem dados)
+└─ TUDO LIMPO ✅
+```
+
+#### 13.4 LGPD Export (Portabilidade)
+
+```json
+{
+  "_meta": {
+    "exportType": "lgpd_portability",
+    "appId": "rurarubber",
+    "userId": "user-xyz789"
+  },
+
+  "userData": {
+    "profile": { "email": "...", "name": "..." },
+
+    "structures": {
+      "farms": [...],
+      "properties": [...],
+      "talhoes": [
+        {
+          "id": "tal-001",
+          "name": "Seringal Norte",
+          "createdByThisApp": true,
+          "usedByOtherApps": ["rurarain"]
+        }
+      ]
+    },
+
+    "movements": {
+      "pesagens": [...],
+      "entregas": [...]
+    },
+
+    "consents": {...},
+    "settings": {...}
+  },
+
+  "references": {
+    "note": "Estruturas usadas mas criadas por outros apps",
+    "externalStructures": [
+      {"id": "tal-005", "sourceApp": "ruracrop"}
+    ]
+  }
+}
+```
+
+| Dado | Exporta? | Formato |
+|------|----------|---------|
+| Movimentações próprias | ✅ | Completo |
+| Estruturas criadas | ✅ | Completo |
+| Estruturas de outros apps (usadas) | ✅ | Referência |
+| Dados de outros apps | ❌ | N/A |
+| Consentimentos | ✅ | Completo |
+
+---
+
+### 14. Cross-Reference
+
+- **CORE-75**: Farm model, FarmOwnedMixin (base para sourceApp)
+- **CORE-76**: Safra global (totais por período)
+- **CORE-33**: CloudBackupService (implementação atual a ser atualizada)
+- **CORE-36**: DataDeletionService (atualizar para multi-app)
+- **CORE-37**: DataExportService (atualizar para multi-app)
+- **RUBBER-XX**: BorrachaBackupProvider (implementar nova interface)
+- **RAIN-XX**: ChuvaBackupProvider (implementar nova interface)
+- **CROP-XX**: CropBackupProvider (futuro)
+- **CASH-XX**: CashBackupProvider (futuro)
+
+---
+
+### 15. Pontos Críticos e Correções Arquiteturais
+
+#### 15.1 DependencyService "Blind Spot" — Apps Não Instalados
+
+**Problema**: Se o RuraRain não está instalado, ele não registra seus DependencyCheckers.
+O DependencyService não sabe que Talhão X tem 12 registros de chuva.
+Restore do RuraRubber pode deletar Talhão X achando que não tem dependência.
+
+**Solução**: DependencyManifest Persistido
+
+```dart
+/// Cada app, ao gravar dados, persiste um manifesto
+/// no Hive box compartilhado (acessível por todos os apps)
+@HiveType(typeId: XX)
+class DependencyManifest {
+  @HiveField(0)
+  final String appId;           // "rurarain"
+
+  @HiveField(1)
+  final Map<String, Set<String>> references;
+  // { "talhao": {"tal-001", "tal-002"}, "property": {"prop-001"} }
+
+  @HiveField(2)
+  final DateTime updatedAt;     // Última atualização do manifesto
+}
+
+/// Ao salvar/deletar qualquer entidade, atualiza manifesto:
+Future<void> onSaveChuva(Chuva chuva) async {
+  await chuvaBox.put(chuva.id, chuva);
+  await DependencyManifestService.instance.addReference(
+    appId: 'rurarain',
+    targetType: 'talhao',
+    targetId: chuva.talhaoId,
+  );
+}
+```
+
+**Regra**: O DependencyService consulta TANTO os checkers registrados
+(apps rodando) QUANTO o manifesto persistido (apps não rodando).
+
+---
+
+#### 15.2 Dependências de Movimentações (Denormalização)
+
+**Problema**: Se Entrega referencia Pesagem por ID, e o restore deleta a Pesagem,
+a Entrega fica com referência quebrada. Mesmo sendo do mesmo app.
+
+**Solução**: Denormalização no momento da criação
+
+```dart
+// ❌ FRÁGIL - Referência por ID que pode quebrar
+class Entrega {
+  List<String> pesagemIds;  // Se pesagem for deletada, "fura"
+}
+
+// ✅ ROBUSTO - Dados copiados na criação
+class Entrega {
+  List<String> pesagemIds;   // Referência (para navegação)
+  double totalPeso;          // Copiado: sum(pesagens.peso)
+  int quantidadePesagens;    // Copiado: pesagens.length
+  // Entrega é auto-suficiente, não "fura" se pesagem for deletada
+}
+```
+
+**Princípio**: Movimentações que referenciam outras movimentações
+devem copiar os dados essenciais no momento da criação.
+A referência por ID é mantida para navegação, mas os dados
+de negócio são denormalizados para resiliência.
+
+---
+
+#### 15.3 Farm Restore — Contexto de Fazenda Diferente
+
+**Problema**: Backup foi feito na Farm A, mas dispositivo atual tem Farm B.
+O que fazer?
+
+**Solução**: UI de decisão com 3 opções
+
+```
+┌──────────────────────────────────────────────────┐
+│  ⚠️ Fazenda Diferente Detectada                  │
+│                                                    │
+│  Backup: "Seringal Santa Fé" (farm-abc123)        │
+│  Atual:  "Fazenda Esperança" (farm-xyz789)        │
+│                                                    │
+│  O que deseja fazer?                               │
+│                                                    │
+│  ○ Restaurar na fazenda atual ("Fazenda Esperança")│
+│    → Dados migrados para farm-xyz789               │
+│                                                    │
+│  ○ Criar nova fazenda com dados do backup          │
+│    → Cria "Seringal Santa Fé" como 2ª fazenda      │
+│                                                    │
+│  ○ Cancelar                                        │
+│                                                    │
+│         [Cancelar]         [Confirmar]             │
+└──────────────────────────────────────────────────┘
+```
+
+**Regra**: NUNCA mesclar silenciosamente. Sempre perguntar ao usuário.
+
+---
+
+#### 15.4 Performance do DependencyChecker (Batch API)
+
+**Problema**: Verificar dependências uma a uma (O(n)) é lento
+quando há centenas de talhões/parceiros para verificar.
+
+**Solução**: API batch no DependencyChecker
+
+```dart
+class DependencyChecker {
+  final String sourceApp;
+  final String sourceType;
+  final String targetType;
+  final String referenceDescription;
+
+  // API individual (mantida para operações pontuais)
+  final Future<int> Function(String targetId) countReferences;
+
+  // API batch (nova, para restore/LGPD)
+  final Future<Map<String, int>> Function(List<String> targetIds)
+      countReferencesBatch;
+}
+
+// Uso no restore:
+final talhaoIds = backup.talhoes.map((t) => t.id).toList();
+final counts = await checker.countReferencesBatch(talhaoIds);
+// Retorna: {"tal-001": 45, "tal-002": 0, "tal-003": 12}
+// Uma única query em vez de N queries individuais
+```
+
+**Implementação sugerida**: Filtro em memória no Hive box
+(que já está carregado), ou query batch se migrar para SQLite.
+
+---
+
+#### 15.5 sourceApp — Imutabilidade e Modificação por Outro App
+
+**Problema**: Se RuraCash edita uma Despesa criada pelo RuraRubber,
+o sourceApp muda? Quem "owns" a entidade?
+
+**Solução**: sourceApp é IMUTÁVEL
+
+```dart
+mixin FarmOwnedMixin {
+  /// App que CRIOU o registro. IMUTÁVEL após criação.
+  /// Determina quem pode deletar/restaurar este registro.
+  String get sourceApp;
+
+  /// OPCIONAL (futuro): Último app que modificou
+  /// Apenas para auditoria, não afeta ownership
+  // String? get lastModifiedByApp;
+}
+```
+
+**Regras**:
+- `sourceApp` NUNCA muda. Define ownership permanente.
+- Se RuraCash edita uma Despesa do RuraRubber, `sourceApp` continua "rurarubber".
+- Restore do RuraRubber restaura a Despesa. Restore do RuraCash NÃO toca nela.
+- `lastModifiedByApp` é opcional e apenas para trilha de auditoria.
+
+---
+
+### 16. Regras de Ownership e LGPD Multi-User
+
+#### 16.1 Quem Pode Executar Operações LGPD na Farm
+
+**Princípio**: Dados pertencem à FAZENDA (Farm), não ao indivíduo.
+Apenas o DONO da fazenda (`farm.ownerId == userId`) tem direito
+de executar operações LGPD (delete, export) sobre os dados da fazenda.
+
+```dart
+/// Verifica se usuário pode executar LGPD na farm
+bool canPerformLgpdOnFarm(Farm farm, String userId) {
+  return farm.ownerId == userId;
+}
+```
+
+#### 16.2 Papéis e Direitos LGPD
+
+| Papel | É Owner? | LGPD Delete Farm Data | LGPD Delete Pessoal | LGPD Export Farm Data | LGPD Export Pessoal |
+|-------|----------|-----------------------|---------------------|-----------------------|---------------------|
+| **Produtor (Owner)** | ✅ | ✅ Tudo da farm | ✅ | ✅ Tudo da farm | ✅ |
+| **Sangrador (vinculado, pode ser Owner)** | ✅/❌ | Se owner: ✅ | ✅ | Se owner: ✅ | ✅ |
+| **Gerente** | ❌ NUNCA | ❌ | ✅ | ❌ | ✅ |
+
+**Esclarecimentos**:
+- **Gerente NUNCA é Owner** — se fosse, seria Produtor. Gerente administra
+  a farm de outro usuário. Não faz sentido ser dono da farm que gerencia.
+- **Sangrador pode ser Owner** — cenário simulado quando o produtor não
+  controla diretamente e o sangrador quer gerenciar seu próprio app.
+  Neste caso, o sangrador É o produtor para fins do sistema.
+- **`createdBy` é trilha de auditoria para o Owner**, NÃO dado pessoal
+  do funcionário. O Owner vê quem criou cada registro na SUA farm.
+
+#### 16.3 LGPD Delete — O Que Cada Papel Pode Deletar
+
+```
+PRODUTOR (Owner):
+├─ Pode deletar TODOS os dados da farm (LGPD Art. 18, VI)
+├─ Isso inclui dados criados por Gerente e Sangrador
+├─ Porque os dados pertencem à FARM, não ao criador
+└─ createdBy é auditoria, não ownership
+
+GERENTE (não-owner):
+├─ Pode deletar seus DADOS PESSOAIS (login, consentimento, preferências)
+├─ NÃO pode deletar dados da farm (pesagens, entregas, etc.)
+├─ Mesmo que ele tenha criado (createdBy = gerente)
+└─ Porque os dados pertencem à farm do Owner
+
+SANGRADOR (owner do próprio app):
+├─ Se farm.ownerId == sangrador.uid → Age como Produtor
+├─ Se farm.ownerId != sangrador.uid → Age como Gerente
+└─ Determinado em runtime pela comparação farm.ownerId vs userId
+```
+
+#### 16.4 Resumo de Decisão
+
+```dart
+// Pseudo-código para decisão LGPD
+Future<LgpdResult> handleLgpdDelete(String userId) async {
+  // 1. Sempre deleta dados pessoais (qualquer papel)
+  await deletePersonalData(userId); // login, consent, prefs
+
+  // 2. Verifica ownership para dados da farm
+  final farm = await FarmService.instance.getDefaultFarm();
+  if (farm != null && farm.ownerId == userId) {
+    // Owner: pode deletar tudo da farm
+    await deleteFarmData(farm.id, sourceApp: currentAppId);
+  } else {
+    // Não-owner: informa que dados da farm permanecem
+    result.addInfo(
+      'Dados da fazenda pertencem ao proprietário e não foram deletados.',
+    );
+  }
+
+  return result;
+}
+```
+
+---
+
+### 17. Cross-Reference (Atualizado)
+
+- **CORE-75**: Farm model, FarmOwnedMixin (base para sourceApp)
+- **CORE-76**: Safra global (totais por período)
+- **CORE-33**: CloudBackupService (implementação atual a ser atualizada)
+- **CORE-36**: DataDeletionService (atualizar para multi-app + ownership)
+- **CORE-37**: DataExportService (atualizar para multi-app + ownership)
+- **RUBBER-XX**: BorrachaBackupProvider (implementar nova interface)
+- **RAIN-XX**: ChuvaBackupProvider (implementar nova interface)
+- **CROP-XX**: CropBackupProvider (futuro)
+- **CASH-XX**: CashBackupProvider (futuro)
+- **LGPD Art. 18, V**: Direito à portabilidade dos dados
+- **LGPD Art. 18, VI**: Direito à eliminação dos dados
+
+---
+
+## Phase CORE-76: Safra Global + Ciclos de Cultura (Suporte RuraCrop)
+
+### Status: [TODO]
+**Priority**: 🟡 ARCHITECTURAL (Futuro - RuraCrop)
+**Objective**: Implementar modelo de Safra como "Ano Agrícola" global e Ciclos para agricultura anual.
+
+### Contexto de Negócio
+
+A Safra é o "guarda-chuva temporal" de todos os apps:
+
+```
+Safra Global (agro_core)
+└── "Safra 2025/2026" (Set/2025 - Ago/2026)
+    ├── RuraRubber: Pesagens de borracha (perene, sem ciclos)
+    ├── RuraCattle: Movimentações de gado (perene, sem ciclos)
+    └── RuraCrop: Ciclos de Cultura (anual, múltiplos ciclos)
+        ├── Ciclo 1: Soja (Verão) - Talhão 1
+        ├── Ciclo 2: Milho Safrinha - Talhão 1
+        └── Ciclo 1: Soja (Verão) - Talhão 2
+```
+
+### Diferença: Safra vs Ciclo
+
+| Conceito | Quem Usa | Descrição |
+|----------|----------|-----------|
+| **Safra** | Todos os apps | Ano agrícola (Set-Ago), janela de tempo |
+| **Ciclo** | Apenas RuraCrop | Instância de cultura em um talhão |
+
+### Modelo de Dados
+
+```dart
+/// Safra Global - Ano Agrícola (agro_core)
+@HiveType(typeId: 21)
+class Safra {
+  @HiveField(0)
+  String id;
+
+  @HiveField(1)
+  String farmId;           // UUID da Farm
+
+  @HiveField(2)
+  String nome;             // "Safra 2025/2026"
+
+  @HiveField(3)
+  DateTime dataInicio;     // 01/09/2025
+
+  @HiveField(4)
+  DateTime? dataFim;       // 31/08/2026 (null = em aberto)
+
+  @HiveField(5)
+  bool ativa;              // true se for a safra atual
+
+  // NOTA: Totais são CALCULADOS via query, não armazenados!
+  // Cada app calcula seus totais com WHERE data BETWEEN inicio AND fim
+}
+```
+
+### Arquitetura: Query-Based (Não Acumulador)
+
+**Princípio**: Não salvamos totais fixos. Salvamos registros individuais.
+O total é **calculado na hora** via query.
+
+```dart
+// ✅ CORRETO - Query dinâmica por período
+Future<double> getTotalKg(String safraId) async {
+  final safra = await getSafra(safraId);
+  return pesagens
+      .where((p) => p.data >= safra.dataInicio && p.data < safra.dataFim)
+      .fold(0.0, (sum, p) => sum + p.peso);
+}
+
+// ❌ ERRADO - Total fixo que "fura" se editar pesagem antiga
+// safra.totalKg = 15400;
+```
+
+### Implementation Plan
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 76.1 | **Modelo Safra**: Entidade com Hive adapter (typeId: 21) | ⏳ TODO |
+| 76.2 | **SafraService**: CRUD + auto-criar em Setembro + getAtiva() | ⏳ TODO |
+| 76.3 | **SafraChip Widget**: Chip compacto para header ("25/26") | ⏳ TODO |
+| 76.4 | **Encerrar Safra**: Define dataFim e cria nova automaticamente | ⏳ TODO |
+| 76.5 | **Query Helpers**: Métodos para filtrar por período da safra | ⏳ TODO |
+
+### Files to Create
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/models/safra.dart` | CREATE | Modelo Safra com Hive adapter |
+| `lib/services/safra_service.dart` | CREATE | Gestão de safras |
+| `lib/widgets/safra_chip.dart` | CREATE | Chip para header |
+| `lib/widgets/safra_bottom_sheet.dart` | CREATE | Seletor de safra |
+
+### L10n Keys Required
+- `safraGlobal`: "Safra"
+- `safraAtiva`: "Safra Ativa"
+- `safraChipLabel`: "{ano1}/{ano2}"
+- `encerrarSafra`: "Encerrar Safra"
+- `novaSafraCriada`: "Nova safra criada: {nome}"
+- `safraAnterior`: "Safras Anteriores"
+
+### Cross-Reference
+- **RUBBER-17**: Usa Safra para controle de produção
+- **CROP-01**: Ciclos vinculados à Safra
+- **CASH-04**: DRE por Safra
+- **CATTLE-XX**: Movimentações por Safra
 
 ---
 

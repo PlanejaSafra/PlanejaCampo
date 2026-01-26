@@ -42,6 +42,10 @@ export 'models/user_cloud_data.dart';
 export 'models/property.dart';
 export 'models/talhao.dart';
 
+// Models (Farm - Multi-User Preparation)
+export 'models/farm.dart';
+export 'models/farm_owned_mixin.dart';
+
 // Services (Auth & Cloud Sync)
 export 'auth/agro_auth_gate.dart';
 export 'services/auth_service.dart';
@@ -51,6 +55,9 @@ export 'services/user_cloud_service.dart';
 export 'services/property_service.dart';
 export 'services/property_helper.dart';
 export 'services/talhao_service.dart';
+
+// Services (Farm - Multi-User Preparation)
+export 'services/farm_service.dart';
 
 // Services (Backup)
 export 'services/cloud_backup_service.dart';
