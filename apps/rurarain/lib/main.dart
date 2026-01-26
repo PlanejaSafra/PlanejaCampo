@@ -40,12 +40,11 @@ Future<void> main() async {
   }
 
   // Initialize App Check (only in release builds)
-  if (!kDebugMode) {
-    await FirebaseAppCheck.instance.activate(
-      androidProvider: AndroidProvider.playIntegrity,
-      appleProvider: AppleProvider.appAttest,
-    );
-  }
+  await FirebaseAppCheck.instance.activate(
+    androidProvider:
+        kDebugMode ? AndroidProvider.debug : AndroidProvider.playIntegrity,
+    appleProvider: kDebugMode ? AppleProvider.debug : AppleProvider.appAttest,
+  );
 
   // Initialize Hive
   await Hive.initFlutter();
@@ -78,7 +77,8 @@ Future<void> main() async {
   CloudBackupService.instance.registerProvider(ChuvaBackupProvider());
 
   // CORE-77: Register LGPD deletion provider
-  DataDeletionService.instance.registerDeletionProvider(ChuvaDeletionProvider());
+  DataDeletionService.instance
+      .registerDeletionProvider(ChuvaDeletionProvider());
 
   // CORE-77: Initialize farm and dependency services
   await FarmService.instance.init();
