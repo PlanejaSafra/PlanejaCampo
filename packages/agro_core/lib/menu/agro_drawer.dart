@@ -74,15 +74,12 @@ class AgroDrawer extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 if (appLogoLightPath != null || appLogoDarkPath != null)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: Image.asset(
-                      theme.brightness == Brightness.dark
-                          ? (appLogoDarkPath ?? appLogoLightPath!)
-                          : (appLogoLightPath ?? appLogoDarkPath!),
-                      height: 80,
-                      fit: BoxFit.contain,
-                    ),
+                  Image.asset(
+                    theme.brightness == Brightness.dark
+                        ? (appLogoDarkPath ?? appLogoLightPath!)
+                        : (appLogoLightPath ?? appLogoDarkPath!),
+                    height: 76,
+                    fit: BoxFit.contain,
                   )
                 else
                   Icon(
@@ -90,7 +87,7 @@ class AgroDrawer extends StatelessWidget {
                     size: 48,
                     color: theme.colorScheme.onPrimary,
                   ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 8),
                 Text(
                   appName,
                   style: theme.textTheme.titleLarge?.copyWith(
