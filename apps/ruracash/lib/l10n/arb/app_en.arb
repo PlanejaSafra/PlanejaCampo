@@ -1,0 +1,109 @@
+{
+  "@@locale": "en",
+
+  "appName": "RuraCash",
+
+  "homeTitle": "Expenses",
+  "homeEmpty": "No expenses recorded this month.",
+  "homeTotal": "Monthly Total",
+  "homeAddFirst": "Tap + to record your first expense",
+
+  "calculatorTitle": "New Expense",
+  "calculatorSave": "SAVE",
+  "calculatorSaved": "Saved!",
+  "calculatorValueRequired": "Enter a value",
+  "calculatorCategoryRequired": "Select a category",
+  "calculatorValueDisplay": "R$ {value}",
+  "@calculatorValueDisplay": {
+    "placeholders": {
+      "value": {"type": "String"}
+    }
+  },
+
+  "catMaoDeObra": "Labor",
+  "catAdubo": "Fertilizer",
+  "catDefensivos": "Pesticides",
+  "catCombustivel": "Fuel",
+  "catManutencao": "Maintenance",
+  "catEnergia": "Energy/Water",
+  "catOutros": "Other",
+
+  "despesaDeleteTitle": "Delete Expense?",
+  "despesaDeleteMessage": "Do you really want to delete this expense?",
+  "despesaDeleteConfirm": "Delete",
+  "despesaDeleteCancel": "Cancel",
+  "despesaDeleted": "Expense deleted",
+  "despesaUndo": "Undo",
+
+  "filterAll": "All",
+  "filterMonth": "Month",
+  "filterCategory": "Category",
+
+  "centroCustoTitle": "Cost Centers",
+  "centroCustoEmpty": "No cost centers registered",
+  "centroCustoAdd": "Add Center",
+  "centroCustoNome": "Center Name",
+  "centroCustoNomeRequired": "Name is required",
+  "centroCustoSave": "Save",
+  "centroCustoDelete": "Delete Center",
+  "centroCustoDeleteConfirm": "Delete this cost center?",
+  "centroCustoDefault": "General",
+  "centroCustoSeringal": "Rubber Plantation",
+  "centroCustoGado": "Cattle",
+  "centroCustoLavoura": "Crops",
+  "centroCustoSede": "Headquarters",
+  "centroCustoVeiculos": "Vehicles",
+  "centroCustoSelectorLabel": "Cost Center",
+  "centroCustoSelectorHint": "Select expense destination",
+
+  "dreTitle": "Farm Income Statement",
+  "dreReceitas": "Revenue",
+  "dreDespesas": "Expenses",
+  "dreResultado": "Net Result",
+  "dreMargem": "Margin",
+  "drePeriodoMes": "Month",
+  "drePeriodoTrimestre": "Quarter",
+  "drePeriodoSafra": "Season",
+  "drePeriodoAno": "Year",
+  "dreSemDados": "Record expenses to see the income statement.",
+  "dreReceitaBorracha": "Rubber",
+  "dreReceitaGado": "Cattle",
+  "dreReceitaOutras": "Other Revenue",
+  "dreExportarPdf": "Export PDF",
+  "drePdfGerado": "PDF generated successfully!",
+  "drePdfErro": "Error generating PDF",
+  "dreComparativo": "vs previous period",
+  "dreAumento": "+{percent}%",
+  "@dreAumento": {
+    "placeholders": {
+      "percent": {"type": "String"}
+    }
+  },
+  "dreReducao": "-{percent}%",
+  "@dreReducao": {
+    "placeholders": {
+      "percent": {"type": "String"}
+    }
+  },
+
+  "drawerHome": "Home",
+  "drawerCalculator": "New Expense",
+  "drawerCentros": "Cost Centers",
+  "drawerDre": "Income Statement",
+  "drawerRelatorios": "Reports",
+
+  "descricaoOpcional": "Description (optional)",
+  "dataLabel": "Date",
+  "hoje": "Today",
+  "ontem": "Yesterday",
+  "observacaoHint": "E.g.: Fertilizer purchase at the cooperative",
+
+  "okButton": "OK",
+  "simButton": "Yes",
+  "naoButton": "No",
+  "salvarButton": "Save",
+  "cancelarButton": "Cancel",
+  "currencySymbol": "R$",
+
+  "aboutDescription": "Farm expense management and financial analysis."
+}

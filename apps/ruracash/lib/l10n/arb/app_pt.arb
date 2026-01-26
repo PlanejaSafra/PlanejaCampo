@@ -1,0 +1,109 @@
+{
+  "@@locale": "pt",
+
+  "appName": "RuraCash",
+
+  "homeTitle": "Despesas",
+  "homeEmpty": "Nenhuma despesa registrada este mês.",
+  "homeTotal": "Total do Mês",
+  "homeAddFirst": "Toque + para registrar sua primeira despesa",
+
+  "calculatorTitle": "Nova Despesa",
+  "calculatorSave": "SALVAR",
+  "calculatorSaved": "Salvo!",
+  "calculatorValueRequired": "Digite um valor",
+  "calculatorCategoryRequired": "Selecione uma categoria",
+  "calculatorValueDisplay": "R$ {value}",
+  "@calculatorValueDisplay": {
+    "placeholders": {
+      "value": {"type": "String"}
+    }
+  },
+
+  "catMaoDeObra": "Mão de Obra",
+  "catAdubo": "Adubo",
+  "catDefensivos": "Defensivos",
+  "catCombustivel": "Combustível",
+  "catManutencao": "Manutenção",
+  "catEnergia": "Energia/Água",
+  "catOutros": "Outros",
+
+  "despesaDeleteTitle": "Excluir Despesa?",
+  "despesaDeleteMessage": "Deseja realmente excluir esta despesa?",
+  "despesaDeleteConfirm": "Excluir",
+  "despesaDeleteCancel": "Cancelar",
+  "despesaDeleted": "Despesa excluída",
+  "despesaUndo": "Desfazer",
+
+  "filterAll": "Todas",
+  "filterMonth": "Mês",
+  "filterCategory": "Categoria",
+
+  "centroCustoTitle": "Centros de Custo",
+  "centroCustoEmpty": "Nenhum centro de custo cadastrado",
+  "centroCustoAdd": "Adicionar Centro",
+  "centroCustoNome": "Nome do Centro",
+  "centroCustoNomeRequired": "Nome é obrigatório",
+  "centroCustoSave": "Salvar",
+  "centroCustoDelete": "Excluir Centro",
+  "centroCustoDeleteConfirm": "Excluir este centro de custo?",
+  "centroCustoDefault": "Geral",
+  "centroCustoSeringal": "Seringal",
+  "centroCustoGado": "Gado",
+  "centroCustoLavoura": "Lavoura",
+  "centroCustoSede": "Sede",
+  "centroCustoVeiculos": "Veículos",
+  "centroCustoSelectorLabel": "Centro de Custo",
+  "centroCustoSelectorHint": "Selecione o destino da despesa",
+
+  "dreTitle": "DRE Fazenda",
+  "dreReceitas": "Receitas",
+  "dreDespesas": "Despesas",
+  "dreResultado": "Resultado",
+  "dreMargem": "Margem",
+  "drePeriodoMes": "Mês",
+  "drePeriodoTrimestre": "Trimestre",
+  "drePeriodoSafra": "Safra",
+  "drePeriodoAno": "Ano",
+  "dreSemDados": "Registre despesas para ver o DRE.",
+  "dreReceitaBorracha": "Borracha",
+  "dreReceitaGado": "Gado",
+  "dreReceitaOutras": "Outras Receitas",
+  "dreExportarPdf": "Exportar PDF",
+  "drePdfGerado": "PDF gerado com sucesso!",
+  "drePdfErro": "Erro ao gerar PDF",
+  "dreComparativo": "vs período anterior",
+  "dreAumento": "+{percent}%",
+  "@dreAumento": {
+    "placeholders": {
+      "percent": {"type": "String"}
+    }
+  },
+  "dreReducao": "-{percent}%",
+  "@dreReducao": {
+    "placeholders": {
+      "percent": {"type": "String"}
+    }
+  },
+
+  "drawerHome": "Início",
+  "drawerCalculator": "Nova Despesa",
+  "drawerCentros": "Centros de Custo",
+  "drawerDre": "DRE Fazenda",
+  "drawerRelatorios": "Relatórios",
+
+  "descricaoOpcional": "Descrição (opcional)",
+  "dataLabel": "Data",
+  "hoje": "Hoje",
+  "ontem": "Ontem",
+  "observacaoHint": "Ex: Compra de adubo na cooperativa",
+
+  "okButton": "OK",
+  "simButton": "Sim",
+  "naoButton": "Não",
+  "salvarButton": "Salvar",
+  "cancelarButton": "Cancelar",
+  "currencySymbol": "R$",
+
+  "aboutDescription": "Controle de despesas e análise financeira da sua fazenda."
+}

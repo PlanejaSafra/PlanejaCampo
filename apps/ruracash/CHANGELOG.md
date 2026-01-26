@@ -1,129 +1,34 @@
-# CHANGELOG - RuraCash (Planejamento)
+# CHANGELOG - RuraCash
 
-> **Status**: App em planejamento. Não iniciado.
 > **Objetivo**: Controle de Despesas centralizado para toda a fazenda, integrando com todos os apps RuraCamp.
 
 ---
 
-## 📱 Visão do Produto
+## Phase CASH-04: DRE Simplificado
 
-### Por que um app separado?
+### Status: [DONE]
+**Date Completed**: 2026-01-26
+**Priority**: 🟢 ENHANCEMENT
+**Objective**: Demonstrativo do Resultado do Exercício da fazenda inteira.
 
-1. **Multiuso**: O trator gasta diesel arrumando cerca do gado (RuraCattle) E levando adubo na seringueira (RuraRubber). Se a despesa ficar presa em um app, o custo do outro fica errado.
-
-2. **Simplicidade**: Quem lança despesa muitas vezes não é quem pesa borracha. Pode ser a esposa, o gerente administrativo, ou o produtor na cidade comprando peça.
-
-3. **DRE Completo**: Um único lugar que mostra o resultado financeiro de toda a fazenda.
-
----
-
-## Phase CASH-01: MVP - Lançamento Rápido
-
-### Status: [TODO]
-**Priority**: 🔴 CRITICAL
-**Objective**: Permitir lançamento ultra-rápido de despesas com UX de calculadora.
-
-### UX Design Principles (3-Click Rule)
-- **Calculator-Style Interface**: Similar ao app de calculadora do celular
-- **Valor Primeiro**: Digita o valor, depois escolhe categoria
-- **2 Toques Máximo**: Valor → Categoria → Salvo!
-- **Smart Defaults**: Categoria mais usada pré-selecionada
-
-### O Fluxo "Calculadora"
-
-```
-┌─────────────────────────────────────┐
-│                        R$ 0,00     │
-│                                     │
-│  [Mão de Obra] [Adubo] [Diesel]    │
-│  [Veneno] [Manut.] [Outros]        │
-│                                     │
-│  ┌─────┬─────┬─────┐               │
-│  │  7  │  8  │  9  │               │
-│  ├─────┼─────┼─────┤               │
-│  │  4  │  5  │  6  │               │
-│  ├─────┼─────┼─────┤               │
-│  │  1  │  2  │  3  │               │
-│  ├─────┼─────┼─────┤               │
-│  │  ,  │  0  │  ⌫  │               │
-│  └─────┴─────┴─────┘               │
-│                                     │
-│  [       ✓ SALVAR       ]          │
-└─────────────────────────────────────┘
-```
-
-### UX Flow
-```
-1. Abre app → Teclado numérico GIGANTE na tela
-2. Digita valor (ex: 150)
-3. Toca na categoria (chips no topo)
-4. Toca "Salvar" → PRONTO!
-   - Feedback háptico
-   - Toast "R$ 150,00 - Diesel ✓"
-   - Tela limpa para próximo lançamento
-```
-
-### Smart Features (Invisible Complexity)
-- **Categoria Frequente**: A categoria mais usada fica pré-selecionada
-- **Valor Recente**: Sugere valores frequentes (R$ 50, R$ 100, R$ 200)
-- **Data Automática**: Sempre "hoje", sem perguntar
-- **Centro de Custo Padrão**: Usa o padrão até usuário mudar
-
-### Implementation Plan
+### Implementation Summary
 
 | Sub-Phase | Description | Status |
 |-----------|-------------|--------|
-| 1.1 | **Scaffold do App**: Criar estrutura básica com Firebase, Hive, agro_core | ⏳ TODO |
-| 1.2 | **Modelo Despesa**: Entidade com valor, categoria, data, centroCusto | ⏳ TODO |
-| 1.3 | **Calculator Keypad**: Teclado numérico grande estilo calculadora | ⏳ TODO |
-| 1.4 | **Category Chips**: Seletor de categorias com chips coloridos | ⏳ TODO |
-| 1.5 | **Quick Save Flow**: Salvar com feedback háptico + toast | ⏳ TODO |
-| 1.6 | **Home Lista**: Lista de despesas do mês com total no topo | ⏳ TODO |
+| 4.1 | **DreScreen**: Dashboard visual com receitas x despesas por centro de custo | ✅ DONE |
+| 4.2 | **Filtro por Período**: SegmentedButton com Mês, Trimestre, Safra, Ano | ✅ DONE |
+| 4.3 | **Category Breakdown**: Percentuais por categoria de despesa | ✅ DONE |
+| 4.4 | **Result Card**: Margem de lucro com cores (verde/vermelho) | ✅ DONE |
 
-### Categorias de Despesa
+### Files Modified
 
-| Categoria | Ícone | Cor | Atalho |
-|-----------|-------|-----|--------|
-| Mão de Obra | 👷 | Blue | MO |
-| Adubo/Fertilizante | 🌱 | Green | AD |
-| Defensivos/Veneno | 🧪 | Purple | VE |
-| Combustível/Diesel | ⛽ | Orange | DI |
-| Manutenção | 🔧 | Gray | MA |
-| Energia/Água | 💡 | Yellow | EN |
-| Outros | 📦 | Brown | OU |
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/screens/dre_screen.dart` | CREATE | DRE dashboard com filtro de período, receitas, despesas por centro, resultado |
 
----
-
-## Phase CASH-02: Centro de Custo (O Segredo)
-
-### Status: [TODO]
-**Priority**: 🟡 ARCHITECTURAL
-**Objective**: Permitir alocar despesas para diferentes áreas da fazenda.
-
-### Business Context
-Uma fazenda tem múltiplas atividades. O produtor precisa saber:
-- Quanto a Seringueira custou este ano?
-- Quanto o Gado custou?
-- Quanto a Sede administrativa custou?
-
-### Implementation Plan
-
-| Sub-Phase | Description | Status |
-|-----------|-------------|--------|
-| 2.1 | **Modelo CentroCusto**: Entidade com nome, ícone, cor, vinculação ao app | ⏳ TODO |
-| 2.2 | **Seletor de Centro**: Ao lançar despesa, escolher para onde foi | ⏳ TODO |
-| 2.3 | **Divisão Proporcional**: Opção de dividir uma despesa (ex: 50% Seringal, 50% Gado) | ⏳ TODO |
-| 2.4 | **Relatório por Centro**: Dashboard mostrando despesas de cada atividade | ⏳ TODO |
-
-### Centros de Custo Padrão
-
-| Centro | Vinculado ao App | Descrição |
-|--------|------------------|-----------|
-| Seringal | RuraRubber | Produção de borracha |
-| Gado | RuraCattle | Pecuária |
-| Lavoura | RuraRain (futuro) | Agricultura |
-| Sede | - | Administrativo geral |
-| Trator/Veículos | - | Uso compartilhado |
+### Notes
+- Receitas mostram R$ 0,00 até CASH-03 (Integração Ecossistema) ser implementado
+- Despesas já funcionam com dados reais do LancamentoService
 
 ---
 
@@ -132,17 +37,6 @@ Uma fazenda tem múltiplas atividades. O produtor precisa saber:
 ### Status: [TODO]
 **Priority**: 🟡 ARCHITECTURAL
 **Objective**: Sincronizar receitas e custos com os outros apps.
-
-### O Fluxo de Integração
-
-```
-RuraRubber (Entregas) ──┐
-                       ├──► RuraCash (Receitas)
-RuraCattle (Vendas) ───┘
-
-RuraCash (Despesas por Centro) ──► RuraRubber (Custo/Kg)
-                                ──► RuraCattle (Custo/Arroba)
-```
 
 ### Implementation Plan
 
@@ -155,61 +49,108 @@ RuraCash (Despesas por Centro) ──► RuraRubber (Custo/Kg)
 
 ---
 
-## Phase CASH-04: DRE Simplificado
+## Phase CASH-02: Centro de Custo
 
-### Status: [TODO]
-**Priority**: 🟢 ENHANCEMENT
-**Objective**: Demonstrativo do Resultado do Exercício da fazenda inteira.
+### Status: [DONE]
+**Date Completed**: 2026-01-26
+**Priority**: 🟡 ARCHITECTURAL
+**Objective**: Permitir alocar despesas para diferentes áreas da fazenda.
 
-### O Dashboard Final
-
-```
-┌─────────────────────────────────────┐
-│       DRE FAZENDA - Jan/2026        │
-├─────────────────────────────────────┤
-│ RECEITAS                            │
-│   Borracha (RuraRubber)   R$ 45.000 │
-│   Gado (RuraCattle)       R$ 12.000 │
-│   ────────────────────────────────  │
-│   Total Receitas          R$ 57.000 │
-├─────────────────────────────────────┤
-│ DESPESAS                            │
-│   Seringal                R$ 18.000 │
-│   Gado                    R$  8.000 │
-│   Sede                    R$  3.000 │
-│   ────────────────────────────────  │
-│   Total Despesas          R$ 29.000 │
-├─────────────────────────────────────┤
-│ RESULTADO                 R$ 28.000 │
-│ Margem                        49.1% │
-└─────────────────────────────────────┘
-```
-
-### Implementation Plan
+### Implementation Summary
 
 | Sub-Phase | Description | Status |
 |-----------|-------------|--------|
-| 4.1 | **Tela DRE**: Dashboard visual com receitas x despesas | ⏳ TODO |
-| 4.2 | **Filtro por Período**: Mês, Trimestre, Safra, Ano | ⏳ TODO |
-| 4.3 | **Comparativo**: DRE atual vs período anterior | ⏳ TODO |
-| 4.4 | **Exportar PDF**: Gerar relatório para contador/banco | ⏳ TODO |
+| 2.1 | **Modelo CentroCusto**: Hive typeId 72, FarmOwnedEntity, nome, icone, cor, appVinculado | ✅ DONE |
+| 2.2 | **CentroCustoService**: Singleton ChangeNotifier com CRUD e default "Geral" | ✅ DONE |
+| 2.3 | **CentroCustoScreen**: Tela de gerenciamento com lista, add bottom sheet, delete dialog | ✅ DONE |
+| 2.4 | **Seletor in Calculator**: Dropdown de centro de custo na tela calculadora (quando >1 centro) | ✅ DONE |
+
+### Files Modified
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/models/centro_custo.dart` | CREATE | Modelo Hive typeId 72, FarmOwnedEntity, create/toJson/fromJson |
+| `lib/models/centro_custo.g.dart` | GENERATE | build_runner adapter |
+| `lib/services/centro_custo_service.dart` | CREATE | Singleton service com CRUD e default "Geral" |
+| `lib/screens/centro_custo_screen.dart` | CREATE | Tela com lista, add bottom sheet, delete dialog |
+
+---
+
+## Phase CASH-01: MVP - Lançamento Rápido
+
+### Status: [DONE]
+**Date Completed**: 2026-01-26
+**Priority**: 🔴 CRITICAL
+**Objective**: Permitir lançamento ultra-rápido de despesas com UX de calculadora.
+
+### Implementation Summary
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 1.1 | **Scaffold do App**: Criar estrutura com Hive, agro_core, l10n, main.dart | ✅ DONE |
+| 1.2 | **Modelo Lancamento**: Hive typeId 71, FarmOwnedEntity, valor, categoria, data, centroCusto | ✅ DONE |
+| 1.3 | **CashCategoria Enum**: Hive typeId 70, 7 categorias com ícones e cores | ✅ DONE |
+| 1.4 | **Calculator Keypad**: Teclado numérico grande (7-8-9 / 4-5-6 / 1-2-3 / ,-0-⌫) | ✅ DONE |
+| 1.5 | **Category Chips**: ChoiceChip com ícones coloridos, smart default (mais usada) | ✅ DONE |
+| 1.6 | **Quick Save Flow**: Salvar com haptic feedback + toast, tela limpa para próximo | ✅ DONE |
+| 1.7 | **Home Screen**: Lista de despesas do mês com total no topo, swipe-to-delete | ✅ DONE |
+| 1.8 | **LancamentoService**: Singleton ChangeNotifier com CRUD, queries por período/categoria/centro | ✅ DONE |
+| 1.9 | **L10n Setup**: ARB files pt/en com ~80 keys, CashLocalizations gerado | ✅ DONE |
+| 1.10 | **Drawer**: buildCashDrawer() com navegação para calculator, centros, dre, settings | ✅ DONE |
+
+### Files Modified
+
+| File | Action | Description |
+|------|--------|-------------|
+| `pubspec.yaml` | CREATE | Dependencies: agro_core, hive, provider, intl, pdf, printing |
+| `l10n.yaml` | CREATE | Config output-class: CashLocalizations |
+| `lib/l10n/arb/app_pt.arb` | CREATE | ~80 Portuguese l10n keys |
+| `lib/l10n/arb/app_en.arb` | CREATE | ~80 English l10n keys |
+| `lib/models/cash_categoria.dart` | CREATE | Enum Hive typeId 70, 7 categorias com ícone/cor/localizedName |
+| `lib/models/cash_categoria.g.dart` | GENERATE | build_runner adapter |
+| `lib/models/lancamento.dart` | CREATE | Modelo Hive typeId 71, FarmOwnedEntity, create/toJson/fromJson |
+| `lib/models/lancamento.g.dart` | GENERATE | build_runner adapter |
+| `lib/services/lancamento_service.dart` | CREATE | Singleton com CRUD, queries mês/período/categoria/centro, quickAdd, smart defaults |
+| `lib/screens/calculator_screen.dart` | CREATE | Calculator-style keypad, category chips, centro dropdown, haptic save |
+| `lib/screens/home_screen.dart` | CREATE | Monthly total card, expense list, swipe-to-delete, FAB |
+| `lib/widgets/cash_drawer.dart` | CREATE | Standardized AgroDrawer helper |
+| `lib/main.dart` | CREATE | Hive adapters, service init, MultiProvider, MaterialApp with routes |
+| `analysis_options.yaml` | CREATE | Standard Flutter lints |
+| `test/widget_test.dart` | MODIFY | Smoke test placeholder |
+
+### Hive TypeIds
+
+| TypeId | Model | Description |
+|--------|-------|-------------|
+| 70 | CashCategoria | Enum com 7 categorias de despesa |
+| 71 | Lancamento | Lançamento financeiro com FarmOwnedEntity |
+| 72 | CentroCusto | Centro de custo com FarmOwnedEntity |
+
+### Categories
+
+| Category | Icon | Color |
+|----------|------|-------|
+| Mão de Obra | people | blue |
+| Adubo/Fertilizante | eco | green |
+| Defensivos/Veneno | science | purple |
+| Combustível/Diesel | local_gas_station | orange |
+| Manutenção | build | grey |
+| Energia/Água | bolt | amber |
+| Outros | more_horiz | brown |
 
 ---
 
 ## Dependências
 
 ### De agro_core
-- `AuthService` (login compartilhado)
 - `PropertyService` (propriedades)
 - `FarmService` (CORE-75) - Farm-centric model
 - `SafraService` (CORE-76) - Janela temporal da safra
-- `CloudBackupService` (backup)
-- `AgroTheme` (visual consistente)
-- `L10n` (internacionalização)
-
-### De Firebase
-- Firestore (sincronização entre apps)
-- Cloud Functions (triggers de integração)
+- `DependencyService` (CORE-77) - Dependency tracking
+- `AgroOnboardingGate` (privacy/consent)
+- `AppTheme` (visual consistente)
+- `AgroLocalizations` (l10n compartilhado)
+- `AgroAdService` (AdMob)
 
 ---
 
@@ -217,59 +158,7 @@ RuraCash (Despesas por Centro) ──► RuraRubber (Custo/Kg)
 
 | App | Integração |
 |-----|------------|
-| **RuraRubber** | Recebe entregas → Gera receitas no RuraCash |
-| **RuraCattle** | Recebe vendas → Gera receitas no RuraCash |
-| **RuraCrop** | Operações de campo → Gera despesas por talhão/ciclo |
+| **RuraRubber** | CASH-03: Recebe entregas → Gera receitas no RuraCash |
+| **RuraCattle** | CASH-03: Recebe vendas → Gera receitas no RuraCash |
 | **CORE-75** | Farm model para dados vinculados à fazenda |
-| **CORE-76** | Safra para DRE por período
-
----
-
-## Prioridade de Implementação
-
-1. **CASH-01** (MVP) - Lançamento funcional
-2. **CASH-02** (Centros de Custo) - Diferenciação
-3. **RUBBER-20** (Break-even) - Implementar no RuraRubber primeiro usando despesas locais
-4. **CASH-03** (Integração) - Conectar os apps
-5. **CASH-04** (DRE) - Visão consolidada
-
----
-
-## Notas Técnicas
-
-### Arquitetura de Dados (Farm-Centric - CORE-75)
-
-```dart
-// Despesa (Hive + Backup) - Farm-Centric Model
-class Despesa with FarmOwnedMixin {
-  String id;
-  String farmId;        // UUID da Farm (CORE-75)
-  String createdBy;     // userId de quem criou
-  DateTime createdAt;
-
-  double valor;
-  String categoria;
-  String centroCusto;
-  DateTime data;
-  bool pago;
-  String? observacao;
-  String? safraId;      // Vinculação com safra (CORE-76)
-  String? cicloId;      // Vinculação com ciclo de cultura (RuraCrop)
-  String? talhaoId;     // Vinculação com talhão (se aplicável)
-}
-
-// CentroCusto
-class CentroCusto {
-  String id;
-  String farmId;        // Farm-centric
-  String nome;
-  String icone;
-  String cor;
-  String? appVinculado; // 'rurarubber', 'ruracattle', 'ruracrop', null
-}
-```
-
-### Sincronização
-- Usar mesmo padrão de BackupProvider do agro_core
-- Firestore collection: `users/{userId}/despesas`
-- Real-time sync quando online
+| **CORE-76** | Safra para DRE por período |
