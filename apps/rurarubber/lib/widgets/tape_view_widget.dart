@@ -66,18 +66,15 @@ class TapeViewWidget extends StatelessWidget {
           Expanded(
             child: ListView.separated(
               padding: const EdgeInsets.all(16),
-              reverse: true, // Show newest at bottom like a receipt? Or top?
-              // Usually calculators show history:
-              // 120
-              // + 95
-              // = 215
-              // Let's scroll to bottom logic.
+              reverse: true,
               itemCount: entries.length,
               separatorBuilder: (_, __) => const Divider(height: 1),
               itemBuilder: (context, index) {
                 // If we reverse, index 0 is the last item added
                 final value = entries[entries.length - 1 - index];
-                return Padding(
+                final isLastEntry = index == 0;
+
+                final entryRow = Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -94,6 +91,35 @@ class TapeViewWidget extends StatelessWidget {
                     ],
                   ),
                 );
+
+                // 16.3 Swipe-to-Undo: only the last entry is dismissible
+                if (isLastEntry && onDeleteLast != null) {
+                  return Dismissible(
+                    key: ValueKey('entry_${entries.length}_$value'),
+                    direction: DismissDirection.endToStart,
+                    onDismissed: (_) => onDeleteLast!(),
+                    background: Container(
+                      alignment: Alignment.centerRight,
+                      padding: const EdgeInsets.only(right: 16),
+                      color: Colors.red.shade100,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Text(
+                            l10n.tapeSwipeToDelete,
+                            style: TextStyle(color: Colors.red.shade700),
+                          ),
+                          const SizedBox(width: 8),
+                          Icon(Icons.delete_outline,
+                              color: Colors.red.shade700),
+                        ],
+                      ),
+                    ),
+                    child: entryRow,
+                  );
+                }
+
+                return entryRow;
               },
             ),
           ),

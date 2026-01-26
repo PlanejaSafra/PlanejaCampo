@@ -73,6 +73,7 @@
   "mercadoOfferInterested": "I'm Interested",
   "mercadoFabSnackbar": "Buyer features coming soon",
   "mercadoBuyerRole": "Buyer",
+  "mercadoFirestoreError": "Unable to load offers. Check your connection.",
 
   "criarOfertaTitle": "Create Offer",
   "criarOfertaTitleField": "Offer Title",
@@ -111,6 +112,9 @@
   "profileSangradorDesc": "I collect latex and weigh rubber",
   "profileContinue": "Continue",
   "profileSelectOne": "Select a profile to continue",
+  "profileLabelProdutor": "Producer",
+  "profileLabelComprador": "Buyer",
+  "profileLabelSangrador": "Tapper",
 
   "homeTitle": "Home",
   "homeWelcome": "Hello, {name}!",
@@ -131,17 +135,17 @@
   "homeViewHistoryDesc": "View past deliveries",
   "homeViewMarket": "Market",
   "homeViewMarketDesc": "View purchase offers",
-  
+
   "homeSummaryTitle": "Monthly Summary",
   "homeSummaryDeliveries": "Deliveries",
   "homeSummaryTotalWeight": "Total Weight",
   "homeSummaryTotalValue": "Total Value",
   "homeSummaryNoData": "No deliveries this month",
-  
+
   "homeRecentDeliveries": "Recent Deliveries",
   "homeNoRecentDeliveries": "No recent deliveries",
   "homeViewAllDeliveries": "View all",
-  
+
   "homeMarketOffers": "Market Offers",
   "homeNoMarketOffers": "No offers available",
   "homeViewAllOffers": "View all",
@@ -158,6 +162,12 @@
   "marketLocationFilterTitle": "Location Filter",
   "marketLocationFilterMessage": "The location filter is based on your main registered property. To change it, go to Settings > Properties and update your location.",
   "marketWhatsappMessage": "Hello, I saw your offer on RuraRubber ({buyerName}). I have production in {region}.",
+  "@marketWhatsappMessage": {
+    "placeholders": {
+      "buyerName": {"type": "String"},
+      "region": {"type": "String"}
+    }
+  },
   "totalLabel": "Total",
   "currencySymbol": "R$",
 
@@ -268,5 +278,140 @@
   "criarVagaPublishing": "Publishing...",
   "criarVagaSuccess": "Post published successfully!",
   "criarVagaError": "Error publishing post",
-  "criarVagaJobDetails": "Job Details"
+  "criarVagaJobDetails": "Job Details",
+
+  "totalFazenda": "Farm Total",
+  "mediaMensal": "Monthly Average",
+  "doTotal": "of total",
+
+  "pesagemQuickAdd": "+{value} kg",
+  "@pesagemQuickAdd": {
+    "placeholders": {
+      "value": {"type": "int"}
+    }
+  },
+
+  "onboardingWelcome": "Welcome to RuraRubber!",
+  "onboardingSeringalName": "Your plantation name",
+  "onboardingSeringalHint": "My Plantation",
+  "onboardingYouAre": "You are:",
+  "onboardingHowManyTappers": "How many tappers do you have?",
+  "onboardingJustMe": "Just me",
+  "onboardingOneTwoTappers": "1-2",
+  "onboardingThreeFiveTappers": "3-5",
+  "onboardingSixPlusTappers": "6+",
+  "onboardingStart": "Start",
+  "onboardingTapperBossName": "Your boss name",
+  "onboardingTapperBossHint": "Producer name",
+
+  "usarTabelas": "Use tapping table system?",
+  "quantasTabelas": "How many tables?",
+  "arvoresPorTabela": "Trees per table (estimated)",
+  "naoUsarTabelas": "Don't use tables",
+  "tabelaSelecionada": "Table {numero}",
+  "@tabelaSelecionada": {
+    "placeholders": {
+      "numero": {"type": "int"}
+    }
+  },
+  "alertaEnforcada": "Warning: Table {numero} was tapped yesterday",
+  "@alertaEnforcada": {
+    "placeholders": {
+      "numero": {"type": "int"}
+    }
+  },
+  "gramasArvore": "g/tree",
+  "produtividadeTabela": "Productivity by Table",
+  "tabelasConfigTitle": "Configure Tables",
+  "tabelasEmpty": "No tables configured",
+
+  "registrarRecebivel": "Register Receivable?",
+  "dataPrevistaRecebimento": "Expected date",
+  "compradorOpcional": "Buyer (optional)",
+  "pular": "Skip",
+  "aReceberCard": "Receivables",
+  "estaSemana": "This week",
+  "esteMes": "This month",
+  "verTodos": "View all",
+  "marcarRecebido": "Mark as received",
+  "recebido": "Received",
+  "pendente": "Pending",
+  "recebivelSalvo": "Receivable saved!",
+  "recebiveisTitle": "Receivables",
+  "recebiveisEmpty": "No receivables registered",
+  "recebivelValor": "Amount",
+  "recebivelConfirmarRecebido": "Confirm receipt?",
+  "recebivelDataRecebimento": "Receipt date",
+
+  "contasPagarTitle": "Accounts Payable",
+  "contasPagarEmpty": "No pending accounts",
+  "contaPagarVencimento": "Due date",
+  "contaPagarPago": "Paid",
+  "contaPagarPendente": "Pending",
+  "contaPagarVencido": "Overdue",
+  "contaPagarBaixaLote": "Batch Payment",
+  "contaPagarMarcarPago": "Mark as paid",
+  "contaPagarFormaPagamento": "Payment method",
+  "contaPagarPix": "PIX",
+  "contaPagarTed": "TED",
+  "contaPagarDinheiro": "Cash",
+  "contaPagarRelatorio": "Purchase Report",
+  "contaPagarVenceEm": "{days, plural, =0{Due today} =1{Due tomorrow} other{Due in {days} days}}",
+  "@contaPagarVenceEm": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+
+  "breakEvenTitle": "Cost Analysis",
+  "custoKg": "Cost/Kg",
+  "margemLucro": "Profit Margin",
+  "precoMedioVenda": "Average Sale Price",
+  "despesaSafraTitle": "Season Expenses",
+  "despesaCategoria": "Category",
+  "despesaValor": "Amount",
+  "despesaData": "Date",
+  "despesaAddButton": "Add Expense",
+  "despesaSaveButton": "Save",
+  "despesaDeleteConfirm": "Delete this expense?",
+  "despesaCatMaoDeObra": "Labor",
+  "despesaCatAdubo": "Fertilizers",
+  "despesaCatDefensivos": "Pesticides",
+  "despesaCatCombustivel": "Fuel",
+  "despesaCatManutencao": "Maintenance",
+  "despesaCatOutros": "Other",
+  "breakEvenAlerta": "Warning: your cost increased {percent}% this month",
+  "@breakEvenAlerta": {
+    "placeholders": {
+      "percent": {"type": "String"}
+    }
+  },
+  "breakEvenSemDados": "Record expenses and deliveries to see cost analysis.",
+  "totalDespesas": "Total Expenses",
+  "totalProducao": "Total Production",
+
+  "raioXParceiro": "Partner Details",
+  "totalSafra": "Season Total",
+  "mediaQuinzenal": "Biweekly Average",
+  "periodo15Dias": "15 Days",
+  "periodoMes": "Month",
+  "periodoSafra": "Season",
+  "acimaDaMedia": "Above average",
+  "abaixoDaMedia": "Below average",
+  "verExtratoFinanceiro": "View Financial Statement",
+  "mediaFazenda": "Farm Average",
+  "producaoLabel": "Production",
+  "comparativoLabel": "Comparison",
+  "drawerBreakEven": "Cost Analysis",
+  "drawerRecebiveis": "Receivables",
+  "drawerContasPagar": "Accounts Payable",
+  "okButton": "OK",
+  "simButton": "Yes",
+  "naoButton": "No",
+  "salvarButton": "Save",
+  "cancelarButton": "Cancel",
+
+  "pesagemNightModeOn": "Night mode on",
+  "pesagemNightModeOff": "Night mode off",
+  "tapeSwipeToDelete": "Swipe to remove"
 }

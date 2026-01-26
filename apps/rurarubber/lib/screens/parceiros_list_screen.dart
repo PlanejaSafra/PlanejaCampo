@@ -4,6 +4,7 @@ import 'package:agro_core/agro_core.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../services/parceiro_service.dart';
 import 'parceiro_form_screen.dart';
+import '../widgets/rubber_drawer.dart';
 
 class ParceirosListScreen extends StatefulWidget {
   const ParceirosListScreen({super.key});
@@ -20,12 +21,7 @@ class _ParceirosListScreenState extends State<ParceirosListScreen> {
       appBar: AppBar(
         title: Text(l10n.parceirosTitle),
       ),
-      drawer: AgroDrawer(
-        appName: 'RuraRubber',
-        versionText: '1.0.0',
-        onNavigate: (route) =>
-            Navigator.pushReplacementNamed(context, '/$route'),
-      ),
+      drawer: buildRubberDrawer(context: context, l10n: l10n),
       body: Consumer<ParceiroService>(
         builder: (context, service, child) {
           final parceiros = service.parceiros;

@@ -5,6 +5,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:intl/intl.dart';
 import '../models/market_offer.dart';
+import '../widgets/rubber_drawer.dart';
 
 class MercadoScreen extends StatefulWidget {
   const MercadoScreen({super.key});
@@ -50,59 +51,7 @@ class _MercadoScreenState extends State<MercadoScreen>
           ],
         ),
       ),
-      drawer: AgroDrawer(
-        appName: 'RuraRubber',
-        versionText: '1.0.0',
-        onNavigate: (route) {
-          switch (route) {
-            case 'home':
-              Navigator.pushReplacementNamed(context, '/home');
-              break;
-            case 'properties':
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => const PropertyListScreen(),
-                ),
-              );
-              break;
-            case 'parceiros':
-              Navigator.pushReplacementNamed(context, '/parceiros');
-              break;
-            case 'mercado':
-              Navigator.pushReplacementNamed(context, '/mercado');
-              break;
-            case 'settings':
-              Navigator.pushNamed(context, '/settings');
-              break;
-            case 'privacy':
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => const AgroPrivacyScreen(),
-                ),
-              );
-              break;
-            case 'about':
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => const AgroAboutScreen(
-                    appName: 'RuraRubber',
-                    version: '1.0.0',
-                  ),
-                ),
-              );
-              break;
-          }
-        },
-        extraItems: [
-          AgroDrawerItem(
-              icon: Icons.people, title: l10n.drawerParceiros, key: 'parceiros'),
-          AgroDrawerItem(
-              icon: Icons.store, title: l10n.drawerMercado, key: 'mercado'),
-        ],
-      ),
+      drawer: buildRubberDrawer(context: context, l10n: l10n),
       body: Column(
         children: [
           // Filter Header
@@ -197,7 +146,7 @@ class _MercadoScreenState extends State<MercadoScreen>
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           final l10n = BorrachaLocalizations.of(context)!;
-          return Center(child: Text('${l10n.errorLabel}: ${snapshot.error}'));
+          return Center(child: Text(l10n.mercadoFirestoreError));
         }
 
         if (snapshot.connectionState == ConnectionState.waiting) {

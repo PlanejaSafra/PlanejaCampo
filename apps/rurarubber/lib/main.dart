@@ -29,6 +29,19 @@ import 'screens/profile_selection_screen.dart';
 import 'screens/lista_entregas_screen.dart';
 import 'screens/job_list_screen.dart';
 import 'screens/criar_vaga_screen.dart';
+import 'models/recebivel.dart';
+import 'models/conta_pagar.dart';
+import 'models/despesa.dart';
+import 'models/tabela_sangria.dart';
+import 'services/recebivel_service.dart';
+import 'services/conta_pagar_service.dart';
+import 'services/despesa_service.dart';
+import 'services/tabela_service.dart';
+import 'services/onboarding_service.dart';
+import 'screens/recebiveis_screen.dart';
+import 'screens/contas_pagar_screen.dart';
+import 'screens/break_even_screen.dart';
+import 'screens/onboarding_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -49,9 +62,21 @@ Future<void> main() async {
   Hive.registerAdapter(TalhaoAdapter());
   Hive.registerAdapter(UserProfileTypeAdapter());
   Hive.registerAdapter(UserProfileAdapter());
+  // CORE-76: Safra adapter
+  Hive.registerAdapter(SafraAdapter());
   // CORE-77 / RUBBER-24: Farm and Dependency adapters
   Hive.registerAdapter(FarmAdapter());
   Hive.registerAdapter(DependencyManifestAdapter());
+  // RUBBER-18: Recebivel adapter
+  Hive.registerAdapter(RecebivelAdapter());
+  // RUBBER-19: ContaPagar adapters
+  Hive.registerAdapter(FormaPagamentoAdapter());
+  Hive.registerAdapter(ContaPagarAdapter());
+  // RUBBER-20: Despesa adapters (Break-even)
+  Hive.registerAdapter(CategoriaDespesaAdapter());
+  Hive.registerAdapter(DespesaAdapter());
+  // RUBBER-23: TabelaSangria adapter
+  Hive.registerAdapter(TabelaSangriaAdapter());
 
   // Initialize Firebase
   // Initialize Firebase
@@ -90,6 +115,13 @@ Future<void> main() async {
     debugPrint('TalhaoService initialization failed: $e');
   }
 
+  // CORE-76: Initialize SafraService
+  try {
+    await SafraService.instance.init();
+  } catch (e) {
+    debugPrint('SafraService initialization failed: $e');
+  }
+
   // CORE-77 / RUBBER-24: Initialize FarmService
   try {
     await FarmService.instance.init();
@@ -109,6 +141,41 @@ Future<void> main() async {
     await UserProfileService.instance.init();
   } catch (e) {
     debugPrint('UserProfileService initialization failed: $e');
+  }
+
+  // RUBBER-18: Initialize RecebivelService
+  try {
+    await RecebivelService.instance.init();
+  } catch (e) {
+    debugPrint('RecebivelService initialization failed: $e');
+  }
+
+  // RUBBER-19: Initialize ContaPagarService
+  try {
+    await ContaPagarService.instance.init();
+  } catch (e) {
+    debugPrint('ContaPagarService initialization failed: $e');
+  }
+
+  // RUBBER-20: Initialize DespesaService (Break-even)
+  try {
+    await DespesaService.instance.init();
+  } catch (e) {
+    debugPrint('DespesaService initialization failed: $e');
+  }
+
+  // RUBBER-23: Initialize TabelaService
+  try {
+    await TabelaService.instance.init();
+  } catch (e) {
+    debugPrint('TabelaService initialization failed: $e');
+  }
+
+  // RUBBER-22: Initialize OnboardingService
+  try {
+    await OnboardingService.instance.init();
+  } catch (e) {
+    debugPrint('OnboardingService initialization failed: $e');
   }
 
   // Initialize AdMob Service
@@ -146,6 +213,10 @@ class RuraRubberApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ParceiroService()..init()),
         ChangeNotifierProvider(create: (_) => EntregaService()..init()),
         ChangeNotifierProvider.value(value: UserProfileService.instance),
+        ChangeNotifierProvider.value(value: RecebivelService.instance),
+        ChangeNotifierProvider.value(value: ContaPagarService.instance),
+        ChangeNotifierProvider.value(value: DespesaService.instance),
+        ChangeNotifierProvider.value(value: TabelaService.instance),
       ],
       child: MaterialApp(
         title: 'RuraRubber',
@@ -178,6 +249,9 @@ class RuraRubberApp extends StatelessWidget {
           '/entregas': (context) => const ListaEntregasScreen(),
           '/jobs': (context) => const JobListScreen(),
           '/criar-vaga': (context) => const CriarVagaScreen(),
+          '/recebiveis': (context) => const RecebiveisScreen(),
+          '/contas-pagar': (context) => const ContasPagarScreen(),
+          '/break-even': (context) => const BreakEvenScreen(),
           '/settings': (context) => AgroSettingsScreen(
                 onExportLocalBackup: () => _handleExportLocalBackup(context),
                 onImportLocalBackup: () => _handleImportLocalBackup(context),
@@ -259,8 +333,10 @@ class RuraRubberApp extends StatelessWidget {
   }
 }
 
-/// Wrapper that checks if user has selected a profile.
-/// If not, shows ProfileSelectionScreen first.
+/// Wrapper that checks onboarding and profile state.
+/// If onboarding not complete, shows OnboardingScreen.
+/// If profile not set, shows ProfileSelectionScreen.
+/// Otherwise, shows HomeScreen.
 class _ProfileGatedHome extends StatefulWidget {
   const _ProfileGatedHome();
 
@@ -271,6 +347,15 @@ class _ProfileGatedHome extends StatefulWidget {
 class _ProfileGatedHomeState extends State<_ProfileGatedHome> {
   @override
   Widget build(BuildContext context) {
+    // RUBBER-22: Check onboarding first
+    if (!OnboardingService.instance.isOnboardingComplete) {
+      return OnboardingScreen(
+        onComplete: () {
+          setState(() {});
+        },
+      );
+    }
+
     return Consumer<UserProfileService>(
       builder: (context, profileService, child) {
         if (!profileService.hasProfile) {

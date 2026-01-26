@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:agro_core/agro_core.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../models/user_profile.dart';
 import '../services/user_profile_service.dart';
 import '../services/entrega_service.dart';
 import '../services/parceiro_service.dart';
 
-/// Home dashboard screen with profile-based content.
-/// Refactored in Phase 11 to prioritize Weather context and simplify role-based access.
+/// Home dashboard screen with profile-based content and safra integration.
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -17,16 +18,18 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  // State for Weather Widget context
   Property? _defaultProperty;
   late PropertyService _propertyService;
   bool _isLoadingProperty = true;
+
+  Safra? _activeSafra;
 
   @override
   void initState() {
     super.initState();
     _propertyService = PropertyService();
     _carregarPropriedadePadrao();
+    _ensureSafra();
   }
 
   Future<void> _carregarPropriedadePadrao() async {
@@ -39,33 +42,74 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  Future<void> _ensureSafra() async {
+    final farmId = FarmService.instance.defaultFarmId;
+    if (farmId == null || farmId.isEmpty) return;
+    try {
+      final safra =
+          await SafraService.instance.ensureAtivaSafra(farmId: farmId);
+      if (mounted) {
+        setState(() {
+          _activeSafra = safra;
+        });
+      }
+    } catch (e) {
+      debugPrint('Error ensuring safra: $e');
+    }
+  }
+
+  void _onSafraChanged(Safra safra) {
+    setState(() {
+      _activeSafra = safra;
+    });
+  }
+
+  String? _profileLabel(BorrachaLocalizations l10n) {
+    final profile = UserProfileService.instance.currentProfile;
+    if (profile == null) return null;
+    switch (profile.profileType) {
+      case UserProfileType.produtor:
+        return l10n.profileLabelProdutor;
+      case UserProfileType.comprador:
+        return l10n.profileLabelComprador;
+      case UserProfileType.sangrador:
+        return l10n.profileLabelSangrador;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = BorrachaLocalizations.of(context)!;
     final theme = Theme.of(context);
     final profile = UserProfileService.instance.currentProfile;
 
-    // Produtor: Full access (Weighing, Partners, Deliveries)
-    // Sangrador: Limited access (Weighing, Deliveries - NO Partners)
     final isProdutor = profile?.isProdutor ?? true;
     final isSangrador = profile?.isSangrador ?? false;
-
-    // Common interface for both acting roles
     final showWeighingInterface = isProdutor || isSangrador;
+    final farmId = FarmService.instance.defaultFarmId ?? '';
 
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.homeTitle),
+        actions: [
+          if (farmId.isNotEmpty)
+            SafraChip(
+              farmId: farmId,
+              onSafraChanged: _onSafraChanged,
+            ),
+          const SizedBox(width: 8),
+        ],
       ),
       drawer: AgroDrawer(
         appName: 'RuraRubber',
-        versionText: '1.0.0', // TODO: Get from package info
+        versionText: '1.0.0',
+        profileName: _profileLabel(l10n),
         appLogoLightPath: 'assets/images/rurarubber-icon.png',
         appLogoDarkPath: 'assets/images/rurarubber-icon.png',
         onNavigate: (route) {
           switch (route) {
             case 'home':
-              Navigator.pop(context); // Already on home
+              Navigator.pop(context);
               break;
             case 'properties':
               Navigator.push(
@@ -73,7 +117,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 MaterialPageRoute(
                   builder: (_) => const PropertyListScreen(),
                 ),
-              ).then((_) => _carregarPropriedadePadrao()); // Refresh on return
+              ).then((_) => _carregarPropriedadePadrao());
               break;
             case 'parceiros':
               Navigator.pushNamed(context, '/parceiros');
@@ -90,9 +134,17 @@ class _HomeScreenState extends State<HomeScreen> {
             case 'jobs':
               Navigator.pushNamed(context, '/jobs');
               break;
+            case 'recebiveis':
+              Navigator.pushNamed(context, '/recebiveis');
+              break;
+            case 'contas-pagar':
+              Navigator.pushNamed(context, '/contas-pagar');
+              break;
+            case 'break-even':
+              Navigator.pushNamed(context, '/break-even');
+              break;
             case 'settings':
               Navigator.pushNamed(context, '/settings').then((_) {
-                // Refresh in case property changed in settings
                 _carregarPropriedadePadrao();
               });
               break;
@@ -124,28 +176,40 @@ class _HomeScreenState extends State<HomeScreen> {
           }
         },
         extraItems: [
-          // Common items
           AgroDrawerItem(
               icon: Icons.scale, title: l10n.drawerPesagem, key: 'pesagem'),
-
-          // Role-based items
-          if (!isSangrador) // Sangrador does NOT manage partners
+          if (!isSangrador)
             AgroDrawerItem(
                 icon: Icons.people,
                 title: l10n.drawerParceiros,
                 key: 'parceiros'),
-
           AgroDrawerItem(
               icon: Icons.history, title: l10n.drawerEntregas, key: 'entregas'),
           AgroDrawerItem(
               icon: Icons.store, title: l10n.drawerMercado, key: 'mercado'),
           AgroDrawerItem(
               icon: Icons.work_outline, title: l10n.jobsTitle, key: 'jobs'),
+          if (!isSangrador)
+            AgroDrawerItem(
+                icon: Icons.account_balance_wallet,
+                title: l10n.recebiveisTitle,
+                key: 'recebiveis'),
+          if (!isSangrador)
+            AgroDrawerItem(
+                icon: Icons.receipt_long,
+                title: l10n.contasPagarTitle,
+                key: 'contas-pagar'),
+          if (!isSangrador)
+            AgroDrawerItem(
+                icon: Icons.analytics,
+                title: l10n.breakEvenTitle,
+                key: 'break-even'),
         ],
       ),
       body: RefreshIndicator(
         onRefresh: () async {
           await _carregarPropriedadePadrao();
+          await _ensureSafra();
           setState(() {});
         },
         child: SingleChildScrollView(
@@ -154,17 +218,14 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Welcome Message
               _buildWelcomeSection(context, l10n, theme),
               const SizedBox(height: 24),
 
-              // WEATHER WIDGET (Replaces Quick Actions)
-              // Provides context for "Minha Propriedade / Seringal"
+              // Weather Widget
               if (_defaultProperty != null)
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Optional header if needed, but WeatherCard has title
                     WeatherCard(
                       propertyId: _defaultProperty!.id,
                       latitude: _defaultProperty!.latitude ?? 0.0,
@@ -178,7 +239,6 @@ class _HomeScreenState extends State<HomeScreen> {
                           ? 'Seringal'
                           : _defaultProperty!.name,
                       onLocationUpdated: () {
-                        // Reload default property to get new coordinates and refresh UI
                         _carregarPropriedadePadrao();
                       },
                     ),
@@ -186,8 +246,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 )
               else if (!_isLoadingProperty)
-                // Fallback if no property set (should ideally prompt to set one)
-                // For now, minimal empty space or prompt
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
@@ -226,20 +284,23 @@ class _HomeScreenState extends State<HomeScreen> {
               if (!_isLoadingProperty && _defaultProperty == null)
                 const SizedBox(height: 24),
 
-              // Monthly Summary (Produtor and Sangrador)
-              // Only if we are in a Production context
-              if (showWeighingInterface) ...[
+              // Safra Summary (Hierarchical: Farm Total + Parceiros)
+              if (showWeighingInterface && _activeSafra != null) ...[
+                _buildSafraSummary(context, l10n, theme),
+                const SizedBox(height: 16),
+                _buildParceiroRanking(context, l10n, theme),
+                const SizedBox(height: 24),
+              ] else if (showWeighingInterface) ...[
                 _buildMonthlySummary(context, l10n, theme),
                 const SizedBox(height: 24),
               ],
 
-              // Recent Deliveries (Produtor/Sangrador) or My Offers (Comprador)
+              // Recent Deliveries or My Offers
               if (showWeighingInterface)
                 _buildRecentDeliveries(context, l10n, theme)
               else
                 _buildMyOffers(context, l10n, theme),
 
-              // Bottom padding for FAB
               const SizedBox(height: 80),
             ],
           ),
@@ -259,8 +320,7 @@ class _HomeScreenState extends State<HomeScreen> {
             : l10n.homeCreateOffer),
       ),
       bottomNavigationBar: const AgroBannerWidget(
-        adUnitId:
-            'ca-app-pub-3109803084293083/5660030835', // RuraRubber Production Banner
+        adUnitId: 'ca-app-pub-3109803084293083/5660030835',
       ),
     );
   }
@@ -285,6 +345,192 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  /// Safra-based summary card: Total Fazenda stats.
+  Widget _buildSafraSummary(
+      BuildContext context, BorrachaLocalizations l10n, ThemeData theme) {
+    final safra = _activeSafra!;
+    return Consumer<EntregaService>(
+      builder: (context, entregaService, child) {
+        final totalPeso = entregaService.totalPesoSafra(safra);
+        final totalValor = entregaService.totalValorSafra(safra);
+        final countEntregas = entregaService.countEntregasSafra(safra);
+        final monthlyData = entregaService.totalMensalSafra(safra);
+        final monthCount = monthlyData.length;
+        final mediaMensal = monthCount > 0 ? totalPeso / monthCount : 0.0;
+        final nf = NumberFormat('#,##0.0', 'pt_BR');
+
+        return Card(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(Icons.agriculture, color: theme.colorScheme.primary),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        l10n.totalFazenda,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    Text(
+                      safra.nome,
+                      style: theme.textTheme.labelMedium?.copyWith(
+                        color: theme.colorScheme.primary,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                if (countEntregas == 0)
+                  Center(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      child: Text(
+                        l10n.homeSummaryNoData,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ),
+                  )
+                else
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _SummaryItem(
+                          label: l10n.homeSummaryDeliveries,
+                          value: '$countEntregas',
+                          icon: Icons.local_shipping,
+                          color: Colors.blue,
+                        ),
+                      ),
+                      Expanded(
+                        child: _SummaryItem(
+                          label: l10n.homeSummaryTotalWeight,
+                          value: '${nf.format(totalPeso)} kg',
+                          icon: Icons.scale,
+                          color: Colors.green,
+                        ),
+                      ),
+                      Expanded(
+                        child: _SummaryItem(
+                          label: l10n.mediaMensal,
+                          value: '${nf.format(mediaMensal)} kg',
+                          icon: Icons.trending_up,
+                          color: Colors.teal,
+                        ),
+                      ),
+                    ],
+                  ),
+                if (totalValor > 0) ...[
+                  const SizedBox(height: 12),
+                  Center(
+                    child: Text(
+                      '${l10n.homeSummaryTotalValue}: R\$ ${NumberFormat('#,##0.00', 'pt_BR').format(totalValor)}',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: Colors.orange.shade700,
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  /// Parceiro ranking within the active safra.
+  Widget _buildParceiroRanking(
+      BuildContext context, BorrachaLocalizations l10n, ThemeData theme) {
+    final safra = _activeSafra!;
+    return Consumer2<EntregaService, ParceiroService>(
+      builder: (context, entregaService, parceiroService, child) {
+        final pesoPorParceiro = entregaService.pesoPorParceiroSafra(safra);
+        if (pesoPorParceiro.isEmpty) return const SizedBox.shrink();
+
+        final totalGeral =
+            pesoPorParceiro.values.fold<double>(0, (s, v) => s + v);
+        final sorted = pesoPorParceiro.entries.toList()
+          ..sort((a, b) => b.value.compareTo(a.value));
+
+        final nf = NumberFormat('#,##0.0', 'pt_BR');
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              l10n.drawerParceiros,
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            ...sorted.map((entry) {
+              final parceiro = parceiroService.getParceiro(entry.key);
+              final nome = parceiro?.nome ?? l10n.unknownPartner;
+              final peso = entry.value;
+              final pct = totalGeral > 0 ? (peso / totalGeral) * 100 : 0.0;
+
+              return Card(
+                margin: const EdgeInsets.only(bottom: 4),
+                child: ListTile(
+                  leading: CircleAvatar(
+                    backgroundColor: theme.colorScheme.primaryContainer,
+                    child: Text(
+                      nome.isNotEmpty ? nome[0].toUpperCase() : '?',
+                      style: TextStyle(
+                        color: theme.colorScheme.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  title: Text(nome),
+                  subtitle: LinearProgressIndicator(
+                    value: totalGeral > 0 ? peso / totalGeral : 0,
+                    backgroundColor:
+                        theme.colorScheme.surfaceContainerHighest,
+                    color: theme.colorScheme.primary,
+                  ),
+                  trailing: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        '${nf.format(peso)} kg',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        '${pct.toStringAsFixed(0)}% ${l10n.doTotal}',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
+                  onTap: () {
+                    Navigator.pushNamed(context, '/parceiro-detail',
+                        arguments: entry.key);
+                  },
+                ),
+              );
+            }),
+          ],
+        );
+      },
+    );
+  }
+
+  /// Fallback monthly summary (when no safra available).
   Widget _buildMonthlySummary(
       BuildContext context, BorrachaLocalizations l10n, ThemeData theme) {
     return Consumer<EntregaService>(
@@ -301,7 +547,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
         final totalValue = entregas.fold<double>(
           0,
-          (sum, e) => sum + e.itens.fold<double>(0, (s, i) => s + i.valorTotal),
+          (sum, e) =>
+              sum + e.itens.fold<double>(0, (s, i) => s + i.valorTotal),
         );
 
         return Card(
@@ -458,8 +705,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       side: BorderSide.none,
                     ),
                     onTap: () {
-                      // Navigate to entrega details
-                      // Navigator.pushNamed(context, '/entregas', arguments: entrega.id);
                       Navigator.pushNamed(context, '/entregas');
                     },
                   ),
@@ -473,7 +718,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildMyOffers(
       BuildContext context, BorrachaLocalizations l10n, ThemeData theme) {
-    // For buyers - show their published offers
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -541,7 +785,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-/// Summary item widget.
 class _SummaryItem extends StatelessWidget {
   final String label;
   final String value;

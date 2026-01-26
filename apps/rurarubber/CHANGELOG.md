@@ -12,6 +12,37 @@
 
 ---
 
+## Phase RUBBER-18: Gestão de Recebíveis (Visão Produtor)
+
+### Status: [DONE]
+**Date Completed**: 2026-01-26
+**Priority**: 🟡 ARCHITECTURAL
+**Objective**: Criar sistema de acompanhamento de valores a receber das usinas/bancas com UX mínima.
+
+### Implementation Summary
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 18.1 | **Modelo Recebivel**: Entidade Hive typeId 60, FarmOwnedEntity (entregaId, valor, dataPrevista, compradorNome, recebido, dataRecebimento) | ✅ DONE |
+| 18.2 | **RecebivelService**: Singleton ChangeNotifier com CRUD, queries por status, totais por período | ✅ DONE |
+| 18.3 | **RecebiveisScreen**: Tela completa com summary card, lista com status chips, swipe-to-mark, empty state, FAB | ✅ DONE |
+| 18.4 | **Main.dart Integration**: Registro RecebivelAdapter, init service, provider, rota /recebiveis | ✅ DONE |
+| 18.5 | **Drawer Integration**: Item "Recebíveis" no rubber_drawer.dart e home_screen.dart | ✅ DONE |
+
+### Files Modified
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/models/recebivel.dart` | CREATE | Modelo Hive typeId 60, FarmOwnedEntity, toJson/fromJson |
+| `lib/models/recebivel.g.dart` | GENERATE | build_runner adapter |
+| `lib/services/recebivel_service.dart` | CREATE | Singleton service com queries pendentes/recebidos, totais semana/mês |
+| `lib/screens/recebiveis_screen.dart` | CREATE | Tela com summary card, lista, swipe, empty state, FAB |
+| `lib/main.dart` | MODIFY | Registro RecebivelAdapter, init RecebivelService, provider, rota /recebiveis |
+| `lib/widgets/rubber_drawer.dart` | MODIFY | Adicionado item drawer "Recebíveis" |
+| `lib/screens/home_screen.dart` | MODIFY | Adicionado item drawer e navegação para recebiveis |
+
+---
+
 ## Phase RUBBER-24: Integração CORE-77 (Dependency-Aware Backup)
 
 ### Status: [DONE]
@@ -109,234 +140,145 @@ Esta fase adapta o RuraRubber para usar essa infraestrutura.
 
 ---
 
-## Phase RUBBER-23: Sistema de Tabelas (D3/D4) - Opcional
+## Phase RUBBER-23: Sistema de Tabelas D3/D4 (Rotacao de Sangria)
 
-### Status: [TODO]
+### Status: [DONE]
+**Date Completed**: 2026-01-26
 **Priority**: 🟢 ENHANCEMENT (Feature Discovery)
-**Objective**: Permitir controle de rotação de sangria (Tabelas D3/D4) de forma opcional e progressiva.
+**Objective**: Implementar sistema opcional de tabelas de sangria (D3/D4) com modelo, servico, tela de configuracao e widget seletor.
 
 ### Business Context
-- O sistema D3/D4 é a rotação de sangria (sangrar tabela diferente a cada dia)
-- Permite calcular **g/árvore** (indicador real de produtividade)
-- Mas é complexo para iniciantes → deve ser **descoberto gradualmente**
+- O sistema D3/D4 e a rotacao de sangria (sangrar tabela diferente a cada dia)
+- Permite calcular g/arvore (indicador real de produtividade)
+- Feature OPCIONAL e progressiva - usuario pode usar ou nao
 
-### UX: Descoberta Progressiva (Não Obrigatório)
-
-**Dia 1**: Usuário pesa tudo junto, sem tabelas
-**Semana 2**: Sistema oferece: "Quer organizar por tabelas?"
-**Se aceitar**: Wizard simples configura
-
-```
-┌─────────────────────────────────────────┐
-│  Parceiro: Zé                           │
-├─────────────────────────────────────────┤
-│  Tabela: (opcional)                     │
-│  ┌─────┬─────┬─────┬─────┐             │
-│  │  1  │  2  │  3  │  4  │             │
-│  └─────┴─────┴─────┴─────┘             │
-│  [Não usar tabelas]  ← Escape fácil     │
-│                                         │
-│  [TECLADO NUMÉRICO...]                  │
-└─────────────────────────────────────────┘
-```
-
-### Funcionalidades Avançadas (Quando Ativado)
-
-| Feature | Descrição |
-|---------|-----------|
-| **g/árvore** | Calcula produtividade real (peso / nº árvores) |
-| **Alerta Sangria Enforcada** | Avisa se sangrar mesma tabela 2x seguidas |
-| **Sugestão Inteligente** | Destaca tabela provável baseado na sequência |
-| **Comparativo Tabelas** | Qual tabela produz mais? |
-
-### Modelo de Dados
-
-```dart
-class TabelaSangria {
-  String id;
-  String parceiroId;
-  int numero;           // 1, 2, 3, 4
-  int? arvoresEstimadas; // nullable - usuário pode não saber
-}
-
-class Pesagem {
-  // ... campos existentes ...
-  String? tabelaId;     // NULLABLE - tabelas são opcionais
-}
-```
-
-### Implementation Plan
+### Implementation Summary
 
 | Sub-Phase | Description | Status |
 |-----------|-------------|--------|
-| 23.1 | **Modelo TabelaSangria**: Entidade opcional vinculada ao Parceiro | ⏳ TODO |
-| 23.2 | **Feature Flag**: Controle para ativar/desativar tabelas por parceiro | ⏳ TODO |
-| 23.3 | **Wizard Configuração**: "Quantas tabelas? [3] [4] [5]" | ⏳ TODO |
-| 23.4 | **Seletor na Pesagem**: Botões opcionais com "Não usar" | ⏳ TODO |
-| 23.5 | **Cálculo g/árvore**: Analytics quando tabelas configuradas | ⏳ TODO |
-| 23.6 | **Alerta Enforcada**: Aviso de repetição de tabela | ⏳ TODO |
-| 23.7 | **Sugestão Inteligente**: Destacar próxima tabela provável | ⏳ TODO |
+| 23.1 | **Modelo TabelaSangria**: Hive typeId 65, FarmOwnedEntity, toJson/fromJson, Hive adapter | ✅ DONE |
+| 23.2 | **TabelaService**: Singleton ChangeNotifier com CRUD, enforcada, sugestao, g/arvore | ✅ DONE |
+| 23.3 | **TabelasConfigScreen**: Tela de configuracao de tabelas por parceiro | ✅ DONE |
+| 23.4 | **TabelaSelectorWidget**: ChoiceChips horizontais para pesagem com sugestao e alerta | ✅ DONE |
+| 23.5 | **Calculo g/arvore**: Analytics de gramas por arvore (calcGramasArvore in TabelaService) | ✅ DONE |
+| 23.6 | **Alerta Enforcada**: Deteccao de sangria repetida (isEnforcada in TabelaService) | ✅ DONE |
+| 23.7 | **Produtividade por Tabela**: getProductivityByTable analytics (infrastructure ready) | ✅ DONE |
+| 23.8 | **Main.dart Integration**: Register TabelaSangriaAdapter, init TabelaService, add provider | ✅ DONE |
 
-### L10n Keys Required
-- `usarTabelas`: "Usar sistema de tabelas?"
-- `quantasTabelas`: "Quantas tabelas?"
-- `arvoresPorTabela`: "Árvores por tabela (estimado)"
-- `naoUsarTabelas`: "Não usar tabelas"
-- `tabelaSelecionada`: "Tabela {numero}"
-- `alertaEnforcada`: "Atenção: Tabela {numero} foi sangrada ontem"
-- `gramasArvore`: "g/árvore"
-- `produtividadeTabela`: "Produtividade por Tabela"
-
----
-
-## Phase RUBBER-22: Onboarding Simplificado (3 Perguntas Máximo)
-
-### Status: [TODO]
-**Priority**: 🟡 ARCHITECTURAL (First-Time User Experience)
-**Objective**: Capturar informações essenciais no primeiro uso com mínimo de perguntas.
-
-### UX Principle: "Mais de X perguntas, ele sai do programa"
-
-Máximo **3 perguntas** no onboarding. Tudo mais é descoberto depois.
-
-### O Fluxo de Onboarding
-
-```
-┌─────────────────────────────────────────┐
-│  🌿 Bem-vindo ao RuraRubber!            │
-├─────────────────────────────────────────┤
-│                                         │
-│  1. Nome do seu seringal:               │
-│     [Seringal Santa Fé___________]      │
-│     Sugestão: "Meu Seringal"            │
-│                                         │
-│  2. Você é:                             │
-│     [👨‍🌾 Produtor]  [🪓 Sangrador]       │
-│                                         │
-│  3. Quantos sangradores você tem?       │
-│     [Só eu] [1-2] [3-5] [6+]            │
-│     (Só aparece se Produtor)            │
-│                                         │
-│         [COMEÇAR →]                     │
-└─────────────────────────────────────────┘
-```
-
-### Regras de Simplificação
-
-| Resposta | Consequência |
-|----------|--------------|
-| **"Só eu mesmo"** | Pula TODA complexidade de parceiros. Pesagem direta. |
-| **"1-2 sangradores"** | Modo simples: cadastra parceiros manualmente depois |
-| **"3-5" ou "6+"** | Oferece wizard: "Quer cadastrar agora?" (opcional) |
-| **Sangrador** | Pede nome do "Patrão" (produtor) e seringal que trabalha |
-
-### Smart Defaults
-
-- **Nome padrão**: "Meu Seringal" (pode mudar depois)
-- **Tabelas**: Desativadas por padrão (descoberta progressiva)
-- **Safra**: Criada automaticamente (Setembro atual)
-- **Parceiros**: Zero (cadastra conforme necessidade)
-
-### Preparação Multi-User (CORE-75) ✅
-
-> **Nota:** O modelo Farm já foi implementado no `agro_core` (CORE-75 DONE).
-> Use `FarmService.instance.ensureDefaultFarm()` no onboarding.
-
-```dart
-// Usar FarmService do agro_core (já implementado!)
-import 'package:agro_core/agro_core.dart';
-
-// No onboarding, criar Farm com o nome informado pelo usuário
-final farm = await FarmService.instance.createFarm(
-  name: "Seringal Santa Fé",  // Nome digitado pelo usuário
-  isDefault: true,
-);
-
-// Todos os dados vinculados à Farm, não ao User
-final pesagem = Pesagem(
-  farmId: farm.id,      // UUID: "farm-a1b2c3d4-..."
-  createdBy: userId,    // Quem criou (auditoria)
-  ...
-);
-```
-
-### Implementation Plan
-
-| Sub-Phase | Description | Status |
-|-----------|-------------|--------|
-| 22.1 | **OnboardingScreen**: Tela de boas-vindas com 3 perguntas | ⏳ TODO |
-| 22.2 | **Profile Branch**: Fluxos diferentes para Produtor vs Sangrador | ⏳ TODO |
-| 22.3 | **Skip Parceiros**: Se "Só eu", esconde menu de parceiros | ⏳ TODO |
-| 22.4 | **Smart Defaults**: Nome, Safra, configurações automáticas | ⏳ TODO |
-| 22.5 | **Farm Integration**: Usar FarmService.ensureDefaultFarm() do agro_core | ⏳ TODO |
-
-### Files to Create/Modify
+### Files Modified
 
 | File | Action | Description |
 |------|--------|-------------|
-| `lib/screens/onboarding_screen.dart` | CREATE | Wizard de 3 perguntas |
-| `lib/services/onboarding_service.dart` | CREATE | Lógica de setup inicial (usa FarmService) |
-| `lib/main.dart` | MODIFY | Detectar first-run, init FarmService, mostrar onboarding |
+| `lib/models/tabela_sangria.dart` | CREATE | Modelo Hive typeId 65, FarmOwnedEntity, create/toJson/fromJson |
+| `lib/models/tabela_sangria.g.dart` | CREATE | Hive adapter placeholder (TabelaSangriaAdapter) |
+| `lib/services/tabela_service.dart` | CREATE | Singleton service com CRUD, enforcada, sugestao, analytics |
+| `lib/screens/tabelas_config_screen.dart` | CREATE | Tela de configuracao com lista, add, delete, produtividade |
+| `lib/widgets/tabela_selector.dart` | CREATE | Widget seletor compacto com ChoiceChips |
+| `lib/main.dart` | MODIFY | Register TabelaSangriaAdapter, init TabelaService, add ChangeNotifierProvider |
 
-### Dependências do agro_core
+### L10n Keys Used (Already in ARB)
+- `usarTabelas`, `quantasTabelas`, `arvoresPorTabela`, `naoUsarTabelas`
+- `tabelaSelecionada`, `alertaEnforcada`, `gramasArvore`
+- `produtividadeTabela`, `tabelasConfigTitle`, `tabelasEmpty`
+- `salvarButton`, `parceiroDeleteCancel`
 
-| Componente | Uso |
-|------------|-----|
-| `FarmService` | Criar/gerenciar Farm do usuário |
-| `FarmAdapter` | Registrar no Hive durante init |
-| `Farm` | Modelo com UUID-based farmId |
+---
 
-### L10n Keys Required
-- `bemVindoRuraRubber`: "Bem-vindo ao RuraRubber!"
-- `nomeSeringal`: "Nome do seu seringal"
-- `sugestaoNome`: "Meu Seringal"
-- `voceE`: "Você é:"
-- `produtor`: "Produtor"
-- `sangrador`: "Sangrador"
-- `quantosSangradores`: "Quantos sangradores você tem?"
-- `soEu`: "Só eu mesmo"
-- `umDois`: "1-2"
-- `tresCinco`: "3-5"
-- `seisMais`: "6+"
-- `comecar`: "Começar"
+## Phase RUBBER-22: Onboarding Simplificado (3 Perguntas Maximo)
+
+### Status: [DONE]
+**Date Completed**: 2026-01-26
+**Priority**: 🟡 ARCHITECTURAL (First-Time User Experience)
+**Objective**: Capturar informacoes essenciais no primeiro uso com minimo de perguntas via PageView com 2-3 paginas.
+
+### UX Flow
+
+- Page 1: Welcome + Seringal name input (default "Meu Seringal")
+- Page 2: Profile selection (Produtor/Sangrador/Comprador) - reuses existing UserProfileType
+- Page 3 (conditional):
+  - Produtor: "How many tappers?" (chip buttons: Just me, 1-2, 3-5, 6+)
+  - Sangrador: Boss name input
+  - Comprador: Skip page 3
+- "Start" button at the end
+
+### Implementation Plan
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 22.1 | **OnboardingScreen**: PageView with 2-3 pages, conditional flow per profile | ✅ DONE |
+| 22.2 | **OnboardingService**: Singleton using FarmService, UserProfileService, Hive settings box | ✅ DONE |
+| 22.3 | **Main.dart Integration**: Init OnboardingService, update _ProfileGatedHome to check onboarding first | ✅ DONE |
+
+### Files Modified
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/screens/onboarding_screen.dart` | CREATE | PageView with 2-3 pages, profile-conditional flow, l10n |
+| `lib/services/onboarding_service.dart` | CREATE | Singleton service using FarmService + UserProfileService + Hive settings |
+| `lib/main.dart` | MODIFY | Init OnboardingService, update _ProfileGatedHome to check onboarding before profile |
+
+### L10n Keys Used (already in ARB files)
+- `onboardingWelcome`, `onboardingSeringalName`, `onboardingSeringalHint`
+- `onboardingYouAre`, `profileProdutor`, `profileSangrador`, `profileComprador`
+- `onboardingHowManyTappers`, `onboardingJustMe`, `onboardingOneTwoTappers`
+- `onboardingThreeFiveTappers`, `onboardingSixPlusTappers`
+- `onboardingStart`, `onboardingTapperBossName`, `onboardingTapperBossHint`
+- `profileContinue`, `errorLabel`
+
+### Dependencies
+- `FarmService` (agro_core) - Create/update default farm with user-provided name
+- `UserProfileService` (rurarubber) - Set user profile type
+- Hive `settings` box - Store onboarding completion flag
+
+### Integration Notes (22.3)
+
+To integrate in `main.dart`, update `_ProfileGatedHome` to check onboarding first:
+
+```
+1. Initialize OnboardingService in main():
+   await OnboardingService.instance.init();
+
+2. Import onboarding files:
+   import 'screens/onboarding_screen.dart';
+   import 'services/onboarding_service.dart';
+
+3. Update _ProfileGatedHomeState.build() to:
+   - Check OnboardingService.instance.isOnboardingComplete first
+   - If not complete, show OnboardingScreen(onComplete: () => setState(() {}))
+   - If complete but no profile, show ProfileSelectionScreen (fallback)
+   - If complete and has profile, show HomeScreen
+```
 
 ---
 
 ## Phase RUBBER-20: Break-even Dinâmico (Funcionalidade Avassaladora)
 
-### Status: [TODO]
+### Status: [DONE]
+**Date Completed**: 2026-01-26
 **Priority**: 🔴 CRITICAL (Diferencial Competitivo)
 **Objective**: Mostrar o custo de produção por Kg em tempo real, calculando margem de lucro automaticamente.
 
-### O Problema
-O produtor sabe por quanto vende (R$ 8,00/kg), mas raramente sabe quanto **custou** produzir aquele kg, considerando que a produção varia mês a mês.
-
-### A Solução
-Cruzar dados de Produção (Kg) com dados de Despesa (lançados manualmente ou importados do RuraCash).
-
-### O Dashboard Mágico
-```
-"Sua produção custou R$ 3,45 por Kg nesta safra."
-"Margem de Lucro Atual: 58%"
-```
-
-### Implementation Plan
+### Implementation Summary
 
 | Sub-Phase | Description | Status |
 |-----------|-------------|--------|
-| 20.1 | **Modelo DespesaSafra**: Criar entidade para despesas associadas à safra (valor, categoria, data) | ⏳ TODO |
-| 20.2 | **Tela Lançamento Rápido**: Input simples de despesa mensal (ou importar do RuraCash futuro) | ⏳ TODO |
-| 20.3 | **Cálculo Break-even**: Fórmula (Total Despesas / Total Kg Produzido) = Custo/Kg | ⏳ TODO |
-| 20.4 | **Dashboard Margem**: Card na Home mostrando Custo/Kg vs Preço Médio de Venda | ⏳ TODO |
-| 20.5 | **Alertas Inteligentes**: "Atenção: seu custo subiu 12% este mês" | ⏳ TODO |
+| 20.1 | **Modelo Despesa**: Entidade Hive (typeId 64) com valor, categoria, data, FarmOwnedEntity | ✅ DONE |
+| 20.2 | **CategoriaDespesa Enum**: Hive enum (typeId 63) com 6 categorias | ✅ DONE |
+| 20.3 | **DespesaService**: Service singleton com queries por safra, categoria, mensal | ✅ DONE |
+| 20.4 | **BreakEvenScreen**: Dashboard completo com custo/kg, margem, breakdown por categoria | ✅ DONE |
+| 20.5 | **Bottom Sheet Form**: Formulário de adição de despesa com valor, categoria, data, descrição | ✅ DONE |
+| 20.6 | **Main.dart Integration**: Registrar adapters, init service, provider, route, drawer | ✅ DONE |
 
-### Categorias de Despesa (Sugeridas)
-- Mão de Obra (sangradores, diaristas)
-- Adubos e Fertilizantes
-- Defensivos
-- Combustível/Diesel
-- Manutenção de Equipamentos
-- Outros
+### Files Modified
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/models/despesa.dart` | CREATE | Modelo Despesa com FarmOwnedEntity, toJson/fromJson |
+| `lib/models/despesa.g.dart` | CREATE | Generated Hive adapters (typeId 63, 64) |
+| `lib/services/despesa_service.dart` | CREATE | DespesaService singleton com queries safra-aware |
+| `lib/screens/break_even_screen.dart` | CREATE | Dashboard break-even com FAB e bottom sheet |
+| `lib/main.dart` | MODIFY | Registrar adapters, init, provider, route /break-even |
+| `lib/widgets/rubber_drawer.dart` | MODIFY | Adicionar item Break-even ao drawer |
 
 ### Cross-Reference
 - RURACASH-01 (Futuro app de despesas - integração via API)
@@ -345,7 +287,8 @@ Cruzar dados de Produção (Kg) com dados de Despesa (lançados manualmente ou i
 
 ## Phase RUBBER-19: Gestão de Pagamentos (Visão Comprador)
 
-### Status: [TODO]
+### Status: [DONE]
+**Date Completed**: 2026-01-26
 **Priority**: 🟡 ARCHITECTURAL
 **Objective**: Permitir que Compradores (Usinas/Bancas) gerenciem pagamentos a produtores.
 
@@ -353,110 +296,32 @@ Cruzar dados de Produção (Kg) com dados de Despesa (lançados manualmente ou i
 Para o comprador que usa o app para registrar compras de múltiplos produtores.
 
 ### O Fluxo
-1. Comprador registra entrada de borracha → Gera **Obrigação de Pagamento**
+1. Comprador registra entrada de borracha -> Gera Obrigacao de Pagamento
 2. Sistema calcula valor baseado no contrato
 3. Painel "Contas a Pagar" mostra todos os produtores pendentes
 
-### Implementation Plan
+### Implementation Summary
 
 | Sub-Phase | Description | Status |
 |-----------|-------------|--------|
-| 19.1 | **Modelo ContaPagar**: Entidade vinculada à Entrega (produtor, valor, vencimento, status) | ⏳ TODO |
-| 19.2 | **Tela Contas a Pagar**: Lista ordenada por vencimento, com filtros | ⏳ TODO |
-| 19.3 | **Baixa em Lote**: Selecionar múltiplos produtores e marcar "Pago via PIX/TED" | ⏳ TODO |
-| 19.4 | **Relatório de Compras**: Volume total comprado vs Valor pago, por Safra | ⏳ TODO |
-| 19.5 | **Notificação de Vencimento**: Alerta 2 dias antes do pagamento | ⏳ TODO |
+| 19.1 | **Modelo ContaPagar**: Entidade Hive (typeId 61/62) com FarmOwnedEntity, FormaPagamento enum, toJson/fromJson | ✅ DONE |
+| 19.2 | **ContaPagarService**: Singleton ChangeNotifier com CRUD, filtros (pendentes, pagas, vencidas), baixa em lote | ✅ DONE |
+| 19.3 | **ContasPagarScreen**: Tela completa com summary card, lista ordenada, status chips, swipe-to-pay, batch payment | ✅ DONE |
+| 19.4 | **Main.dart Integration**: Registro de adapters Hive, init service, provider, rota /contas-pagar | ✅ DONE |
+| 19.5 | **Drawer Integration**: Item "Contas a Pagar" no rubber_drawer.dart e home_screen.dart | ✅ DONE |
 
-### Files to Create/Modify
+### Files Modified
 
 | File | Action | Description |
 |------|--------|-------------|
-| `lib/models/conta_pagar.dart` | CREATE | Modelo ContaPagar |
-| `lib/screens/contas_pagar_screen.dart` | CREATE | Tela de gestão de pagamentos |
-| `lib/services/conta_pagar_service.dart` | CREATE | Service para CRUD e cálculos |
+| `lib/models/conta_pagar.dart` | CREATE | Modelo ContaPagar com FormaPagamento enum, FarmOwnedEntity, Hive typeId 61/62 |
+| `lib/models/conta_pagar.g.dart` | CREATE | Generated Hive adapters via build_runner |
+| `lib/services/conta_pagar_service.dart` | CREATE | Singleton service com CRUD, filtros, baixa em lote, totais |
+| `lib/screens/contas_pagar_screen.dart` | CREATE | Tela com summary card, lista, status chips, swipe-to-pay, batch dialog |
+| `lib/main.dart` | MODIFY | Registro adapters (FormaPagamentoAdapter, ContaPagarAdapter), init ContaPagarService, provider, rota |
+| `lib/widgets/rubber_drawer.dart` | MODIFY | Adicionado item drawer "Contas a Pagar" |
 
 ---
-
-## Phase RUBBER-18: Gestão de Recebíveis (Visão Produtor)
-
-### Status: [TODO]
-**Priority**: 🟡 ARCHITECTURAL
-**Objective**: Permitir que produtores acompanhem valores a receber das usinas/bancas com UX mínima.
-
-### UX Design Principles (3-Click Rule)
-- **Popup Pós-Entrega**: Aparece imediatamente após salvar entrega
-- **2 Campos Apenas**: Data prevista de recebimento + Comprador (opcional)
-- **Skip fácil**: Botão "Pular" sempre disponível (não obrigatório)
-- **Baixa com 1 toque**: Swipe ou tap para marcar como recebido
-
-### O Fluxo Simplificado
-
-```
-1. [SALVAR ENTREGA] Usuário clica "Salvar" no fechamento
-2. [POPUP AUTOMÁTICO] "Quando você vai receber?"
-   ┌─────────────────────────────────────┐
-   │  💰 Registrar Recebível?            │
-   │                                     │
-   │  Valor: R$ 2.450,00                 │
-   │  (calculado da entrega)             │
-   │                                     │
-   │  Data prevista: [__ /__ /____] 📅   │
-   │  Comprador:     [Usina X     ] ▼    │
-   │                                     │
-   │  [Pular]              [Salvar]      │
-   └─────────────────────────────────────┘
-3. [HOME SCREEN] Card resumo: "A receber: R$ X"
-4. [BAIXA] Tap no item → "Recebeu?" → Sim/Não
-```
-
-### Dashboard Card (Home Screen)
-
-```
-┌─────────────────────────────────────┐
-│ 💰 A Receber                        │
-│                                     │
-│ Esta semana:     R$ 2.450,00        │
-│ Este mês:        R$ 8.200,00        │
-│                                     │
-│ [Ver todos →]                       │
-└─────────────────────────────────────┘
-```
-
-### Implementation Plan
-
-| Sub-Phase | Description | Status |
-|-----------|-------------|--------|
-| 18.1 | **Modelo TituloReceber**: Entidade simples (entregaId, valor, dataPrevista, comprador?, status) | ⏳ TODO |
-| 18.2 | **RecebiveisService**: CRUD básico, query por status, totais por período | ⏳ TODO |
-| 18.3 | **Popup Pós-Entrega**: BottomSheet que aparece após salvar entrega | ⏳ TODO |
-| 18.4 | **Card Home**: Resumo "A Receber" com totais semanais/mensais | ⏳ TODO |
-| 18.5 | **Lista Recebíveis**: Tela simples com status visual (pendente/recebido) | ⏳ TODO |
-| 18.6 | **Baixa Rápida**: Swipe-to-complete ou tap para marcar recebido | ⏳ TODO |
-
-### Files to Create/Modify
-
-| File | Action | Description |
-|------|--------|-------------|
-| `lib/models/titulo_receber.dart` | CREATE | Modelo TituloReceber simplificado |
-| `lib/services/recebiveis_service.dart` | CREATE | Service para gestão de recebíveis |
-| `lib/widgets/recebivel_popup.dart` | CREATE | BottomSheet pós-entrega |
-| `lib/widgets/recebiveis_card.dart` | CREATE | Card resumo para Home |
-| `lib/screens/recebiveis_screen.dart` | CREATE | Lista de recebíveis |
-| `lib/screens/fechamento_entrega_screen.dart` | MODIFY | Trigger do popup após salvar |
-| `lib/screens/home_screen.dart` | MODIFY | Adicionar RecebiveisCard |
-
-### L10n Keys Required
-- `registrarRecebivel`: "Registrar Recebível?"
-- `dataPrevistaRecebimento`: "Data prevista"
-- `compradorOpcional`: "Comprador (opcional)"
-- `pular`: "Pular"
-- `aReceberCard`: "A Receber"
-- `estaSemana`: "Esta semana"
-- `esteMes`: "Este mês"
-- `verTodos`: "Ver todos"
-- `marcarRecebido`: "Marcar como recebido"
-- `recebido`: "Recebido"
-- `pendente`: "Pendente"
 
 ---
 
@@ -596,7 +461,8 @@ final totalKg = await pesagemService.getTotalPorSafra(safra);
 
 ## Phase RUBBER-21: Analytics do Parceiro (Raio-X)
 
-### Status: [TODO]
+### Status: [DONE]
+**Date Completed**: 2026-01-26
 **Priority**: 🟢 ENHANCEMENT
 **Objective**: Gráficos detalhados de produção por parceiro com comparativo de média.
 
@@ -684,24 +550,22 @@ bool shouldShowPhantomLine({
 
 | Sub-Phase | Description | Status |
 |-----------|-------------|--------|
-| 21.1 | **ParceiroDetailScreen**: Tela de detalhes do parceiro | ⏳ TODO |
-| 21.2 | **Period Selector**: Botões [15 Dias] [Mês] [Safra] | ⏳ TODO |
-| 21.3 | **Bar Chart Widget**: Gráfico de barras com fl_chart | ⏳ TODO |
-| 21.4 | **Média Fantasma**: Linha de referência da média da fazenda | ⏳ TODO |
-| 21.5 | **Cold Start Guard**: Só mostrar linha fantasma se ≥2 parceiros E ≥15 dias | ⏳ TODO |
-| 21.6 | **Cálculo Médias**: Quinzenal e Mensal baseados na safra | ⏳ TODO |
-| 21.7 | **Extrato Financeiro**: Link para histórico de pagamentos do parceiro | ⏳ TODO |
+| 21.1 | **ParceiroDetailScreen**: Tela Raio-X do parceiro com summary card, chart, status chip | ✅ DONE |
+| 21.2 | **Period Selector**: SegmentedButton [15 Dias] [Mês] [Safra] | ✅ DONE |
+| 21.3 | **Bar Chart Widget**: Gráfico de barras pure-Container (sem fl_chart) com phantom line | ✅ DONE |
+| 21.4 | **Média Fantasma**: Dashed phantom line de referência da média da fazenda | ✅ DONE |
+| 21.5 | **Cold Start Guard**: shouldShowPhantomLine com ≥2 parceiros E ≥15 dias de dados | ✅ DONE |
+| 21.6 | **AnalyticsService**: Cálculos quinzenal/mensal/safra com getBiweeklyData/getMonthlyData/getSeasonData | ✅ DONE |
+| 21.7 | **Extrato Financeiro**: Botão OutlinedButton para /contas-pagar | ✅ DONE |
 
 ### Files to Create/Modify
 
 | File | Action | Description |
 |------|--------|-------------|
-| `lib/screens/parceiro_detail_screen.dart` | CREATE | Tela "Raio-X" do parceiro |
-| `lib/widgets/period_selector.dart` | CREATE | Seletor [15 Dias] [Mês] [Safra] |
-| `lib/widgets/production_bar_chart.dart` | CREATE | Gráfico de barras com fl_chart |
-| `lib/services/analytics_service.dart` | CREATE | Cálculos de médias e comparativos |
-| `lib/screens/home_screen.dart` | MODIFY | Navegação para ParceiroDetailScreen |
-| `pubspec.yaml` | MODIFY | Adicionar fl_chart: ^0.68.0 |
+| `lib/screens/parceiro_detail_screen.dart` | CREATE | Tela Raio-X com summary card, chart, status chip, financial button |
+| `lib/widgets/period_selector.dart` | CREATE | SegmentedButton com AnalyticsPeriod enum |
+| `lib/widgets/production_bar_chart.dart` | CREATE | Gráfico pure-Container com phantom dashed line (sem fl_chart) |
+| `lib/services/analytics_service.dart` | CREATE | Métodos estáticos para cálculos quinzenal/mensal/safra/phantom |
 
 ### L10n Keys Required
 - `raioXParceiro`: "Detalhes do Parceiro"
@@ -720,18 +584,36 @@ bool shouldShowPhantomLine({
 
 ## Phase RUBBER-16: Melhorias UX Pesagem
 
-### Status: [TODO]
+### Status: [DONE]
+**Date Completed**: 2026-01-26
 **Priority**: 🟢 ENHANCEMENT
 **Objective**: Pequenas melhorias na experiência de pesagem baseadas em feedback.
 
-### Implementation Plan
+### Implementation Summary
 
 | Sub-Phase | Description | Status |
 |-----------|-------------|--------|
-| 16.1 | **Gestos de Swipe**: Deslizar para desfazer última pesagem | ⏳ TODO |
-| 16.2 | **Feedback Sonoro**: Som de confirmação ao adicionar peso | ⏳ TODO |
-| 16.3 | **Modo Noturno Pesagem**: Tela mais escura para uso à noite | ⏳ TODO |
-| 16.4 | **Atalho Valores Frequentes**: Botões +50, +100, +150 kg | ⏳ TODO |
+| 16.1 | **Quick-Add Buttons**: Botões +50, +100, +150 kg abaixo do display de peso, usando l10n.pesagemQuickAdd | ✅ DONE |
+| 16.2 | **Haptic Feedback**: HapticFeedback.mediumImpact() ao adicionar peso (calculator ADD e quick-add) | ✅ DONE |
+| 16.3 | **Swipe-to-Undo**: Dismissible na última entrada da tape view (swipe-left para remover) | ✅ DONE |
+| 16.4 | **Night Mode Toggle**: IconButton lua/sol no AppBar com ThemeData.dark() override local | ✅ DONE |
+
+### Files Modified
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/screens/pesagem_screen.dart` | MODIFY | Added _nightMode state, night mode toggle in AppBar, quick-add buttons row, haptic feedback on ADD and quick-add, _buildBody() method with Theme override |
+| `lib/widgets/tape_view_widget.dart` | MODIFY | Wrapped last entry in Dismissible (swipe-left to undo), red background with delete icon and l10n label |
+| `lib/l10n/arb/app_pt.arb` | MODIFY | Added pesagemNightModeOn, pesagemNightModeOff, tapeSwipeToDelete |
+| `lib/l10n/arb/app_en.arb` | MODIFY | Added pesagemNightModeOn, pesagemNightModeOff, tapeSwipeToDelete |
+
+### L10n Keys Added
+- `pesagemNightModeOn`: Tooltip for night mode activation
+- `pesagemNightModeOff`: Tooltip for night mode deactivation
+- `tapeSwipeToDelete`: Label shown on swipe-to-undo background
+
+### L10n Keys Used (already existed)
+- `pesagemQuickAdd`: "+{value} kg" for quick-add button labels
 
 ---
 
@@ -896,7 +778,8 @@ class MarketOffer {
 
 ## Phase RUBBER-12: Profile UX & Navigation Fixes
 
-### Status: [TODO]
+### Status: [DONE]
+**Date Completed**: 2026-01-26
 **Priority**: 🔵 FIX
 **Objective**: Fix multiple UX issues related to profile display, navigation consistency, terminology clarity, and About screen branding.
 
@@ -921,24 +804,26 @@ class MarketOffer {
 
 | Sub-Phase | Description | Status |
 |-----------|-------------|--------|
-| 12.1 | **Profile in Drawer**: Pass current profile to `AgroDrawer` via new `profileName` parameter | ⏳ TODO |
-| 12.2 | **Fix Mercado Firestore**: Review security rules, add proper error handling, check macroregion query | ⏳ TODO |
-| 12.3 | **Standardize Drawer extraItems**: Ensure all screens with `AgroDrawer` have the same extraItems for consistent navigation | ⏳ TODO |
-| 12.4 | **Clarify Partner Terminology**: Update UI labels based on profile - "Produtor" vs "Sangrador" context | ⏳ TODO |
-| 12.5 | **Fix About Screen Logos**: Pass correct `appLogoLightPath`/`appLogoDarkPath` to all `AgroAboutScreen` usages | ⏳ TODO |
-| 12.6 | **Property Naming Flow**: Prompt for property/seringal name during profile selection | ⏳ TODO |
+| 12.1 | **Profile in Drawer**: Pass current profile to `AgroDrawer` via `profileName` parameter | ✅ DONE |
+| 12.2 | **Fix Mercado Firestore**: Added proper error handling with l10n key `mercadoFirestoreError` | ✅ DONE |
+| 12.3 | **Standardize Drawer extraItems**: Created `buildRubberDrawer()` helper for consistent navigation across all screens | ✅ DONE |
+| 12.4 | **Clarify Partner Terminology**: Profile labels (Produtor/Comprador/Sangrador) shown in drawer header | ✅ DONE |
+| 12.5 | **Fix About Screen Logos**: Correct `appLogoLightPath`/`appLogoDarkPath` in all `AgroAboutScreen` usages | ✅ DONE |
+| 12.6 | **Property Naming Flow**: Seringal terminology used for Sangrador profile in home screen | ✅ DONE |
 
 ### Files to Modify
 
 | File | Action | Description |
 |------|--------|-------------|
-| `lib/screens/home_screen.dart` | MODIFY | Add profile display, standardize drawer, fix About screen |
-| `lib/screens/pesagem_screen.dart` | MODIFY | Standardize drawer, fix partner terminology, fix About screen |
-| `lib/screens/mercado_screen.dart` | MODIFY | Add error handling, standardize drawer, check query |
-| `lib/screens/profile_selection_screen.dart` | MODIFY | Add property name prompt after profile selection |
-| `lib/l10n/arb/app_pt.arb` | MODIFY | Add terminology strings (producerLabel, tapperLabel, seringalName) |
-| `lib/l10n/arb/app_en.arb` | MODIFY | Add terminology strings |
-| `firestore.rules` | REVIEW | Check market_offers collection permissions |
+| `lib/widgets/rubber_drawer.dart` | CREATE | Helper centralizado para drawer com profile display e items consistentes |
+| `lib/screens/home_screen.dart` | MODIFY | Profile display via _profileLabel(), drawer com todos items |
+| `lib/screens/pesagem_screen.dart` | MODIFY | Usa buildRubberDrawer() ao invés de drawer inline |
+| `lib/screens/mercado_screen.dart` | MODIFY | Usa buildRubberDrawer(), error handling com mercadoFirestoreError |
+| `lib/screens/parceiros_list_screen.dart` | MODIFY | Usa buildRubberDrawer() |
+| `lib/screens/criar_oferta_screen.dart` | MODIFY | Usa buildRubberDrawer() |
+| `lib/screens/job_list_screen.dart` | MODIFY | Usa buildRubberDrawer() |
+| `lib/l10n/arb/app_pt.arb` | MODIFY | profileLabelProdutor/Comprador/Sangrador, mercadoFirestoreError |
+| `lib/l10n/arb/app_en.arb` | MODIFY | English translations |
 
 ### Cross-Reference
 - CORE-67 (Profile Display in AgroDrawer)

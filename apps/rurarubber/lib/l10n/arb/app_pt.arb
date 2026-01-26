@@ -73,6 +73,7 @@
   "mercadoOfferInterested": "Tenho Interesse",
   "mercadoFabSnackbar": "Funcionalidade para Compradores em breve",
   "mercadoBuyerRole": "Comprador",
+  "mercadoFirestoreError": "Não foi possível carregar as ofertas. Verifique sua conexão.",
 
   "criarOfertaTitle": "Criar Oferta",
   "criarOfertaTitleField": "Título da Oferta",
@@ -111,6 +112,9 @@
   "profileSangradorDesc": "Coleto látex e faço pesagens",
   "profileContinue": "Continuar",
   "profileSelectOne": "Selecione um perfil para continuar",
+  "profileLabelProdutor": "Produtor",
+  "profileLabelComprador": "Comprador",
+  "profileLabelSangrador": "Sangrador",
 
   "homeTitle": "Início",
   "homeWelcome": "Olá, {name}!",
@@ -131,17 +135,17 @@
   "homeViewHistoryDesc": "Ver entregas anteriores",
   "homeViewMarket": "Mercado",
   "homeViewMarketDesc": "Ver ofertas de compra",
-  
+
   "homeSummaryTitle": "Resumo do Mês",
   "homeSummaryDeliveries": "Entregas",
   "homeSummaryTotalWeight": "Peso Total",
   "homeSummaryTotalValue": "Valor Total",
   "homeSummaryNoData": "Nenhuma entrega este mês",
-  
+
   "homeRecentDeliveries": "Entregas Recentes",
   "homeNoRecentDeliveries": "Nenhuma entrega recente",
   "homeViewAllDeliveries": "Ver todas",
-  
+
   "homeMarketOffers": "Ofertas do Mercado",
   "homeNoMarketOffers": "Nenhuma oferta disponível",
   "homeViewAllOffers": "Ver todas",
@@ -166,7 +170,7 @@
   },
   "totalLabel": "Total",
   "currencySymbol": "R$",
-  
+
   "drawerHome": "Início",
 
   "shareTitle": "Compartilhar Peso",
@@ -274,5 +278,140 @@
   "criarVagaPublishing": "Publicando...",
   "criarVagaSuccess": "Anúncio publicado com sucesso!",
   "criarVagaError": "Erro ao publicar anúncio",
-  "criarVagaJobDetails": "Detalhes da Vaga"
+  "criarVagaJobDetails": "Detalhes da Vaga",
+
+  "totalFazenda": "Total Fazenda",
+  "mediaMensal": "Média Mensal",
+  "doTotal": "do total",
+
+  "pesagemQuickAdd": "+{value} kg",
+  "@pesagemQuickAdd": {
+    "placeholders": {
+      "value": {"type": "int"}
+    }
+  },
+
+  "onboardingWelcome": "Bem-vindo ao RuraRubber!",
+  "onboardingSeringalName": "Nome do seu seringal",
+  "onboardingSeringalHint": "Meu Seringal",
+  "onboardingYouAre": "Você é:",
+  "onboardingHowManyTappers": "Quantos sangradores você tem?",
+  "onboardingJustMe": "Só eu mesmo",
+  "onboardingOneTwoTappers": "1-2",
+  "onboardingThreeFiveTappers": "3-5",
+  "onboardingSixPlusTappers": "6+",
+  "onboardingStart": "Começar",
+  "onboardingTapperBossName": "Nome do seu patrão",
+  "onboardingTapperBossHint": "Nome do produtor",
+
+  "usarTabelas": "Usar sistema de tabelas?",
+  "quantasTabelas": "Quantas tabelas?",
+  "arvoresPorTabela": "Árvores por tabela (estimado)",
+  "naoUsarTabelas": "Não usar tabelas",
+  "tabelaSelecionada": "Tabela {numero}",
+  "@tabelaSelecionada": {
+    "placeholders": {
+      "numero": {"type": "int"}
+    }
+  },
+  "alertaEnforcada": "Atenção: Tabela {numero} foi sangrada ontem",
+  "@alertaEnforcada": {
+    "placeholders": {
+      "numero": {"type": "int"}
+    }
+  },
+  "gramasArvore": "g/árvore",
+  "produtividadeTabela": "Produtividade por Tabela",
+  "tabelasConfigTitle": "Configurar Tabelas",
+  "tabelasEmpty": "Nenhuma tabela configurada",
+
+  "registrarRecebivel": "Registrar Recebível?",
+  "dataPrevistaRecebimento": "Data prevista",
+  "compradorOpcional": "Comprador (opcional)",
+  "pular": "Pular",
+  "aReceberCard": "A Receber",
+  "estaSemana": "Esta semana",
+  "esteMes": "Este mês",
+  "verTodos": "Ver todos",
+  "marcarRecebido": "Marcar como recebido",
+  "recebido": "Recebido",
+  "pendente": "Pendente",
+  "recebivelSalvo": "Recebível registrado!",
+  "recebiveisTitle": "Recebíveis",
+  "recebiveisEmpty": "Nenhum recebível registrado",
+  "recebivelValor": "Valor",
+  "recebivelConfirmarRecebido": "Confirmar recebimento?",
+  "recebivelDataRecebimento": "Data do recebimento",
+
+  "contasPagarTitle": "Contas a Pagar",
+  "contasPagarEmpty": "Nenhuma conta pendente",
+  "contaPagarVencimento": "Vencimento",
+  "contaPagarPago": "Pago",
+  "contaPagarPendente": "Pendente",
+  "contaPagarVencido": "Vencido",
+  "contaPagarBaixaLote": "Baixa em Lote",
+  "contaPagarMarcarPago": "Marcar como pago",
+  "contaPagarFormaPagamento": "Forma de pagamento",
+  "contaPagarPix": "PIX",
+  "contaPagarTed": "TED",
+  "contaPagarDinheiro": "Dinheiro",
+  "contaPagarRelatorio": "Relatório de Compras",
+  "contaPagarVenceEm": "{days, plural, =0{Vence hoje} =1{Vence amanhã} other{Vence em {days} dias}}",
+  "@contaPagarVenceEm": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+
+  "breakEvenTitle": "Análise de Custo",
+  "custoKg": "Custo/Kg",
+  "margemLucro": "Margem de Lucro",
+  "precoMedioVenda": "Preço Médio de Venda",
+  "despesaSafraTitle": "Despesas da Safra",
+  "despesaCategoria": "Categoria",
+  "despesaValor": "Valor",
+  "despesaData": "Data",
+  "despesaAddButton": "Adicionar Despesa",
+  "despesaSaveButton": "Salvar",
+  "despesaDeleteConfirm": "Excluir esta despesa?",
+  "despesaCatMaoDeObra": "Mão de Obra",
+  "despesaCatAdubo": "Adubos e Fertilizantes",
+  "despesaCatDefensivos": "Defensivos",
+  "despesaCatCombustivel": "Combustível",
+  "despesaCatManutencao": "Manutenção",
+  "despesaCatOutros": "Outros",
+  "breakEvenAlerta": "Atenção: seu custo subiu {percent}% este mês",
+  "@breakEvenAlerta": {
+    "placeholders": {
+      "percent": {"type": "String"}
+    }
+  },
+  "breakEvenSemDados": "Registre despesas e entregas para ver a análise de custo.",
+  "totalDespesas": "Total Despesas",
+  "totalProducao": "Total Produção",
+
+  "raioXParceiro": "Detalhes do Parceiro",
+  "totalSafra": "Total Safra",
+  "mediaQuinzenal": "Média Quinzenal",
+  "periodo15Dias": "15 Dias",
+  "periodoMes": "Mês",
+  "periodoSafra": "Safra",
+  "acimaDaMedia": "Acima da média",
+  "abaixoDaMedia": "Abaixo da média",
+  "verExtratoFinanceiro": "Ver Extrato Financeiro",
+  "mediaFazenda": "Média Fazenda",
+  "producaoLabel": "Produção",
+  "comparativoLabel": "Comparativo",
+  "drawerBreakEven": "Análise de Custo",
+  "drawerRecebiveis": "Recebíveis",
+  "drawerContasPagar": "Contas a Pagar",
+  "okButton": "OK",
+  "simButton": "Sim",
+  "naoButton": "Não",
+  "salvarButton": "Salvar",
+  "cancelarButton": "Cancelar",
+
+  "pesagemNightModeOn": "Modo noturno ativado",
+  "pesagemNightModeOff": "Modo noturno desativado",
+  "tapeSwipeToDelete": "Deslize para remover"
 }

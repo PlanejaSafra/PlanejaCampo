@@ -5,6 +5,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:intl/intl.dart';
 import '../models/job_post.dart';
+import '../widgets/rubber_drawer.dart';
 
 class JobListScreen extends StatefulWidget {
   const JobListScreen({super.key});
@@ -50,64 +51,7 @@ class _JobListScreenState extends State<JobListScreen>
           ],
         ),
       ),
-      drawer: AgroDrawer(
-        appName: 'RuraRubber',
-        versionText: '1.0.0',
-        onNavigate: (route) {
-          switch (route) {
-            case 'home':
-              Navigator.pushReplacementNamed(context, '/home');
-              break;
-            case 'properties':
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => const PropertyListScreen(),
-                ),
-              );
-              break;
-            case 'parceiros':
-              Navigator.pushReplacementNamed(context, '/parceiros');
-              break;
-            case 'mercado':
-              Navigator.pushReplacementNamed(context, '/mercado');
-              break;
-            case 'jobs':
-              // Already here
-              break;
-            case 'settings':
-              Navigator.pushNamed(context, '/settings');
-              break;
-            case 'privacy':
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => const AgroPrivacyScreen(),
-                ),
-              );
-              break;
-            case 'about':
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => const AgroAboutScreen(
-                    appName: 'RuraRubber',
-                    version: '1.0.0',
-                  ),
-                ),
-              );
-              break;
-          }
-        },
-        extraItems: [
-          AgroDrawerItem(
-              icon: Icons.people, title: l10n.drawerParceiros, key: 'parceiros'),
-          AgroDrawerItem(
-              icon: Icons.store, title: l10n.drawerMercado, key: 'mercado'),
-          AgroDrawerItem(
-              icon: Icons.work_outline, title: l10n.jobsTitle, key: 'jobs'),
-        ],
-      ),
+      drawer: buildRubberDrawer(context: context, l10n: l10n),
       body: Column(
         children: [
           // Filter Header

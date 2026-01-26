@@ -3,7 +3,7 @@ import 'package:hive/hive.dart';
 part 'user_profile.g.dart';
 
 /// Type of user profile - determines app behavior and available features.
-@HiveType(typeId: 20)
+@HiveType(typeId: 50)
 enum UserProfileType {
   /// Producer/Farmer - sees dashboard with weighing history, partners, and market offers.
   @HiveField(0)
@@ -19,7 +19,7 @@ enum UserProfileType {
 }
 
 /// User profile stored locally to determine app behavior.
-@HiveType(typeId: 21)
+@HiveType(typeId: 51)
 class UserProfile extends HiveObject {
   /// The type of profile (produtor or comprador).
   @HiveField(0)

@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:agro_core/agro_core.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../models/market_offer.dart';
+import '../widgets/rubber_drawer.dart';
 
 class CriarOfertaScreen extends StatefulWidget {
   const CriarOfertaScreen({super.key});
@@ -130,59 +131,7 @@ class _CriarOfertaScreenState extends State<CriarOfertaScreen> {
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.criarOfertaTitle)),
-      drawer: AgroDrawer(
-        appName: 'RuraRubber',
-        versionText: '1.0.0',
-        onNavigate: (route) {
-          switch (route) {
-            case 'home':
-              Navigator.pushReplacementNamed(context, '/home');
-              break;
-            case 'properties':
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => const PropertyListScreen(),
-                ),
-              );
-              break;
-            case 'parceiros':
-              Navigator.pushReplacementNamed(context, '/parceiros');
-              break;
-            case 'mercado':
-              Navigator.pushReplacementNamed(context, '/mercado');
-              break;
-            case 'settings':
-              Navigator.pushNamed(context, '/settings');
-              break;
-            case 'privacy':
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => const AgroPrivacyScreen(),
-                ),
-              );
-              break;
-            case 'about':
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => const AgroAboutScreen(
-                    appName: 'RuraRubber',
-                    version: '1.0.0',
-                  ),
-                ),
-              );
-              break;
-          }
-        },
-        extraItems: [
-          AgroDrawerItem(
-              icon: Icons.people, title: l10n.drawerParceiros, key: 'parceiros'),
-          AgroDrawerItem(
-              icon: Icons.store, title: l10n.drawerMercado, key: 'mercado'),
-        ],
-      ),
+      drawer: buildRubberDrawer(context: context, l10n: l10n),
       body: Form(
         key: _formKey,
         child: ListView(
