@@ -29,7 +29,12 @@ class MigrationService {
       final defaultProperty = await propertyService.ensureDefaultProperty();
 
       // 2. Get all rainfall records
-      final chuvaBox = await Hive.openBox<RegistroChuva>('registros_chuva');
+      Box chuvaBox;
+      if (Hive.isBoxOpen('registros_chuva')) {
+        chuvaBox = Hive.box('registros_chuva');
+      } else {
+        chuvaBox = await Hive.openBox('registros_chuva');
+      }
       final allRecords = chuvaBox.values.toList();
 
       int migratedCount = 0;
@@ -74,7 +79,8 @@ class MigrationService {
 
       // Log migration result (for debugging)
       if (migratedCount > 0) {
-        print('[MigrationService] Migrated $migratedCount rainfall records to property system');
+        print(
+            '[MigrationService] Migrated $migratedCount rainfall records to property system');
       }
     } catch (e) {
       // If migration fails, don't mark as complete so it can retry next time

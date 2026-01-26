@@ -213,131 +213,147 @@ class _ConsentScreenState extends State<ConsentScreen> {
           ExitDialogHelper.showExitConfirmationDialog(context);
         },
         child: SafeArea(
-          child: SingleChildScrollView(
+          child: Padding(
             padding: const EdgeInsets.all(24.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SizedBox(height: 16),
-                Icon(
-                  Icons.tune,
-                  size: 48,
-                  color: theme.colorScheme.primary,
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  l10n.consentTitle,
-                  style: theme.textTheme.headlineMedium,
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  l10n.consentIntro,
-                  style: theme.textTheme.bodyMedium,
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 24),
-                // Option 1: Cloud Backup
-                _ConsentTile(
-                  title: l10n.consentOption1Title,
-                  subtitle: l10n.consentOption1Desc,
-                  legalText: l10n.consentOption1Legal,
-                  value: _cloudBackup,
-                  onChanged: (v) => setState(() {
-                    _cloudBackup = v ?? false;
-                  }),
-                ),
-                const SizedBox(height: 8),
-
-                // Option 2: Business Network
-                _ConsentTile(
-                  title: l10n.consentOption2Title,
-                  subtitle: l10n.consentOption2Desc,
-                  legalText: l10n.consentOption2Legal,
-                  value: _socialNetwork,
-                  onChanged: (v) => setState(() {
-                    _socialNetwork = v ?? false;
-                  }),
-                ),
-                const SizedBox(height: 8),
-
-                // Option 3: Intelligence
-                _ConsentTile(
-                  title: l10n.consentOption3Title,
-                  subtitle: l10n.consentOption3Desc,
-                  legalText: l10n.consentOption3Legal,
-                  value: _aggregateMetrics,
-                  onChanged: (v) => setState(() {
-                    _aggregateMetrics = v ?? false;
-                  }),
-                ),
-                const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: _isProcessing ? null : _handlePrimaryButton,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                  ),
-                  child: _isProcessing
-                      ? const SizedBox(
-                          width: 24,
-                          height: 24,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.white,
-                          ),
-                        )
-                      : Text(
-                          _getPrimaryButtonText(context),
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        const SizedBox(height: 16),
+                        Icon(
+                          Icons.tune,
+                          size: 48,
+                          color: theme.colorScheme.primary,
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          l10n.consentTitle,
+                          style: theme.textTheme.headlineMedium,
                           textAlign: TextAlign.center,
                         ),
-                ),
-                const SizedBox(height: 12),
-                OutlinedButton(
-                  onPressed: _declineAll,
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.grey[600],
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                  ),
-                  child: Text(l10n.declineLabel),
-                ),
-                const SizedBox(height: 24),
-                // Terms and Privacy links (like in IdentityScreen)
-                RichText(
-                  textAlign: TextAlign.center,
-                  text: TextSpan(
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: Colors.grey[600],
+                        const SizedBox(height: 16),
+                        Text(
+                          l10n.consentIntro,
+                          style: theme.textTheme.bodyMedium,
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 24),
+                        // Option 1: Cloud Backup
+                        _ConsentTile(
+                          title: l10n.consentOption1Title,
+                          subtitle: l10n.consentOption1Desc,
+                          legalText: l10n.consentOption1Legal,
+                          value: _cloudBackup,
+                          onChanged: (v) => setState(() {
+                            _cloudBackup = v ?? false;
+                          }),
+                        ),
+                        const SizedBox(height: 8),
+
+                        // Option 2: Business Network
+                        _ConsentTile(
+                          title: l10n.consentOption2Title,
+                          subtitle: l10n.consentOption2Desc,
+                          legalText: l10n.consentOption2Legal,
+                          value: _socialNetwork,
+                          onChanged: (v) => setState(() {
+                            _socialNetwork = v ?? false;
+                          }),
+                        ),
+                        const SizedBox(height: 8),
+
+                        // Option 3: Intelligence
+                        _ConsentTile(
+                          title: l10n.consentOption3Title,
+                          subtitle: l10n.consentOption3Desc,
+                          legalText: l10n.consentOption3Legal,
+                          value: _aggregateMetrics,
+                          onChanged: (v) => setState(() {
+                            _aggregateMetrics = v ?? false;
+                          }),
+                        ),
+                        const SizedBox(height: 16),
+                      ],
                     ),
-                    children: [
-                      TextSpan(text: l10n.consentFooterPrefix),
-                      TextSpan(
-                        text: l10n.identityTermsLink,
-                        style: TextStyle(
-                          color: theme.colorScheme.primary,
-                          decoration: TextDecoration.underline,
-                          fontWeight: FontWeight.w500,
-                        ),
-                        recognizer: TapGestureRecognizer()
-                          ..onTap = _showTermsOfUse,
-                      ),
-                      TextSpan(text: l10n.consentFooterConnector),
-                      TextSpan(
-                        text: l10n.identityPrivacyLink,
-                        style: TextStyle(
-                          color: theme.colorScheme.primary,
-                          decoration: TextDecoration.underline,
-                          fontWeight: FontWeight.w500,
-                        ),
-                        recognizer: TapGestureRecognizer()
-                          ..onTap = _showPrivacyPolicy,
-                      ),
-                      TextSpan(text: l10n.consentFooterSuffix),
-                    ],
                   ),
                 ),
-                const SizedBox(height: 16),
+                // Footer (Sticky Buttons)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: _isProcessing ? null : _handlePrimaryButton,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                      ),
+                      child: _isProcessing
+                          ? const SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
+                          : Text(
+                              _getPrimaryButtonText(context),
+                              textAlign: TextAlign.center,
+                            ),
+                    ),
+                    const SizedBox(height: 12),
+                    OutlinedButton(
+                      onPressed: _declineAll,
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Colors.grey[600],
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                      ),
+                      child: Text(l10n.declineLabel),
+                    ),
+                    const SizedBox(height: 24),
+                    // Terms and Privacy links
+                    RichText(
+                      textAlign: TextAlign.center,
+                      text: TextSpan(
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: Colors.grey[600],
+                        ),
+                        children: [
+                          TextSpan(text: l10n.consentFooterPrefix),
+                          TextSpan(
+                            text: l10n.identityTermsLink,
+                            style: TextStyle(
+                              color: theme.colorScheme.primary,
+                              decoration: TextDecoration.underline,
+                              fontWeight: FontWeight.w500,
+                            ),
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = _showTermsOfUse,
+                          ),
+                          TextSpan(text: l10n.consentFooterConnector),
+                          TextSpan(
+                            text: l10n.identityPrivacyLink,
+                            style: TextStyle(
+                              color: theme.colorScheme.primary,
+                              decoration: TextDecoration.underline,
+                              fontWeight: FontWeight.w500,
+                            ),
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = _showPrivacyPolicy,
+                          ),
+                          TextSpan(text: l10n.consentFooterSuffix),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+                ),
               ],
             ),
           ),
