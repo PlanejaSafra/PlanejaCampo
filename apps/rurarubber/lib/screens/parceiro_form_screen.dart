@@ -107,9 +107,10 @@ class _ParceiroFormScreenState extends State<ParceiroFormScreen> {
       ),
     );
 
-    if (confirm == true) {
+    if (confirm == true && mounted) {
+      final service = context.read<ParceiroService>();
       setState(() => _isLoading = true);
-      await context.read<ParceiroService>().deleteParceiro(widget.parceiroId!);
+      await service.deleteParceiro(widget.parceiroId!);
       if (mounted) {
         Navigator.of(context).pop();
       }

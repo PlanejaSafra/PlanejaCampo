@@ -34,18 +34,34 @@
 
 ## Phase CASH-03: Integração com Ecossistema RuraCamp
 
-### Status: [TODO]
+### Status: [BLOCKED]
 **Priority**: 🟡 ARCHITECTURAL
 **Objective**: Sincronizar receitas e custos com os outros apps.
+**Blocked By**: Cloud Sync Infrastructure (future phase)
 
-### Implementation Plan
+### Blocking Reason
+
+Apps separados em Android/iOS possuem sandboxing rígido - não é possível compartilhar Hive data localmente entre RuraCash e RuraRubber. A única solução robusta é sincronização via Firestore:
+
+1. RuraRubber salva entregas localmente + enfileira sync para Firestore
+2. RuraCash escuta Firestore e baixa receitas para cache local
+3. Ambos funcionam offline-first (generic_service_v3.dart pattern)
+
+**Pré-requisito**: Implementar cloud sync infrastructure no agro_core.
+
+### Implementation Plan (Deferred)
 
 | Sub-Phase | Description | Status |
 |-----------|-------------|--------|
-| 3.1 | **API de Receitas**: Endpoint para buscar receitas dos outros apps | ⏳ TODO |
-| 3.2 | **Listener de Entregas**: Quando RuraRubber fecha entrega, notificar RuraCash | ⏳ TODO |
-| 3.3 | **Push de Custos**: Enviar custo/kg para RuraRubber calcular margem | ⏳ TODO |
-| 3.4 | **Sincronização Cloud**: Usar Firestore para sincronizar entre apps | ⏳ TODO |
+| 3.1 | **API de Receitas**: Endpoint para buscar receitas dos outros apps | 🚫 BLOCKED |
+| 3.2 | **Listener de Entregas**: Quando RuraRubber fecha entrega, notificar RuraCash | 🚫 BLOCKED |
+| 3.3 | **Push de Custos**: Enviar custo/kg para RuraRubber calcular margem | 🚫 BLOCKED |
+| 3.4 | **Sincronização Cloud**: Usar Firestore para sincronizar entre apps | 🚫 BLOCKED |
+
+### Workaround Atual
+- DRE mostra R$ 0,00 para receitas
+- Usuário pode ver despesas completas
+- Quando cloud sync for implementado, receitas aparecerão automaticamente
 
 ---
 
