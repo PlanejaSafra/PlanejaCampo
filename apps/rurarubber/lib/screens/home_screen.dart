@@ -235,8 +235,9 @@ class _HomeScreenState extends State<HomeScreen> {
                               .weatherActivateForecastSeringalMessage
                           : null,
                       titleOverride: (isSangrador && !isProdutor) &&
-                              _defaultProperty!.name == 'Minha Propriedade'
-                          ? 'Seringal'
+                              _defaultProperty!.name ==
+                                  AgroLocalizations.of(context)!.propertyDefaultName
+                          ? AgroLocalizations.of(context)!.rubberPlantationTitle
                           : _defaultProperty!.name,
                       onLocationUpdated: () {
                         _carregarPropriedadePadrao();

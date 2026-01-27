@@ -15,9 +15,37 @@
 ### Why LOCKED
 
 - Requer CORE-91 (FarmType) implementado primeiro
-- Requer decisão de UX: dropdown no AppBar? Bottom sheet? Chips?
-- Requer decisão sobre categorias pessoais: quantas? quais? configuráveis?
 - Requer strings l10n para todas as categorias novas (pt-BR + en)
+
+### UX Decision: Onboarding Profile Selection
+
+Na **primeira entrada** do app, exibir uma tela com dois botões grandes:
+
+```
+┌──────────────────────────────────────────┐
+│       Bem-vindo ao RuraCash!             │
+│                                          │
+│  Como você quer começar?                 │
+│                                          │
+│  ┌────────────────────────────────────┐  │
+│  │  🚜  Produtor Rural               │  │
+│  │  Controle custos da fazenda       │  │
+│  └────────────────────────────────────┘  │
+│                                          │
+│  ┌────────────────────────────────────┐  │
+│  │  🏠  Finanças Pessoais            │  │
+│  │  Controle gastos domésticos       │  │
+│  └────────────────────────────────────┘  │
+│                                          │
+│  Você pode mudar depois na barra de cima │
+└──────────────────────────────────────────┘
+```
+
+Comportamento:
+- **Produtor Rural**: Cria farm `FarmType.agro` com nome l10n `farmDefaultName`, ativa categorias agro
+- **Finanças Pessoais**: Cria farm `FarmType.personal` com nome l10n `farmDefaultNamePersonal`, ativa categorias pessoais
+- A segunda farm (a que não foi escolhida) pode ser criada depois pelo context switcher no AppBar
+- O context switcher fica no AppBar da tela principal, permitindo alternar entre farms ou criar a segunda
 
 ### Licensing Rule
 

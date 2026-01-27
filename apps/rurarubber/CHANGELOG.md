@@ -4,6 +4,34 @@
 
 ---
 
+## Phase RUBBER-29: L10n Hardcoded Default Names Fix
+
+### Status: [DONE]
+**Date Completed**: 2026-01-26
+**Priority**: 🔵 FIX
+**Objective**: Substituir nomes padrão hardcoded ("Meu Seringal", "Seringal", "Minha Propriedade") por keys l10n localizadas, alinhando com a regra de zero hardcoded strings (CLAUDE.md regra 6).
+
+### Implementation Summary
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| RUBBER-29.1 | `onboarding_service.dart`: Substituir fallback hardcoded "Meu Seringal" por parâmetro `fallbackName` passado pela tela (l10n `farmDefaultNameRubber`) | ✅ DONE |
+| RUBBER-29.2 | `onboarding_screen.dart`: Passar `AgroLocalizations.of(context)!.farmDefaultNameRubber` como `fallbackName` | ✅ DONE |
+| RUBBER-29.3 | `home_screen.dart`: Substituir hardcoded "Minha Propriedade" e "Seringal" por `propertyDefaultName` e `rubberPlantationTitle` via l10n | ✅ DONE |
+
+### Files Modified
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/services/onboarding_service.dart` | MODIFY | Adicionar param `fallbackName`, remover hardcode "Meu Seringal" |
+| `lib/screens/onboarding_screen.dart` | MODIFY | Importar agro_core, passar fallbackName l10n |
+| `lib/screens/home_screen.dart` | MODIFY | Substituir hardcodes "Minha Propriedade" e "Seringal" por l10n |
+
+### Cross-Reference
+- CORE-92: Keys l10n adicionadas nos ARBs do agro_core
+
+---
+
 ## Phase RUBBER-28: Code Quality Fixes (Post-CORE-83 Cleanup)
 
 ### Status: [DONE]

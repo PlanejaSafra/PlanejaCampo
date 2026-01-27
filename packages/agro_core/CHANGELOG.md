@@ -2,6 +2,31 @@
 
 ---
 
+## Phase CORE-92: L10n Default Name Keys + Missing Export Strings
+
+### Status: [DONE]
+**Date Completed**: 2026-01-26
+**Priority**: 🔵 FIX
+**Objective**: Adicionar keys de nomes padrão localizados para farms (rubber, personal) e corrigir keys faltantes de export (exportDataSuccess, exportDataError) que causavam erros de compilação no agro_privacy_screen.
+
+### Implementation Summary
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| CORE-92.1 | Adicionar `farmDefaultNamePersonal` ("Minhas Financas" / "My Finances") aos ARBs | ✅ DONE |
+| CORE-92.2 | Adicionar `farmDefaultNameRubber` ("Meu Seringal" / "My Rubber Plantation") aos ARBs | ✅ DONE |
+| CORE-92.3 | Adicionar `rubberPlantationTitle` ("Seringal" / "Rubber Plantation") aos ARBs | ✅ DONE |
+| CORE-92.4 | Adicionar `exportDataSuccess` e `exportDataError` faltantes nos ARBs (fix 2 erros em agro_privacy_screen.dart) | ✅ DONE |
+
+### Files Modified
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/l10n/arb/app_pt.arb` | MODIFY | Adicionar 5 novas keys l10n |
+| `lib/l10n/arb/app_en.arb` | MODIFY | Adicionar 5 novas keys l10n |
+
+---
+
 ## Phase CORE-91: FarmType — Context Differentiation (Agro vs Pessoal) [LOCKED]
 
 ### Status: [LOCKED]

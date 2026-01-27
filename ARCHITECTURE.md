@@ -261,6 +261,7 @@ if (kIsWeb || defaultTargetPlatform == TargetPlatform.windows ||
 | CORE-86 | Owner-Based Settings Visibility | DONE | isOwner flag em AgroSettingsScreen/AgroPrivacyScreen para controle de visibilidade |
 | CORE-87 | Auto-Backup UX | DONE | Switch de auto-backup no card de Cloud Backup |
 | CORE-88 | Data Tier Architecture | DONE | Farm.isShared, GenericSyncService Tier 3 gate, FarmService helpers |
+| CORE-92 | L10n Default Name Keys + Missing Export Strings | DONE | ARB keys para nomes padrão de farms + fix exportDataSuccess/Error |
 
 ### Integração nos Apps
 
@@ -271,6 +272,7 @@ if (kIsWeb || defaultTargetPlatform == TargetPlatform.windows ||
 | RuraRubber | RUBBER-26 | DONE | Sync adapters, App Check, Property Name Gate, Firebase init nativo |
 | RuraRubber | RUBBER-27 | DONE | Owner-Based Settings: isOwner via FarmService/AuthService |
 | RuraRubber | RUBBER-28 | DONE | Code quality: fix static_access_to_instance_member, unnecessary imports, missing @override |
+| RuraRubber | RUBBER-29 | DONE | L10n hardcoded default names fix: "Meu Seringal", "Seringal" → l10n keys |
 | RuraRain | RAIN-03 | DONE | FarmOwnedMixin em RegistroChuva, ChuvaBackupProvider, ChuvaDeletionProvider |
 | RuraRain | RAIN-04 | DONE | ChuvaService migrado para GenericSyncService |
 | RuraRain | RAIN-05 | DONE | Sync adapter registration |

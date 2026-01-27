@@ -1073,6 +1073,24 @@ abstract class AgroLocalizations {
   /// **'My Farm'**
   String get farmDefaultName;
 
+  /// No description provided for @farmDefaultNamePersonal.
+  ///
+  /// In en, this message translates to:
+  /// **'My Finances'**
+  String get farmDefaultNamePersonal;
+
+  /// No description provided for @farmDefaultNameRubber.
+  ///
+  /// In en, this message translates to:
+  /// **'My Rubber Plantation'**
+  String get farmDefaultNameRubber;
+
+  /// No description provided for @rubberPlantationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Rubber Plantation'**
+  String get rubberPlantationTitle;
+
   /// No description provided for @farmTitle.
   ///
   /// In en, this message translates to:
@@ -1844,8 +1862,86 @@ abstract class AgroLocalizations {
   /// No description provided for @exportDataError.
   ///
   /// In en, this message translates to:
-  /// **'Error exporting data.'**
+  /// **'Error exporting data'**
   String get exportDataError;
+
+  /// No description provided for @exportProcessing.
+  ///
+  /// In en, this message translates to:
+  /// **'Processing...'**
+  String get exportProcessing;
+
+  /// No description provided for @exportSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Export successful!'**
+  String get exportSuccess;
+
+  /// No description provided for @exportError.
+  ///
+  /// In en, this message translates to:
+  /// **'Error exporting data: {error}'**
+  String exportError(Object error);
+
+  /// No description provided for @exportShareSubject.
+  ///
+  /// In en, this message translates to:
+  /// **'RuraCamp Data - {app}'**
+  String exportShareSubject(Object app);
+
+  /// No description provided for @syncPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync pending'**
+  String get syncPending;
+
+  /// No description provided for @syncInProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Syncing...'**
+  String get syncInProgress;
+
+  /// No description provided for @syncComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync complete'**
+  String get syncComplete;
+
+  /// No description provided for @syncFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync failed'**
+  String get syncFailed;
+
+  /// No description provided for @syncConflict.
+  ///
+  /// In en, this message translates to:
+  /// **'Conflict detected'**
+  String get syncConflict;
+
+  /// No description provided for @offlineMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Offline mode'**
+  String get offlineMode;
+
+  /// No description provided for @offlineQueueCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} pending operations'**
+  String offlineQueueCount(int count);
+
+  /// No description provided for @syncRetrying.
+  ///
+  /// In en, this message translates to:
+  /// **'Retrying...'**
+  String get syncRetrying;
+
+  /// No description provided for @syncOfflineQueued.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved locally, will sync'**
+  String get syncOfflineQueued;
 
   /// No description provided for @revokeAllButton.
   ///

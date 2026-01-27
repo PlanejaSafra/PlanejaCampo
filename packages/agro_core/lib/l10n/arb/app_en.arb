@@ -200,6 +200,9 @@
   "propertyLocationUnavailable": "Could not get your location",
 
   "farmDefaultName": "My Farm",
+  "farmDefaultNamePersonal": "My Finances",
+  "farmDefaultNameRubber": "My Rubber Plantation",
+  "rubberPlantationTitle": "Rubber Plantation",
   "farmTitle": "Farms",
   "farmAdd": "Add Farm",
   "farmEdit": "Edit Farm",
@@ -420,6 +423,8 @@
   "exportDataDescription": "Download a copy of your data in a standard format to use in other services.",
   "exportDataJson": "JSON (complete)",
   "exportDataCsv": "CSV (Excel/Spreadsheets)",
+  "exportDataSuccess": "Data exported successfully!",
+  "exportDataError": "Error exporting data",
   "exportProcessing": "Processing...",
   "exportSuccess": "Export successful!",
   "exportError": "Error exporting data: {error}",

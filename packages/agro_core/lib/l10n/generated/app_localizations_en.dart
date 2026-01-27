@@ -498,6 +498,15 @@ class AgroLocalizationsEn extends AgroLocalizations {
   String get farmDefaultName => 'My Farm';
 
   @override
+  String get farmDefaultNamePersonal => 'My Finances';
+
+  @override
+  String get farmDefaultNameRubber => 'My Rubber Plantation';
+
+  @override
+  String get rubberPlantationTitle => 'Rubber Plantation';
+
+  @override
   String get farmTitle => 'Farms';
 
   @override
@@ -904,7 +913,52 @@ class AgroLocalizationsEn extends AgroLocalizations {
   String get exportDataSuccess => 'Data exported successfully!';
 
   @override
-  String get exportDataError => 'Error exporting data.';
+  String get exportDataError => 'Error exporting data';
+
+  @override
+  String get exportProcessing => 'Processing...';
+
+  @override
+  String get exportSuccess => 'Export successful!';
+
+  @override
+  String exportError(Object error) {
+    return 'Error exporting data: $error';
+  }
+
+  @override
+  String exportShareSubject(Object app) {
+    return 'RuraCamp Data - $app';
+  }
+
+  @override
+  String get syncPending => 'Sync pending';
+
+  @override
+  String get syncInProgress => 'Syncing...';
+
+  @override
+  String get syncComplete => 'Sync complete';
+
+  @override
+  String get syncFailed => 'Sync failed';
+
+  @override
+  String get syncConflict => 'Conflict detected';
+
+  @override
+  String get offlineMode => 'Offline mode';
+
+  @override
+  String offlineQueueCount(int count) {
+    return '$count pending operations';
+  }
+
+  @override
+  String get syncRetrying => 'Retrying...';
+
+  @override
+  String get syncOfflineQueued => 'Saved locally, will sync';
 
   @override
   String get revokeAllButton => 'Revoke All and Sign Out';

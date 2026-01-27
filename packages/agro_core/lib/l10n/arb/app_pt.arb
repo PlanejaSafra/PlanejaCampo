@@ -200,6 +200,9 @@
   "propertyLocationUnavailable": "Não foi possível obter sua localização",
 
   "farmDefaultName": "Minha Fazenda",
+  "farmDefaultNamePersonal": "Minhas Finanças",
+  "farmDefaultNameRubber": "Meu Seringal",
+  "rubberPlantationTitle": "Seringal",
   "farmTitle": "Fazendas",
   "farmAdd": "Adicionar Fazenda",
   "farmEdit": "Editar Fazenda",
@@ -420,6 +423,8 @@
   "exportDataDescription": "Baixe uma cópia dos seus dados em formato padrão para usar em outros serviços.",
   "exportDataJson": "JSON (completo)",
   "exportDataCsv": "CSV (Excel/Planilhas)",
+  "exportDataSuccess": "Dados exportados com sucesso!",
+  "exportDataError": "Erro ao exportar dados",
   "exportProcessing": "Processando...",
   "exportSuccess": "Exportação concluída com sucesso!",
   "exportError": "Erro ao exportar dados: {error}",

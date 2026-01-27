@@ -1,3 +1,4 @@
+import 'package:agro_core/agro_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -86,6 +87,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       await OnboardingService.instance.completeOnboarding(
         seringalName: _seringalNameController.text,
         profileType: _selectedProfile!,
+        fallbackName: AgroLocalizations.of(context)!.farmDefaultNameRubber,
         tapperCountSelection: _selectedTapperCount,
         bossNameValue: _selectedProfile == UserProfileType.sangrador
             ? _bossNameController.text.trim().isNotEmpty

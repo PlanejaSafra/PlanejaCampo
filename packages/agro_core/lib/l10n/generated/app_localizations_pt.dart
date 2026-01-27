@@ -498,6 +498,15 @@ class AgroLocalizationsPt extends AgroLocalizations {
   String get farmDefaultName => 'Minha Fazenda';
 
   @override
+  String get farmDefaultNamePersonal => 'Minhas Finanças';
+
+  @override
+  String get farmDefaultNameRubber => 'Meu Seringal';
+
+  @override
+  String get rubberPlantationTitle => 'Seringal';
+
+  @override
   String get farmTitle => 'Fazendas';
 
   @override
@@ -904,7 +913,52 @@ class AgroLocalizationsPt extends AgroLocalizations {
   String get exportDataSuccess => 'Dados exportados com sucesso!';
 
   @override
-  String get exportDataError => 'Erro ao exportar dados.';
+  String get exportDataError => 'Erro ao exportar dados';
+
+  @override
+  String get exportProcessing => 'Processando...';
+
+  @override
+  String get exportSuccess => 'Exportação concluída com sucesso!';
+
+  @override
+  String exportError(Object error) {
+    return 'Erro ao exportar dados: $error';
+  }
+
+  @override
+  String exportShareSubject(Object app) {
+    return 'Dados RuraCamp - $app';
+  }
+
+  @override
+  String get syncPending => 'Sincronização pendente';
+
+  @override
+  String get syncInProgress => 'Sincronizando...';
+
+  @override
+  String get syncComplete => 'Sincronização concluída';
+
+  @override
+  String get syncFailed => 'Falha na sincronização';
+
+  @override
+  String get syncConflict => 'Conflito detectado';
+
+  @override
+  String get offlineMode => 'Modo offline';
+
+  @override
+  String offlineQueueCount(int count) {
+    return '$count operações pendentes';
+  }
+
+  @override
+  String get syncRetrying => 'Tentando novamente...';
+
+  @override
+  String get syncOfflineQueued => 'Salvo localmente, será sincronizado';
 
   @override
   String get revokeAllButton => 'Revogar Tudo e Sair';

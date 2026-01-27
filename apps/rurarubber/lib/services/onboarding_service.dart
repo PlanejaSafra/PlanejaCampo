@@ -61,15 +61,17 @@ class OnboardingService {
   /// - [profileType]: The selected profile type (produtor/sangrador/comprador).
   /// - [tapperCountSelection]: For Produtor - how many tappers (e.g., "just_me", "1-2", "3-5", "6+").
   /// - [bossNameValue]: For Sangrador - the name of their boss/producer.
+  /// - [fallbackName]: Localized fallback name if user leaves the field empty.
   Future<void> completeOnboarding({
     required String seringalName,
     required UserProfileType profileType,
+    required String fallbackName,
     String? tapperCountSelection,
     String? bossNameValue,
   }) async {
     await _ensureInitialized();
 
-    final name = seringalName.trim().isEmpty ? 'Meu Seringal' : seringalName.trim();
+    final name = seringalName.trim().isEmpty ? fallbackName : seringalName.trim();
 
     // 1. Create or update the default farm with the user-provided name
     try {
