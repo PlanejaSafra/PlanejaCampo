@@ -8,7 +8,7 @@
 
 ## Phase RAIN-10: Unified Sync Pipeline — Migrate to GenericSyncService Tier 2
 
-### Status: [TODO]
+### Status: [DONE]
 **Priority**: 🟡 ARCHITECTURAL
 **Objective**: Migrar ChuvaService para usar o Tier 2 built-in do GenericSyncService (CORE-95), eliminando o SyncService customizado standalone do RuraRain.
 

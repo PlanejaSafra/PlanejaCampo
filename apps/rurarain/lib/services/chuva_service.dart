@@ -1,8 +1,10 @@
 import 'package:agro_core/agro_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:dart_geohash/dart_geohash.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../models/registro_chuva.dart';
-import 'sync_service.dart';
+
 
 /// Serviço de Chuva migrado para GenericSyncService (CORE-83)
 class ChuvaService extends GenericSyncService<RegistroChuva> {
@@ -18,6 +20,46 @@ class ChuvaService extends GenericSyncService<RegistroChuva> {
 
   @override
   bool get syncEnabled => true;
+
+  @override
+  bool get tier2Enabled => true;
+
+  @override
+  Tier2UploadItem? buildTier2Data(RegistroChuva item) {
+    // 1. Get property (sync lookup from cache)
+    final property = PropertyService().getPropertyById(item.propertyId);
+    if (property == null || !property.hasLocation) return null;
+
+    // 2. Get User ID (security rule requirement)
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+    if (userId == null) return null;
+
+    // 3. Generate GeoHash
+    final geoHasher = GeoHasher();
+    final geoHash5 =
+        geoHasher.encode(property.longitude!, property.latitude!, precision: 5);
+
+    // 4. Construct Doc ID (matches legacy SyncService format)
+    // Format: {geoHash5}_{propertyId}_{timestamp}
+    final docId =
+        '${geoHash5}_${item.propertyId}_${item.data.millisecondsSinceEpoch}';
+
+    // 5. Build data map
+    return Tier2UploadItem(
+      docId: docId,
+      collection: 'rainfall_data',
+      data: {
+        'mm': item.milimetros,
+        'date': item.data, // Will be converted to Timestamp by pipeline
+        'lat': property.latitude,
+        'lon': property.longitude,
+        'geohash5': geoHash5,
+        'geohash4': geoHash5.substring(0, 4),
+        'geohash3': geoHash5.substring(0, 3),
+        'userId': userId,
+      },
+    );
+  }
 
   @override
   RegistroChuva fromMap(Map<String, dynamic> map) =>
@@ -84,17 +126,15 @@ class ChuvaService extends GenericSyncService<RegistroChuva> {
   Future<void> adicionar(RegistroChuva registro) async {
     await super.add(registro);
     await _updateWidget();
-    // Tier 3 sync: automático pelo GenericSyncService (CORE-78/88)
-    // Tier 2 sync: queue for aggregate statistics (RAIN-08)
-    await _queueTier2Sync(registro);
+    // Tier 3 sync: automatic via GenericSyncService (CORE-78/88)
+    // Tier 2 sync: automatic via GenericSyncService pipeline (RAIN-10)
   }
 
   /// Atualiza registro existente
   Future<void> atualizar(RegistroChuva registro) async {
     await super.update(registro.id.toString(), registro);
     await _updateWidget();
-    // Tier 2 sync: re-queue updated record (RAIN-08)
-    await _reQueueTier2Sync(registro);
+    // Tier 2 sync: automatic via GenericSyncService pipeline (RAIN-10)
   }
 
   /// Exclui registro
@@ -108,50 +148,6 @@ class ChuvaService extends GenericSyncService<RegistroChuva> {
   // Tier 2 Sync (Aggregate Statistics) — RAIN-08
   // ─────────────────────────────────────────────────────────────────────
 
-  /// Queue a rainfall record for Tier 2 sync (aggregate statistics).
-  /// Looks up the property for location data, then queues and syncs.
-  Future<void> _queueTier2Sync(RegistroChuva registro) async {
-    try {
-      final property =
-          PropertyService().getPropertyById(registro.propertyId);
-      if (property == null) return;
-
-      await SyncService().queueForSync(registro, property);
-      // Fire-and-forget: try to sync immediately (non-blocking)
-      SyncService().syncPendingItems().then((result) {
-        if (result.itemsSynced > 0) {
-          debugPrint('[Tier2] Synced ${result.itemsSynced} items');
-          SyncService().updateLastSyncTimestamp();
-        }
-      }).catchError((e) {
-        debugPrint('[Tier2] Sync failed (non-fatal): $e');
-      });
-    } catch (e) {
-      debugPrint('[Tier2] Queue failed (non-fatal): $e');
-    }
-  }
-
-  /// Re-queue an updated rainfall record for Tier 2 sync.
-  Future<void> _reQueueTier2Sync(RegistroChuva registro) async {
-    try {
-      final property =
-          PropertyService().getPropertyById(registro.propertyId);
-      if (property == null) return;
-
-      await SyncService().reQueueForSync(registro, property);
-      // Fire-and-forget sync
-      SyncService().syncPendingItems().then((result) {
-        if (result.itemsSynced > 0) {
-          debugPrint('[Tier2] Synced ${result.itemsSynced} updated items');
-          SyncService().updateLastSyncTimestamp();
-        }
-      }).catchError((e) {
-        debugPrint('[Tier2] Sync failed (non-fatal): $e');
-      });
-    } catch (e) {
-      debugPrint('[Tier2] Re-queue failed (non-fatal): $e');
-    }
-  }
 
   // ─────────────────────────────────────────────────────────────────────
   // Lógica de Talhões
@@ -266,9 +262,7 @@ class ChuvaService extends GenericSyncService<RegistroChuva> {
     return dateNow.difference(dateLast).inDays;
   }
 
-  Future<void> notifyRainLogged() async {
-    // Placeholder legacy
-  }
+
 
   // Widget Update Logic (Preserved)
   Future<void> _updateWidget() async {

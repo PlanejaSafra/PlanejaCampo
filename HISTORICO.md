@@ -1,7 +1,9 @@
 Não seja prolixo.
 Seja direto e objetivo.
-Internalize CLAUDE.md, README.md, ARCHITECTURE.md e CHANGELOG.md do agro_core.
-Internalize CLAUDE.md, README.md, ARCHITECTURE.md e CHANGELOG.md do rurarain.
+Internalize CLAUDE.md README.md, ARCHITECTURE.md e CHANGELOG.md na raiz do projeto.
+Internalize CLAUDE.md README.md, ARCHITECTURE.md e CHANGELOG.md do agro_core.
+Internalize README.md, ARCHITECTURE.md e CHANGELOG.md do rurarain e outros apps.
+
 
 Analise as fases 350+ do CHANGELOG  e verifique se estão corretamente e totalmente implementadas, e aponte gaps, falhas e possíveis não implementações.
 
@@ -2345,3 +2347,36 @@ RUBBER-30	Verificar que rurarubber já usa GenericSyncService corretamente	TODO
 CASH-11	Verificar que ruracash já usa GenericSyncService corretamente	TODO
 CASH-12.4/5	Criar projeto Firebase + google-services.json + firebase_options.dart	BLOCKED
 flutter analyze	Rodar em todos os apps após mudanças	TODO
+
+---
+
+# Unified Sync Pipeline Implementation (CORE-95 / RAIN-10)
+**Date:** 2026-01-27
+
+## Objectives
+- Deprecate legacy `SyncService` in RuraRain.
+- Migrate `ChuvaService` to use `GenericSyncService` Tier 2 pipeline.
+- Verify `GenericSyncService` usage in RuraRubber and RuraCash.
+- Finalize CORE-95 architectural phase.
+
+## Changes Implemented
+1.  **RuraRain Migrated (RAIN-10)**:
+    -   `ChuvaService` now overrides `tier2Enabled` and implements `buildTier2Data`.
+    -   Removed manual sync queue calls (`_queueTier2Sync`).
+    -   Removed `SyncService` initialization from `main.dart`.
+    -   `SyncService` class marked as `@deprecated`.
+    -   Removed unused `notifyRainLogged` method and imports.
+
+2.  **Verification (RUBBER-30 / CASH-11)**:
+    -   Confirmed all RuraRubber services (`EntregaService`, etc.) inherit from `GenericSyncService` with `syncEnabled=true`.
+    -   Confirmed RuraCash `LancamentoService` inherits from `GenericSyncService` with `syncEnabled=false` (awaiting Firebase).
+
+3.  **Documentation**:
+    -   Updated `rurarain/ARCHITECTURE.md` to reference `GenericSyncService`.
+    -   Marked all relevant phases as DONE in `CHANGELOG.md` files (core, rain, rubber, cash).
+
+## Status
+- **CORE-95**: DONE
+- **RAIN-10**: DONE
+- **RUBBER-30**: DONE
+- **CASH-11**: DONE

@@ -4,7 +4,7 @@
 
 ## Phase CORE-95: Unified Sync Pipeline — GenericSyncService for All Tiers
 
-### Status: [DOING]
+### Status: [DONE]
 **Priority**: 🟡 ARCHITECTURAL
 **Objective**: Refatorar o GenericSyncService para suportar todos os Data Tiers (1, 2, 3) num pipeline unificado. Eliminar SyncServices customizados nos apps. O GenericSyncService decidirá o tier baseado em configuração (flag, coleção ou parâmetro).
 
@@ -22,9 +22,9 @@
 | CORE-95.5 | Integrar Tier2Pipeline no `_save()`: queue/requeue após save local, fire-and-forget sync | ✅ DONE |
 | CORE-95.6 | Adicionar `dispose()` ao GenericSyncService para cleanup de timers (Tier2Pipeline + debounce) | ✅ DONE |
 | CORE-95.7 | Exportar `tier2_pipeline.dart` no barrel `agro_core.dart` | ✅ DONE |
-| CORE-95.8 | RAIN-10: Migrar ChuvaService para usar Tier 2 built-in (eliminar SyncService standalone) | ⏳ TODO |
-| CORE-95.9 | RUBBER-30: Verificar que rurarubber usa GenericSyncService exclusivamente | ⏳ TODO |
-| CORE-95.10 | CASH-11: Verificar que ruracash usa GenericSyncService exclusivamente | ⏳ TODO |
+| CORE-95.8 | RAIN-10: Migrar ChuvaService para usar Tier 2 built-in (eliminar SyncService standalone) | ✅ DONE |
+| CORE-95.9 | RUBBER-30: Verificar que rurarubber usa GenericSyncService exclusivamente | ✅ DONE |
+| CORE-95.10 | CASH-11: Verificar que ruracash usa GenericSyncService exclusivamente | ✅ DONE |
 
 ### Architecture
 

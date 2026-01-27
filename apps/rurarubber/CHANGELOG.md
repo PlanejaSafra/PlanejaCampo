@@ -6,7 +6,7 @@
 
 ## Phase RUBBER-30: Unified Sync Pipeline Verification
 
-### Status: [TODO]
+### Status: [DONE]
 **Priority**: 🟡 ARCHITECTURAL
 **Objective**: Verificar que todos os serviços do RuraRubber usam exclusivamente GenericSyncService. Todos os 5 services (Despesa, Entrega, Parceiro, Recebivel, Tabela) já estendem GenericSyncService com syncEnabled=true. Nenhum tem Tier 2 customizado.
 

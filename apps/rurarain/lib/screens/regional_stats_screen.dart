@@ -4,7 +4,8 @@ import 'package:intl/intl.dart';
 
 import '../models/regional_stats.dart';
 import '../services/chuva_service.dart';
-import '../services/sync_service.dart';
+import '../services/chuva_service.dart';
+import '../services/rainfall_stats_service.dart';
 import '../widgets/balanco_hidrico_chart.dart';
 
 /// Screen showing regional rainfall statistics and comparison with user's data.
@@ -25,7 +26,7 @@ class RegionalStatsScreen extends StatefulWidget {
 }
 
 class _RegionalStatsScreenState extends State<RegionalStatsScreen> {
-  final _syncService = SyncService();
+  final _statsService = RainfallStatsService();
   final _chuvaService = ChuvaService();
 
   RegionalStats? _regionalStats;
@@ -42,7 +43,7 @@ class _RegionalStatsScreenState extends State<RegionalStatsScreen> {
 
   Future<void> _loadData() async {
     // Check consent
-    if (!_syncService.hasUserConsent) {
+    if (!_statsService.hasUserConsent) {
       setState(() {
         _hasError = true;
       });
@@ -64,7 +65,7 @@ class _RegionalStatsScreenState extends State<RegionalStatsScreen> {
 
     try {
       // Fetch regional stats
-      final stats = await _syncService.fetchRegionalStats(
+      final stats = await _statsService.fetchRegionalStats(
         latitude: widget.latitude!,
         longitude: widget.longitude!,
       );
@@ -122,7 +123,7 @@ class _RegionalStatsScreenState extends State<RegionalStatsScreen> {
     if (_hasError) {
       // Determine error message based on state
       String errorMsg;
-      if (!_syncService.hasUserConsent) {
+      if (!_statsService.hasUserConsent) {
         errorMsg = l10n.regionalRequireConsent;
       } else if (widget.latitude == null || widget.longitude == null) {
         errorMsg = l10n.configurePropertyFirst;

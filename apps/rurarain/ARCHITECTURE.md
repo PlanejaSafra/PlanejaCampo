@@ -42,7 +42,7 @@ Ponto de entrada do aplicativo.
     *   Se `!onboardingCompleted`: Mostra `ConsentScreen` (3 Opções: Backup [Pré-ativado], Social, Inteligência).
     *   Se concluído: Mostra `ListaChuvasScreen` (Home).
 3.  **Híbrido**:
-    *   `SyncService`: Só envia dados se `AgroPrivacyStore.consentAggregateMetrics` for `true`.
+    *   `GenericSyncService (Tier 2)`: Pipeline unificado que envia dados anonimos se `AgroPrivacyStore.consentAggregateMetrics` for `true`.
     *   `UserCloudService`: Backup ativo implicitamente para usuários logados.
 
 ---

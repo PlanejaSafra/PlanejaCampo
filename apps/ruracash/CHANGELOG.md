@@ -53,7 +53,7 @@
 
 ## Phase CASH-11: Unified Sync Pipeline Verification
 
-### Status: [TODO]
+### Status: [DONE]
 **Priority**: 🟡 ARCHITECTURAL
 **Objective**: Verificar que todos os serviços do RuraCash usam exclusivamente GenericSyncService. Ambos services (Lancamento, CentroCusto) já estendem GenericSyncService com syncEnabled=false (Firebase placeholder). Nenhum tem Tier 2 customizado.
 

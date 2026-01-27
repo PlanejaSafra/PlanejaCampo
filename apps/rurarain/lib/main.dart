@@ -10,17 +10,17 @@ import 'dart:async';
 
 import 'firebase_options.dart';
 import 'models/registro_chuva.dart';
-import 'models/sync_queue_item.dart';
 import 'models/user_preferences.dart';
+
 
 import 'screens/lista_chuvas_screen.dart';
 import 'screens/weather_detail_screen.dart';
 import 'services/chuva_service.dart';
 import 'services/chuva_backup_provider.dart';
 import 'services/chuva_deletion_provider.dart';
-import 'services/migration_service.dart';
 import 'services/notification_service.dart';
-import 'services/sync_service.dart';
+import 'services/rainfall_stats_service.dart';
+
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -60,7 +60,7 @@ Future<void> main() async {
   Hive.registerAdapter(TalhaoAdapter());
   Hive.registerAdapter(RegistroChuvaAdapter());
   Hive.registerAdapter(WeatherForecastAdapter());
-  Hive.registerAdapter(SyncQueueItemAdapter());
+
 
   // CORE-77: Register farm and dependency adapters
   Hive.registerAdapter(FarmAdapter());
@@ -105,7 +105,8 @@ Future<void> main() async {
   await WeatherService().init();
 
   // Initialize sync service (for regional statistics)
-  await SyncService().init();
+  await RainfallStatsService().init();
+
 
   // Load user preferences
   final prefs = await UserPreferences.load();

@@ -12,6 +12,7 @@ import '../models/sync_queue_item.dart';
 
 /// Service for syncing rainfall data to Firestore and fetching regional statistics.
 /// Implements opt-in consent, rate limiting, and periodic retry.
+@deprecated
 class SyncService {
   static const String _queueBoxName = 'sync_queue';
   static const String _metadataBoxName = 'sync_metadata';
