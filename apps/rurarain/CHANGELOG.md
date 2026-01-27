@@ -6,21 +6,31 @@
 
 ---
 
-## Phase RAIN-10: Unified Sync Pipeline
+## Phase RAIN-10: Unified Sync Pipeline — Migrate to GenericSyncService Tier 2
 
-### Status: [LOCKED]
+### Status: [TODO]
 **Priority**: 🟡 ARCHITECTURAL
-**Objective**: Unificar Tier 2 (stats anônimos) e Tier 3 (full data sync) sob o GenericSyncService. O GenericSyncService receberia parâmetro de tier ou decidiria por coleção, eliminando o SyncService customizado do RuraRain.
+**Objective**: Migrar ChuvaService para usar o Tier 2 built-in do GenericSyncService (CORE-95), eliminando o SyncService customizado standalone do RuraRain.
 
 ### Prerequisites
-- RAIN-09 (Tier 2 bug fixes) deve estar DONE
-- CORE-95: Unified Sync Pipeline deve ser planejado no agro_core
+- RAIN-09 (Tier 2 bug fixes) deve estar DONE ✅
+- CORE-95 (Tier 2 no GenericSyncService) deve estar DOING ✅
 
 ### Scope
-- Migrar `SyncService` (rurarain) para usar `GenericSyncService` como base
-- GenericSyncService decide tier baseado em config (coleção ou parâmetro)
-- Manter backoff, retry periódico, rate limiting, consent check
-- Eliminar duplicidade de lógica de fila e retry
+- Override `tier2Enabled => true` no ChuvaService
+- Override `buildTier2Data()` para converter RegistroChuva em Tier2UploadItem (anonymized, geoHashed)
+- Override `prepareTier2ForUpload()` para converter DateTime → Firestore Timestamp
+- Remover `_queueTier2Sync()` e `_reQueueTier2Sync()` do ChuvaService
+- Remover import e init do SyncService standalone no main.dart
+- Deprecar `sync_service.dart` (manter para itens existentes na fila antiga)
+
+### Files to Modify
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/services/chuva_service.dart` | MODIFY | Add tier2Enabled, buildTier2Data, prepareTier2ForUpload; remove _queueTier2Sync |
+| `lib/main.dart` | MODIFY | Remove SyncService init |
+| `lib/services/sync_service.dart` | DEPRECATE | Mantido para backward compat (fila antiga) |
 
 ---
 

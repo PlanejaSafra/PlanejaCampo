@@ -5,26 +5,70 @@
 
 ---
 
-## Phase CASH-11: Unified Sync Pipeline — GenericSyncService for All Tiers
+## Phase CASH-12: Android Build Configuration — Flavors, Firebase, Desugaring
 
-### Status: [LOCKED]
+### Status: [DOING]
+**Priority**: 🔴 CRITICAL
+**Objective**: Configurar o projeto Android do RuraCash com paridade ao RuraRain/RuraRubber. O `flutter create` deixou tudo no padrão sem Firebase, sem flavors, sem desugaring.
+
+### Gaps Found
+
+| Item | Atual (RuraCash) | Correto (RuraRain/Rubber) |
+|------|-------------------|---------------------------|
+| `settings.gradle` AGP | 8.1.0 | 8.6.0 |
+| `settings.gradle` Kotlin | 1.8.22 | 2.0.0+ |
+| `settings.gradle` google-services | AUSENTE | 4.3.15 |
+| `settings.gradle` flutter-plugin-loader | 1.0.0 | 1.0.0 (rubber) / 3.16.0 (rain) |
+| `build.gradle` google-services plugin | AUSENTE | `com.google.gms.google-services` |
+| `build.gradle` flavors | AUSENTE | dev/prod |
+| `build.gradle` desugaring | AUSENTE | `coreLibraryDesugaringEnabled true` |
+| `build.gradle` minSdk | flutter default | 23 |
+| `build.gradle` Firebase dependencies | AUSENTE | firebase-bom + analytics |
+| `AndroidManifest.xml` label | Hardcoded "ruracash" | `@string/app_name` |
+| `google-services.json` | AUSENTE | dev/ + prod/ |
+| `firebase_options.dart` | PLACEHOLDER values | Real Firebase credentials |
+
+### Implementation Summary
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| CASH-12.1 | Atualizar `settings.gradle`: AGP 8.6.0, Kotlin 2.0.0, add google-services plugin | ✅ DONE |
+| CASH-12.2 | Atualizar `build.gradle`: add google-services plugin, flavors dev/prod, desugaring, minSdk 23 | ✅ DONE |
+| CASH-12.3 | Fix `AndroidManifest.xml`: usar `@string/app_name` em vez de hardcoded | ✅ DONE |
+| CASH-12.4 | Criar `google-services.json` para dev/prod via Firebase CLI | 🚫 BLOCKED (requer criação de projeto Firebase) |
+| CASH-12.5 | Atualizar `firebase_options.dart` com credenciais reais | 🚫 BLOCKED (requer criação de projeto Firebase) |
+
+### Files Modified
+
+| File | Action | Description |
+|------|--------|-------------|
+| `android/settings.gradle` | MODIFY | AGP, Kotlin, google-services versions |
+| `android/app/build.gradle` | MODIFY | Flavors, desugaring, minSdk, Firebase deps |
+| `android/app/src/main/AndroidManifest.xml` | MODIFY | Fix app label |
+| `android/app/src/dev/google-services.json` | CREATE | Firebase config (dev) |
+| `android/app/src/prod/google-services.json` | CREATE | Firebase config (prod) |
+| `lib/firebase_options.dart` | MODIFY | Real Firebase credentials |
+
+---
+
+## Phase CASH-11: Unified Sync Pipeline Verification
+
+### Status: [TODO]
 **Priority**: 🟡 ARCHITECTURAL
-**Objective**: Refatorar todos os serviços de sync para usar exclusivamente o GenericSyncService (agro_core) como base para todos os Tiers (1, 2, 3). Eliminar lógica de sync customizada duplicada.
+**Objective**: Verificar que todos os serviços do RuraCash usam exclusivamente GenericSyncService. Ambos services (Lancamento, CentroCusto) já estendem GenericSyncService com syncEnabled=false (Firebase placeholder). Nenhum tem Tier 2 customizado.
 
 ### Prerequisites
-- CORE-95: Unified Sync Pipeline deve ser implementado no agro_core
-- RAIN-09 (Tier 2 bug fixes) deve estar DONE
+- CORE-95: Unified Sync Pipeline deve estar DOING ✅
 
 ### Scope
-- Migrar qualquer sync customizado para usar GenericSyncService
-- GenericSyncService decide tier baseado em config (coleção, parâmetro, ou flag)
-- Garantir zero subcollections (flat root collections apenas)
-- Manter backoff, retry periódico, rate limiting, consent check
+- Verificar que nenhum service usa subcollections
+- Verificar que nenhum service tem lógica de sync customizada fora do GenericSyncService
+- Quando Firebase for configurado (CASH-12.4/12.5), re-habilitar syncEnabled=true
 
 ### Cross-Reference
-- RAIN-10 [LOCKED]: Unified Sync Pipeline (rurarain)
-- RUBBER-30 [LOCKED]: Unified Sync Pipeline (rurarubber)
-- CORE-95 [LOCKED]: Unified Sync Pipeline (agro_core)
+- RAIN-10 [TODO]: Unified Sync Pipeline (rurarain)
+- RUBBER-30 [TODO]: Unified Sync Pipeline (rurarubber)
+- CORE-95 [DOING]: Unified Sync Pipeline (agro_core)
 
 ---
 

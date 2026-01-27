@@ -4,26 +4,23 @@
 
 ---
 
-## Phase RUBBER-30: Unified Sync Pipeline — GenericSyncService for All Tiers
+## Phase RUBBER-30: Unified Sync Pipeline Verification
 
-### Status: [LOCKED]
+### Status: [TODO]
 **Priority**: 🟡 ARCHITECTURAL
-**Objective**: Refatorar todos os serviços de sync para usar exclusivamente o GenericSyncService (agro_core) como base para todos os Tiers (1, 2, 3). Eliminar lógica de sync customizada duplicada.
+**Objective**: Verificar que todos os serviços do RuraRubber usam exclusivamente GenericSyncService. Todos os 5 services (Despesa, Entrega, Parceiro, Recebivel, Tabela) já estendem GenericSyncService com syncEnabled=true. Nenhum tem Tier 2 customizado.
 
 ### Prerequisites
-- CORE-95: Unified Sync Pipeline deve ser implementado no agro_core
-- RAIN-09 (Tier 2 bug fixes) deve estar DONE
+- CORE-95: Unified Sync Pipeline deve estar DOING ✅
 
 ### Scope
-- Migrar qualquer sync customizado para usar GenericSyncService
-- GenericSyncService decide tier baseado em config (coleção, parâmetro, ou flag)
-- Garantir zero subcollections (flat root collections apenas)
-- Manter backoff, retry periódico, rate limiting, consent check
-- Unificar OfflineQueueManager + SyncQueueItem numa fila única
+- Verificar que nenhum service usa subcollections (flat root collections apenas)
+- Verificar que nenhum service tem lógica de sync customizada fora do GenericSyncService
+- Confirmar zero subcollection usage nos firestoreCollection getters
 
 ### Cross-Reference
-- RAIN-10 [LOCKED]: Unified Sync Pipeline (rurarain)
-- CORE-95 [LOCKED]: Unified Sync Pipeline (agro_core)
+- RAIN-10 [TODO]: Unified Sync Pipeline (rurarain)
+- CORE-95 [DOING]: Unified Sync Pipeline (agro_core)
 
 ---
 

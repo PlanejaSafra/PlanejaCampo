@@ -15,13 +15,14 @@ export 'widgets/primary_button.dart';
 export 'widgets/talhao_selector.dart';
 export 'widgets/weather_card.dart';
 
-// Services (Sync Infrastructure - CORE-78)
+// Services (Sync Infrastructure - CORE-78/95)
 export 'services/sync/sync_models.dart';
 export 'services/sync/local_cache_manager.dart';
 export 'services/sync/offline_queue_manager.dart';
 export 'services/sync/data_integrity_manager.dart';
 export 'services/sync/generic_sync_service.dart';
 export 'services/sync/sync_config.dart';
+export 'services/sync/tier2_pipeline.dart';
 
 // Services (Existing)
 export 'services/weather_service.dart';

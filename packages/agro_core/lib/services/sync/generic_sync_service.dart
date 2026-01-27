@@ -7,6 +7,7 @@ import 'sync_config.dart';
 import 'local_cache_manager.dart';
 import 'offline_queue_manager.dart';
 import 'data_integrity_manager.dart';
+import 'tier2_pipeline.dart';
 import '../farm_service.dart';
 
 /// Classe base para serviços com suporte a offline-first e sincronização.
@@ -14,25 +15,69 @@ import '../farm_service.dart';
 /// T deve implementar [SyncableEntity] ou ser compatível com os métodos abstratos.
 ///
 /// Funcionalidades:
-/// - CRUD local (Hive)
-/// - Sincronização automática com Firestore (opcional)
+/// - CRUD local (Hive) — Tier 1
+/// - Tier 2: Anonymous aggregate upload (consent-gated, rate-limited)
+/// - Tier 3: Full data sync with Firestore (farm.isShared gated)
 /// - Fila de operações offline
 /// - Resolução de conflitos
 /// - Cache com validação de integridade
+///
+/// Data Tier Architecture (CORE-88/95):
+/// - Tier 1: Local only (default). No cloud sync.
+/// - Tier 2: Anonymized aggregate data (opt-in via [tier2Enabled]).
+///   Consent-gated via [AgroPrivacyStore.consentAggregateMetrics],
+///   rate-limited, exponential backoff retry.
+/// - Tier 3: Full cloud sync (opt-in via [syncEnabled]).
+///   Gated by [Farm.isShared] (multi-user license).
 abstract class GenericSyncService<T> extends ChangeNotifier {
   // --- Configurações Abstratas ---
 
   /// Nome do Box no Hive (deve ser único)
   String get boxName;
 
-  /// Se deve sincronizar com Firestore
+  /// Se deve sincronizar com Firestore (Tier 3: full data sync)
   bool get syncEnabled => false;
 
-  /// Nome da coleção no Firestore (default: boxName)
+  /// Nome da coleção no Firestore (default: boxName).
+  /// MUST be a flat root collection — subcollections are FORBIDDEN.
   String get firestoreCollection => boxName;
 
   /// Tag para logs e metadados
   String get sourceApp;
+
+  // --- Tier 2 Configuration (CORE-95) ---
+
+  /// Whether Tier 2 (anonymous aggregate) sync is enabled.
+  /// Override to `true` in subclasses that upload anonymized data.
+  bool get tier2Enabled => false;
+
+  /// Build anonymized Tier 2 data for an item.
+  /// Return null if this item should not be queued for Tier 2
+  /// (e.g., missing location data, no property assigned).
+  ///
+  /// The returned [Tier2UploadItem.data] must contain only
+  /// Hive-serializable types (String, int, double, bool, DateTime,
+  /// List, Map). DateTime values are automatically converted to
+  /// Firestore Timestamps at upload time.
+  ///
+  /// Override in subclasses that enable Tier 2.
+  Tier2UploadItem? buildTier2Data(T item) => null;
+
+  /// Prepare Tier 2 data for Firestore upload (called at sync time).
+  /// Default: converts DateTime → Firestore Timestamp, adds `uploaded_at`.
+  /// Override for custom type conversions.
+  Map<String, dynamic> prepareTier2ForUpload(Map<String, dynamic> data) {
+    final upload = <String, dynamic>{};
+    for (final entry in data.entries) {
+      if (entry.value is DateTime) {
+        upload[entry.key] = Timestamp.fromDate(entry.value as DateTime);
+      } else {
+        upload[entry.key] = entry.value;
+      }
+    }
+    upload['uploaded_at'] = FieldValue.serverTimestamp();
+    return upload;
+  }
 
   // --- Métodos de Serialização Abstratos ---
 
@@ -46,6 +91,7 @@ abstract class GenericSyncService<T> extends ChangeNotifier {
   bool _initialized = false;
   final Map<String, Timer?> _debounceTimers = {};
   bool _isSyncing = false;
+  Tier2Pipeline? _tier2Pipeline;
 
   /// Inicializa o serviço (abre box)
   @mustCallSuper
@@ -64,7 +110,36 @@ abstract class GenericSyncService<T> extends ChangeNotifier {
     // Constrói índices em memória
     _buildIndices();
 
+    // Subcollection detection guard (CORE-95)
+    if (syncEnabled && firestoreCollection.contains('/')) {
+      debugPrint('[GenericSyncService] ERROR: Subcollection detected in '
+          'firestoreCollection "$firestoreCollection" for service "$boxName". '
+          'RULE VIOLATION: Use flat root collections only!');
+    }
+
+    // Initialize Tier 2 pipeline (CORE-95)
+    if (tier2Enabled) {
+      _tier2Pipeline = Tier2Pipeline(
+        serviceName: boxName,
+        dataConverter: prepareTier2ForUpload,
+      );
+      await _tier2Pipeline!.init();
+      debugPrint('[GenericSyncService] Tier 2 pipeline initialized '
+          'for "$boxName"');
+    }
+
     _initialized = true;
+  }
+
+  /// Dispose resources (Tier 2 pipeline timer, debounce timers).
+  @override
+  void dispose() {
+    _tier2Pipeline?.dispose();
+    for (final timer in _debounceTimers.values) {
+      timer?.cancel();
+    }
+    _debounceTimers.clear();
+    super.dispose();
   }
 
   // --- Indexação em Memória (Otimização) ---
@@ -251,6 +326,33 @@ abstract class GenericSyncService<T> extends ChangeNotifier {
         await OfflineQueueManager.instance.addToQueue(op);
       } catch (e) {
         debugPrint('[GenericSyncService] Queue operation failed (non-fatal): $e');
+      }
+    }
+
+    // 4. Tier 2: Queue for anonymous aggregate upload (CORE-95)
+    if (tier2Enabled && _tier2Pipeline != null) {
+      try {
+        final tier2Data = buildTier2Data(item);
+        if (tier2Data != null) {
+          if (isNew) {
+            await _tier2Pipeline!.queue(tier2Data);
+          } else {
+            await _tier2Pipeline!.reQueue(tier2Data);
+          }
+          // Fire-and-forget sync attempt
+          _tier2Pipeline!.syncPending().then((result) {
+            if (result.itemsSynced > 0) {
+              debugPrint('[GenericSyncService/$boxName] '
+                  'Tier 2 synced ${result.itemsSynced} items');
+            }
+          }).catchError((e) {
+            debugPrint('[GenericSyncService/$boxName] '
+                'Tier 2 sync failed (non-fatal): $e');
+          });
+        }
+      } catch (e) {
+        debugPrint('[GenericSyncService/$boxName] '
+            'Tier 2 queue failed (non-fatal): $e');
       }
     }
   }

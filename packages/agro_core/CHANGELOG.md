@@ -4,25 +4,59 @@
 
 ## Phase CORE-95: Unified Sync Pipeline — GenericSyncService for All Tiers
 
-### Status: [LOCKED]
+### Status: [DOING]
 **Priority**: 🟡 ARCHITECTURAL
 **Objective**: Refatorar o GenericSyncService para suportar todos os Data Tiers (1, 2, 3) num pipeline unificado. Eliminar SyncServices customizados nos apps. O GenericSyncService decidirá o tier baseado em configuração (flag, coleção ou parâmetro).
 
 ### Prerequisites
-- RAIN-09 (Tier 2 bug fixes) deve estar DONE
+- RAIN-09 (Tier 2 bug fixes) deve estar DONE ✅
 
-### Scope
-- Estender GenericSyncService com suporte a Tier 2 (dados anonimizados, consent-based)
-- Unificar OfflineQueueManager + SyncQueueItem numa fila única
-- Adicionar retry periódico ao GenericSyncService (atualmente só existe no SyncService do rurarain)
-- Garantir zero subcollections (flat root collections apenas)
-- Manter gates de tier: Tier 1 (local only), Tier 2 (consent-based anonymized), Tier 3 (farm.isShared multi-user)
-- Strategy pattern para serialização de dados por tier
+### Implementation Summary
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| CORE-95.1 | Criar `Tier2Pipeline` class: fila Hive genérica, rate limiting, exponential backoff, periodic retry timer, consent check via AgroPrivacyStore | ✅ DONE |
+| CORE-95.2 | Criar `Tier2UploadItem` e `Tier2SyncResult` value classes | ✅ DONE |
+| CORE-95.3 | Adicionar subcollection detection guard em `GenericSyncService.init()` — log ERROR se `firestoreCollection` contém `/` | ✅ DONE |
+| CORE-95.4 | Adicionar Tier 2 API ao GenericSyncService: `tier2Enabled`, `buildTier2Data()`, `prepareTier2ForUpload()` | ✅ DONE |
+| CORE-95.5 | Integrar Tier2Pipeline no `_save()`: queue/requeue após save local, fire-and-forget sync | ✅ DONE |
+| CORE-95.6 | Adicionar `dispose()` ao GenericSyncService para cleanup de timers (Tier2Pipeline + debounce) | ✅ DONE |
+| CORE-95.7 | Exportar `tier2_pipeline.dart` no barrel `agro_core.dart` | ✅ DONE |
+| CORE-95.8 | RAIN-10: Migrar ChuvaService para usar Tier 2 built-in (eliminar SyncService standalone) | ⏳ TODO |
+| CORE-95.9 | RUBBER-30: Verificar que rurarubber usa GenericSyncService exclusivamente | ⏳ TODO |
+| CORE-95.10 | CASH-11: Verificar que ruracash usa GenericSyncService exclusivamente | ⏳ TODO |
+
+### Architecture
+
+```
+GenericSyncService<T>
+├── Tier 1: Local only (default)
+│   └── Hive box → getAll(), getById(), add(), update(), delete()
+│
+├── Tier 2: Anonymous aggregate (opt-in)
+│   ├── tier2Enabled → true
+│   ├── buildTier2Data(item) → Tier2UploadItem?
+│   ├── prepareTier2ForUpload(data) → Firestore-ready map
+│   └── Tier2Pipeline: queue → rate-limit → backoff → periodic retry
+│
+└── Tier 3: Full data sync (farm.isShared)
+    ├── syncEnabled → true
+    ├── _shouldSyncToCloud() → FarmService.isActiveFarmShared()
+    └── OfflineQueueManager → batch write to Firestore
+```
+
+### Files Modified
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/services/sync/tier2_pipeline.dart` | CREATE | Tier2Pipeline, Tier2UploadItem, Tier2SyncResult |
+| `lib/services/sync/generic_sync_service.dart` | MODIFY | Add tier2Enabled, buildTier2Data, prepareTier2ForUpload, subcollection guard, dispose, Tier 2 integration in _save() |
+| `lib/agro_core.dart` | MODIFY | Export tier2_pipeline.dart |
 
 ### Cross-Reference
-- RAIN-10 [LOCKED]: App-specific migration (rurarain)
-- RUBBER-30 [LOCKED]: App-specific migration (rurarubber)
-- CASH-11 [LOCKED]: App-specific migration (ruracash)
+- RAIN-10 [LOCKED]: App-specific migration (rurarain) — next step
+- RUBBER-30 [LOCKED]: App-specific verification (rurarubber)
+- CASH-11 [LOCKED]: App-specific verification (ruracash)
 - CORE-78: GenericSyncService original (Tier 3 only)
 - CORE-88: Data Tier Architecture definition
 
