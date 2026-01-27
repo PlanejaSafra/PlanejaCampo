@@ -2,6 +2,126 @@
 
 ---
 
+## Phase CORE-88: Data Tier Architecture - Farm.isShared + GenericSyncService Tier 3 Gate
+
+### Status: [DONE]
+**Date Completed**: 2026-01-26
+**Priority**: 🟡 ARCHITECTURAL
+**Objective**: Implementar arquitetura de tiers de dados para sincronização cloud. Definir 4 níveis de dados (Tier 0-3) com gates específicos. Tier 3 (full data sync via GenericSyncService) só sincroniza quando `farm.isShared=true` (licença multi-user ativada). Preparação completa para futuro multi-user sem necessidade de revisitar.
+
+### Data Tier Architecture
+
+| Tier | Dados | Gate | Service | Coleções |
+|------|-------|------|---------|----------|
+| **Tier 0** | Identidade e Termos | Sempre (obrigatório) | `UserCloudService` | `users` |
+| **Tier 1** | Backups Manuais | `consentCloudBackup` | `CloudBackupService` | `user_backups`, `user_backup_chunks` |
+| **Tier 2** | Estatísticas Anônimas | `consentAggregateMetrics` | `SyncService` (rurarain) | `rainfall_data`, `rainfall_stats` |
+| **Tier 3** | Dados Completos (Multi-User) | `farm.isShared` | `GenericSyncService` | Todas as coleções do app |
+
+### Design Decisions
+
+- **`Farm.isShared`** (HiveField 9, default `false`): Flag que indica se a farm está no modo compartilhado (multi-user). Quando `true`, GenericSyncService sincroniza com Firestore.
+- **Ativação futura**: Quando licença multi-user for adquirida, o sistema apenas seta `farm.isShared = true`. O GenericSyncService já estará pronto para sincronizar.
+- **Consent implícito**: Ao ativar licença multi-user, o usuário concorda com termos que incluem sync de dados. Não é necessário check de `consentCloudBackup` no Tier 3.
+- **Retrocompatibilidade**: `isShared` default `false` garante que apps existentes continuam offline-only sem mudanças.
+
+### Implementation Summary
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| CORE-88.1 | Adicionar `@HiveField(9) bool isShared` ao modelo Farm (default false), atualizar construtor, factory, toJson, fromJson | ✅ DONE |
+| CORE-88.2 | Atualizar `farm.g.dart` manualmente (adapter com 9 fields, leitura/escrita de isShared) | ✅ DONE |
+| CORE-88.3 | Atualizar FarmService: `importFarm()` preserva isShared, `transferData()` preserva isShared, adicionar helpers `isActiveFarmShared()` e `setFarmShared()` | ✅ DONE |
+| CORE-88.4 | Atualizar GenericSyncService: substituir check `consentCloudBackup` por `_shouldSyncToCloud()` que verifica `farm.isShared`, importar FarmService, remover import uuid | ✅ DONE |
+| CORE-88.5 | Documentar Data Tier Architecture no ARCHITECTURE.md (nova seção 13) | ✅ DONE |
+
+### Files Modified
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/models/farm.dart` | MODIFY | Adicionar `@HiveField(9) bool isShared` (default false), helpers `setShared()`, `activateSharing()`, `deactivateSharing()`, atualizar toJson/fromJson |
+| `lib/models/farm.g.dart` | REGENERATE | Adapter com 9 campos (inclui isShared) |
+| `lib/services/farm_service.dart` | MODIFY | `importFarm()` preserva isShared, `transferData()` preserva isShared, novos métodos `isActiveFarmShared()` e `setFarmShared()` |
+| `lib/services/sync/generic_sync_service.dart` | MODIFY | Substituir import AgroPrivacyStore por FarmService, criar `_shouldSyncToCloud()`, atualizar `_save()` e `delete()` |
+
+### Notes
+
+- Tier 0, 1, 2 já possuem services dedicados com seus próprios gates — não são afetados por esta fase
+- GenericSyncService é exclusivamente Tier 3 — só deve sincronizar quando farm está em modo compartilhado
+- O campo `subscriptionTier` (HiveField 8) é para limites de farms; `isShared` (HiveField 9) é para habilitar sync
+- Quando `isShared=false`, dados ficam exclusivamente offline-first (Hive local) — nenhum dado é enviado ao Firestore via GenericSyncService
+
+### Cross-Reference
+- CORE-86: Check de consent substituído por isShared (evolução)
+- CORE-87: Owner-based access control (complementar)
+- RAIN-07: Adaptação do RuraRain para isOwner + parity com RUBBER-27
+- RUBBER-27: Já adaptado para isOwner (não requer mudanças adicionais)
+
+---
+
+## Phase CORE-87: Owner-Based Access Control for Settings & Privacy
+
+### Status: [DONE]
+**Date Completed**: 2026-01-26
+**Priority**: 🟡 ARCHITECTURAL
+**Objective**: Restringir funcionalidades de backup, exportação, importação e exclusão LGPD ao owner da farm ativa. Usuários vinculados a farms de terceiros não veem essas opções.
+
+### Implementation Summary
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| CORE-87.1 | Adicionar parâmetro `isOwner` ao AgroSettingsScreen (default true) | ✅ DONE |
+| CORE-87.2 | Esconder seção Cloud Backup quando isOwner=false | ✅ DONE |
+| CORE-87.3 | Esconder seção Local Backup quando isOwner=false | ✅ DONE |
+| CORE-87.4 | Esconder Sync toggle quando isOwner=false | ✅ DONE |
+| CORE-87.5 | Remover "Exportar Meus Dados LGPD" de Settings (redundante com Privacy) | ✅ DONE |
+| CORE-87.6 | Adicionar parâmetro `isOwner` ao AgroPrivacyScreen (default true) | ✅ DONE |
+| CORE-87.7 | Esconder botões Export/Delete LGPD em Privacy quando isOwner=false | ✅ DONE |
+| CORE-87.8 | Propagar isOwner de Settings para Privacy na navegação | ✅ DONE |
+
+### Files Modified
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/screens/agro_settings_screen.dart` | MODIFY | Adicionado `isOwner`, removido `onExportData`/`_handleExportData`/import DataExportService, seções condicionais por isOwner |
+| `lib/screens/agro_privacy_screen.dart` | MODIFY | Adicionado `isOwner`, botões Export/Delete condicionais |
+
+### Notes
+
+- Default `isOwner = true` para retrocompatibilidade (apps single-owner como RuraRain/RuraCash não precisam mudar)
+- Lógica de owner: `FarmService.instance.getDefaultFarm()?.isOwner(currentUser.uid)`
+- Consents (toggles) continuam visíveis para todos — são preferências pessoais, não dados da farm
+
+---
+
+## Phase CORE-86: Consent Check for GenericSyncService Cloud Sync
+
+### Status: [DONE]
+**Date Completed**: 2026-01-26
+**Priority**: 🔴 CRITICAL
+**Objective**: Bloquear sincronização automática de dados completos para o Firestore sem consentimento do usuário. O GenericSyncService enfileirava operações para o cloud sem verificar `consentCloudBackup`.
+
+### Implementation Summary
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| CORE-86.1 | Adicionar check `AgroPrivacyStore.consentCloudBackup` no `_save()` antes de enfileirar | ✅ DONE |
+| CORE-86.2 | Adicionar check `AgroPrivacyStore.consentCloudBackup` no `delete()` antes de enfileirar | ✅ DONE |
+
+### Files Modified
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/services/sync/generic_sync_service.dart` | MODIFY | Import AgroPrivacyStore, condicional `syncEnabled && AgroPrivacyStore.consentCloudBackup` em _save() e delete() |
+
+### Notes
+
+- Dados locais continuam sendo salvos normalmente (offline-first)
+- Apenas a operação de enfileirar para sync no Firestore é bloqueada sem consent
+- Se o usuário consentir depois, novos saves serão sincronizados (dados anteriores não retroativos)
+
+---
+
 ## Phase CORE-85: Remove Incomplete Cloud Data Deletion from Settings + Improve Privacy Deletion Dialog
 
 ### Status: [DONE]

@@ -2,13 +2,12 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:uuid/uuid.dart';
-
 import 'sync_models.dart';
 import 'sync_config.dart';
 import 'local_cache_manager.dart';
 import 'offline_queue_manager.dart';
 import 'data_integrity_manager.dart';
+import '../farm_service.dart';
 
 /// Classe base para serviços com suporte a offline-first e sincronização.
 ///
@@ -182,8 +181,8 @@ abstract class GenericSyncService<T> extends ChangeNotifier {
     await _box!.delete(id);
     notifyListeners();
 
-    // 2. Sync / Queue
-    if (syncEnabled) {
+    // 2. Sync / Queue (Tier 3: only if farm is in shared/multi-user mode)
+    if (_shouldSyncToCloud()) {
       try {
         // Tenta deletar no server se online (otimista)
         // Implementação simplificada: Põe na fila sempre para garantir ordem
@@ -229,7 +228,8 @@ abstract class GenericSyncService<T> extends ChangeNotifier {
     notifyListeners();
 
     // 3. Sync / Queue (non-fatal: local save already succeeded)
-    if (syncEnabled) {
+    // Tier 3: only queue for cloud sync if farm is in shared/multi-user mode
+    if (_shouldSyncToCloud()) {
       try {
         // Cria versão para upload com marker de timestamp do servidor
         final uploadData = Map<String, dynamic>.from(dataWithMeta);
@@ -365,6 +365,25 @@ abstract class GenericSyncService<T> extends ChangeNotifier {
     } finally {
       _isSyncing = false;
     }
+  }
+
+  // --- Tier 3 Gate ---
+
+  /// Determines whether data should be synced to Firestore.
+  ///
+  /// Data Tier Architecture — Tier 3 (Full Data Sync):
+  /// Only syncs when BOTH conditions are met:
+  /// 1. The subclass has `syncEnabled = true` (service-level opt-in)
+  /// 2. The active farm has `isShared = true` (multi-user license activated)
+  ///
+  /// This ensures that GenericSyncService NEVER sends data to Firestore
+  /// unless the farm owner has explicitly activated multi-user collaboration
+  /// through a license purchase.
+  ///
+  /// See also: [Farm.isShared], [FarmService.isActiveFarmShared]
+  bool _shouldSyncToCloud() {
+    if (!syncEnabled) return false;
+    return FarmService.instance.isActiveFarmShared();
   }
 
   // --- Helpers e Queries Locais ---

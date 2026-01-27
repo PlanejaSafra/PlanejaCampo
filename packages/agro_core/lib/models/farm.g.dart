@@ -25,13 +25,14 @@ class FarmAdapter extends TypeAdapter<Farm> {
       isDefault: fields[5] as bool,
       description: fields[6] as String?,
       subscriptionTier: fields[8] as String?,
+      isShared: fields[9] as bool? ?? false,
     );
   }
 
   @override
   void write(BinaryWriter writer, Farm obj) {
     writer
-      ..writeByte(8)
+      ..writeByte(9)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -47,7 +48,9 @@ class FarmAdapter extends TypeAdapter<Farm> {
       ..writeByte(6)
       ..write(obj.description)
       ..writeByte(8)
-      ..write(obj.subscriptionTier);
+      ..write(obj.subscriptionTier)
+      ..writeByte(9)
+      ..write(obj.isShared);
   }
 
   @override

@@ -275,17 +275,27 @@ class RuraRubberApp extends StatelessWidget {
           '/recebiveis': (context) => const RecebiveisScreen(),
           '/contas-pagar': (context) => const ContasPagarScreen(),
           '/break-even': (context) => const BreakEvenScreen(),
-          '/settings': (context) => AgroSettingsScreen(
-                onExportLocalBackup: () => _handleExportLocalBackup(context),
-                onImportLocalBackup: () => _handleImportLocalBackup(context),
-                onResetProfile: () async {
-                  await UserProfileService.instance.clearProfile();
-                  if (context.mounted) {
-                    Navigator.of(context)
-                        .pushNamedAndRemoveUntil('/', (route) => false);
-                  }
-                },
-              ),
+          '/settings': (context) {
+                final farm = FarmService.instance.getDefaultFarm();
+                final uid = AuthService.currentUser?.uid ?? '';
+                final isOwner = farm?.isOwner(uid) ?? true;
+                return AgroSettingsScreen(
+                  isOwner: isOwner,
+                  onExportLocalBackup: isOwner
+                      ? () => _handleExportLocalBackup(context)
+                      : null,
+                  onImportLocalBackup: isOwner
+                      ? () => _handleImportLocalBackup(context)
+                      : null,
+                  onResetProfile: () async {
+                    await UserProfileService.instance.clearProfile();
+                    if (context.mounted) {
+                      Navigator.of(context)
+                          .pushNamedAndRemoveUntil('/', (route) => false);
+                    }
+                  },
+                );
+              },
           '/profile-selection': (context) => ProfileSelectionScreen(
                 onProfileSelected: () {
                   Navigator.pushReplacementNamed(context, '/home');

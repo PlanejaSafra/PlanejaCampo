@@ -4,7 +4,6 @@ import 'package:intl/intl.dart';
 import '../l10n/generated/app_localizations.dart';
 import '../services/auth_service.dart';
 import '../services/cloud_backup_service.dart';
-import '../services/data_export_service.dart';
 import '../services/user_cloud_service.dart';
 import '../privacy/agro_privacy_store.dart';
 import '../widgets/backup_restore_dialog.dart';
@@ -30,9 +29,6 @@ class AgroSettingsScreen extends StatefulWidget {
 
   /// Callback to navigate to privacy/consent management screen.
   final VoidCallback? onNavigateToPrivacy;
-
-  /// Callback to export user data (LGPD compliance).
-  final VoidCallback? onExportData;
 
   /// Callback to toggle cloud sync.
   final void Function(bool)? onToggleCloudSync;
@@ -73,6 +69,11 @@ class AgroSettingsScreen extends StatefulWidget {
   /// Callback when backup restore is complete (to refresh main screen)
   final VoidCallback? onRestoreComplete;
 
+  /// Whether the current user is the owner of the active farm.
+  /// When false, hides: cloud backup, local backup, LGPD export/delete.
+  /// Defaults to true for backward compatibility (single-owner apps).
+  final bool isOwner;
+
   const AgroSettingsScreen({
     super.key,
     this.onNavigateToAbout,
@@ -81,7 +82,6 @@ class AgroSettingsScreen extends StatefulWidget {
     this.onChangeThemeMode,
     this.currentThemeMode = ThemeMode.system,
     this.onNavigateToPrivacy,
-    this.onExportData,
     this.onToggleCloudSync,
     this.cloudSyncEnabled = true,
     this.onReminderChanged,
@@ -95,6 +95,7 @@ class AgroSettingsScreen extends StatefulWidget {
     this.rainAlertsEnabled = false,
     this.onResetProfile,
     this.onRestoreComplete,
+    this.isOwner = true,
     this.appLogoLightPath,
     this.appLogoDarkPath,
   });
@@ -189,7 +190,9 @@ class _AgroSettingsScreenState extends State<AgroSettingsScreen> {
     } else {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (_) => const AgroPrivacyScreen()),
+        MaterialPageRoute(
+          builder: (_) => AgroPrivacyScreen(isOwner: widget.isOwner),
+        ),
       );
     }
   }
@@ -207,30 +210,6 @@ class _AgroSettingsScreenState extends State<AgroSettingsScreen> {
             appLogoLightPath: widget.appLogoLightPath,
             appLogoDarkPath: widget.appLogoDarkPath,
           ),
-        ),
-      );
-    }
-  }
-
-  Future<void> _handleExportData() async {
-    if (widget.onExportData != null) {
-      widget.onExportData!.call();
-      return;
-    }
-
-    final l10n = AgroLocalizations.of(context)!;
-    final scaffold = ScaffoldMessenger.of(context);
-
-    try {
-      await DataExportService.instance.shareExport(asCsv: false);
-      scaffold.showSnackBar(
-        SnackBar(content: Text(l10n.exportDataSuccess)),
-      );
-    } catch (e) {
-      scaffold.showSnackBar(
-        SnackBar(
-          content: Text('${l10n.exportDataError}: $e'),
-          backgroundColor: Colors.red,
         ),
       );
     }
@@ -586,8 +565,9 @@ class _AgroSettingsScreenState extends State<AgroSettingsScreen> {
               ],
 
               // =============================================
-              // CLOUD BACKUP SECTION (Prominent)
+              // CLOUD BACKUP SECTION (Owner only)
               // =============================================
+              if (widget.isOwner) ...[
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
                 child: Row(
@@ -741,11 +721,14 @@ class _AgroSettingsScreenState extends State<AgroSettingsScreen> {
                 ),
               ),
 
+              ], // end CLOUD BACKUP SECTION (Owner only)
+
               // =============================================
-              // LOCAL BACKUP SECTION (only show if app provides callbacks)
+              // LOCAL BACKUP SECTION (Owner only, if app provides callbacks)
               // =============================================
-              if (widget.onExportLocalBackup != null ||
-                  widget.onImportLocalBackup != null) ...[
+              if (widget.isOwner &&
+                  (widget.onExportLocalBackup != null ||
+                  widget.onImportLocalBackup != null)) ...[
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
                   child: Text(
@@ -804,14 +787,15 @@ class _AgroSettingsScreenState extends State<AgroSettingsScreen> {
                   ),
                 ),
               ),
-              // Cloud sync toggle
-              SwitchListTile(
-                secondary: const Icon(Icons.cloud_sync),
-                title: Text(l10n.settingsSyncPrefs),
-                subtitle: Text(l10n.settingsSyncPrefsDesc),
-                value: _cloudSyncEnabled,
-                onChanged: _handleToggleCloudSync,
-              ),
+              // Cloud sync toggle (Owner only)
+              if (widget.isOwner)
+                SwitchListTile(
+                  secondary: const Icon(Icons.cloud_sync),
+                  title: Text(l10n.settingsSyncPrefs),
+                  subtitle: Text(l10n.settingsSyncPrefsDesc),
+                  value: _cloudSyncEnabled,
+                  onChanged: _handleToggleCloudSync,
+                ),
 
               // Switch Profile
               if (widget.onResetProfile != null)
@@ -821,14 +805,6 @@ class _AgroSettingsScreenState extends State<AgroSettingsScreen> {
                   subtitle: Text(l10n.settingsResetProfileDesc),
                   onTap: widget.onResetProfile,
                 ),
-
-              // Export data (LGPD)
-              ListTile(
-                leading: const Icon(Icons.download_outlined),
-                title: Text(l10n.settingsExportMyData),
-                subtitle: Text(l10n.settingsExportMyDataDesc),
-                onTap: _handleExportData,
-              ),
 
               const Divider(),
 

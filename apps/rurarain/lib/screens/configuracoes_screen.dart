@@ -40,6 +40,15 @@ class _ConfiguracoesScreenState extends State<ConfiguracoesScreen> {
   late String _reminderTime;
   bool _rainAlertsEnabled = false;
 
+  /// Whether the current user is the owner of the active farm.
+  /// Controls visibility of backup/export/LGPD features in settings.
+  bool get _isOwner {
+    final farm = FarmService.instance.getDefaultFarm();
+    final uid = AuthService.currentUser?.uid ?? '';
+    if (farm == null || uid.isEmpty) return true; // Safe default
+    return farm.isOwner(uid);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -51,70 +60,6 @@ class _ConfiguracoesScreenState extends State<ConfiguracoesScreen> {
   Future<void> _loadRainAlerts() async {
     final enabled = await BackgroundService().isRainAlertsEnabled();
     if (mounted) setState(() => _rainAlertsEnabled = enabled);
-  }
-
-  void _showExportSheet() {
-    final l10n = AgroLocalizations.of(context)!;
-
-    showModalBottomSheet(
-      context: context,
-      builder: (context) => Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              l10n.exportDataTitle,
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              l10n.exportDataDescription,
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            const SizedBox(height: 24),
-            ListTile(
-              leading: const Icon(Icons.code),
-              title: Text(l10n.exportDataJson),
-              subtitle: Text(l10n.exportJsonSubtitle),
-              onTap: () async {
-                Navigator.pop(context);
-                await _handleExport(asCsv: false);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.table_chart),
-              title: Text(l10n.exportDataCsv),
-              subtitle: Text(l10n.exportCsvSubtitle),
-              onTap: () async {
-                Navigator.pop(context);
-                await _handleExport(asCsv: true);
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Future<void> _handleExport({required bool asCsv}) async {
-    final l10n = AgroLocalizations.of(context)!;
-    final scaffold = ScaffoldMessenger.of(context);
-
-    try {
-      await DataExportService.instance.shareExport(asCsv: asCsv);
-      scaffold.showSnackBar(
-        SnackBar(content: Text(l10n.exportDataSuccess)),
-      );
-    } catch (e) {
-      scaffold.showSnackBar(
-        SnackBar(
-          content: Text('${l10n.exportDataError}: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
   }
 
   Future<void> _handleReminderChange(bool enabled, TimeOfDay? time) async {
@@ -170,7 +115,10 @@ class _ConfiguracoesScreenState extends State<ConfiguracoesScreen> {
       minute: int.parse(parts[1]),
     );
 
+    final isOwner = _isOwner;
+
     return AgroSettingsScreen(
+      isOwner: isOwner,
       onNavigateToAbout: widget.onNavigateToAbout,
       onChangeLocale: widget.onChangeLocale,
       currentLocale: widget.currentLocale,
@@ -180,11 +128,10 @@ class _ConfiguracoesScreenState extends State<ConfiguracoesScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => const AgroPrivacyScreen(),
+            builder: (_) => AgroPrivacyScreen(isOwner: isOwner),
           ),
         );
       },
-      onExportData: _showExportSheet,
       onToggleCloudSync: (value) async {
         await UserCloudService.instance.setSyncEnabled(value);
         setState(() {});

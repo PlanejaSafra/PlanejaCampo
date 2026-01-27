@@ -12,7 +12,12 @@ import 'terms_of_use_screen.dart';
 /// Privacy and consents management screen.
 /// Allows users to view terms summary and manage consent preferences.
 class AgroPrivacyScreen extends StatefulWidget {
-  const AgroPrivacyScreen({super.key});
+  /// Whether the current user is the owner of the active farm.
+  /// When false, hides: export data (LGPD) and delete data buttons.
+  /// Defaults to true for backward compatibility (single-owner apps).
+  final bool isOwner;
+
+  const AgroPrivacyScreen({super.key, this.isOwner = true});
 
   @override
   State<AgroPrivacyScreen> createState() => _AgroPrivacyScreenState();
@@ -487,35 +492,37 @@ class _AgroPrivacyScreenState extends State<AgroPrivacyScreen> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    // Export data button
-                    Card(
-                      child: ListTile(
-                        leading: const Icon(Icons.download_outlined),
-                        title: Text(l10n.exportDataButton),
-                        subtitle: Text(l10n.exportJsonOrCsv),
-                        trailing: const Icon(Icons.chevron_right),
-                        onTap: _showExportSheet,
-                      ),
-                    ),
-                    // Delete data button
-                    Card(
-                      color: Colors.red[50],
-                      child: ListTile(
-                        leading: Icon(Icons.delete_forever_outlined,
-                            color: Colors.red[700]),
-                        title: Text(
-                          l10n.deleteDataButton,
-                          style: TextStyle(color: Colors.red[700]),
+                    // Export data button (Owner only)
+                    if (widget.isOwner)
+                      Card(
+                        child: ListTile(
+                          leading: const Icon(Icons.download_outlined),
+                          title: Text(l10n.exportDataButton),
+                          subtitle: Text(l10n.exportJsonOrCsv),
+                          trailing: const Icon(Icons.chevron_right),
+                          onTap: _showExportSheet,
                         ),
-                        subtitle: Text(
-                          l10n.deleteDataSubtitle,
-                          style: TextStyle(color: Colors.red[400]),
-                        ),
-                        trailing:
-                            Icon(Icons.chevron_right, color: Colors.red[700]),
-                        onTap: _showDeleteDialog,
                       ),
-                    ),
+                    // Delete data button (Owner only)
+                    if (widget.isOwner)
+                      Card(
+                        color: Colors.red[50],
+                        child: ListTile(
+                          leading: Icon(Icons.delete_forever_outlined,
+                              color: Colors.red[700]),
+                          title: Text(
+                            l10n.deleteDataButton,
+                            style: TextStyle(color: Colors.red[700]),
+                          ),
+                          subtitle: Text(
+                            l10n.deleteDataSubtitle,
+                            style: TextStyle(color: Colors.red[400]),
+                          ),
+                          trailing:
+                              Icon(Icons.chevron_right, color: Colors.red[700]),
+                          onTap: _showDeleteDialog,
+                        ),
+                      ),
                     // Revoke all and sign out
                     const SizedBox(height: 8),
                     Card(

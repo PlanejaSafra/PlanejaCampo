@@ -56,6 +56,25 @@ class Farm extends HiveObject {
   @HiveField(8)
   String? subscriptionTier;
 
+  /// Whether this farm is in shared (multi-user) mode.
+  ///
+  /// When `true`, GenericSyncService (Tier 3) will sync data to Firestore,
+  /// enabling real-time collaboration between farm owner and linked workers.
+  ///
+  /// When `false` (default), all data remains exclusively offline-first (Hive local).
+  /// No data is sent to Firestore via GenericSyncService.
+  ///
+  /// This flag is activated when a multi-user license is purchased/activated.
+  /// The license activation process sets `isShared = true` on the farm.
+  ///
+  /// Data Tier Architecture:
+  /// - Tier 0 (users): Always synced — UserCloudService
+  /// - Tier 1 (backups): consentCloudBackup — CloudBackupService
+  /// - Tier 2 (stats): consentAggregateMetrics — SyncService
+  /// - Tier 3 (full data): isShared — GenericSyncService (this flag)
+  @HiveField(9)
+  bool isShared;
+
   // Future fields (commented for reference):
   // @HiveField(7)
   // List<FarmMember>? members;
@@ -69,6 +88,7 @@ class Farm extends HiveObject {
     this.isDefault = false,
     this.description,
     this.subscriptionTier,
+    this.isShared = false,
   });
 
   /// Factory for creating a new farm with auto-generated UUID
@@ -87,6 +107,7 @@ class Farm extends HiveObject {
     bool isDefault = false,
     String? description,
     String? subscriptionTier,
+    bool isShared = false,
   }) {
     final now = DateTime.now();
     final uuid = const Uuid().v4();
@@ -99,6 +120,7 @@ class Farm extends HiveObject {
       isDefault: isDefault,
       description: description,
       subscriptionTier: subscriptionTier,
+      isShared: isShared,
     );
   }
 
@@ -120,6 +142,30 @@ class Farm extends HiveObject {
     updatedAt = DateTime.now();
   }
 
+  /// Activate shared (multi-user) mode on this farm.
+  ///
+  /// When activated, GenericSyncService (Tier 3) will begin syncing
+  /// this farm's data to Firestore for multi-user collaboration.
+  void activateSharing() {
+    isShared = true;
+    updatedAt = DateTime.now();
+  }
+
+  /// Deactivate shared (multi-user) mode on this farm.
+  ///
+  /// Data remains in Hive local but stops syncing to Firestore.
+  /// Existing cloud data is NOT deleted (handled separately if needed).
+  void deactivateSharing() {
+    isShared = false;
+    updatedAt = DateTime.now();
+  }
+
+  /// Set shared mode directly.
+  void setShared(bool value) {
+    isShared = value;
+    updatedAt = DateTime.now();
+  }
+
   /// Convert to JSON Map for backup/export
   Map<String, dynamic> toJson() {
     return {
@@ -131,6 +177,7 @@ class Farm extends HiveObject {
       'isDefault': isDefault,
       'description': description,
       if (subscriptionTier != null) 'subscriptionTier': subscriptionTier,
+      'isShared': isShared,
     };
   }
 
@@ -145,6 +192,7 @@ class Farm extends HiveObject {
       isDefault: json['isDefault'] as bool? ?? false,
       description: json['description'] as String?,
       subscriptionTier: json['subscriptionTier'] as String?,
+      isShared: json['isShared'] as bool? ?? false,
     );
   }
 

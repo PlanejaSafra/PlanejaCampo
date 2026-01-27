@@ -4,6 +4,28 @@
 
 ---
 
+## Phase RUBBER-27: Owner-Based Settings Access Control
+
+### Status: [DONE]
+**Date Completed**: 2026-01-26
+**Priority**: 🟡 ARCHITECTURAL
+**Objective**: Integrar controle de acesso por owner da farm na tela de configurações. Usa `FarmService.getDefaultFarm().isOwner(uid)` para determinar automaticamente se o usuário é dono da farm ativa.
+
+### Implementation Summary
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| RUBBER-27.1 | Passar isOwner automático para AgroSettingsScreen baseado em Farm.isOwner | ✅ DONE |
+| RUBBER-27.2 | Condicionar callbacks de local backup (export/import) ao isOwner | ✅ DONE |
+
+### Files Modified
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/main.dart` | MODIFY | Route '/settings' usa FarmService + AuthService para calcular isOwner automaticamente |
+
+---
+
 ## 🚀 ROADMAP: Evolução Financeira RuraRubber
 
 > **Objetivo Estratégico**: Transformar o RuraRubber de "Calculadora de Peso" em "Gestor de Safra" completo.

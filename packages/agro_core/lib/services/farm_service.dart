@@ -179,6 +179,8 @@ class FarmService {
       updatedAt: farm.updatedAt,
       isDefault: farm.isDefault,
       description: farm.description,
+      subscriptionTier: farm.subscriptionTier,
+      isShared: farm.isShared,
     );
 
     // If this is set as default, unset other defaults
@@ -333,6 +335,8 @@ class FarmService {
         updatedAt: DateTime.now(),
         isDefault: hasNewDefault ? false : farm.isDefault,
         description: farm.description,
+        subscriptionTier: farm.subscriptionTier,
+        isShared: farm.isShared,
       );
 
       await _box.put(farm.id, updatedFarm);
@@ -350,6 +354,33 @@ class FarmService {
   /// }
   /// ```
   String? get defaultFarmId => getDefaultFarm()?.id;
+
+  /// Check if the active (default) farm is in shared (multi-user) mode.
+  ///
+  /// Returns `true` if the default farm has `isShared == true`.
+  /// Returns `false` if no default farm exists or isShared is false.
+  ///
+  /// Used by GenericSyncService to determine if Tier 3 data should
+  /// be synchronized to Firestore.
+  bool isActiveFarmShared() {
+    final farm = getDefaultFarm();
+    return farm?.isShared ?? false;
+  }
+
+  /// Set the shared (multi-user) mode on the active (default) farm.
+  ///
+  /// This is called when a multi-user license is activated or deactivated.
+  /// When `shared = true`, GenericSyncService (Tier 3) will begin syncing
+  /// this farm's data to Firestore.
+  Future<void> setFarmShared(bool shared) async {
+    final farm = getDefaultFarm();
+    if (farm == null) {
+      throw Exception('No default farm found. Cannot set shared mode.');
+    }
+
+    farm.setShared(shared);
+    await _box.put(farm.id, farm);
+  }
 }
 
 /// Exception thrown when a user tries to create more farms

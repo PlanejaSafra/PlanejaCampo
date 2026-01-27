@@ -104,12 +104,14 @@ Exemplo: Se o RuraRubber fizer restore, dados do RuraRain na mesma fazenda **nã
 
 ## 4. Modelo Multi-User (Preparação)
 
-### 4.1. Farm-Centric Model (CORE-75)
+### 4.1. Farm-Centric Model (CORE-75, CORE-88)
 
 - Dados pertencem à **fazenda** (via farmId), não ao usuário
-- O modelo `Farm` no agro_core armazena: id, name, ownerId, memberIds, createdAt
-- `FarmService` gerencia ciclo de vida: criação, lookup, default farm
+- O modelo `Farm` no agro_core armazena: id, name, ownerId, createdAt, subscriptionTier, isShared
+- `Farm.isShared` (CORE-88): Quando `true`, ativa Tier 3 sync (GenericSyncService envia dados para Firestore)
+- `FarmService` gerencia ciclo de vida: criação, lookup, default farm, `isActiveFarmShared()`, `setFarmShared()`
 - `FarmAdapter` registrado no Hive de cada app
+- **Futuro**: Farm Switcher para alternar entre fazenda própria e fazendas vinculadas (colaborador)
 
 ### 4.2. Ownership Rules (CORE-77 Section 16)
 
@@ -255,6 +257,10 @@ if (kIsWeb || defaultTargetPlatform == TargetPlatform.windows ||
 | CORE-78 | GenericSyncService | DONE | Infraestrutura offline-first unificada: GenericSyncService, OfflineQueueManager, LocalCacheManager, DataIntegrityManager, SyncConfig |
 | CORE-83 | Migration to GenericSyncService | DONE | Migração de todos os services dos apps para GenericSyncService |
 | CORE-84 | Sync Infrastructure Fixes | DONE | Adapter registration, processQueue logging, _save error handling, property prompt fix, App Check debug guard, 61 unit tests |
+| CORE-85 | Remove misleading "Delete Cloud Data" | DONE | Removido botão incompleto de Settings, melhorado dialog de exclusão em Privacy |
+| CORE-86 | Owner-Based Settings Visibility | DONE | isOwner flag em AgroSettingsScreen/AgroPrivacyScreen para controle de visibilidade |
+| CORE-87 | Auto-Backup UX | DONE | Switch de auto-backup no card de Cloud Backup |
+| CORE-88 | Data Tier Architecture | DONE | Farm.isShared, GenericSyncService Tier 3 gate, FarmService helpers |
 
 ### Integração nos Apps
 
@@ -263,9 +269,12 @@ if (kIsWeb || defaultTargetPlatform == TargetPlatform.windows ||
 | RuraRubber | RUBBER-24 | DONE | FarmOwnedEntity em Parceiro/Entrega, BorrachaBackupProvider, BorrachaDeletionProvider |
 | RuraRubber | RUBBER-25 | DONE | Migração de 5 services para GenericSyncService |
 | RuraRubber | RUBBER-26 | DONE | Sync adapters, App Check, Property Name Gate, Firebase init nativo |
+| RuraRubber | RUBBER-27 | DONE | Owner-Based Settings: isOwner via FarmService/AuthService |
 | RuraRain | RAIN-03 | DONE | FarmOwnedMixin em RegistroChuva, ChuvaBackupProvider, ChuvaDeletionProvider |
 | RuraRain | RAIN-04 | DONE | ChuvaService migrado para GenericSyncService |
 | RuraRain | RAIN-05 | DONE | Sync adapter registration |
+| RuraRain | RAIN-06 | DONE | Sync adapters + Firebase init nativo |
+| RuraRain | RAIN-07 | DONE | Owner-Based Settings: isOwner via FarmService/AuthService |
 | RuraCash | CASH-05 | DONE | Migração de services para GenericSyncService |
 | RuraCash | CASH-06 | DONE | Sync adapter registration |
 | RuraCattle | - | TODO | Aguardando implementação |
@@ -380,5 +389,101 @@ graph TD
 - **Problema**: Delta Sync baseia-se em timestamps gerados pelo cliente (`DateTime.now()`). Relógios desajustados podem causar perda de dados ou conflitos.
 - **Decisão**: Aceitável para o MVP e cenários onde o usuário mantém o horário automático.
 - **Plano Futuro**: Implementar `FieldValue.serverTimestamp()` do Firestore para garantir a "hora da verdade" no servidor, independente do cliente.
+
+---
+
+## 13. Data Tier Architecture (CORE-88)
+
+> **Status**: Implementado
+> **Propósito**: Controle granular de quais dados são enviados ao Firestore, em quais circunstâncias, e por qual serviço.
+
+### 13.1. Visão Geral
+
+Nem todos os dados têm o mesmo nível de sensibilidade ou necessidade de sincronização. O RuraCamp define 4 tiers de dados no Firestore, cada um com sua própria gate (condição de ativação) e serviço responsável.
+
+### 13.2. Tiers de Dados
+
+| Tier | Coleções Firestore | Gate (Condição) | Serviço | Quando Sincroniza |
+|------|-------------------|-----------------|---------|-------------------|
+| **Tier 0** | `users` | Sempre (aceitar termos) | `UserCloudService` | Ao aceitar termos de uso; consents, preferências, lastActive |
+| **Tier 1** | `user_backups`, `user_backup_chunks` | `consentCloudBackup` | `CloudBackupService` | Backup manual ou automático (se consent ativo) |
+| **Tier 2** | `rainfall_data`, `rainfall_stats` | `consentAggregateMetrics` | `SyncService` (app-specific) | Dados anonimizados para estatísticas regionais |
+| **Tier 3** | Todas as coleções via GenericSyncService | `farm.isShared` | `GenericSyncService` | Apenas quando licença multi-user é ativada na fazenda |
+
+### 13.3. Detalhamento dos Tiers
+
+#### Tier 0 — Dados do Usuário (Obrigatório)
+- **Coleção**: `users/{uid}`
+- **Conteúdo**: Consents, preferências de sync, timestamps, device info
+- **Gate**: Implícita — aceitar termos de uso já autoriza
+- **Controlado por**: `UserCloudService`
+- **Nota**: Único tier que sincroniza sem consent explícito adicional
+
+#### Tier 1 — Backup na Nuvem (Consent Explícito)
+- **Coleções**: `user_backups/{uid}`, `user_backup_chunks/{uid}_chunk_{n}`
+- **Conteúdo**: Snapshot completo dos dados locais (properties, registros, etc.)
+- **Gate**: `AgroPrivacyStore.consentCloudBackup == true`
+- **Controlado por**: `CloudBackupService` com `BackupProvider`/`EnhancedBackupProvider`
+- **Nota**: Login com Google implica consent para Cloud Backup (termos de uso)
+
+#### Tier 2 — Métricas Agregadas (Consent Explícito)
+- **Coleções**: `rainfall_data`, `rainfall_stats` (app-specific)
+- **Conteúdo**: Dados anonimizados (sem identificação pessoal) para estatísticas regionais
+- **Gate**: `AgroPrivacyStore.consentAggregateMetrics == true`
+- **Controlado por**: `SyncService` específico do app (ex: RuraRain)
+- **Nota**: Dados são anonimizados antes do envio; o usuário pode revogar a qualquer momento
+
+#### Tier 3 — Sync Completo Multi-User (Licença)
+- **Coleções**: Todas as coleções gerenciadas por subclasses de `GenericSyncService`
+- **Conteúdo**: Dados completos de negócio (pesagens, entregas, despesas, etc.)
+- **Gate**: `Farm.isShared == true` (ativado por licença multi-user)
+- **Controlado por**: `GenericSyncService._shouldSyncToCloud()`
+- **Nota**: Consent é implícito na compra da licença multi-user. O flag `isShared` é ativado na fazenda, não no usuário.
+
+### 13.4. Implementação da Gate Tier 3
+
+O método `_shouldSyncToCloud()` no `GenericSyncService` verifica duas condições:
+
+1. `syncEnabled` — flag no nível do serviço (subclasse opt-in)
+2. `FarmService.instance.isActiveFarmShared()` — flag na fazenda ativa
+
+Ambas devem ser `true` para que dados sejam enfileirados para sync com Firestore. Caso contrário, todos os dados permanecem exclusivamente no Hive local.
+
+### 13.5. Fluxo de Decisão
+
+```
+Operação de Escrita (add/update/delete)
+  │
+  ├─ 1. Salva no Hive local (SEMPRE)
+  │
+  ├─ 2. Verifica _shouldSyncToCloud()
+  │     │
+  │     ├─ syncEnabled == false → FIM (dados locais apenas)
+  │     │
+  │     ├─ farm.isShared == false → FIM (dados locais apenas)
+  │     │
+  │     └─ AMBOS true → Enfileira operação no OfflineQueueManager
+  │                       │
+  │                       ├─ Online → Envia para Firestore
+  │                       └─ Offline → Persiste na fila, retry automático
+  │
+  └─ 3. notifyListeners() (UI atualiza imediatamente)
+```
+
+### 13.6. Controle de Visibilidade por Ownership
+
+O flag `isOwner` (computado via `Farm.isOwner(uid)`) controla a visibilidade de features na UI:
+
+| Feature | Owner | Membro/Colaborador |
+|---------|-------|-------------------|
+| Backup Nuvem | Visível | Oculto |
+| Backup Local (export/import) | Visível | Oculto |
+| Cloud Sync Toggle | Visível | Oculto |
+| Export LGPD | Visível | Oculto |
+| Deletar Dados | Visível | Oculto |
+| Configurações Gerais (idioma, tema, notificações) | Visível | Visível |
+| Gerenciar Consents (Privacidade) | Visível | Visível |
+
+Isso é implementado via `AgroSettingsScreen(isOwner: ...)` e `AgroPrivacyScreen(isOwner: ...)`.
 
 

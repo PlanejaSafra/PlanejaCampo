@@ -3,6 +3,64 @@
 > **Note**: Core infrastructure phases (33-37, 46, 51-54, 70) are documented in `packages/agro_core/CHANGELOG.md`.
 > This file contains only app-specific changes for RuraRain.
 >
+
+---
+
+## Phase RAIN-07: Owner-Based Settings & Privacy Access Control
+
+### Status: [DONE]
+**Date Completed**: 2026-01-26
+**Priority**: 🟡 ARCHITECTURAL
+**Objective**: Integrar controle de acesso por owner da farm na tela de configurações e privacidade do RuraRain. Paridade com RUBBER-27. Usa `FarmService.getDefaultFarm().isOwner(uid)` para determinar automaticamente se o usuário é dono da farm ativa.
+
+### Implementation Summary
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| RAIN-07.1 | Calcular `isOwner` automaticamente via `FarmService.getDefaultFarm()?.isOwner(uid)` no getter `_isOwner` e passar para `AgroSettingsScreen` | ✅ DONE |
+| RAIN-07.2 | Passar `isOwner` para `AgroPrivacyScreen` na navegação de `ConfiguracoesScreen` | ✅ DONE |
+| RAIN-07.3 | Visibilidade de backup já controlada pelo flag `isOwner` no `AgroSettingsScreen` (não necessita nulificar callbacks) | ✅ DONE |
+
+### Files Modified
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/screens/configuracoes_screen.dart` | MODIFY | Calcular isOwner, passar para AgroSettingsScreen e AgroPrivacyScreen, condicionar backup callbacks |
+
+### Notes
+
+- Default `isOwner = true` para retrocompatibilidade (se Farm não existir, considera owner)
+- Lógica idêntica ao RUBBER-27: `FarmService.instance.getDefaultFarm()?.isOwner(AuthService.currentUser?.uid ?? '') ?? true`
+- Consents (toggles) continuam visíveis para todos — são preferências pessoais
+- Lembretes e alertas de chuva continuam disponíveis para todos — são funcionalidades do dispositivo
+
+### Cross-Reference
+- CORE-87: Infraestrutura isOwner no AgroSettingsScreen e AgroPrivacyScreen
+- RUBBER-27: Implementação equivalente no RuraRubber
+
+---
+
+## Phase RAIN-06: Remove Redundant Export from Settings
+
+### Status: [DONE]
+**Date Completed**: 2026-01-26
+**Priority**: 🔵 FIX
+**Objective**: Remover callback `onExportData` e métodos `_showExportSheet`/`_handleExport` da tela de configurações — funcionalidade já disponível na tela de Privacidade. Remover callback `onDeleteCloudData` que era enganoso (não deletava backups).
+
+### Implementation Summary
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| RAIN-06.1 | Remover onDeleteCloudData callback e handler de exclusão cloud | ✅ DONE |
+| RAIN-06.2 | Remover onExportData callback e métodos _showExportSheet/_handleExport | ✅ DONE |
+
+### Files Modified
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/screens/configuracoes_screen.dart` | MODIFY | Removidos onDeleteCloudData, onExportData, _showExportSheet, _handleExport |
+
+---
 > **Phase Prefix Migration**: From RAIN-01 onwards, phases use the `RAIN-` prefix instead of `CHUVA-`.
 
 ---
