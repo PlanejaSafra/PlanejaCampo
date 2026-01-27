@@ -28,6 +28,11 @@ void main() async {
   Hive.registerAdapter(SafraAdapter());
   Hive.registerAdapter(DependencyManifestAdapter());
 
+  // Sync infrastructure adapters (required for OfflineQueueManager)
+  Hive.registerAdapter(OfflineOperationAdapter());
+  Hive.registerAdapter(OperationTypeAdapter());
+  Hive.registerAdapter(OperationPriorityAdapter());
+
   // Register Hive Adapters - RuraCash
   Hive.registerAdapter(CashCategoriaAdapter());
   Hive.registerAdapter(LancamentoAdapter());

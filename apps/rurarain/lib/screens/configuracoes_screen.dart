@@ -185,36 +185,6 @@ class _ConfiguracoesScreenState extends State<ConfiguracoesScreen> {
         );
       },
       onExportData: _showExportSheet,
-      onDeleteCloudData: () async {
-        final l10n = AgroLocalizations.of(context)!;
-        final confirmed = await showDialog<bool>(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: Text(l10n.deleteCloudDataTitle),
-            content: Text(l10n.deleteCloudDataMessage),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, false),
-                child: Text(l10n.cancelButton),
-              ),
-              TextButton(
-                style: TextButton.styleFrom(foregroundColor: Colors.red),
-                onPressed: () => Navigator.pop(context, true),
-                child: Text(l10n.deleteButton),
-              ),
-            ],
-          ),
-        );
-
-        if (confirmed == true) {
-          await UserCloudService.instance.deleteCloudData();
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(l10n.deleteCloudDataSuccess)),
-            );
-          }
-        }
-      },
       onToggleCloudSync: (value) async {
         await UserCloudService.instance.setSyncEnabled(value);
         setState(() {});

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -27,17 +28,30 @@ class OfflineQueueManager {
   Future<void> init() async {
     if (_initialized) return;
 
+    debugPrint('[OfflineQueue] Initializing...');
+
     if (!Hive.isBoxOpen(_queueBoxName)) {
       _queueBox = await Hive.openBox<OfflineOperation>(_queueBoxName);
     } else {
       _queueBox = Hive.box<OfflineOperation>(_queueBoxName);
     }
 
+    debugPrint('[OfflineQueue] Queue box opened '
+        '(${_queueBox!.length} pending operations)');
+
     // Configura listener de rede
     _connectivitySubscription =
         Connectivity().onConnectivityChanged.listen((results) {
       final hasNet = results.any((r) => r != ConnectivityResult.none);
+      final wasOnline = _isOnline;
       _isOnline = hasNet;
+
+      if (hasNet && !wasOnline) {
+        debugPrint('[OfflineQueue] Network restored! '
+            'Pending: ${getPendingCount()}');
+      } else if (!hasNet && wasOnline) {
+        debugPrint('[OfflineQueue] Network lost');
+      }
 
       if (hasNet && getPendingCount() > 0) {
         // Debounce leve para evitar oscilações
@@ -51,6 +65,9 @@ class OfflineQueueManager {
     final results = await Connectivity().checkConnectivity();
     _isOnline = results.any((r) => r != ConnectivityResult.none);
 
+    debugPrint('[OfflineQueue] Initialized '
+        '(online: $_isOnline, pending: ${_queueBox!.length})');
+
     _initialized = true;
   }
 
@@ -58,6 +75,9 @@ class OfflineQueueManager {
   Future<void> addToQueue(OfflineOperation op) async {
     if (!_initialized) await init();
     await _queueBox!.put(op.id, op);
+    debugPrint('[OfflineQueue] Added: ${op.operationType.name} '
+        '${op.collection}/${op.docId} (priority: ${op.priority.name}, '
+        'queue size: ${_queueBox!.length})');
 
     // Tenta processar imediatamente se possível (fire and forget)
     processQueue();
@@ -77,7 +97,15 @@ class OfflineQueueManager {
   /// Processa a fila de operações (envia para Firestore)
   Future<void> processQueue() async {
     final hasNet = await _checkConnection();
-    if (_isProcessing || !hasNet) return;
+    if (_isProcessing) {
+      debugPrint('[OfflineQueue] processQueue skipped: already processing');
+      return;
+    }
+    if (!hasNet) {
+      debugPrint('[OfflineQueue] processQueue skipped: offline '
+          '(pending: ${getPendingCount()})');
+      return;
+    }
 
     _isProcessing = true;
     int successCount = 0;
@@ -86,15 +114,27 @@ class OfflineQueueManager {
     try {
       final queue = getQueue();
       if (queue.isEmpty) {
+        debugPrint('[OfflineQueue] processQueue: queue is empty, nothing to do');
         _isProcessing = false;
         return;
+      }
+
+      debugPrint('[OfflineQueue] processQueue START: ${queue.length} operations pending');
+      for (var op in queue) {
+        debugPrint('[OfflineQueue]   → ${op.operationType.name} '
+            '${op.collection}/${op.docId} '
+            '(priority: ${op.priority.name}, retries: ${op.retryCount})');
       }
 
       // Processa em batches para eficiência
       final batchSize = SyncConfig.instance.batchSize;
       final batches = _chunkList(queue, batchSize);
 
-      for (var batchOps in batches) {
+      for (var i = 0; i < batches.length; i++) {
+        final batchOps = batches[i];
+        debugPrint('[OfflineQueue] Processing batch ${i + 1}/${batches.length} '
+            '(${batchOps.length} ops)');
+
         final batch = FirebaseFirestore.instance.batch();
         final processedOps = <OfflineOperation>[];
 
@@ -114,14 +154,22 @@ class OfflineQueueManager {
                   // Merge true para updates parciais
                   batch.set(ref, data, SetOptions(merge: true));
                   processedOps.add(op);
+                  debugPrint('[OfflineQueue]   ✓ Staged ${op.operationType.name}: '
+                      '${op.collection}/${op.docId}');
+                } else {
+                  debugPrint('[OfflineQueue]   ✗ Skipped ${op.operationType.name}: '
+                      '${op.collection}/${op.docId} (data is null)');
                 }
                 break;
               case OperationType.delete:
                 batch.delete(ref);
                 processedOps.add(op);
+                debugPrint('[OfflineQueue]   ✓ Staged delete: '
+                    '${op.collection}/${op.docId}');
                 break;
             }
           } catch (e) {
+            debugPrint('[OfflineQueue]   ✗ Error staging ${op.collection}/${op.docId}: $e');
             op.recordFailure(e.toString());
             op.save();
             failCount++;
@@ -129,16 +177,20 @@ class OfflineQueueManager {
         }
 
         if (processedOps.isNotEmpty) {
+          debugPrint('[OfflineQueue] Committing batch ${i + 1} '
+              '(${processedOps.length} ops to Firestore)...');
           try {
             await batch
                 .commit()
                 .timeout(SyncConfig.instance.timeoutOnlineWrite);
 
+            debugPrint('[OfflineQueue] ✓ Batch ${i + 1} committed successfully!');
             for (var op in processedOps) {
               await op.delete();
               successCount++;
             }
           } catch (e) {
+            debugPrint('[OfflineQueue] ✗ Batch ${i + 1} FAILED: $e');
             for (var op in processedOps) {
               op.recordFailure(e.toString());
               await op.save();
@@ -147,6 +199,10 @@ class OfflineQueueManager {
           }
         }
       }
+
+      debugPrint('[OfflineQueue] processQueue DONE: '
+          '$successCount synced, $failCount failed, '
+          '${getPendingCount()} remaining');
 
       if (successCount > 0 || failCount > 0) {
         _syncResultController.add(SyncResult(
@@ -157,6 +213,7 @@ class OfflineQueueManager {
         ));
       }
     } catch (e) {
+      debugPrint('[OfflineQueue] processQueue ERROR: $e');
       _syncResultController.add(SyncResult.failure(e.toString()));
     } finally {
       _isProcessing = false;

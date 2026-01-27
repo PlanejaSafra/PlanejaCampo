@@ -1,11 +1,14 @@
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart'
+    show kDebugMode, kIsWeb, defaultTargetPlatform, TargetPlatform;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:agro_core/agro_core.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -67,6 +70,11 @@ Future<void> main() async {
   // CORE-77 / RUBBER-24: Farm and Dependency adapters
   Hive.registerAdapter(FarmAdapter());
   Hive.registerAdapter(DependencyManifestAdapter());
+
+  // Sync infrastructure adapters (required for OfflineQueueManager)
+  Hive.registerAdapter(OfflineOperationAdapter());
+  Hive.registerAdapter(OperationTypeAdapter());
+  Hive.registerAdapter(OperationPriorityAdapter());
   // RUBBER-18: Recebivel adapter
   Hive.registerAdapter(RecebivelAdapter());
   // RUBBER-19: ContaPagar adapters
@@ -78,19 +86,34 @@ Future<void> main() async {
   // RUBBER-23: TabelaSangria adapter
   Hive.registerAdapter(TabelaSangriaAdapter());
 
-  // Initialize Firebase
-  // Initialize Firebase
+  // RUBBER-26: Initialize Firebase (native config for Android/iOS)
   try {
-    if (Firebase.apps.isEmpty) {
+    if (kIsWeb ||
+        defaultTargetPlatform == TargetPlatform.windows ||
+        defaultTargetPlatform == TargetPlatform.linux ||
+        defaultTargetPlatform == TargetPlatform.macOS) {
       await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
       );
+    } else {
+      // Android and iOS rely on native configuration (google-services.json / GoogleService-Info.plist)
+      // which are swapped by Gradle flavors.
+      await Firebase.initializeApp();
     }
   } catch (e) {
-    if (e.toString().contains('duplicate-app')) {
-      debugPrint('Firebase already initialized (ignored duplicate-app error)');
-    } else {
-      debugPrint('Firebase initialization failed: $e');
+    debugPrint('Firebase initialization failed: $e');
+  }
+
+  // RUBBER-26: App Check - only activate in release builds.
+  // Debug builds skip App Check to avoid needing debug tokens during development.
+  if (!kDebugMode) {
+    try {
+      await FirebaseAppCheck.instance.activate(
+        androidProvider: AndroidProvider.playIntegrity,
+        appleProvider: AppleProvider.appAttest,
+      );
+    } catch (e) {
+      debugPrint('App Check activation failed: $e');
     }
   }
 
@@ -366,8 +389,60 @@ class _ProfileGatedHomeState extends State<_ProfileGatedHome> {
           );
         }
 
-        return const HomeScreen();
+        // RUBBER-26: Property Name Gate (parity with RuraRain)
+        return const _PropertyNameGate(
+          child: HomeScreen(),
+        );
       },
     );
+  }
+}
+
+/// RUBBER-26: Gate that prompts for property name if using generic default name.
+/// Parity with RuraRain's _PropertyNameGate.
+class _PropertyNameGate extends StatefulWidget {
+  final Widget child;
+
+  const _PropertyNameGate({required this.child});
+
+  @override
+  State<_PropertyNameGate> createState() => _PropertyNameGateState();
+}
+
+class _PropertyNameGateState extends State<_PropertyNameGate> {
+  bool _hasChecked = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Defer check to after first frame to ensure context is ready
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkAndPrompt();
+    });
+  }
+
+  Future<void> _checkAndPrompt() async {
+    if (_hasChecked) return;
+
+    if (shouldPromptForPropertyName()) {
+      final defaultProperty = PropertyService().getDefaultProperty();
+      if (defaultProperty != null && mounted) {
+        await showPropertyNamePromptDialog(
+          context,
+          currentName: defaultProperty.name,
+        );
+      }
+    }
+
+    if (mounted) {
+      setState(() {
+        _hasChecked = true;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return widget.child;
   }
 }

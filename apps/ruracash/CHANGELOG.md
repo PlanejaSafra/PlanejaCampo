@@ -5,6 +5,31 @@
 
 ---
 
+## Phase CASH-06: Fix Sync Adapter Registration
+
+### Status: [DONE]
+**Date Completed**: 2026-01-26
+**Priority**: 🔵 FIX
+**Objective**: Registrar adapters Hive da infraestrutura de sync (OfflineOperation, OperationType, OperationPriority) no main.dart para evitar `HiveError: Cannot write, unknown type: OfflineOperation` quando GenericSyncService tenta enfileirar operações offline.
+**Cross-Reference**: CORE-84
+
+### Root Cause
+Os services LancamentoService e CentroCustoService usam `GenericSyncService` com `syncEnabled => true`, que enfileira operações no `OfflineQueueManager`. O OfflineQueueManager persiste objetos `OfflineOperation` no Hive, mas os adapters nunca foram registrados no `main.dart` do RuraCash.
+
+### Implementation Summary
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 6.1 | Registrar OfflineOperationAdapter, OperationTypeAdapter, OperationPriorityAdapter no main.dart | ✅ DONE |
+
+### Files Modified
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/main.dart` | MODIFY | Adicionar 3 registros de adapter após adapters existentes |
+
+---
+
 ## Phase CASH-05: Migração para GenericSyncService
 
 ### Status: [DONE]

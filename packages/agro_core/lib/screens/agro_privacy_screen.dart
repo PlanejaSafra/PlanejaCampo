@@ -238,22 +238,35 @@ class _AgroPrivacyScreenState extends State<AgroPrivacyScreen> {
             ],
           ),
           actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text(l10n.deleteDataCancel),
-            ),
-            ElevatedButton(
-              onPressed: confirmed
-                  ? () async {
-                      Navigator.pop(context);
-                      await _handleDeleteData();
-                    }
-                  : null,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-                foregroundColor: Colors.white,
-              ),
-              child: Text(l10n.deleteDataConfirm),
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.pop(context),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green,
+                      foregroundColor: Colors.white,
+                    ),
+                    child: Text(l10n.deleteDataCancel),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: confirmed
+                        ? () async {
+                            Navigator.pop(context);
+                            await _handleDeleteData();
+                          }
+                        : null,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                      foregroundColor: Colors.white,
+                    ),
+                    child: Text(l10n.deleteDataConfirm),
+                  ),
+                ),
+              ],
             ),
           ],
         ),

@@ -66,6 +66,11 @@ Future<void> main() async {
   Hive.registerAdapter(FarmAdapter());
   Hive.registerAdapter(DependencyManifestAdapter());
 
+  // Sync infrastructure adapters (required for OfflineQueueManager)
+  Hive.registerAdapter(OfflineOperationAdapter());
+  Hive.registerAdapter(OperationTypeAdapter());
+  Hive.registerAdapter(OperationPriorityAdapter());
+
   // Initialize privacy store
   await AgroPrivacyStore.init();
 

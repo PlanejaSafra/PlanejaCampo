@@ -2,6 +2,85 @@
 
 ---
 
+## Phase CORE-85: Remove Incomplete Cloud Data Deletion from Settings + Improve Privacy Deletion Dialog
+
+### Status: [DONE]
+**Date Completed**: 2026-01-26
+**Priority**: 🔵 FIX
+**Objective**: Remover o botão "Deletar Dados Nuvem" da tela de configurações (só deletava `users/{uid}`, não deletava backups — enganoso). Melhorar UX do dialog de exclusão na tela de Privacidade com botão Cancelar mais visível.
+
+### Implementation Summary
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| CORE-85.1 | Remover botão "Deletar Dados Nuvem", handler e callback de AgroSettingsScreen | ✅ DONE |
+| CORE-85.2 | Melhorar dialog de exclusão em AgroPrivacyScreen — botão Cancelar verde, mesmo tamanho do Excluir | ✅ DONE |
+
+### Files Modified
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/screens/agro_settings_screen.dart` | MODIFY | Removido campo `onDeleteCloudData`, parâmetro do construtor, método `_handleDeleteCloudData`, e ListTile "Deletar Dados Nuvem" |
+| `lib/screens/agro_privacy_screen.dart` | MODIFY | Botões do dialog de exclusão agora em Row com Expanded: Cancelar (verde) e Excluir Permanentemente (vermelho), mesma largura |
+
+### Notes
+
+- A exclusão completa de dados (backups, auth, dados locais) permanece disponível na tela de Privacidade via `DataDeletionService.deleteAllUserData()`
+- Strings l10n mantidas (`deleteCloudDataTitle`, etc.) para possível uso futuro
+
+---
+
+## Phase CORE-84: Fix Sync Infrastructure & Property Prompt Bugs
+
+### Status: [DONE]
+**Date Completed**: 2026-01-26
+**Priority**: 🔵 FIX
+**Objective**: Corrigir bugs críticos na infraestrutura de sincronização (adapters Hive não registrados, erros silenciosos no processQueue, erro de propagação no _save) e loop no prompt de nome de propriedade.
+
+### Implementation Summary
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 84.1 | **Sync Adapter Registration**: Registrar OfflineOperationAdapter, OperationTypeAdapter, OperationPriorityAdapter em todos os apps (RuraRain, RuraRubber, RuraCash) | ✅ DONE |
+| 84.2 | **processQueue Logging**: Adicionar debugPrint em init(), addToQueue(), processQueue() para diagnóstico completo do pipeline de sync | ✅ DONE |
+| 84.3 | **GenericSyncService._save() Error Handling**: Envolver operações de queue em try-catch para evitar propagação de erros de sync ao CRUD local | ✅ DONE |
+| 84.4 | **Property Name Prompt Loop Fix**: Adicionar flag persistente `propertyNamePrompted` em AgroPrivacyStore para evitar re-prompt quando usuário mantém nome padrão | ✅ DONE |
+| 84.5 | **App Check Debug Guard**: Envolver FirebaseAppCheck.activate() em `if (!kDebugMode)` para evitar falhas em builds debug | ✅ DONE |
+| 84.6 | **Unit Tests**: 61 testes unitários cobrindo SyncModels, DataIntegrityManager, Hive serialization, pipeline CRUD e cross-app scenarios | ✅ DONE |
+
+### Root Causes
+
+1. **Sync Adapter Missing**: `OfflineOperation` (typeId 33), `OperationType` (typeId 32), `OperationPriority` (typeId 31) tinham adapters gerados em `sync_models.g.dart` e exportados via `agro_core.dart`, mas NENHUM app registrava esses adapters no `main.dart`. Resultado: `HiveError: Cannot write, unknown type: OfflineOperation`.
+
+2. **Silent Queue Failures**: `OfflineQueueManager.processQueue()` não tinha nenhum `debugPrint`, tornando impossível diagnosticar falhas de sincronização.
+
+3. **Save Error Propagation**: `GenericSyncService._save()` propagava erros do OfflineQueueManager para o chamador, fazendo CRUD local falhar quando sync falhava.
+
+4. **Property Prompt Loop**: `shouldPromptForPropertyName()` verificava se o nome era genérico ("Minha Propriedade"), mas o usuário podia confirmar mantendo o nome padrão, causando re-prompt infinito.
+
+5. **App Check in Debug**: `FirebaseAppCheck.instance.activate()` falhava em builds debug sem token configurado, bloqueando inicialização.
+
+### Files Modified
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/services/sync/offline_queue_manager.dart` | MODIFY | Adicionar debugPrint em processQueue para logging de início, batches, sucesso e falha |
+| `lib/services/sync/generic_sync_service.dart` | MODIFY | Envolver queue operations em try-catch no _save() |
+| `lib/privacy/agro_privacy_keys.dart` | MODIFY | Adicionar key `propertyNamePrompted` |
+| `lib/privacy/agro_privacy_store.dart` | MODIFY | Adicionar isPropertyNamePrompted() e setPropertyNamePrompted() |
+| `lib/widgets/property_name_prompt_dialog.dart` | MODIFY | Verificar flag antes de checar nome; setar flag após salvar |
+| `test/sync_models_test.dart` | CREATE | 18 testes para OfflineOperation, SyncMetadata, SyncResult |
+| `test/data_integrity_test.dart` | CREATE | 22 testes para hash, validação, conflitos, resolução |
+| `test/sync_pipeline_test.dart` | CREATE | 21 testes para Hive adapters, queue, CRUD pipeline, cross-app |
+| `pubspec.yaml` | MODIFY | Adicionar mocktail e fake_cloud_firestore em dev_dependencies |
+
+### Cross-Reference
+- RAIN-05: Registro de adapters no RuraRain
+- RUBBER-26: Registro de adapters + App Check + Property Name Gate no RuraRubber
+- CASH-06: Registro de adapters no RuraCash
+
+---
+
 ## Phase CORE-78: GenericSyncService - Infraestrutura Offline-First Unificada
 
 ### Status: [DONE]

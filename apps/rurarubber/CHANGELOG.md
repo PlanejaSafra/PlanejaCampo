@@ -12,6 +12,58 @@
 
 ---
 
+## Phase RUBBER-26: Parity Fixes (Sync, App Check, Property Name Gate, Firebase Init)
+
+### Status: [DONE]
+**Date Completed**: 2026-01-26
+**Priority**: 🔵 FIX
+**Objective**: Corrigir gaps do RuraRubber em relação ao RuraRain: registrar adapters de sync, adicionar App Check com guard de debug, adicionar Property Name Gate, e corrigir inicialização do Firebase para usar config nativa em Android/iOS.
+**Cross-Reference**: CORE-84, RAIN-05
+
+### Gaps Identificados vs RuraRain
+
+| Gap | RuraRain | RuraRubber (antes) |
+|-----|----------|--------------------|
+| Sync Adapters | ✅ Registrados | ❌ Faltavam |
+| App Check | ✅ Com kDebugMode guard | ❌ Ausente |
+| Property Name Gate | ✅ _PropertyNameGate widget | ❌ Ausente |
+| Firebase Init | ✅ Config nativa Android/iOS | ❌ Sempre DefaultFirebaseOptions |
+
+### Implementation Summary
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 26.1 | **Sync Adapter Registration**: Registrar OfflineOperationAdapter, OperationTypeAdapter, OperationPriorityAdapter no main.dart | ✅ DONE |
+| 26.2 | **App Check**: Adicionar firebase_app_check import e ativação com guard `if (!kDebugMode)` | ✅ DONE |
+| 26.3 | **Property Name Gate**: Adicionar _PropertyNameGate widget que verifica nome genérico e mostra dialog | ✅ DONE |
+| 26.4 | **Firebase Init**: Usar config nativa para Android/iOS, DefaultFirebaseOptions apenas para desktop/web | ✅ DONE |
+
+### Files Modified
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/main.dart` | MODIFY | Sync adapters, App Check com kDebugMode, Firebase init nativo, Property Name Gate |
+
+### Implementation Details
+
+**App Check (26.2)**:
+- Importa `firebase_app_check` e `foundation.dart` (kDebugMode, kIsWeb, defaultTargetPlatform, TargetPlatform)
+- Ativação condicional: `if (!kDebugMode)` previne falha em debug builds
+- Usa `AndroidProvider.playIntegrity` e `AppleProvider.appAttest`
+
+**Property Name Gate (26.3)**:
+- Reutiliza `shouldPromptForPropertyName()` e `showPropertyNamePromptDialog()` do agro_core
+- Widget `_PropertyNameGate` inserido entre `_ProfileGatedHome` e `HomeScreen`
+- Verifica após onboarding e profile selection, mostra dialog se nome é genérico
+- Flag `propertyNamePrompted` (CORE-84.4) previne re-prompt quando usuário mantém nome padrão
+
+**Firebase Init (26.4)**:
+- Android/iOS: `Firebase.initializeApp()` sem options (usa google-services.json / GoogleService-Info.plist nativos)
+- Web/Desktop: `Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform)`
+- Melhora compatibilidade com Gradle flavors (dev/prod)
+
+---
+
 ## Phase RUBBER-25: Migração para GenericSyncService
 ### Status: [DONE]
 **Date Completed**: 2026-01-26

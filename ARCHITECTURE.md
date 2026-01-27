@@ -204,15 +204,45 @@ Todo app deve inicializar os seguintes componentes na ordem correta:
 | Ordem | Componente | Método |
 |-------|-----------|--------|
 | 1 | Hive | `Hive.initFlutter()` |
-| 2 | Hive Adapters | `registerAdapter()` para todos os models + Farm + DependencyManifest |
+| 2 | Hive Adapters | `registerAdapter()` para todos os models + Farm + DependencyManifest + **Sync Adapters** |
 | 3 | Privacy Store | `AgroPrivacyStore.init()` |
-| 4 | Data Migration | `DataMigrationService.instance.runMigrations()` |
-| 5 | Cloud Service | `UserCloudService.instance.init()` |
-| 6 | Backup Providers | `CloudBackupService.instance.registerProvider(...)` |
-| 7 | Deletion Providers | `DataDeletionService.instance.registerDeletionProvider(...)` |
-| 8 | Farm Service | `FarmService.instance.init()` |
-| 9 | Dependency Service | `DependencyService.instance.init()` |
-| 10 | App Services | PropertyService, TalhaoService, etc. |
+| 4 | Firebase | `Firebase.initializeApp()` (nativo para Android/iOS, `DefaultFirebaseOptions` para desktop/web) |
+| 5 | App Check | `FirebaseAppCheck.instance.activate()` envolvido em `if (!kDebugMode)` |
+| 6 | Data Migration | `DataMigrationService.instance.runMigrations()` |
+| 7 | Cloud Service | `UserCloudService.instance.init()` |
+| 8 | Backup Providers | `CloudBackupService.instance.registerProvider(...)` |
+| 9 | Deletion Providers | `DataDeletionService.instance.registerDeletionProvider(...)` |
+| 10 | Farm Service | `FarmService.instance.init()` |
+| 11 | Dependency Service | `DependencyService.instance.init()` |
+| 12 | App Services | PropertyService, TalhaoService, etc. |
+| 13 | AdMob | `AgroAdService.instance.initialize()` |
+
+### 8.1. Sync Adapters Obrigatórios (CORE-84)
+
+Todo app que usa `GenericSyncService` com `syncEnabled => true` **DEVE** registrar os 3 adapters de sync:
+
+```dart
+Hive.registerAdapter(OfflineOperationAdapter());
+Hive.registerAdapter(OperationTypeAdapter());
+Hive.registerAdapter(OperationPriorityAdapter());
+```
+
+Estes são necessários porque o `OfflineQueueManager` persiste objetos `OfflineOperation` no Hive. Sem estes adapters, qualquer operação de sync causa `HiveError: Cannot write, unknown type`.
+
+### 8.2. Firebase Init Pattern (CORE-84)
+
+```dart
+if (kIsWeb || defaultTargetPlatform == TargetPlatform.windows ||
+    defaultTargetPlatform == TargetPlatform.linux ||
+    defaultTargetPlatform == TargetPlatform.macOS) {
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+} else {
+  // Android/iOS: native config (google-services.json / GoogleService-Info.plist)
+  await Firebase.initializeApp();
+}
+```
 
 ---
 
@@ -222,13 +252,22 @@ Todo app deve inicializar os seguintes componentes na ordem correta:
 |------|------|--------|-----------|
 | CORE-75 | Farm-Centric Model | DONE | Modelo Farm, FarmService, FarmAdapter para multi-user |
 | CORE-77 | Dependency-Aware Backup | DONE | EnhancedBackupProvider, 3-phase restore, sourceApp isolation, DependencyService, AppDeletionProvider, BackupMeta, RestoreAnalysis, LgpdDeletionResult |
+| CORE-78 | GenericSyncService | DONE | Infraestrutura offline-first unificada: GenericSyncService, OfflineQueueManager, LocalCacheManager, DataIntegrityManager, SyncConfig |
+| CORE-83 | Migration to GenericSyncService | DONE | Migração de todos os services dos apps para GenericSyncService |
+| CORE-84 | Sync Infrastructure Fixes | DONE | Adapter registration, processQueue logging, _save error handling, property prompt fix, App Check debug guard, 61 unit tests |
 
 ### Integração nos Apps
 
 | App | Fase | Status | Descrição |
 |-----|------|--------|-----------|
 | RuraRubber | RUBBER-24 | DONE | FarmOwnedEntity em Parceiro/Entrega, BorrachaBackupProvider, BorrachaDeletionProvider |
+| RuraRubber | RUBBER-25 | DONE | Migração de 5 services para GenericSyncService |
+| RuraRubber | RUBBER-26 | DONE | Sync adapters, App Check, Property Name Gate, Firebase init nativo |
 | RuraRain | RAIN-03 | DONE | FarmOwnedMixin em RegistroChuva, ChuvaBackupProvider, ChuvaDeletionProvider |
+| RuraRain | RAIN-04 | DONE | ChuvaService migrado para GenericSyncService |
+| RuraRain | RAIN-05 | DONE | Sync adapter registration |
+| RuraCash | CASH-05 | DONE | Migração de services para GenericSyncService |
+| RuraCash | CASH-06 | DONE | Sync adapter registration |
 | RuraCattle | - | TODO | Aguardando implementação |
 | RuraFuel | - | TODO | Aguardando implementação |
 
@@ -249,17 +288,21 @@ Todo app deve inicializar os seguintes componentes na ordem correta:
 ### Novo App
 
 - [ ] Registrar FarmAdapter e DependencyManifestAdapter no Hive
+- [ ] Registrar OfflineOperationAdapter, OperationTypeAdapter, OperationPriorityAdapter no Hive (CORE-84)
+- [ ] Inicializar Firebase com pattern nativo (Android/iOS) vs DefaultFirebaseOptions (desktop/web)
+- [ ] Adicionar App Check com guard `if (!kDebugMode)` (CORE-84)
 - [ ] Inicializar FarmService e DependencyService no main.dart
 - [ ] Criar BackupProvider implementando EnhancedBackupProvider
 - [ ] Criar DeletionProvider implementando AppDeletionProvider
 - [ ] Registrar providers no CloudBackupService e DataDeletionService
 - [ ] Garantir que todas as entidades usam sourceApp = "nomedoapp"
+- [ ] Adicionar Property Name Gate no fluxo de navegação (CORE-84)
 
 ---
 
 ## 11. GenericSyncService (CORE-78)
 
-> **Status**: Planejado (Aguardando Implementação)
+> **Status**: Implementado e testado (61 unit tests)
 > **Propósito**: Infraestrutura unificada para serviços offline-first com sincronização opcional.
 
 ### 11.1. Visão Geral

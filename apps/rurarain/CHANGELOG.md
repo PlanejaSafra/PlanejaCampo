@@ -7,6 +7,33 @@
 
 ---
 
+## Phase RAIN-05: Fix Sync Adapter Registration
+
+### Status: [DONE]
+**Date Completed**: 2026-01-26
+**Priority**: 🔵 FIX
+**Objective**: Registrar adapters Hive da infraestrutura de sync (OfflineOperation, OperationType, OperationPriority) no main.dart para resolver erro `HiveError: Cannot write, unknown type: OfflineOperation`.
+**Cross-Reference**: CORE-84
+
+### Root Cause
+O ChuvaService usa `GenericSyncService` com `syncEnabled => true`, que enfileira operações no `OfflineQueueManager`. O OfflineQueueManager persiste objetos `OfflineOperation` no Hive, mas os adapters nunca foram registrados no `main.dart` do RuraRain.
+
+### Implementation Summary
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| 5.1 | Registrar OfflineOperationAdapter no main.dart | ✅ DONE |
+| 5.2 | Registrar OperationTypeAdapter no main.dart | ✅ DONE |
+| 5.3 | Registrar OperationPriorityAdapter no main.dart | ✅ DONE |
+
+### Files Modified
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/main.dart` | MODIFY | Adicionar 3 registros de adapter: OfflineOperationAdapter, OperationTypeAdapter, OperationPriorityAdapter |
+
+---
+
 ## Phase RAIN-04: Migração para GenericSyncService
 ### Status: [DONE]
 **Date Completed**: 2026-01-26

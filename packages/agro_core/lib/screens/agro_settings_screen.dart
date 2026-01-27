@@ -34,9 +34,6 @@ class AgroSettingsScreen extends StatefulWidget {
   /// Callback to export user data (LGPD compliance).
   final VoidCallback? onExportData;
 
-  /// Callback to delete cloud data.
-  final VoidCallback? onDeleteCloudData;
-
   /// Callback to toggle cloud sync.
   final void Function(bool)? onToggleCloudSync;
 
@@ -85,7 +82,6 @@ class AgroSettingsScreen extends StatefulWidget {
     this.currentThemeMode = ThemeMode.system,
     this.onNavigateToPrivacy,
     this.onExportData,
-    this.onDeleteCloudData,
     this.onToggleCloudSync,
     this.cloudSyncEnabled = true,
     this.onReminderChanged,
@@ -236,42 +232,6 @@ class _AgroSettingsScreenState extends State<AgroSettingsScreen> {
           content: Text('${l10n.exportDataError}: $e'),
           backgroundColor: Colors.red,
         ),
-      );
-    }
-  }
-
-  Future<void> _handleDeleteCloudData() async {
-    if (widget.onDeleteCloudData != null) {
-      widget.onDeleteCloudData!.call();
-      return;
-    }
-
-    final l10n = AgroLocalizations.of(context)!;
-    final scaffold = ScaffoldMessenger.of(context);
-
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.deleteCloudDataTitle),
-        content: Text(l10n.deleteCloudDataMessage),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(l10n.cancelButton),
-          ),
-          TextButton(
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            onPressed: () => Navigator.pop(context, true),
-            child: Text(l10n.deleteButton),
-          ),
-        ],
-      ),
-    );
-
-    if (confirmed == true) {
-      await UserCloudService.instance.deleteCloudData();
-      scaffold.showSnackBar(
-        SnackBar(content: Text(l10n.deleteCloudDataSuccess)),
       );
     }
   }
@@ -868,17 +828,6 @@ class _AgroSettingsScreenState extends State<AgroSettingsScreen> {
                 title: Text(l10n.settingsExportMyData),
                 subtitle: Text(l10n.settingsExportMyDataDesc),
                 onTap: _handleExportData,
-              ),
-
-              // Delete cloud data
-              ListTile(
-                leading: Icon(Icons.delete_outline, color: Colors.red[700]),
-                title: Text(
-                  l10n.settingsDeleteCloudData,
-                  style: TextStyle(color: Colors.red[700]),
-                ),
-                subtitle: Text(l10n.settingsDeleteCloudDataDesc),
-                onTap: _handleDeleteCloudData,
               ),
 
               const Divider(),
