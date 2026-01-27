@@ -1,8 +1,8 @@
 import 'package:agro_core/agro_core.dart';
-import 'package:agro_core/services/sync/generic_sync_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../models/registro_chuva.dart';
+import 'sync_service.dart';
 
 /// Serviço de Chuva migrado para GenericSyncService (CORE-83)
 class ChuvaService extends GenericSyncService<RegistroChuva> {
@@ -84,19 +84,73 @@ class ChuvaService extends GenericSyncService<RegistroChuva> {
   Future<void> adicionar(RegistroChuva registro) async {
     await super.add(registro);
     await _updateWidget();
-    // Sync é automático pelo GenericSyncService (CORE-78)
+    // Tier 3 sync: automático pelo GenericSyncService (CORE-78/88)
+    // Tier 2 sync: queue for aggregate statistics (RAIN-08)
+    await _queueTier2Sync(registro);
   }
 
   /// Atualiza registro existente
   Future<void> atualizar(RegistroChuva registro) async {
     await super.update(registro.id.toString(), registro);
     await _updateWidget();
+    // Tier 2 sync: re-queue updated record (RAIN-08)
+    await _reQueueTier2Sync(registro);
   }
 
   /// Exclui registro
   Future<void> excluir(int id) async {
     await super.delete(id.toString());
     await _updateWidget();
+    // Tier 2: no action needed on delete (anonymized aggregate data stays)
+  }
+
+  // ─────────────────────────────────────────────────────────────────────
+  // Tier 2 Sync (Aggregate Statistics) — RAIN-08
+  // ─────────────────────────────────────────────────────────────────────
+
+  /// Queue a rainfall record for Tier 2 sync (aggregate statistics).
+  /// Looks up the property for location data, then queues and syncs.
+  Future<void> _queueTier2Sync(RegistroChuva registro) async {
+    try {
+      final property =
+          PropertyService().getPropertyById(registro.propertyId);
+      if (property == null) return;
+
+      await SyncService().queueForSync(registro, property);
+      // Fire-and-forget: try to sync immediately (non-blocking)
+      SyncService().syncPendingItems().then((result) {
+        if (result.itemsSynced > 0) {
+          debugPrint('[Tier2] Synced ${result.itemsSynced} items');
+          SyncService().updateLastSyncTimestamp();
+        }
+      }).catchError((e) {
+        debugPrint('[Tier2] Sync failed (non-fatal): $e');
+      });
+    } catch (e) {
+      debugPrint('[Tier2] Queue failed (non-fatal): $e');
+    }
+  }
+
+  /// Re-queue an updated rainfall record for Tier 2 sync.
+  Future<void> _reQueueTier2Sync(RegistroChuva registro) async {
+    try {
+      final property =
+          PropertyService().getPropertyById(registro.propertyId);
+      if (property == null) return;
+
+      await SyncService().reQueueForSync(registro, property);
+      // Fire-and-forget sync
+      SyncService().syncPendingItems().then((result) {
+        if (result.itemsSynced > 0) {
+          debugPrint('[Tier2] Synced ${result.itemsSynced} updated items');
+          SyncService().updateLastSyncTimestamp();
+        }
+      }).catchError((e) {
+        debugPrint('[Tier2] Sync failed (non-fatal): $e');
+      });
+    } catch (e) {
+      debugPrint('[Tier2] Re-queue failed (non-fatal): $e');
+    }
   }
 
   // ─────────────────────────────────────────────────────────────────────

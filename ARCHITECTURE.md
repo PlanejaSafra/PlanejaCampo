@@ -278,6 +278,7 @@ if (kIsWeb || defaultTargetPlatform == TargetPlatform.windows ||
 | RuraRain | RAIN-05 | DONE | Sync adapter registration |
 | RuraRain | RAIN-06 | DONE | Sync adapters + Firebase init nativo |
 | RuraRain | RAIN-07 | DONE | Owner-Based Settings: isOwner via FarmService/AuthService |
+| RuraRain | RAIN-08 | DONE | Tier 2 Statistics Sync: fix queueForSync bug, integrate Tier 2 in ChuvaService.adicionar/atualizar |
 | RuraCash | CASH-05 | DONE | Migração de services para GenericSyncService |
 | RuraCash | CASH-06 | DONE | Sync adapter registration |
 | RuraCash | CASH-07 | DONE | Architecture alignment: gen-l10n, syncEnabled=false, dead code fix, code quality |

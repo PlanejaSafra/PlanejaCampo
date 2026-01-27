@@ -6,6 +6,52 @@
 
 ---
 
+## Phase RAIN-08: Tier 2 Statistics Sync Integration
+
+### Status: [DONE]
+**Date Completed**: 2026-01-26
+**Priority**: 🔴 CRITICAL
+**Objective**: Conectar o SyncService (Tier 2 — estatísticas agregadas) ao fluxo de registro de chuva. Corrigir bug no `queueForSync` e remover import desnecessário. Antes desta fase, o SyncService existia mas nunca era chamado — nenhum dado chegava ao Firestore `rainfall_data`.
+
+### Root Cause
+
+O `SyncService` foi implementado (CORE-78) com `queueForSync()` e `syncPendingItems()`, e inicializado no `main.dart`, mas **nenhum ponto do código** chamava esses métodos após adicionar/editar registros de chuva. O pipeline de Tier 2 estava completo mas operacionalmente desconectado.
+
+Além disso, o método `queueForSync` tinha um bug: `firstWhere` com `orElse: () => throw StateError(...)` fazia o método crashar ao tentar adicionar um item que não estava na fila (caso normal), ao invés de continuar com o enfileiramento.
+
+### Implementation Summary
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| RAIN-08.1 | Fix bug `queueForSync`: substituir `firstWhere` + `throw` por `any()` para checar duplicatas sem crash | ✅ DONE |
+| RAIN-08.2 | Adicionar `reQueueForSync()` ao SyncService para permitir re-enfileiramento de registros atualizados | ✅ DONE |
+| RAIN-08.3 | Integrar Tier 2 em `ChuvaService.adicionar()`: queue + fire-and-forget `syncPendingItems()` | ✅ DONE |
+| RAIN-08.4 | Integrar Tier 2 em `ChuvaService.atualizar()`: re-queue + fire-and-forget sync | ✅ DONE |
+| RAIN-08.5 | Remover import desnecessário de `generic_sync_service.dart` (barrel via `agro_core.dart`) | ✅ DONE |
+
+### Data Flow (After Fix)
+
+```
+adicionar() → save local → _queueTier2Sync()
+                              ├── PropertyService.getPropertyById()
+                              ├── SyncService.queueForSync(registro, property)
+                              └── SyncService.syncPendingItems() [fire-and-forget]
+                                    └── Firestore: rainfall_data/{geoHash5}/records/{docId}
+```
+
+### Files Modified
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/services/sync_service.dart` | MODIFY | Fix `queueForSync` bug, add `reQueueForSync()` |
+| `lib/services/chuva_service.dart` | MODIFY | Add `_queueTier2Sync()`, `_reQueueTier2Sync()`, integrate in `adicionar()`/`atualizar()`, remove unnecessary import |
+
+### Cross-Reference
+- CORE-78: GenericSyncService (Tier 3 infrastructure)
+- CORE-88: Data Tier Architecture (Tier gates definition)
+
+---
+
 ## Phase RAIN-07: Owner-Based Settings & Privacy Access Control
 
 ### Status: [DONE]

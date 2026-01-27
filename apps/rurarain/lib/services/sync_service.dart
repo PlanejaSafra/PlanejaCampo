@@ -70,14 +70,10 @@ class SyncService {
     );
 
     // Check if already queued
-    final existing = _queueBox.values.firstWhere(
+    final alreadyQueued = _queueBox.values.any(
       (item) => item.registroId == registro.id,
-      orElse: () => throw StateError('Not found'),
     );
-
-    if (existing.registroId == registro.id) {
-      return; // Already queued
-    }
+    if (alreadyQueued) return;
 
     // Create queue item
     final queueItem = SyncQueueItem.fromRainfallRecord(
@@ -92,6 +88,20 @@ class SyncService {
 
     // Add to queue
     await _queueBox.put(registro.id.toString(), queueItem);
+  }
+
+  /// Re-queue an updated rainfall record (replaces existing queue item).
+  /// If the record was already synced (not in queue), queues as new.
+  Future<void> reQueueForSync(
+      RegistroChuva registro, Property property) async {
+    if (!hasUserConsent) return;
+    if (property.latitude == null || property.longitude == null) return;
+
+    // Remove existing queue item if present
+    await _queueBox.delete(registro.id.toString());
+
+    // Queue with updated data
+    await queueForSync(registro, property);
   }
 
   /// Sync pending items to Firestore (Wi-Fi only, rate limited)
