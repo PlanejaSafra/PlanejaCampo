@@ -2,6 +2,32 @@
 
 ---
 
+## Phase CORE-95: Unified Sync Pipeline — GenericSyncService for All Tiers
+
+### Status: [LOCKED]
+**Priority**: 🟡 ARCHITECTURAL
+**Objective**: Refatorar o GenericSyncService para suportar todos os Data Tiers (1, 2, 3) num pipeline unificado. Eliminar SyncServices customizados nos apps. O GenericSyncService decidirá o tier baseado em configuração (flag, coleção ou parâmetro).
+
+### Prerequisites
+- RAIN-09 (Tier 2 bug fixes) deve estar DONE
+
+### Scope
+- Estender GenericSyncService com suporte a Tier 2 (dados anonimizados, consent-based)
+- Unificar OfflineQueueManager + SyncQueueItem numa fila única
+- Adicionar retry periódico ao GenericSyncService (atualmente só existe no SyncService do rurarain)
+- Garantir zero subcollections (flat root collections apenas)
+- Manter gates de tier: Tier 1 (local only), Tier 2 (consent-based anonymized), Tier 3 (farm.isShared multi-user)
+- Strategy pattern para serialização de dados por tier
+
+### Cross-Reference
+- RAIN-10 [LOCKED]: App-specific migration (rurarain)
+- RUBBER-30 [LOCKED]: App-specific migration (rurarubber)
+- CASH-11 [LOCKED]: App-specific migration (ruracash)
+- CORE-78: GenericSyncService original (Tier 3 only)
+- CORE-88: Data Tier Architecture definition
+
+---
+
 ## Phase CORE-93: FarmType typeId Collision Fix + L10n Additions
 
 ### Status: [DONE]

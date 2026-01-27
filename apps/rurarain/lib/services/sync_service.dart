@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:agro_core/agro_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dart_geohash/dart_geohash.dart';
+import 'package:flutter/foundation.dart';
 import 'package:hive/hive.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -10,11 +11,14 @@ import '../models/registro_chuva.dart';
 import '../models/sync_queue_item.dart';
 
 /// Service for syncing rainfall data to Firestore and fetching regional statistics.
-/// Implements opt-in consent, rate limiting, and Wi-Fi-only sync.
+/// Implements opt-in consent, rate limiting, and periodic retry.
 class SyncService {
   static const String _queueBoxName = 'sync_queue';
   static const String _metadataBoxName = 'sync_metadata';
   static const int _maxDailyWrites = 10;
+
+  /// Interval between periodic sync attempts.
+  static const Duration _retryInterval = Duration(minutes: 2);
 
   static final SyncService _instance = SyncService._internal();
   factory SyncService() => _instance;
@@ -24,9 +28,13 @@ class SyncService {
   late Box<dynamic> _metadataBox;
   final _firestore = FirebaseFirestore.instance;
   final _geoHasher = GeoHasher();
+  Timer? _retryTimer;
+  bool _initialized = false;
 
-  /// Initialize Hive boxes
+  /// Initialize Hive boxes and start periodic sync.
   Future<void> init() async {
+    if (_initialized) return;
+
     _queueBox = await Hive.openBox<SyncQueueItem>(_queueBoxName);
     _metadataBox = await Hive.openBox(_metadataBoxName);
 
@@ -35,6 +43,40 @@ class SyncService {
       persistenceEnabled: true,
       cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED,
     );
+
+    _initialized = true;
+
+    debugPrint('[Tier2] SyncService initialized. '
+        'Pending items: $pendingItemCount');
+
+    // Start periodic retry for items that failed or were queued while offline
+    _startPeriodicSync();
+  }
+
+  /// Start periodic sync timer to retry failed/pending items.
+  void _startPeriodicSync() {
+    _retryTimer?.cancel();
+    _retryTimer = Timer.periodic(_retryInterval, (_) async {
+      if (!hasUserConsent) return;
+      if (hasReachedDailyLimit) return;
+      if (pendingItemCount == 0) return;
+
+      debugPrint('[Tier2] Periodic retry: $pendingItemCount pending items');
+      final result = await syncPendingItems();
+      if (result.itemsSynced > 0) {
+        debugPrint('[Tier2] Periodic retry synced ${result.itemsSynced} items');
+        updateLastSyncTimestamp();
+      }
+      if (result.error != null) {
+        debugPrint('[Tier2] Periodic retry error: ${result.error}');
+      }
+    });
+  }
+
+  /// Stop periodic sync (call on dispose).
+  void dispose() {
+    _retryTimer?.cancel();
+    _retryTimer = null;
   }
 
   /// Check if user has consented to data sharing
@@ -57,10 +99,17 @@ class SyncService {
   /// Queue a rainfall record for sync
   Future<void> queueForSync(RegistroChuva registro, Property property) async {
     // Only queue if user has consented
-    if (!hasUserConsent) return;
+    if (!hasUserConsent) {
+      debugPrint('[Tier2] queueForSync: SKIPPED — no user consent');
+      return;
+    }
 
     // Property must have location
-    if (property.latitude == null || property.longitude == null) return;
+    if (property.latitude == null || property.longitude == null) {
+      debugPrint('[Tier2] queueForSync: SKIPPED — property "${property.name}" '
+          'has no location (lat=${property.latitude}, lon=${property.longitude})');
+      return;
+    }
 
     // Generate GeoHash
     final geoHash5 = _geoHasher.encode(
@@ -73,7 +122,10 @@ class SyncService {
     final alreadyQueued = _queueBox.values.any(
       (item) => item.registroId == registro.id,
     );
-    if (alreadyQueued) return;
+    if (alreadyQueued) {
+      debugPrint('[Tier2] queueForSync: SKIPPED — registro ${registro.id} already queued');
+      return;
+    }
 
     // Create queue item
     final queueItem = SyncQueueItem.fromRainfallRecord(
@@ -88,6 +140,9 @@ class SyncService {
 
     // Add to queue
     await _queueBox.put(registro.id.toString(), queueItem);
+    debugPrint('[Tier2] queueForSync: QUEUED registro ${registro.id} '
+        '(${registro.milimetros}mm, geoHash=$geoHash5). '
+        'Queue size: ${_queueBox.length}');
   }
 
   /// Re-queue an updated rainfall record (replaces existing queue item).
@@ -104,9 +159,10 @@ class SyncService {
     await queueForSync(registro, property);
   }
 
-  /// Sync pending items to Firestore (Wi-Fi only, rate limited)
+  /// Sync pending items to Firestore (rate limited)
   Future<SyncResult> syncPendingItems() async {
     if (!hasUserConsent) {
+      debugPrint('[Tier2] syncPendingItems: SKIPPED — no consent');
       return SyncResult(
         success: false,
         itemsSynced: 0,
@@ -115,6 +171,7 @@ class SyncService {
     }
 
     if (hasReachedDailyLimit) {
+      debugPrint('[Tier2] syncPendingItems: SKIPPED — daily limit reached');
       return SyncResult(
         success: false,
         itemsSynced: 0,
@@ -123,10 +180,16 @@ class SyncService {
     }
 
     // Get items ready for sync
-    final readyItems = _queueBox.values
+    final allItems = _queueBox.values.toList();
+    final readyItems = allItems
         .where((item) => item.shouldRetry && item.isReadyForRetry)
         .take(_maxDailyWrites - (_metadataBox.get('today_writes') as int? ?? 0))
         .toList();
+
+    debugPrint('[Tier2] syncPendingItems: '
+        'total=${allItems.length}, '
+        'shouldRetry=${allItems.where((i) => i.shouldRetry).length}, '
+        'ready=${readyItems.length}');
 
     if (readyItems.isEmpty) {
       return SyncResult(success: true, itemsSynced: 0);
@@ -137,15 +200,20 @@ class SyncService {
 
     for (final item in readyItems) {
       try {
+        debugPrint('[Tier2] Syncing item ${item.registroId} '
+            '(attempt ${item.attempts + 1})...');
         await _syncSingleItem(item);
         await _queueBox.delete(item.registroId.toString());
         synced++;
 
         // Update daily write counter
         _incrementDailyWriteCount();
+        debugPrint('[Tier2] Item ${item.registroId} synced SUCCESSFULLY');
       } catch (e) {
         lastError = e.toString();
         item.recordAttempt(lastError);
+        debugPrint('[Tier2] Item ${item.registroId} FAILED: $lastError '
+            '(attempts: ${item.attempts}/5)');
       }
 
       // Respect rate limit
@@ -159,16 +227,15 @@ class SyncService {
     );
   }
 
-  /// Sync a single item to Firestore
+  /// Sync a single item to Firestore.
+  ///
+  /// Uses flat root collection (no subcollections per project rules):
+  /// `rainfall_data/{geoHash5}_{propertyId}_{timestamp}`
   Future<void> _syncSingleItem(SyncQueueItem item) async {
-    // Prepare document data (anonymized*)
-    // * We MUST include userId to satisfy Firestore Security Rules (Fail-Safe),
-    // even if logically we want it anonymized.
-    // The rules require: request.resource.data.userId == request.auth.uid
-    final userId =
-        _firestore.app.options.apiKey.isNotEmpty ? (await _getUserId()) : null;
+    // Prepare document data (anonymized — only userId for security rules)
+    final userId = await _getUserId();
 
-    final docData = {
+    final docData = <String, dynamic>{
       'mm': item.millimeters,
       'date': Timestamp.fromDate(item.date),
       'lat': item.latitude,
@@ -183,14 +250,17 @@ class SyncService {
       docData['userId'] = userId;
     }
 
+    // Flat collection — docId encodes geoHash + property + timestamp
+    final docId =
+        '${item.geoHash5}_${item.propertyId}_${item.date.millisecondsSinceEpoch}';
+    debugPrint('[Tier2] Writing to Firestore: rainfall_data/$docId');
+
     // Write to Firestore with timeout
     await _firestore
         .collection('rainfall_data')
-        .doc(item.geoHash5)
-        .collection('records')
-        .doc('${item.propertyId}_${item.date.millisecondsSinceEpoch}')
+        .doc(docId)
         .set(docData, SetOptions(merge: true))
-        .timeout(const Duration(seconds: 5));
+        .timeout(const Duration(seconds: 10));
   }
 
   /// Increment daily write counter

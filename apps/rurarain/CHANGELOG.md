@@ -6,6 +6,66 @@
 
 ---
 
+## Phase RAIN-10: Unified Sync Pipeline
+
+### Status: [LOCKED]
+**Priority**: 🟡 ARCHITECTURAL
+**Objective**: Unificar Tier 2 (stats anônimos) e Tier 3 (full data sync) sob o GenericSyncService. O GenericSyncService receberia parâmetro de tier ou decidiria por coleção, eliminando o SyncService customizado do RuraRain.
+
+### Prerequisites
+- RAIN-09 (Tier 2 bug fixes) deve estar DONE
+- CORE-95: Unified Sync Pipeline deve ser planejado no agro_core
+
+### Scope
+- Migrar `SyncService` (rurarain) para usar `GenericSyncService` como base
+- GenericSyncService decide tier baseado em config (coleção ou parâmetro)
+- Manter backoff, retry periódico, rate limiting, consent check
+- Eliminar duplicidade de lógica de fila e retry
+
+---
+
+## Phase RAIN-09: Fix Tier 2 Sync — 3 Critical Bugs
+
+### Status: [DONE]
+**Date Completed**: 2026-01-27
+**Priority**: 🔴 CRITICAL
+**Objective**: Corrigir 3 bugs que impediam completamente o envio de estatísticas Tier 2 ao Firestore. Nenhum dado de chuva chegava ao Firebase apesar do usuário ter aceitado todos os consentimentos.
+
+### Root Cause Analysis
+
+Análise profunda do fluxo de ponta a ponta revelou 3 bugs em cadeia:
+
+1. **Backoff impede primeiro sync**: `isReadyForRetry` exigia 1 minuto de espera mesmo para `attempts=0` (item recém-criado). Como `syncPendingItems()` era chamado imediatamente após enfileirar, o item nunca passava no filtro.
+
+2. **Nenhum mecanismo de retry**: Após o sync imediato falhar (Bug #1), nenhum timer, listener ou trigger jamais chamava `syncPendingItems()` novamente. Items ficavam na fila para sempre.
+
+3. **Firestore rules bloqueavam escrita**: O path original usava subcollection (`rainfall_data/{geoHash}/records/{docId}`) que violava a regra #4 do projeto (no subcollections) e não tinha regra Firestore correspondente. Migrado para flat collection `rainfall_data/{docId}`.
+
+### Implementation Summary
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| RAIN-09.1 | Fix `isReadyForRetry`: `attempts==0` retorna `true` imediatamente (sem backoff na primeira tentativa) | ✅ DONE |
+| RAIN-09.2 | Adicionar `Timer.periodic` (2 min) ao SyncService para retry de itens pendentes | ✅ DONE |
+| RAIN-09.3 | Migrar Firestore write de subcollection para flat root collection `rainfall_data/{docId}` | ✅ DONE |
+| RAIN-09.4 | Adicionar regra Firestore para `rainfall_data/{docId}` com userId check | ✅ DONE |
+| RAIN-09.5 | Adicionar `rainfall_data` ao deny-list da regra genérica FarmOwnedEntity | ✅ DONE |
+| RAIN-09.6 | Adicionar debug logging em todo o fluxo Tier 2 (queue, sync, retry) | ✅ DONE |
+
+### Files Modified
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/models/sync_queue_item.dart` | MODIFY | Fix `isReadyForRetry`: skip backoff for first attempt |
+| `lib/services/sync_service.dart` | MODIFY | Add periodic retry timer, debug logging, flat collection write, init guard |
+| `firestore.rules` | MODIFY | Add `rainfall_data/{docId}` rule, add to deny-list |
+
+### Cross-Reference
+- RAIN-08: Tier 2 integration (connected pipeline but had these 3 bugs)
+- RAIN-10 [LOCKED]: Unified Sync Pipeline (future refactor)
+
+---
+
 ## Phase RAIN-08: Tier 2 Statistics Sync Integration
 
 ### Status: [DONE]

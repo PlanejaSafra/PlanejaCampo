@@ -99,17 +99,24 @@ class SyncQueueItem extends HiveObject {
     save();
   }
 
-  /// Check if item is ready for retry (exponential backoff)
+  /// Check if item is ready for retry (exponential backoff).
+  ///
+  /// First attempt (attempts == 0) is always immediate.
+  /// Subsequent retries use exponential backoff: 1min, 5min, 15min, 1hour, 6hours.
   bool get isReadyForRetry {
     if (!shouldRetry) return false;
+
+    // First attempt: always ready (no backoff for fresh items)
+    if (attempts == 0) return true;
 
     final now = DateTime.now();
     final timeSinceQueued = now.difference(queuedAt);
 
-    // Exponential backoff: 1min, 5min, 15min, 1hour, 6hours
+    // Exponential backoff for retries: 1min, 5min, 15min, 1hour, 6hours
     final backoffMinutes = [1, 5, 15, 60, 360];
-    final waitTime = attempts < backoffMinutes.length
-        ? backoffMinutes[attempts]
+    final retryIndex = attempts - 1; // attempts=1 → backoff[0]=1min
+    final waitTime = retryIndex < backoffMinutes.length
+        ? backoffMinutes[retryIndex]
         : 360;
 
     return timeSinceQueued.inMinutes >= waitTime;

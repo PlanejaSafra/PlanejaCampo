@@ -5,6 +5,29 @@
 
 ---
 
+## Phase CASH-11: Unified Sync Pipeline — GenericSyncService for All Tiers
+
+### Status: [LOCKED]
+**Priority**: 🟡 ARCHITECTURAL
+**Objective**: Refatorar todos os serviços de sync para usar exclusivamente o GenericSyncService (agro_core) como base para todos os Tiers (1, 2, 3). Eliminar lógica de sync customizada duplicada.
+
+### Prerequisites
+- CORE-95: Unified Sync Pipeline deve ser implementado no agro_core
+- RAIN-09 (Tier 2 bug fixes) deve estar DONE
+
+### Scope
+- Migrar qualquer sync customizado para usar GenericSyncService
+- GenericSyncService decide tier baseado em config (coleção, parâmetro, ou flag)
+- Garantir zero subcollections (flat root collections apenas)
+- Manter backoff, retry periódico, rate limiting, consent check
+
+### Cross-Reference
+- RAIN-10 [LOCKED]: Unified Sync Pipeline (rurarain)
+- RUBBER-30 [LOCKED]: Unified Sync Pipeline (rurarubber)
+- CORE-95 [LOCKED]: Unified Sync Pipeline (agro_core)
+
+---
+
 ## Phase CASH-10: Gap Fixes — L10n, isOwner, syncEnabled, typeId
 
 ### Status: [DONE]

@@ -45,7 +45,20 @@ service cloud.firestore {
       allow update, delete: if ownsDoc();
     }
 
-    // 4. Public read-only (Cloud Functions / Admin SDK only writes)
+    // 4. Rainfall Tier 2 (anonymized aggregate data — flat root collection)
+    //    Path: rainfall_data/{docId}
+    //    docId format: {geoHash5}_{propertyId}_{timestamp}
+    //    Auth user can create/update own records. No public reads (privacy).
+    match /rainfall_data/{docId} {
+      allow create: if isAuth()
+                       && request.resource.data.userId == request.auth.uid;
+      allow update: if isAuth()
+                       && resource.data.userId == request.auth.uid;
+      allow read:   if false; // Privacy: no client reads of raw data
+      allow delete: if false; // Aggregate data is immutable
+    }
+
+    // 5. Public read-only (Cloud Functions / Admin SDK only writes)
     match /rainfall_stats/{document=**} {
       allow read:  if isAuth();
       allow write: if false;
@@ -86,7 +99,7 @@ service cloud.firestore {
       function isProtected() {
         return collection in [
           'users', 'user_backups', 'user_backup_chunks',
-          'rainfall_records', 'rainfall_stats', 'regions',
+          'rainfall_records', 'rainfall_data', 'rainfall_stats', 'regions',
           'market_offers', 'job_posts'
         ];
       }
