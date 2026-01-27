@@ -5,6 +5,108 @@
 
 ---
 
+## Phase CASH-08: Firebase & Auth Integration [LOCKED]
+
+### Status: [LOCKED]
+**Priority**: 🟡 ARCHITECTURAL
+**Objective**: Integrar Firebase, autenticação Google, CloudBackupService, DataDeletionService, e fluxo de login completo ao RuraCash. Alinhar com RuraRubber/RuraRain que já possuem esses recursos.
+**Prerequisite**: CASH-07 (corrigir erros e alinhar base)
+
+### Why LOCKED
+
+RuraCash atualmente opera 100% offline sem Firebase. Para ativar:
+- Criar projeto Firebase para RuraCash (ou usar projeto compartilhado)
+- Gerar `google-services.json` (Android) e `GoogleService-Info.plist` (iOS)
+- Gerar `firebase_options.dart` via FlutterFire CLI
+- Configurar flavors se necessário
+
+### Implementation Summary (Planned)
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| CASH-08.1 | Criar projeto Firebase, gerar configs (google-services.json, firebase_options.dart) | ⏳ TODO |
+| CASH-08.2 | Inicializar Firebase no main.dart (pattern nativo Android/iOS + DefaultFirebaseOptions desktop) | ⏳ TODO |
+| CASH-08.3 | Adicionar App Check com guard `if (!kDebugMode)` | ⏳ TODO |
+| CASH-08.4 | Registrar Hive adapters: DeviceInfoAdapter, ConsentDataAdapter, UserCloudDataAdapter | ⏳ TODO |
+| CASH-08.5 | Inicializar UserCloudService, DataMigrationService no main.dart | ⏳ TODO |
+| CASH-08.6 | Criar AuthGate com LoginScreen e fluxo de login Google/Anônimo | ⏳ TODO |
+| CASH-08.7 | Criar CashBackupProvider (implements EnhancedBackupProvider) para Lancamento + CentroCusto | ⏳ TODO |
+| CASH-08.8 | Criar CashDeletionProvider (implements AppDeletionProvider) para LGPD | ⏳ TODO |
+| CASH-08.9 | Registrar backup/deletion providers no main.dart | ⏳ TODO |
+| CASH-08.10 | Criar ConfiguracoesScreen app-specific com isOwner, locale, theme, backup callbacks | ⏳ TODO |
+| CASH-08.11 | Re-habilitar `syncEnabled => true` nos services (após Firebase estar ativo) | ⏳ TODO |
+| CASH-08.12 | Adicionar Property Name Gate no fluxo de navegação | ⏳ TODO |
+
+### Files to Create/Modify
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/firebase_options.dart` | CREATE | Gerado pelo FlutterFire CLI |
+| `lib/main.dart` | MODIFY | Firebase init, App Check, adapters, services, AuthGate |
+| `lib/screens/configuracoes_screen.dart` | CREATE | Settings wrapper com isOwner, locale, theme |
+| `lib/services/cash_backup_provider.dart` | CREATE | EnhancedBackupProvider para backup/restore |
+| `lib/services/cash_deletion_provider.dart` | CREATE | AppDeletionProvider para LGPD |
+| `android/app/src/main/google-services.json` | CREATE | Firebase config Android |
+
+### Cross-Reference
+- CORE-84: Firebase init pattern, App Check, Sync adapters
+- CORE-86/87: Owner-based settings, auto-backup
+- RUBBER-26/27: Referência de implementação completa
+- RAIN-06/07: Referência de implementação completa
+
+---
+
+## Phase CASH-07: Architecture Alignment & Error Fixes
+
+### Status: [DONE]
+**Date Completed**: 2026-01-26
+**Priority**: 🔴 CRITICAL
+**Objective**: Corrigir 17 erros de compilação (CashLocalizations), prevenir crash de runtime (syncEnabled sem Firebase), e alinhar code quality com padrões do monorepo.
+
+### Root Cause Analysis
+
+1. **CashLocalizations não gerado** (17 erros): `l10n.yaml` existe, ARB files existem, `flutter: generate: true` está no pubspec — mas `flutter gen-l10n` nunca foi executado. Resultado: todas as telas que importam `package:flutter_gen/gen_l10n/app_localizations.dart` falham.
+
+2. **syncEnabled => true sem Firebase** (crash em runtime): Ambos services (LancamentoService, CentroCustoService) declaram `syncEnabled => true`, mas o app NÃO inicializa Firebase. Quando `getById()` é chamado, `scheduleSyncInBackground()` → `syncWithServer()` → `FirebaseFirestore.instance` → crash. Solução: `syncEnabled => false` até Firebase ser configurado (CASH-08).
+
+3. **Dead code**: `CentroCustoService.defaultCentroCusto` tem `return list.first;` seguido de `return list.firstWhere(...)` — segunda linha é inalcançável.
+
+4. **Imports não utilizados**: `uuid` importado em ambos services mas não usado diretamente (GenericSyncService cuida de IDs).
+
+5. **Missing @override**: `clearAll()` em ambos services sobrescreve método do GenericSyncService sem anotação.
+
+6. **Imports desnecessários**: `generic_sync_service.dart` importado diretamente quando já está no barrel `agro_core.dart`.
+
+### Implementation Summary
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| CASH-07.1 | Gerar CashLocalizations via `flutter gen-l10n` no diretório ruracash | ✅ DONE |
+| CASH-07.2 | Alterar `syncEnabled => false` em LancamentoService e CentroCustoService | ✅ DONE |
+| CASH-07.3 | Corrigir dead code em `CentroCustoService.defaultCentroCusto` — remover `return list.first;` inalcançável | ✅ DONE |
+| CASH-07.4 | Remover imports `package:uuid/uuid.dart` não utilizados em ambos services | ✅ DONE |
+| CASH-07.5 | Adicionar `@override` em `clearAll()` de ambos services, remover imports desnecessários de `generic_sync_service.dart` | ✅ DONE |
+
+### Files Modified
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/services/lancamento_service.dart` | MODIFY | syncEnabled=false, remover uuid import, remover generic_sync_service import, @override clearAll |
+| `lib/services/centro_custo_service.dart` | MODIFY | syncEnabled=false, remover uuid import, remover generic_sync_service import, @override clearAll, fix dead code |
+| `.dart_tool/flutter_gen/` | GENERATE | CashLocalizations gerado por flutter gen-l10n |
+
+### Notes
+
+- `syncEnabled => false` é temporário — será re-habilitado em CASH-08 quando Firebase estiver configurado
+- CashLocalizations é app-level l10n (strings específicas do RuraCash), separado do AgroLocalizations do core
+- isOwner não precisa ser wired agora — sem Auth, o default `true` é correto para uso single-user offline
+
+### Cross-Reference
+- CORE-83: Migração para GenericSyncService (origem do syncEnabled=true prematuro)
+- CORE-88: Data Tier Architecture (GenericSyncService Tier 3 gate via farm.isShared)
+
+---
+
 ## Phase CASH-06: Fix Sync Adapter Registration
 
 ### Status: [DONE]

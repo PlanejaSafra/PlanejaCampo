@@ -1,8 +1,6 @@
 import 'package:agro_core/agro_core.dart';
-import 'package:agro_core/services/sync/generic_sync_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:uuid/uuid.dart';
 import '../models/lancamento.dart';
 import '../models/cash_categoria.dart';
 
@@ -21,7 +19,7 @@ class LancamentoService extends GenericSyncService<Lancamento> {
   String get sourceApp => 'ruracash';
 
   @override
-  bool get syncEnabled => true;
+  bool get syncEnabled => false;
 
   @override
   Lancamento fromMap(Map<String, dynamic> map) => Lancamento.fromJson(map);
@@ -200,6 +198,7 @@ class LancamentoService extends GenericSyncService<Lancamento> {
   }
 
   /// Clear all entries.
+  @override
   Future<void> clearAll() async {
     await super.clearAll();
   }

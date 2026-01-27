@@ -277,6 +277,7 @@ if (kIsWeb || defaultTargetPlatform == TargetPlatform.windows ||
 | RuraRain | RAIN-07 | DONE | Owner-Based Settings: isOwner via FarmService/AuthService |
 | RuraCash | CASH-05 | DONE | Migração de services para GenericSyncService |
 | RuraCash | CASH-06 | DONE | Sync adapter registration |
+| RuraCash | CASH-07 | DONE | Architecture alignment: gen-l10n, syncEnabled=false, dead code fix, code quality |
 | RuraCattle | - | TODO | Aguardando implementação |
 | RuraFuel | - | TODO | Aguardando implementação |
 

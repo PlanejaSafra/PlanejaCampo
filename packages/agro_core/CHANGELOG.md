@@ -2,6 +2,120 @@
 
 ---
 
+## Phase CORE-90: MultiFarm — Farm Switcher & Multi-Membership [LOCKED]
+
+### Status: [LOCKED]
+**Priority**: 🟡 ARCHITECTURAL
+**Objective**: Permitir que um usuário acesse múltiplas fazendas (própria + vinculadas como gerente/sangrador). Implementar farm switcher na UI, modelo de membership, convite/aceite de membros, e filtragem de dados por fazenda ativa.
+**Prerequisite**: CORE-88 (Data Tier Architecture), todos os apps com Firebase/Auth configurado
+
+### Why LOCKED
+
+- Requer todos os apps com Firebase + Auth integrados (RuraCash ainda não tem — CASH-08)
+- Requer backend Firestore para troca de convites (farm invitations)
+- Requer definição de business rules para licenças multi-user
+- Requer UX design do farm switcher (dropdown? drawer section? tela dedicada?)
+
+### Architecture Overview
+
+```
+Cenário: User B (sangrador) é convidado para Farm A (owner: User C)
+
+User B possui:
+├─ Farm B (própria, isOwner=true, isDefault=true)
+└─ Farm A (vinculada, isOwner=false, role=worker)
+
+Farm Switcher:
+├─ [●] Farm B — "Minha Fazenda" (owner)
+└─ [ ] Farm A — "Seringal Santa Fé" (sangrador)
+
+Ao trocar para Farm A:
+├─ FarmService.setActiveFarm("farm-A-id")
+├─ Dados filtrados por farmId = "farm-A-id"
+├─ isOwner = false → backup/LGPD ocultos
+├─ isShared = true → GenericSyncService sincroniza
+└─ UI mostra dados de Farm A apenas
+```
+
+### Implementation Summary (Planned)
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| CORE-90.1 | **FarmMember Model**: Criar modelo `FarmMember` com `userId`, `farmId`, `role` (owner/manager/worker), `invitedBy`, `joinedAt`, `status` (pending/accepted/rejected). HiveType + Firestore | ⏳ TODO |
+| CORE-90.2 | **FarmRole Enum**: Criar enum `FarmRole` (owner, manager, worker) com permissões associadas. HiveType | ⏳ TODO |
+| CORE-90.3 | **Farm.members field**: Adicionar `List<FarmMember>? members` ao modelo Farm (HiveField 7, reservado) | ⏳ TODO |
+| CORE-90.4 | **FarmInvitation Model**: Criar modelo para convites pendentes. Armazenado no Firestore (`farm_invitations/{inviteId}`) para troca entre usuários | ⏳ TODO |
+| CORE-90.5 | **FarmService.getAccessibleFarms()**: Retornar todas as farms acessíveis (próprias + vinculadas). Composição de farms locais (Hive) + farms remotas (Firestore, se online) | ⏳ TODO |
+| CORE-90.6 | **FarmService.setActiveFarm(farmId)**: Trocar a farm ativa. Atualiza `isDefault` em todas as farms. Notifica listeners para UI refresh. Recarrega dados filtrados | ⏳ TODO |
+| CORE-90.7 | **FarmService.inviteMember()**: Criar convite no Firestore. Gera link/código que o convidado usa para aceitar | ⏳ TODO |
+| CORE-90.8 | **FarmService.acceptInvitation()**: Aceitar convite. Cria FarmMember local + registra no Firestore da farm | ⏳ TODO |
+| CORE-90.9 | **FarmService.removeMember()**: Owner remove membro. Revoga acesso, limpa dados locais do membro | ⏳ TODO |
+| CORE-90.10 | **FarmService.leaveFarm()**: Membro sai voluntariamente. Dados criados por ele permanecem na farm (pertencem ao owner) | ⏳ TODO |
+| CORE-90.11 | **Farm Switcher Widget**: Componente reutilizável (dropdown ou bottom sheet) para alternar entre fazendas. Mostra nome, role, ícone de owner/worker | ⏳ TODO |
+| CORE-90.12 | **AgroDrawer integration**: Adicionar farm switcher no drawer (acima dos itens de menu). Cada app herda automaticamente | ⏳ TODO |
+| CORE-90.13 | **Data Filtering**: Todos os services que usam GenericSyncService devem filtrar por `farmId` da farm ativa. `getAll()` retorna apenas dados da farm ativa | ⏳ TODO |
+| CORE-90.14 | **Sync on Farm Switch**: Ao trocar para farm compartilhada (isShared=true), trigger `syncAllWithServer()` para baixar dados mais recentes | ⏳ TODO |
+| CORE-90.15 | **License Activation**: Quando licença multi-user é comprada, setar `farm.isShared = true` e habilitar Tier 3 sync. Endpoint ou in-app purchase flow | ⏳ TODO |
+
+### Firestore Collections (New)
+
+| Collection | Document | Description |
+|------------|----------|-------------|
+| `farm_members/{farmId}_{userId}` | FarmMember data | Registro de membership com role |
+| `farm_invitations/{inviteId}` | Invitation data | Convite pendente com code, expiration |
+
+### Permission Matrix
+
+| Ação | Owner | Manager | Worker |
+|------|-------|---------|--------|
+| Ver dados da farm | ✅ | ✅ | ✅ |
+| Criar registros | ✅ | ✅ | ✅ |
+| Editar registros (próprios) | ✅ | ✅ | ✅ |
+| Editar registros (de outros) | ✅ | ✅ | ❌ |
+| Deletar registros | ✅ | ✅ | ❌ |
+| Backup da farm | ✅ | ❌ | ❌ |
+| Restore da farm | ✅ | ❌ | ❌ |
+| Export LGPD (farm) | ✅ | ❌ | ❌ |
+| Deletar dados (LGPD) | ✅ | ❌ | ❌ |
+| Convidar membros | ✅ | ✅ | ❌ |
+| Remover membros | ✅ | ❌ | ❌ |
+| Alterar roles | ✅ | ❌ | ❌ |
+| Ativar/desativar sharing | ✅ | ❌ | ❌ |
+| Trocar de farm (switcher) | ✅ | ✅ | ✅ |
+
+### Files to Create/Modify
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/models/farm_member.dart` | CREATE | Modelo FarmMember + HiveAdapter |
+| `lib/models/farm_role.dart` | CREATE | Enum FarmRole (owner, manager, worker) |
+| `lib/models/farm_invitation.dart` | CREATE | Modelo FarmInvitation para Firestore |
+| `lib/models/farm.dart` | MODIFY | Adicionar `List<FarmMember>? members` (HiveField 7) |
+| `lib/services/farm_service.dart` | MODIFY | getAccessibleFarms, setActiveFarm, invite/accept/remove/leave |
+| `lib/widgets/farm_switcher.dart` | CREATE | Widget reutilizável de seleção de farm |
+| `lib/widgets/agro_drawer.dart` | MODIFY | Integrar farm switcher no drawer |
+| `lib/services/sync/generic_sync_service.dart` | MODIFY | Filtrar getAll() por farmId da farm ativa |
+
+### UX Flow (Planned)
+
+1. **Owner cria farm** → Farm criada com `isShared = false` (offline-only)
+2. **Owner compra licença** → `farm.isShared = true`, Tier 3 sync ativado
+3. **Owner convida sangrador** → Gera convite (código ou link)
+4. **Sangrador aceita** → FarmMember criado, farm aparece no switcher do sangrador
+5. **Sangrador troca para farm do owner** → Dados sincronizados, UI filtrada
+6. **Sangrador cria registro** → `createdBy = sangrador.uid`, `farmId = farm-owner`
+7. **Owner vê registro** → Vê quem criou (auditoria via createdBy)
+8. **Sangrador sai** → Perde acesso, dados permanecem na farm
+
+### Cross-Reference
+- CORE-75: Farm-Centric Model (base)
+- CORE-77: Ownership rules, LGPD, createdBy audit trail
+- CORE-86/87: isOwner-based visibility (já implementado)
+- CORE-88: Data Tier Architecture, farm.isShared, Tier 3 gate
+- Todos os apps: Precisam de CASH-08 / equivalente antes de CORE-90
+
+---
+
 ## Phase CORE-88: Data Tier Architecture - Farm.isShared + GenericSyncService Tier 3 Gate
 
 ### Status: [DONE]
