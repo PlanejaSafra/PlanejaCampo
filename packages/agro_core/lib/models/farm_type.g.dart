@@ -8,7 +8,7 @@ part of 'farm_type.dart';
 
 class FarmTypeAdapter extends TypeAdapter<FarmType> {
   @override
-  final int typeId = 21;
+  final int typeId = 22;
 
   @override
   FarmType read(BinaryReader reader) {

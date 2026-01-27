@@ -1887,4 +1887,10 @@ class AgroLocalizationsPt extends AgroLocalizations {
 
   @override
   String get dateDayMonthPattern => 'd \'de\' MMMM';
+
+  @override
+  String get farmTypeAgro => 'Rural';
+
+  @override
+  String get farmTypePersonal => 'Pessoal';
 }

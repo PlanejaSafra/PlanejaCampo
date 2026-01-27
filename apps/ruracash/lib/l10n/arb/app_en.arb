@@ -112,5 +112,13 @@
   "cancelarButton": "Cancel",
   "currencySymbol": "R$",
 
-  "aboutDescription": "Farm expense management and financial analysis."
+  "aboutDescription": "Farm expense management and financial analysis.",
+
+  "contextSwitcherTooltip": "Switch Context",
+  "contextSwitchError": "Error switching context: {error}",
+  "@contextSwitchError": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  }
 }

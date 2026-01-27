@@ -2,6 +2,38 @@
 
 ---
 
+## Phase CORE-93: FarmType typeId Collision Fix + L10n Additions
+
+### Status: [DONE]
+**Date Completed**: 2026-01-26
+**Priority**: 🔵 FIX
+**Objective**: Corrigir colisão de typeId entre FarmType e Safra (ambos usavam typeId 21), adicionar keys l10n para tipos de fazenda, e completar CORE-91 gaps (icon, localizedName, hardcoded name).
+
+### Implementation Summary
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| CORE-93.1 | Fix FarmType typeId 21→22 (colisão com Safra que também usa 21). Causava crash no RuraRubber | ✅ DONE |
+| CORE-93.2 | Adicionar `farmTypeAgro` ("Rural") e `farmTypePersonal` ("Pessoal"/"Personal") aos ARBs + gen-l10n | ✅ DONE |
+| CORE-93.3 | Adicionar `icon` getter e `localizedName(l10n)` ao FarmType enum (gap do CORE-91) | ✅ DONE |
+| CORE-93.4 | Fix `FarmService.createPersonalFarm()` hardcoded "Minhas Finanças" → l10n com fallback inglês | ✅ DONE |
+
+### Files Modified
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/models/farm_type.dart` | MODIFY | typeId 21→22, add icon getter, localizedName method |
+| `lib/models/farm_type.g.dart` | MODIFY | typeId 21→22 no adapter gerado |
+| `lib/services/farm_service.dart` | MODIFY | createPersonalFarm aceita AgroLocalizations, fallback 'My Finances' |
+| `lib/l10n/arb/app_pt.arb` | MODIFY | Add farmTypeAgro, farmTypePersonal |
+| `lib/l10n/arb/app_en.arb` | MODIFY | Add farmTypeAgro, farmTypePersonal |
+
+### Cross-Reference
+- CORE-91: FarmType original phase (sub-phases agora DONE)
+- CASH-09/10: RuraCash context switcher usa estas keys
+
+---
+
 ## Phase CORE-92: L10n Default Name Keys + Missing Export Strings
 
 ### Status: [DONE]
@@ -65,24 +97,24 @@ enum FarmType { agro, personal }
 | RuraCattle | MINOR | Filtrar farms por `FarmType.agro` |
 | RuraFuel | MINOR | Filtrar farms por `FarmType.agro` |
 
-### Implementation Summary (Planned)
+### Implementation Summary
 
 | Sub-Phase | Description | Status |
 |-----------|-------------|--------|
-| CORE-91.1 | **FarmType Enum**: Criar `enum FarmType { agro, personal }` com HiveType typeId 21, displayName, icon | ⏳ TODO |
-| CORE-91.2 | **Farm.type field**: Adicionar `@HiveField(10) FarmType type` ao modelo Farm (default `FarmType.agro`) | ⏳ TODO |
-| CORE-91.3 | **Farm.g.dart regeneration**: Rodar `build_runner` no agro_core para regenerar FarmAdapter com novo campo | ⏳ TODO |
-| CORE-91.4 | **FarmTypeAdapter registration**: Registrar `FarmTypeAdapter()` no Hive de cada app (main.dart) | ⏳ TODO |
-| CORE-91.5 | **Farm.create update**: Adicionar parâmetro `type` na factory `Farm.create()` (default: `FarmType.agro`) | ⏳ TODO |
-| CORE-91.6 | **FarmService filtering**: Adicionar `getFarmsByType(FarmType type)` para filtrar farms por tipo | ⏳ TODO |
-| CORE-91.7 | **Migration**: Farms existentes sem campo `type` recebem `FarmType.agro` via null fallback no adapter | ⏳ TODO |
-| CORE-91.8 | **Export barrel**: Exportar `farm_type.dart` no `agro_core.dart` | ⏳ TODO |
+| CORE-91.1 | **FarmType Enum**: `enum FarmType { agro, personal }` com HiveType typeId 22 (corrigido de 21, ver CORE-93), icon, localizedName | ✅ DONE |
+| CORE-91.2 | **Farm.type field**: `@HiveField(10) FarmType type` no modelo Farm (default `FarmType.agro`) | ✅ DONE |
+| CORE-91.3 | **Farm.g.dart regeneration**: build_runner executado, FarmAdapter regenerado com campo type | ✅ DONE |
+| CORE-91.4 | **FarmTypeAdapter registration**: Registrado `FarmTypeAdapter()` no Hive de cada app (main.dart) | ✅ DONE |
+| CORE-91.5 | **Farm.create update**: Parâmetro `type` adicionado na factory `Farm.create()` (default: `FarmType.agro`) | ✅ DONE |
+| CORE-91.6 | **FarmService filtering**: `getFarmsByType(FarmType type)` e `createPersonalFarm()` implementados | ✅ DONE |
+| CORE-91.7 | **Migration**: Farms existentes sem campo type recebem `FarmType.agro` via null fallback no adapter | ✅ DONE |
+| CORE-91.8 | **Export barrel**: `farm_type.dart` exportado no `agro_core.dart` | ✅ DONE |
 
 ### Files to Create/Modify
 
 | File | Action | Description |
 |------|--------|-------------|
-| `lib/models/farm_type.dart` | CREATE | Enum FarmType com HiveType typeId 21 |
+| `lib/models/farm_type.dart` | CREATE | Enum FarmType com HiveType typeId 22 |
 | `lib/models/farm.dart` | MODIFY | Adicionar @HiveField(10) FarmType type |
 | `lib/models/farm.g.dart` | REGENERATE | build_runner com novo campo |
 | `lib/services/farm_service.dart` | MODIFY | Adicionar getFarmsByType(), createPersonalFarm() |

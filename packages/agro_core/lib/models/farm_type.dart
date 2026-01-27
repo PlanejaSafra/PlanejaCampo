@@ -6,7 +6,7 @@ part 'farm_type.g.dart';
 /// Farm type: agro (rural/business) or personal (household finance).
 ///
 /// Used by CASH-09 to separate farm expenses from personal expenses.
-@HiveType(typeId: 21)
+@HiveType(typeId: 22)
 enum FarmType {
   @HiveField(0)
   agro,

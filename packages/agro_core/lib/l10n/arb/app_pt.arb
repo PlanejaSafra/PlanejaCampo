@@ -933,5 +933,8 @@
     }
   },
   "refreshTooltip": "Atualizar",
-  "dateDayMonthPattern": "d 'de' MMMM"
+  "dateDayMonthPattern": "d 'de' MMMM",
+
+  "farmTypeAgro": "Rural",
+  "farmTypePersonal": "Pessoal"
 }

@@ -112,5 +112,13 @@
   "cancelarButton": "Cancelar",
   "currencySymbol": "R$",
 
-  "aboutDescription": "Controle de despesas e análise financeira da sua fazenda."
+  "aboutDescription": "Controle de despesas e análise financeira da sua fazenda.",
+
+  "contextSwitcherTooltip": "Alternar Contexto",
+  "contextSwitchError": "Erro ao trocar contexto: {error}",
+  "@contextSwitchError": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  }
 }

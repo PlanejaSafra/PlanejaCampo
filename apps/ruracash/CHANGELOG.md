@@ -5,6 +5,40 @@
 
 ---
 
+## Phase CASH-10: Gap Fixes — L10n, isOwner, syncEnabled, typeId
+
+### Status: [DONE]
+**Date Completed**: 2026-01-26
+**Priority**: 🔵 FIX
+**Objective**: Corrigir gaps encontrados nas fases CASH-08 e CASH-09: strings hardcoded na home_screen, isOwner hardcoded, syncEnabled=true com Firebase placeholder, e keys l10n faltantes.
+
+### Implementation Summary
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| CASH-10.1 | Fix 6 strings hardcoded em home_screen.dart (contexto switcher, farm names, error messages) → usar l10n | ✅ DONE |
+| CASH-10.2 | Adicionar `contextSwitcherTooltip` e `contextSwitchError` aos ARBs pt/en + gen-l10n | ✅ DONE |
+| CASH-10.3 | Fix ConfiguracoesScreen: isOwner hardcoded `true` → computar via FarmService/AuthService | ✅ DONE |
+| CASH-10.4 | Fix syncEnabled=true → false em LancamentoService e CentroCustoService (Firebase tem PLACEHOLDER credentials, crashava) | ✅ DONE |
+
+### Files Modified
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/screens/home_screen.dart` | MODIFY | 6 hardcoded strings → l10n (contextSwitcherTooltip, farmTypeAgro/Personal, farmDefaultName, contextSwitchError) |
+| `lib/screens/configuracoes_screen.dart` | MODIFY | isOwner computado via FarmService.getDefaultFarm().isOwner(uid) |
+| `lib/services/lancamento_service.dart` | MODIFY | syncEnabled: true → false (CASH-08 placeholder Firebase) |
+| `lib/services/centro_custo_service.dart` | MODIFY | syncEnabled: true → false (CASH-08 placeholder Firebase) |
+| `lib/l10n/arb/app_pt.arb` | MODIFY | Add contextSwitcherTooltip, contextSwitchError |
+| `lib/l10n/arb/app_en.arb` | MODIFY | Add contextSwitcherTooltip, contextSwitchError |
+
+### Cross-Reference
+- CORE-93: farmTypeAgro/farmTypePersonal l10n keys + typeId fix
+- CASH-08: Firebase integration (syncEnabled guard)
+- CASH-09: Context switcher (l10n keys)
+
+---
+
 ## Phase CASH-09: Personal Finance Mode [DONE]
 
 ### Status: [DONE]

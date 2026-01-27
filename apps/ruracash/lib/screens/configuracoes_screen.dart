@@ -4,10 +4,17 @@ import 'package:agro_core/agro_core.dart';
 class ConfiguracoesScreen extends StatelessWidget {
   const ConfiguracoesScreen({super.key});
 
+  bool _computeIsOwner() {
+    final farm = FarmService.instance.getDefaultFarm();
+    if (farm == null) return true;
+    final uid = AuthService.currentUser?.uid;
+    if (uid == null) return true;
+    return farm.isOwner(uid);
+  }
+
   @override
   Widget build(BuildContext context) {
-    // Determine if user is owner (usually true for single-user offline app)
-    final isOwner = true;
+    final isOwner = _computeIsOwner();
 
     return AgroSettingsScreen(
       isOwner: isOwner,
@@ -18,7 +25,6 @@ class ConfiguracoesScreen extends StatelessWidget {
               builder: (_) => const AgroAboutScreen(
                     appName: 'RuraCash',
                     version: '1.0.0',
-                    // appLogoLightPath: ...
                   )),
         );
       },

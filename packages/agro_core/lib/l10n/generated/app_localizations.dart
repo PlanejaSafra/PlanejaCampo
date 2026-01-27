@@ -3634,6 +3634,18 @@ abstract class AgroLocalizations {
   /// In en, this message translates to:
   /// **'MMMM d'**
   String get dateDayMonthPattern;
+
+  /// No description provided for @farmTypeAgro.
+  ///
+  /// In en, this message translates to:
+  /// **'Rural'**
+  String get farmTypeAgro;
+
+  /// No description provided for @farmTypePersonal.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal'**
+  String get farmTypePersonal;
 }
 
 class _AgroLocalizationsDelegate extends LocalizationsDelegate<AgroLocalizations> {
