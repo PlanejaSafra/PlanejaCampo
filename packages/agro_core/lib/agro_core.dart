@@ -55,6 +55,7 @@ export 'models/talhao.dart';
 // Models (Farm - Multi-User Preparation)
 export 'models/farm.dart';
 export 'models/farm_owned_mixin.dart';
+export 'models/farm_type.dart';
 
 // Models (Dependency-Aware Backup - CORE-77)
 export 'models/backup_meta.dart';

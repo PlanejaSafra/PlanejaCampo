@@ -5,9 +5,10 @@
 
 ---
 
-## Phase CASH-09: Personal Finance Mode [LOCKED]
+## Phase CASH-09: Personal Finance Mode [DONE]
 
-### Status: [LOCKED]
+### Status: [DONE]
+**Date Completed**: 2026-01-26
 **Priority**: 🟢 ENHANCEMENT
 **Objective**: Permitir alternância entre contexto Rural e Pessoal para sanear o DRE da fazenda. Usar o modelo Farm-Centric para criar uma "Fazenda Pessoal" com categorias domésticas, isolando gastos pessoais (supermercado, farmácia, lazer) dos custos operacionais da fazenda (adubo, mão de obra, combustível).
 **Prerequisite**: CORE-91 (FarmType enum no Farm model)
@@ -163,20 +164,15 @@ DRE pessoal mostra apenas gastos domésticos.
 
 ---
 
-## Phase CASH-08: Firebase & Auth Integration [LOCKED]
+## Phase CASH-08: Firebase & Auth Integration [IN PROGRESS]
 
-### Status: [LOCKED]
+### Status: [IN PROGRESS]
+**Start Date**: 2026-01-26
 **Priority**: 🟡 ARCHITECTURAL
 **Objective**: Integrar Firebase, autenticação Google, CloudBackupService, DataDeletionService, e fluxo de login completo ao RuraCash. Alinhar com RuraRubber/RuraRain que já possuem esses recursos.
 **Prerequisite**: CASH-07 (corrigir erros e alinhar base)
 
-### Why LOCKED
 
-RuraCash atualmente opera 100% offline sem Firebase. Para ativar:
-- Criar projeto Firebase para RuraCash (ou usar projeto compartilhado)
-- Gerar `google-services.json` (Android) e `GoogleService-Info.plist` (iOS)
-- Gerar `firebase_options.dart` via FlutterFire CLI
-- Configurar flavors se necessário
 
 ### Implementation Summary (Planned)
 

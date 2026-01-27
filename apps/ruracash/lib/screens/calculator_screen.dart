@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:agro_core/agro_core.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../models/cash_categoria.dart';
 import '../services/lancamento_service.dart';
@@ -23,11 +24,22 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
   @override
   void initState() {
     super.initState();
-    // Smart default: pre-select most used category
+    final farm = FarmService.instance.getDefaultFarm();
+    final isPersonal = farm?.type == FarmType.personal;
+
+    // Smart default: pre-select most used category from CURRENT context
     final mostUsed = LancamentoService.instance.categoriaMaisUsada;
-    _selectedCategory = mostUsed ?? CashCategoria.outros;
-    _selectedCentroCustoId =
-        CentroCustoService.instance.defaultCentroCusto?.id;
+
+    if (mostUsed != null &&
+        ((isPersonal && mostUsed.isPersonal) ||
+            (!isPersonal && mostUsed.isAgro))) {
+      _selectedCategory = mostUsed;
+    } else {
+      _selectedCategory =
+          isPersonal ? CashCategoria.alimentacao : CashCategoria.outros;
+    }
+
+    _selectedCentroCustoId = CentroCustoService.instance.defaultCentroCusto?.id;
   }
 
   void _onDigit(String digit) {
@@ -161,13 +173,19 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
             child: Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: CashCategoria.values.map((cat) {
+              children: CashCategoria.values.where((c) {
+                final farm = FarmService.instance.getDefaultFarm();
+                final isPersonal = farm?.type == FarmType.personal;
+                return isPersonal ? c.isPersonal : c.isAgro;
+              }).map((cat) {
                 final isSelected = _selectedCategory == cat;
                 return ChoiceChip(
                   label: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(cat.icon, size: 16, color: isSelected ? Colors.white : cat.color),
+                      Icon(cat.icon,
+                          size: 16,
+                          color: isSelected ? Colors.white : cat.color),
                       const SizedBox(width: 4),
                       Text(cat.localizedName(l10n)),
                     ],

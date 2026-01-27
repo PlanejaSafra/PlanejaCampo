@@ -64,6 +64,7 @@ Future<void> main() async {
 
   // CORE-77: Register farm and dependency adapters
   Hive.registerAdapter(FarmAdapter());
+  Hive.registerAdapter(FarmTypeAdapter());
   Hive.registerAdapter(DependencyManifestAdapter());
 
   // Sync infrastructure adapters (required for OfflineQueueManager)

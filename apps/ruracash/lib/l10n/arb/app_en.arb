@@ -27,6 +27,13 @@
   "catManutencao": "Maintenance",
   "catEnergia": "Energy/Water",
   "catOutros": "Other",
+  "catAlimentacao": "Food",
+  "catTransporte": "Transport",
+  "catSaude": "Health",
+  "catEducacao": "Education",
+  "catLazer": "Leisure",
+  "catMoradia": "Housing",
+  "catOutrosPessoal": "Other (Personal)",
 
   "despesaDeleteTitle": "Delete Expense?",
   "despesaDeleteMessage": "Do you really want to delete this expense?",

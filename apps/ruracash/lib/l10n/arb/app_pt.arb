@@ -27,6 +27,13 @@
   "catManutencao": "Manutenção",
   "catEnergia": "Energia/Água",
   "catOutros": "Outros",
+  "catAlimentacao": "Alimentação",
+  "catTransporte": "Transporte",
+  "catSaude": "Saúde",
+  "catEducacao": "Educação",
+  "catLazer": "Lazer",
+  "catMoradia": "Moradia",
+  "catOutrosPessoal": "Outros (Pessoal)",
 
   "despesaDeleteTitle": "Excluir Despesa?",
   "despesaDeleteMessage": "Deseja realmente excluir esta despesa?",

@@ -69,6 +69,7 @@ Future<void> main() async {
   Hive.registerAdapter(SafraAdapter());
   // CORE-77 / RUBBER-24: Farm and Dependency adapters
   Hive.registerAdapter(FarmAdapter());
+  Hive.registerAdapter(FarmTypeAdapter());
   Hive.registerAdapter(DependencyManifestAdapter());
 
   // Sync infrastructure adapters (required for OfflineQueueManager)
@@ -276,26 +277,24 @@ class RuraRubberApp extends StatelessWidget {
           '/contas-pagar': (context) => const ContasPagarScreen(),
           '/break-even': (context) => const BreakEvenScreen(),
           '/settings': (context) {
-                final farm = FarmService.instance.getDefaultFarm();
-                final uid = AuthService.currentUser?.uid ?? '';
-                final isOwner = farm?.isOwner(uid) ?? true;
-                return AgroSettingsScreen(
-                  isOwner: isOwner,
-                  onExportLocalBackup: isOwner
-                      ? () => _handleExportLocalBackup(context)
-                      : null,
-                  onImportLocalBackup: isOwner
-                      ? () => _handleImportLocalBackup(context)
-                      : null,
-                  onResetProfile: () async {
-                    await UserProfileService.instance.clearProfile();
-                    if (context.mounted) {
-                      Navigator.of(context)
-                          .pushNamedAndRemoveUntil('/', (route) => false);
-                    }
-                  },
-                );
+            final farm = FarmService.instance.getDefaultFarm();
+            final uid = AuthService.currentUser?.uid ?? '';
+            final isOwner = farm?.isOwner(uid) ?? true;
+            return AgroSettingsScreen(
+              isOwner: isOwner,
+              onExportLocalBackup:
+                  isOwner ? () => _handleExportLocalBackup(context) : null,
+              onImportLocalBackup:
+                  isOwner ? () => _handleImportLocalBackup(context) : null,
+              onResetProfile: () async {
+                await UserProfileService.instance.clearProfile();
+                if (context.mounted) {
+                  Navigator.of(context)
+                      .pushNamedAndRemoveUntil('/', (route) => false);
+                }
               },
+            );
+          },
           '/profile-selection': (context) => ProfileSelectionScreen(
                 onProfileSelected: () {
                   Navigator.pushReplacementNamed(context, '/home');

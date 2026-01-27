@@ -1,6 +1,8 @@
 import 'package:hive/hive.dart';
 import 'package:uuid/uuid.dart';
 
+import 'farm_type.dart';
+
 part 'farm.g.dart';
 
 /// Model representing a farm in the RuraCamp ecosystem.
@@ -75,6 +77,15 @@ class Farm extends HiveObject {
   @HiveField(9)
   bool isShared;
 
+  /// Farm type: 'agro' (rural/business) or 'personal' (household finance).
+  ///
+  /// - agro: Standard farm with crop/cattle management.
+  /// - personal: "Personal Finances" mode (CASH-09).
+  ///
+  /// Default is `FarmType.agro` for backward compatibility.
+  @HiveField(10)
+  FarmType type;
+
   // Future fields (commented for reference):
   // @HiveField(7)
   // List<FarmMember>? members;
@@ -89,6 +100,7 @@ class Farm extends HiveObject {
     this.description,
     this.subscriptionTier,
     this.isShared = false,
+    this.type = FarmType.agro,
   });
 
   /// Factory for creating a new farm with auto-generated UUID
@@ -108,6 +120,7 @@ class Farm extends HiveObject {
     String? description,
     String? subscriptionTier,
     bool isShared = false,
+    FarmType type = FarmType.agro,
   }) {
     final now = DateTime.now();
     final uuid = const Uuid().v4();
@@ -121,6 +134,7 @@ class Farm extends HiveObject {
       description: description,
       subscriptionTier: subscriptionTier,
       isShared: isShared,
+      type: type,
     );
   }
 
@@ -178,6 +192,7 @@ class Farm extends HiveObject {
       'description': description,
       if (subscriptionTier != null) 'subscriptionTier': subscriptionTier,
       'isShared': isShared,
+      'type': type.index,
     };
   }
 
@@ -193,6 +208,9 @@ class Farm extends HiveObject {
       description: json['description'] as String?,
       subscriptionTier: json['subscriptionTier'] as String?,
       isShared: json['isShared'] as bool? ?? false,
+      type: json['type'] != null
+          ? FarmType.values[json['type'] as int]
+          : FarmType.agro,
     );
   }
 

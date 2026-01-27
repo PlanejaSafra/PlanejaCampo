@@ -3,6 +3,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 import '../l10n/generated/app_localizations.dart';
 import '../models/farm.dart';
+import '../models/farm_type.dart';
 
 /// Service for managing farms in the RuraCamp ecosystem.
 ///
@@ -67,6 +68,15 @@ class FarmService {
       ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
   }
 
+  /// Get farms by type for the current user
+  List<Farm> getFarmsByType(FarmType type) {
+    if (_currentUserId == null) return [];
+    return _box.values
+        .where((f) => f.ownerId == _currentUserId && f.type == type)
+        .toList()
+      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+  }
+
   /// Get the default farm for the current user
   /// Returns null if no default farm exists
   Farm? getDefaultFarm() {
@@ -101,13 +111,22 @@ class FarmService {
 
   /// Check if the current user can create a new farm.
   ///
-  /// Free tier: limited to [freeTierMaxFarms] (default: 1).
-  /// Paid tiers ('basic', 'premium'): unlimited.
+  /// FREE Tier:
+  /// - agro: limited to [freeTierMaxFarms] (default: 1).
+  /// - personal: limited to 1 (fixed).
   ///
-  /// Returns true if the user can create another farm.
-  bool canCreateFarm() {
+  /// Paid tiers ('basic', 'premium'): unlimited agro farms.
+  ///
+  /// Returns true if the user can create another farm of the specified type.
+  bool canCreateFarm({FarmType type = FarmType.agro}) {
     if (_currentUserId == null) return false;
-    final currentCount = getFarmCount();
+
+    if (type == FarmType.personal) {
+      final personalCount = getFarmsByType(FarmType.personal).length;
+      return personalCount < 1;
+    }
+
+    final currentCount = getFarmsByType(FarmType.agro).length;
     final tier = getSubscriptionTier();
     if (tier == 'free') return currentCount < freeTierMaxFarms;
     return true; // paid tiers = unlimited
@@ -131,6 +150,7 @@ class FarmService {
     required String name,
     bool isDefault = false,
     String? description,
+    FarmType type = FarmType.agro,
   }) async {
     if (_currentUserId == null) {
       throw Exception('User not authenticated. Cannot create farm.');
@@ -140,8 +160,11 @@ class FarmService {
       throw Exception('Farm name cannot be empty.');
     }
 
-    // Check farm limit (skip for first farm / ensureDefaultFarm)
-    if (getFarmCount() > 0 && !canCreateFarm()) {
+    // Check farm limit
+    if (!canCreateFarm(type: type)) {
+      if (type == FarmType.personal) {
+        throw FarmLimitException('Personal farm limit reached (Max 1).');
+      }
       throw FarmLimitException(
         'Farm limit reached. Free tier allows $freeTierMaxFarms farm(s).',
       );
@@ -152,6 +175,7 @@ class FarmService {
       ownerId: _currentUserId!,
       isDefault: isDefault,
       description: description,
+      type: type,
     );
 
     // If this is set as default, unset other defaults
@@ -181,6 +205,7 @@ class FarmService {
       description: farm.description,
       subscriptionTier: farm.subscriptionTier,
       isShared: farm.isShared,
+      type: farm.type,
     );
 
     // If this is set as default, unset other defaults
@@ -303,6 +328,25 @@ class FarmService {
     return _box.values.where((f) => f.ownerId == _currentUserId).length;
   }
 
+  /// Create or get the personal farm for the current user.
+  ///
+  /// Pass [l10n] to use localized default name. If both [name] and [l10n]
+  /// are null, falls back to English default.
+  Future<Farm> createPersonalFarm({
+    String? name,
+    AgroLocalizations? l10n,
+  }) async {
+    final existing = getFarmsByType(FarmType.personal);
+    if (existing.isNotEmpty) return existing.first;
+
+    final farmName = name ?? l10n?.farmDefaultNamePersonal ?? 'My Finances';
+    return await createFarm(
+      name: farmName,
+      type: FarmType.personal,
+      isDefault: false, // Don't switch context automatically
+    );
+  }
+
   /// Check if a farm name already exists (case-insensitive)
   bool farmNameExists(String name, {String? excludeId}) {
     if (_currentUserId == null) return false;
@@ -337,6 +381,7 @@ class FarmService {
         description: farm.description,
         subscriptionTier: farm.subscriptionTier,
         isShared: farm.isShared,
+        type: farm.type,
       );
 
       await _box.put(farm.id, updatedFarm);

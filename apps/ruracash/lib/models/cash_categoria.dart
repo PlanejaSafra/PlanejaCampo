@@ -25,7 +25,29 @@ enum CashCategoria {
   energia,
 
   @HiveField(6)
-  outros;
+  outros,
+
+  // Personal Categories (CASH-09)
+  @HiveField(7)
+  alimentacao,
+
+  @HiveField(8)
+  transporte,
+
+  @HiveField(9)
+  saude,
+
+  @HiveField(10)
+  educacao,
+
+  @HiveField(11)
+  lazer,
+
+  @HiveField(12)
+  moradia,
+
+  @HiveField(13)
+  outrosPessoal;
 
   /// Icon for the category.
   IconData get icon {
@@ -44,6 +66,21 @@ enum CashCategoria {
         return Icons.bolt;
       case CashCategoria.outros:
         return Icons.category;
+      // Personal
+      case CashCategoria.alimentacao:
+        return Icons.restaurant;
+      case CashCategoria.transporte:
+        return Icons.directions_car;
+      case CashCategoria.saude:
+        return Icons.local_hospital;
+      case CashCategoria.educacao:
+        return Icons.school;
+      case CashCategoria.lazer:
+        return Icons.beach_access;
+      case CashCategoria.moradia:
+        return Icons.home;
+      case CashCategoria.outrosPessoal:
+        return Icons.more_horiz;
     }
   }
 
@@ -64,6 +101,21 @@ enum CashCategoria {
         return Colors.amber;
       case CashCategoria.outros:
         return Colors.brown;
+      // Personal
+      case CashCategoria.alimentacao:
+        return Colors.red;
+      case CashCategoria.transporte:
+        return Colors.blueGrey;
+      case CashCategoria.saude:
+        return Colors.teal;
+      case CashCategoria.educacao:
+        return Colors.indigo;
+      case CashCategoria.lazer:
+        return Colors.orangeAccent;
+      case CashCategoria.moradia:
+        return Colors.brown;
+      case CashCategoria.outrosPessoal:
+        return Colors.grey;
     }
   }
 
@@ -84,6 +136,24 @@ enum CashCategoria {
         return l10n.catEnergia;
       case CashCategoria.outros:
         return l10n.catOutros;
+      // Personal
+      case CashCategoria.alimentacao:
+        return l10n.catAlimentacao;
+      case CashCategoria.transporte:
+        return l10n.catTransporte;
+      case CashCategoria.saude:
+        return l10n.catSaude;
+      case CashCategoria.educacao:
+        return l10n.catEducacao;
+      case CashCategoria.lazer:
+        return l10n.catLazer;
+      case CashCategoria.moradia:
+        return l10n.catMoradia;
+      case CashCategoria.outrosPessoal:
+        return l10n.catOutrosPessoal;
     }
   }
+
+  bool get isAgro => index <= 6;
+  bool get isPersonal => index >= 7;
 }

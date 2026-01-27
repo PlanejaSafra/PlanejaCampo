@@ -29,7 +29,8 @@
 
 ## Phase CORE-91: FarmType — Context Differentiation (Agro vs Pessoal) [LOCKED]
 
-### Status: [LOCKED]
+### Status: [DONE]
+**Date Completed**: 2026-01-26
 **Priority**: 🟡 ARCHITECTURAL
 **Objective**: Adicionar diferenciação de tipo ao modelo Farm, permitindo que um mesmo usuário mantenha contextos separados (fazenda rural vs finanças pessoais). Habilita o CASH-09 (Personal Finance Mode) e previne poluição do DRE da fazenda com gastos domésticos.
 **Prerequisite**: Nenhum — mudança retrocompatível. Recomenda-se implementar junto com CASH-09.

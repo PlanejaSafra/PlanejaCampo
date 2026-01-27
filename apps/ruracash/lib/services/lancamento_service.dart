@@ -19,7 +19,7 @@ class LancamentoService extends GenericSyncService<Lancamento> {
   String get sourceApp => 'ruracash';
 
   @override
-  bool get syncEnabled => false;
+  bool get syncEnabled => false; // CASH-08: disabled until real Firebase config
 
   @override
   Lancamento fromMap(Map<String, dynamic> map) => Lancamento.fromJson(map);
@@ -63,10 +63,19 @@ class LancamentoService extends GenericSyncService<Lancamento> {
   // ─────────────────────────────────────────────────────────────────────
 
   /// All entries sorted by date descending.
+  /// Filtered by the active farm (CORE-91/CASH-09).
   List<Lancamento> get lancamentos {
-    final list = getAll();
+    final farmId = FarmService.instance.defaultFarmId;
+    if (farmId == null) return [];
+
+    final list = getByFarmId(farmId);
     list.sort((a, b) => b.data.compareTo(a.data));
     return list;
+  }
+
+  /// Force UI update (e.g. after switching context)
+  void forceUpdate() {
+    notifyListeners();
   }
 
   /// Entries for the current month.

@@ -18,7 +18,7 @@ class CentroCustoService extends GenericSyncService<CentroCusto> {
   String get sourceApp => 'ruracash';
 
   @override
-  bool get syncEnabled => false;
+  bool get syncEnabled => false; // CASH-08: disabled until real Firebase config
 
   @override
   CentroCusto fromMap(Map<String, dynamic> map) => CentroCusto.fromJson(map);
@@ -33,7 +33,7 @@ class CentroCustoService extends GenericSyncService<CentroCusto> {
   Future<void> init() async {
     await super.init();
     await _migrateDataIfNeeded();
-    await _ensureDefaultCentroCusto();
+    await ensureDefaultCentroCusto();
   }
 
   /// Migra dados antigos (Objetos) para nova estrutura
@@ -58,9 +58,12 @@ class CentroCustoService extends GenericSyncService<CentroCusto> {
     }
   }
 
-  /// All cost centers sorted by name.
+  /// Helper to get active farm ID.
+  String get activeFarmId => FarmService.instance.defaultFarmId ?? '';
+
+  /// All cost centers sorted by name, filtered by active farm.
   List<CentroCusto> get centros {
-    final list = getAll();
+    final list = getAll().where((c) => c.farmId == activeFarmId).toList();
     list.sort((a, b) => a.nome.compareTo(b.nome));
     return list;
   }
@@ -107,13 +110,15 @@ class CentroCustoService extends GenericSyncService<CentroCusto> {
     await super.delete(id);
   }
 
-  /// Ensure at least one default center exists.
-  Future<void> _ensureDefaultCentroCusto() async {
-    if (getAll().isEmpty) {
+  /// Ensure at least one default center exists for the ACTIVE farm.
+  Future<void> ensureDefaultCentroCusto() async {
+    if (centros.isEmpty) {
       await createCentroCusto(
         nome: 'Geral',
         corValue: 0xFF607D8B,
       );
+      debugPrint(
+          '[CentroCustoService] Created default center for farm: $activeFarmId');
     }
   }
 
