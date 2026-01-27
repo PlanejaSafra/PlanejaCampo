@@ -149,7 +149,7 @@ class BackupService {
     }
 
     // Import entregas - save directly to Hive box
-    final entregaBox = await Hive.openBox<Entrega>(EntregaService.boxName);
+    final entregaBox = await Hive.openBox<Entrega>(EntregaService.instance.boxName);
     final existingEntregaIds = entregaBox.values.map((e) => e.id).toSet();
     int importedEntregas = 0;
 

@@ -270,6 +270,7 @@ if (kIsWeb || defaultTargetPlatform == TargetPlatform.windows ||
 | RuraRubber | RUBBER-25 | DONE | Migração de 5 services para GenericSyncService |
 | RuraRubber | RUBBER-26 | DONE | Sync adapters, App Check, Property Name Gate, Firebase init nativo |
 | RuraRubber | RUBBER-27 | DONE | Owner-Based Settings: isOwner via FarmService/AuthService |
+| RuraRubber | RUBBER-28 | DONE | Code quality: fix static_access_to_instance_member, unnecessary imports, missing @override |
 | RuraRain | RAIN-03 | DONE | FarmOwnedMixin em RegistroChuva, ChuvaBackupProvider, ChuvaDeletionProvider |
 | RuraRain | RAIN-04 | DONE | ChuvaService migrado para GenericSyncService |
 | RuraRain | RAIN-05 | DONE | Sync adapter registration |

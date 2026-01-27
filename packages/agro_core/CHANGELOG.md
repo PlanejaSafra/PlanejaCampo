@@ -2,6 +2,88 @@
 
 ---
 
+## Phase CORE-91: FarmType — Context Differentiation (Agro vs Pessoal) [LOCKED]
+
+### Status: [LOCKED]
+**Priority**: 🟡 ARCHITECTURAL
+**Objective**: Adicionar diferenciação de tipo ao modelo Farm, permitindo que um mesmo usuário mantenha contextos separados (fazenda rural vs finanças pessoais). Habilita o CASH-09 (Personal Finance Mode) e previne poluição do DRE da fazenda com gastos domésticos.
+**Prerequisite**: Nenhum — mudança retrocompatível. Recomenda-se implementar junto com CASH-09.
+
+### Why LOCKED
+
+- Requer decisão de design: enum simples (`agro`, `personal`) ou extensível (`agro`, `personal`, `pecuaria`, `granja`)?
+- Requer regeneração do `farm.g.dart` via `build_runner` em TODOS os apps
+- Requer testes de migração: farms existentes devem receber `type = FarmType.agro` como default
+- Requer decisão sobre filtros cross-app: cada app mostra apenas farms do seu contexto?
+
+### Architecture Overview
+
+```
+Modelo Farm — Campos atuais + novo campo `type`:
+
+@HiveField(10)
+FarmType type; // default = FarmType.agro
+
+enum FarmType { agro, personal }
+// HiveType com typeId 21 (próximo disponível após Farm=20)
+```
+
+### Impact Analysis
+
+| App | Impacto | Ação Necessária |
+|-----|---------|-----------------|
+| agro_core | MODIFY | Adicionar FarmType enum, campo type no Farm, regenerar adapter |
+| RuraRubber | MINOR | Filtrar farms por `FarmType.agro` no FarmService — farms pessoais não aparecem |
+| RuraRain | MINOR | Idem — filtrar farms por `FarmType.agro` |
+| RuraCash | FEATURE | Usar ambos tipos. Farm pessoal habilita categorias domésticas (CASH-09) |
+| RuraCattle | MINOR | Filtrar farms por `FarmType.agro` |
+| RuraFuel | MINOR | Filtrar farms por `FarmType.agro` |
+
+### Implementation Summary (Planned)
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| CORE-91.1 | **FarmType Enum**: Criar `enum FarmType { agro, personal }` com HiveType typeId 21, displayName, icon | ⏳ TODO |
+| CORE-91.2 | **Farm.type field**: Adicionar `@HiveField(10) FarmType type` ao modelo Farm (default `FarmType.agro`) | ⏳ TODO |
+| CORE-91.3 | **Farm.g.dart regeneration**: Rodar `build_runner` no agro_core para regenerar FarmAdapter com novo campo | ⏳ TODO |
+| CORE-91.4 | **FarmTypeAdapter registration**: Registrar `FarmTypeAdapter()` no Hive de cada app (main.dart) | ⏳ TODO |
+| CORE-91.5 | **Farm.create update**: Adicionar parâmetro `type` na factory `Farm.create()` (default: `FarmType.agro`) | ⏳ TODO |
+| CORE-91.6 | **FarmService filtering**: Adicionar `getFarmsByType(FarmType type)` para filtrar farms por tipo | ⏳ TODO |
+| CORE-91.7 | **Migration**: Farms existentes sem campo `type` recebem `FarmType.agro` via null fallback no adapter | ⏳ TODO |
+| CORE-91.8 | **Export barrel**: Exportar `farm_type.dart` no `agro_core.dart` | ⏳ TODO |
+
+### Files to Create/Modify
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/models/farm_type.dart` | CREATE | Enum FarmType com HiveType typeId 21 |
+| `lib/models/farm.dart` | MODIFY | Adicionar @HiveField(10) FarmType type |
+| `lib/models/farm.g.dart` | REGENERATE | build_runner com novo campo |
+| `lib/services/farm_service.dart` | MODIFY | Adicionar getFarmsByType(), createPersonalFarm() |
+| `lib/agro_core.dart` | MODIFY | Exportar farm_type.dart |
+
+### Licensing Rule
+
+A farm pessoal é **FREE** — não conta para o limite de farms do `subscriptionTier`:
+- `getFarmLimit(tier)` controla apenas farms `FarmType.agro` (free=1, basic=3, premium=ilimitado)
+- Farms `FarmType.personal` são limitadas a 1 por usuário, independente do tier
+- A farm pessoal é uma feature do app, não um recurso premium
+- Regra: `countFarms(FarmType.agro) <= farmLimit` + `countFarms(FarmType.personal) <= 1`
+
+### Backwards Compatibility
+
+- Farms existentes no Hive NÃO possuem campo `type` (HiveField 10)
+- O Hive reader retorna `null` para fields ausentes
+- O adapter deve usar fallback: `type: fields[10] as FarmType? ?? FarmType.agro`
+- Resultado: **zero migração manual necessária** — farms existentes automaticamente tornam-se `agro`
+
+### Cross-Reference
+- CORE-75: Farm-Centric Model (base)
+- CORE-90: MultiFarm (complementar — multi-user requer que FarmType exista)
+- CASH-09: Personal Finance Mode (consumidor principal desta funcionalidade)
+
+---
+
 ## Phase CORE-90: MultiFarm — Farm Switcher & Multi-Membership [LOCKED]
 
 ### Status: [LOCKED]

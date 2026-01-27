@@ -361,7 +361,7 @@ class BorrachaBackupProvider implements EnhancedBackupProvider {
 
     // Entregas
     if (data['entregas'] != null) {
-      final box = await Hive.openBox<Entrega>(EntregaService.boxName);
+      final box = await Hive.openBox<Entrega>(EntregaService.instance.boxName);
 
       for (final e in data['entregas'] as List) {
         final eMap = e as Map<String, dynamic>;

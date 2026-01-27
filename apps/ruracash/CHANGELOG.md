@@ -5,6 +5,136 @@
 
 ---
 
+## Phase CASH-09: Personal Finance Mode [LOCKED]
+
+### Status: [LOCKED]
+**Priority**: 🟢 ENHANCEMENT
+**Objective**: Permitir alternância entre contexto Rural e Pessoal para sanear o DRE da fazenda. Usar o modelo Farm-Centric para criar uma "Fazenda Pessoal" com categorias domésticas, isolando gastos pessoais (supermercado, farmácia, lazer) dos custos operacionais da fazenda (adubo, mão de obra, combustível).
+**Prerequisite**: CORE-91 (FarmType enum no Farm model)
+
+### Why LOCKED
+
+- Requer CORE-91 (FarmType) implementado primeiro
+- Requer decisão de UX: dropdown no AppBar? Bottom sheet? Chips?
+- Requer decisão sobre categorias pessoais: quantas? quais? configuráveis?
+- Requer strings l10n para todas as categorias novas (pt-BR + en)
+
+### Licensing Rule
+
+A farm pessoal é **FREE** — o usuário pode ter 2 farms sem assinatura/compra:
+- 1 farm `FarmType.agro` (criada no onboarding normal)
+- 1 farm `FarmType.personal` (criada automaticamente pelo CASH-09)
+
+Não é necessário licença, assinatura ou compra para habilitar o modo pessoal. O `subscriptionTier` do modelo Farm controla apenas farms **agro** adicionais (futuro multi-fazenda). A farm pessoal é uma feature do app, não um recurso premium.
+
+O `FarmService` deve permitir esta exceção:
+- `getFarmLimit(tier)` retorna o limite de farms **agro** (free=1, basic=3, premium=ilimitado)
+- Farms `FarmType.personal` **NÃO** contam para o limite
+- Regra: `countFarms(FarmType.agro) <= farmLimit` + `countFarms(FarmType.personal) <= 1`
+
+### Problem Statement
+
+A maioria dos produtores rurais mistura gastos da fazenda com gastos pessoais no mesmo controle financeiro. Isso resulta em:
+- **DRE poluído**: O relatório da fazenda inclui conta de luz de casa, feira, farmácia
+- **Falsa sensação de prejuízo**: A fazenda pode dar lucro, mas aparenta dar prejuízo porque os gastos pessoais estão somados
+- **Nenhuma visibilidade doméstica**: O produtor não sabe quanto gasta com a família por mês
+- **O app "perde utilidade" fora de safra**: Se só registra custos rurais, fica sem uso nos meses de entre-safra
+
+### Solution: "Farm as Context"
+
+Tratar a "Vida Pessoal" como se fosse uma Farm:
+- `Farm A`: "Seringal Santa Fé" (`type: FarmType.agro`) — categorias rurais
+- `Farm B`: "Minhas Finanças" (`type: FarmType.personal`) — categorias domésticas
+
+Ao trocar o contexto, o `farmId` muda. Todos os filtros, DRE, queries e backups funcionam automaticamente.
+
+### Architecture Overview
+
+```
+Usuário abre RuraCash:
+  ┌──────────────────────────────────────────┐
+  │ Header: [ 🚜 Seringal Sta Fé  ▼ ]       │  ← Context Switcher
+  │                                          │
+  │  Total do Mês: R$ 3.200,00              │
+  │  ├─ Mão de Obra: R$ 1.500               │
+  │  ├─ Combustível: R$ 800                  │
+  │  └─ Adubo: R$ 900                        │
+  └──────────────────────────────────────────┘
+
+Ao trocar para "Pessoal":
+  ┌──────────────────────────────────────────┐
+  │ Header: [ 🏠 Minhas Finanças  ▼ ]       │  ← Context Switcher
+  │                                          │
+  │  Total do Mês: R$ 2.100,00              │
+  │  ├─ Mercado: R$ 800                      │
+  │  ├─ Farmácia: R$ 300                     │
+  │  ├─ Educação: R$ 500                     │
+  │  └─ Casa: R$ 500                         │
+  └──────────────────────────────────────────┘
+
+Dados NUNCA se misturam — farmId diferente.
+DRE da fazenda mostra apenas custos operacionais.
+DRE pessoal mostra apenas gastos domésticos.
+```
+
+### Implementation Summary (Planned)
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| CASH-09.1 | **CashCategoriaPersonal Enum**: Criar enum com categorias domésticas: mercado, farmacia, lazer, casa, educacao, saude, transporte, vestuario, outros. HiveType typeId 73, com icon/color/localizedName | ⏳ TODO |
+| CASH-09.2 | **Lancamento model update**: Adicionar campo `categoriaPersonal` (HiveField novo, nullable). Se farm é personal, usa categoriaPersonal; se agro, usa categoria | ⏳ TODO |
+| CASH-09.3 | **Auto-create personal farm**: No `main.dart`, após init do FarmService, verificar se existe farm `FarmType.personal`. Se não, criar "Minhas Finanças" automaticamente | ⏳ TODO |
+| CASH-09.4 | **Context Switcher Widget**: Dropdown no AppBar do CashHomeScreen que lista farms do usuário (agro + personal). Ao trocar, armazenar `activeFarmId` e recarregar dados | ⏳ TODO |
+| CASH-09.5 | **Category Context**: CalculatorScreen mostra categorias agro ou pessoais conforme o tipo da farm ativa. Usar `if (activeFarm.type == FarmType.personal)` para decidir qual enum usar | ⏳ TODO |
+| CASH-09.6 | **DRE Filtering**: DreScreen já filtra por farmId via LancamentoService. Validar que o relatório mostra apenas dados do contexto ativo. Ajustar título: "DRE — Seringal" vs "DRE — Pessoal" | ⏳ TODO |
+| CASH-09.7 | **HomeScreen Context**: CashHomeScreen mostra total e lista filtrados pela farm ativa. Ícone/cor do header muda conforme contexto (🚜 verde vs 🏠 azul) | ⏳ TODO |
+| CASH-09.8 | **L10n strings**: Adicionar strings para todas as categorias pessoais + labels de contexto (pt-BR + en). Mínimo 20 novas chaves | ⏳ TODO |
+| CASH-09.9 | **Cross-app guard**: Garantir que RuraRubber/RuraRain/etc filtram farms por `FarmType.agro` e NUNCA mostram a farm pessoal em seus contextos | ⏳ TODO |
+
+### Categorias Pessoais (Planned)
+
+| Enum Value | Icon | Color | pt-BR | en |
+|------------|------|-------|-------|-----|
+| `mercado` | shopping_cart | green | Mercado | Groceries |
+| `farmacia` | medical_services | red | Farmácia | Pharmacy |
+| `lazer` | sports_esports | purple | Lazer | Leisure |
+| `casa` | home | brown | Casa | Home |
+| `educacao` | school | blue | Educação | Education |
+| `saude` | health_and_safety | pink | Saúde | Health |
+| `transporte` | directions_car | orange | Transporte | Transport |
+| `vestuario` | checkroom | teal | Vestuário | Clothing |
+| `outros` | category | grey | Outros | Other |
+
+### Files to Create/Modify
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/models/cash_categoria_personal.dart` | CREATE | Enum com 9 categorias pessoais, HiveType typeId 73 |
+| `lib/models/lancamento.dart` | MODIFY | Adicionar HiveField para categoriaPersonal (nullable) |
+| `lib/models/lancamento.g.dart` | REGENERATE | build_runner com novo campo |
+| `lib/screens/cash_home_screen.dart` | MODIFY | Adicionar context switcher, filtrar por farm ativa |
+| `lib/screens/calculator_screen.dart` | MODIFY | Mostrar categorias conforme contexto (agro vs personal) |
+| `lib/screens/dre_screen.dart` | MODIFY | Título contextual, validar filtro por farmId |
+| `lib/widgets/context_switcher.dart` | CREATE | Dropdown widget de seleção de contexto |
+| `lib/l10n/arb/app_pt.arb` | MODIFY | ~20 novas chaves para categorias pessoais |
+| `lib/l10n/arb/app_en.arb` | MODIFY | ~20 novas chaves para categorias pessoais |
+| `lib/main.dart` | MODIFY | Auto-create farm pessoal, registrar novo adapter |
+
+### Strategic Value
+
+- **Diferencial competitivo**: Nenhum app agro separa finanças rural/pessoal de forma simples
+- **Retenção o ano todo**: Fora de safra, o produtor continua usando para gastos domésticos
+- **Educação financeira**: O produtor finalmente vê que a fazenda dá lucro — o problema é o gasto pessoal
+- **Base para DRE consolidado** (futuro): "Resultado Geral = Receita Fazenda - Custos Fazenda - Gastos Pessoais"
+
+### Cross-Reference
+- CORE-91: FarmType enum (prerequisite)
+- CORE-75: Farm-Centric Model (base)
+- CASH-01: MVP Lançamento de Despesas (base de categorias e models)
+- CASH-04: DRE (consumidor de dados filtrados por farm)
+
+---
+
 ## Phase CASH-08: Firebase & Auth Integration [LOCKED]
 
 ### Status: [LOCKED]

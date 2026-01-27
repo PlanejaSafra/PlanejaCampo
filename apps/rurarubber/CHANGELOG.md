@@ -4,6 +4,47 @@
 
 ---
 
+## Phase RUBBER-28: Code Quality Fixes (Post-CORE-83 Cleanup)
+
+### Status: [DONE]
+**Date Completed**: 2026-01-26
+**Priority**: 🔵 FIX
+**Objective**: Corrigir 2 erros de compilação (`static_access_to_instance_member`) e 7 infos de code quality (imports desnecessários, missing `@override`) introduzidos durante a migração para GenericSyncService (CORE-83).
+
+### Root Cause
+
+1. **`EntregaService.boxName` acesso estático** (2 erros): `boxName` é getter de instância do `GenericSyncService`, mas `backup_service.dart` e `borracha_backup_provider.dart` acessavam via `EntregaService.boxName` (estático). Correção: `EntregaService.instance.boxName`.
+
+2. **Imports `generic_sync_service.dart` desnecessários** (3 infos): Import direto quando já é exportado pelo barrel `agro_core.dart`.
+
+3. **Missing `@override` em `clearAll()`** (4 infos): Método `clearAll()` sobrescreve `GenericSyncService.clearAll()` sem anotação.
+
+### Implementation Summary
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| RUBBER-28.1 | Fix `EntregaService.boxName` → `EntregaService.instance.boxName` em backup_service e borracha_backup_provider | ✅ DONE |
+| RUBBER-28.2 | Remover imports desnecessários de `generic_sync_service.dart` em despesa, entrega, parceiro, recebivel, tabela services | ✅ DONE |
+| RUBBER-28.3 | Adicionar `@override` em `clearAll()` de entrega, parceiro, recebivel, tabela services | ✅ DONE |
+
+### Files Modified
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/services/backup_service.dart` | MODIFY | `EntregaService.instance.boxName` |
+| `lib/services/borracha_backup_provider.dart` | MODIFY | `EntregaService.instance.boxName` |
+| `lib/services/despesa_service.dart` | MODIFY | Remover import desnecessário de generic_sync_service |
+| `lib/services/entrega_service.dart` | MODIFY | Remover import desnecessário, @override clearAll |
+| `lib/services/parceiro_service.dart` | MODIFY | Remover import desnecessário, @override clearAll |
+| `lib/services/recebivel_service.dart` | MODIFY | Remover import desnecessário, @override clearAll |
+| `lib/services/tabela_service.dart` | MODIFY | Remover import desnecessário, @override clearAll |
+
+### Cross-Reference
+- CORE-83: Migração para GenericSyncService (origem dos issues)
+- CASH-07: Mesma correção aplicada no RuraCash
+
+---
+
 ## Phase RUBBER-27: Owner-Based Settings Access Control
 
 ### Status: [DONE]

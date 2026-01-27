@@ -1,5 +1,4 @@
 import 'package:agro_core/agro_core.dart';
-import 'package:agro_core/services/sync/generic_sync_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:uuid/uuid.dart';
@@ -345,6 +344,7 @@ class EntregaService extends GenericSyncService<Entrega> {
   }
 
   /// Clear all entregas (used for restore).
+  @override
   Future<void> clearAll() async {
     await super.clearAll();
     _currentEntrega = null;

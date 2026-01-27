@@ -1,5 +1,4 @@
 import 'package:agro_core/agro_core.dart';
-import 'package:agro_core/services/sync/generic_sync_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../models/parceiro.dart';
@@ -76,6 +75,7 @@ class ParceiroService extends GenericSyncService<Parceiro> {
     return getById(id);
   }
 
+  @override
   Future<void> clearAll() async {
     await super.clearAll();
   }
