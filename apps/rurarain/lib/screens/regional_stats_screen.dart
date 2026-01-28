@@ -4,7 +4,6 @@ import 'package:intl/intl.dart';
 
 import '../models/regional_stats.dart';
 import '../services/chuva_service.dart';
-import '../services/chuva_service.dart';
 import '../services/rainfall_stats_service.dart';
 import '../widgets/balanco_hidrico_chart.dart';
 
@@ -151,7 +150,7 @@ class _RegionalStatsScreenState extends State<RegionalStatsScreen> {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 16),
-              if (!_syncService.hasUserConsent)
+              if (!_statsService.hasUserConsent)
                 ElevatedButton.icon(
                   onPressed: () {
                     Navigator.pop(context);

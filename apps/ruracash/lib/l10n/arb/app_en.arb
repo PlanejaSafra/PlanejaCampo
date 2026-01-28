@@ -64,6 +64,7 @@
   "centroCustoSelectorHint": "Select expense destination",
 
   "dreTitle": "Farm Income Statement",
+  "dreTitlePersonal": "Personal Finances",
   "dreReceitas": "Revenue",
   "dreDespesas": "Expenses",
   "dreResultado": "Net Result",

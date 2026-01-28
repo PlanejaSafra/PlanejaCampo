@@ -64,6 +64,7 @@
   "centroCustoSelectorHint": "Selecione o destino da despesa",
 
   "dreTitle": "DRE Fazenda",
+  "dreTitlePersonal": "Finanças Pessoais",
   "dreReceitas": "Receitas",
   "dreDespesas": "Despesas",
   "dreResultado": "Resultado",

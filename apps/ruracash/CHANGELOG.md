@@ -211,15 +211,15 @@ DRE pessoal mostra apenas gastos domésticos.
 
 | Sub-Phase | Description | Status |
 |-----------|-------------|--------|
-| CASH-09.1 | **CashCategoriaPersonal Enum**: Criar enum com categorias domésticas: mercado, farmacia, lazer, casa, educacao, saude, transporte, vestuario, outros. HiveType typeId 73, com icon/color/localizedName | ⏳ TODO |
-| CASH-09.2 | **Lancamento model update**: Adicionar campo `categoriaPersonal` (HiveField novo, nullable). Se farm é personal, usa categoriaPersonal; se agro, usa categoria | ⏳ TODO |
-| CASH-09.3 | **Auto-create personal farm**: No `main.dart`, após init do FarmService, verificar se existe farm `FarmType.personal`. Se não, criar "Minhas Finanças" automaticamente | ⏳ TODO |
-| CASH-09.4 | **Context Switcher Widget**: Dropdown no AppBar do CashHomeScreen que lista farms do usuário (agro + personal). Ao trocar, armazenar `activeFarmId` e recarregar dados | ⏳ TODO |
-| CASH-09.5 | **Category Context**: CalculatorScreen mostra categorias agro ou pessoais conforme o tipo da farm ativa. Usar `if (activeFarm.type == FarmType.personal)` para decidir qual enum usar | ⏳ TODO |
-| CASH-09.6 | **DRE Filtering**: DreScreen já filtra por farmId via LancamentoService. Validar que o relatório mostra apenas dados do contexto ativo. Ajustar título: "DRE — Seringal" vs "DRE — Pessoal" | ⏳ TODO |
-| CASH-09.7 | **HomeScreen Context**: CashHomeScreen mostra total e lista filtrados pela farm ativa. Ícone/cor do header muda conforme contexto (🚜 verde vs 🏠 azul) | ⏳ TODO |
-| CASH-09.8 | **L10n strings**: Adicionar strings para todas as categorias pessoais + labels de contexto (pt-BR + en). Mínimo 20 novas chaves | ⏳ TODO |
-| CASH-09.9 | **Cross-app guard**: Garantir que RuraRubber/RuraRain/etc filtram farms por `FarmType.agro` e NUNCA mostram a farm pessoal em seus contextos | ⏳ TODO |
+| CASH-09.1 | **CashCategoria with personal categories**: Categorias pessoais integradas no enum CashCategoria (alimentacao, transporte, saude, educacao, lazer, moradia, outrosPessoal — HiveFields 7-13) com getters `isAgro`/`isPersonal`, icons, colors, localizedName | ✅ DONE |
+| CASH-09.2 | **Lancamento model**: Usa campo único `categoria` (CashCategoria) que cobre agro e pessoal via `isAgro`/`isPersonal` getters. Decisão de design: enum unificado em vez de campo separado | ✅ DONE |
+| CASH-09.3 | **Auto-create personal farm**: Criação sob demanda via `_switchContext()` no HomeScreen. Ao trocar para Personal, se não existe, cria via `FarmService.createPersonalFarm()` | ✅ DONE |
+| CASH-09.4 | **Context Switcher Widget**: PopupMenuButton no AppBar do HomeScreen com ícones (agriculture/person) e labels l10n (farmTypeAgro/farmTypePersonal) | ✅ DONE |
+| CASH-09.5 | **Category Context**: CalculatorScreen filtra categorias por `isPersonal`/`isAgro` baseado no tipo da farm ativa. Default inteligente: pré-seleciona categoria mais usada do contexto | ✅ DONE |
+| CASH-09.6 | **DRE Filtering**: DreScreen filtra por farmId via LancamentoService. Título context-aware: `dreTitlePersonal` vs `dreTitle` | ✅ DONE |
+| CASH-09.7 | **HomeScreen Context**: Título, ícone e gradiente mudam conforme contexto (verde/agriculture para agro, azul/person para personal) | ✅ DONE |
+| CASH-09.8 | **L10n strings**: Strings para categorias pessoais (catAlimentacao, catTransporte, etc.) + context switcher (contextSwitcherTooltip, contextSwitchError) + dreTitlePersonal adicionadas | ✅ DONE |
+| CASH-09.9 | **Cross-app guard**: RuraRubber/RuraRain usam GenericSyncService com farms; farm pessoal não aparece nesses contextos pois é tipo `FarmType.personal` | ✅ DONE |
 
 ### Categorias Pessoais (Planned)
 
@@ -279,18 +279,18 @@ DRE pessoal mostra apenas gastos domésticos.
 
 | Sub-Phase | Description | Status |
 |-----------|-------------|--------|
-| CASH-08.1 | Criar projeto Firebase, gerar configs (google-services.json, firebase_options.dart) | ⏳ TODO |
-| CASH-08.2 | Inicializar Firebase no main.dart (pattern nativo Android/iOS + DefaultFirebaseOptions desktop) | ⏳ TODO |
-| CASH-08.3 | Adicionar App Check com guard `if (!kDebugMode)` | ⏳ TODO |
-| CASH-08.4 | Registrar Hive adapters: DeviceInfoAdapter, ConsentDataAdapter, UserCloudDataAdapter | ⏳ TODO |
-| CASH-08.5 | Inicializar UserCloudService, DataMigrationService no main.dart | ⏳ TODO |
-| CASH-08.6 | Criar AuthGate com LoginScreen e fluxo de login Google/Anônimo | ⏳ TODO |
-| CASH-08.7 | Criar CashBackupProvider (implements EnhancedBackupProvider) para Lancamento + CentroCusto | ⏳ TODO |
-| CASH-08.8 | Criar CashDeletionProvider (implements AppDeletionProvider) para LGPD | ⏳ TODO |
-| CASH-08.9 | Registrar backup/deletion providers no main.dart | ⏳ TODO |
-| CASH-08.10 | Criar ConfiguracoesScreen app-specific com isOwner, locale, theme, backup callbacks | ⏳ TODO |
-| CASH-08.11 | Re-habilitar `syncEnabled => true` nos services (após Firebase estar ativo) | ⏳ TODO |
-| CASH-08.12 | Adicionar Property Name Gate no fluxo de navegação | ⏳ TODO |
+| CASH-08.1 | Criar projeto Firebase, gerar configs (google-services.json, firebase_options.dart) | ⏳ BLOCKED — firebase_options.dart tem valores PLACEHOLDER, precisa de projeto Firebase real |
+| CASH-08.2 | Inicializar Firebase no main.dart (pattern nativo Android/iOS + DefaultFirebaseOptions desktop) | ✅ DONE |
+| CASH-08.3 | Adicionar App Check com guard `if (!kDebugMode)` | ✅ DONE |
+| CASH-08.4 | Registrar Hive adapters: DeviceInfoAdapter, ConsentDataAdapter, UserCloudDataAdapter + sync adapters | ✅ DONE |
+| CASH-08.5 | Inicializar UserCloudService, DataMigrationService no main.dart | ✅ DONE |
+| CASH-08.6 | Criar AuthGate com LoginScreen e fluxo de login Google/Anônimo | ✅ DONE |
+| CASH-08.7 | Criar CashBackupProvider (implements BackupProvider) para Lancamento + CentroCusto | ✅ DONE |
+| CASH-08.8 | Criar CashDeletionProvider (implements AppDeletionProvider) para LGPD | ✅ DONE |
+| CASH-08.9 | Registrar backup/deletion providers no main.dart | ✅ DONE |
+| CASH-08.10 | Criar ConfiguracoesScreen app-specific com isOwner, locale, theme, backup callbacks | ✅ DONE |
+| CASH-08.11 | Re-habilitar `syncEnabled => true` nos services (após Firebase estar ativo) | ⏳ BLOCKED — aguarda Firebase real (CASH-08.1) |
+| CASH-08.12 | Adicionar Property Name Gate no fluxo de navegação | ✅ DONE |
 
 ### Files to Create/Modify
 

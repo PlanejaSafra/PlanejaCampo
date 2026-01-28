@@ -1,3 +1,4 @@
+import 'package:agro_core/agro_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -75,9 +76,12 @@ class _DreScreenState extends State<DreScreen> {
       l10n.drePeriodoAno,
     ];
 
+    final isPersonal =
+        FarmService.instance.getDefaultFarm()?.type == FarmType.personal;
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.dreTitle),
+        title: Text(isPersonal ? l10n.dreTitlePersonal : l10n.dreTitle),
       ),
       drawer: buildCashDrawer(context: context, l10n: l10n),
       body: Consumer2<LancamentoService, CentroCustoService>(
