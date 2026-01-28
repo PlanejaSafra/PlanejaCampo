@@ -58,6 +58,12 @@ export 'models/farm.dart';
 export 'models/farm_owned_mixin.dart';
 export 'models/farm_type.dart';
 
+// Models (Unified Categories - CORE-96)
+export 'models/categoria.dart';
+export 'models/categoria_core.dart';
+export 'services/categoria_service.dart';
+export 'exceptions/categoria_exceptions.dart';
+
 // Models (Dependency-Aware Backup - CORE-77)
 export 'models/backup_meta.dart';
 export 'models/dependency_check_result.dart';

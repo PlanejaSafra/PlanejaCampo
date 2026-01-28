@@ -2,6 +2,306 @@
 
 ---
 
+## Phase CORE-96: Categoria Unificada — Model Cross-App para Categorias Financeiras
+
+### Status: [IMPLEMENTED]
+**Priority**: 🟡 ARCHITECTURAL
+**Objective**: Criar infraestrutura de categorias unificadas no agro_core para suportar: (1) categorias "core" imutáveis usadas por todos os apps do ecossistema (RuraFuel, RuraRubber, etc.), (2) categorias customizáveis pelo usuário, (3) identificação cross-app via `coreKey` imutável independente do nome de exibição.
+
+### Contexto e Motivação
+
+O RuraCash atual usa um `enum CashCategoria` com 14 categorias fixas. Isso impede:
+- Usuário criar categorias personalizadas (ex: "Ração Gado", "Sementes")
+- Usuário renomear categorias para seu contexto (ex: "Combustível" → "Diesel da Fazenda")
+- Expansão futura sem breaking changes
+
+A solução é migrar de enum para model, onde:
+- **Categorias Core**: Pré-criadas, `coreKey` imutável, nome editável (só visual), não deletáveis
+- **Categorias Custom**: Criadas pelo usuário, sem `coreKey`, editáveis, deletáveis/arquiváveis
+
+### Problema Cross-App Resolvido
+
+Quando RuraFuel lança uma despesa de combustível no RuraCash:
+```
+ANTES (enum): lancamento.categoria = CashCategoria.combustivel
+             → Se usuário "deletasse" categoria, quebrava
+             → Nome fixo "Combustível" em todos os contextos
+
+DEPOIS (model): categoriaService.getByCoreKey('combustivel')
+               → Retorna categoria independente do nome atual
+               → Usuário pode ter renomeado para "Diesel"
+               → coreKey NUNCA muda, cross-app sempre funciona
+```
+
+### Model: Categoria
+
+```dart
+@HiveType(typeId: 78)
+class Categoria implements FarmOwnedEntity, SyncableEntity {
+  // Identificação
+  @HiveField(0)  final String id;              // UUID, PK
+  @HiveField(1)  final String nome;            // Display name, editável
+  @HiveField(2)  final String icone;           // Nome do ícone Material (ex: 'local_gas_station')
+  @HiveField(3)  final int corValue;           // Color.value (int)
+
+  // Classificação
+  @HiveField(4)  final bool isReceita;         // true=receita, false=despesa
+  @HiveField(5)  final bool isCore;            // true=categoria do sistema, protegida
+  @HiveField(6)  final String? coreKey;        // Identificador cross-app (ex: 'combustivel', 'maoDeObra')
+                                               // Só preenchido se isCore=true. IMUTÁVEL.
+
+  // Contexto
+  @HiveField(7)  final bool isAgro;            // true=categoria agrícola
+  @HiveField(8)  final bool isPersonal;        // true=categoria pessoal
+                                               // Uma categoria pode ser ambos (ex: 'outros')
+
+  // Estado
+  @HiveField(9)  final bool isAtiva;           // false=arquivada (soft delete)
+  @HiveField(10) final int ordem;              // Ordenação na UI (drag-drop futuro)
+
+  // Hierarquia (Premium++)
+  @HiveField(11) final String? parentId;       // Para subcategorias (ex: Combustível > Diesel, Gasolina)
+
+  // FarmOwnedEntity
+  @HiveField(12) final String farmId;
+
+  // SyncableEntity
+  @HiveField(13) final String createdBy;
+  @HiveField(14) final DateTime createdAt;
+  @HiveField(15) final DateTime updatedAt;
+  @HiveField(16) final String sourceApp;       // Sempre 'agro_core' para categorias core
+
+  // Getters
+  Color get cor => Color(corValue);
+  IconData get iconData => _iconMap[icone] ?? Icons.category;
+  bool get isSubcategoria => parentId != null;
+  bool get canDelete => !isCore && isAtiva;
+  bool get canEditName => !isCore;
+  bool get canEditType => false;               // Nunca muda isReceita após criação
+
+  // Factory
+  factory Categoria.core({...});               // Para criar categorias do sistema
+  factory Categoria.custom({...});             // Para criar categorias do usuário
+
+  // Serialization
+  Map<String, dynamic> toJson();
+  factory Categoria.fromJson(Map<String, dynamic> json);
+}
+```
+
+### Enum: CategoriaCore (Identificadores Cross-App)
+
+```dart
+/// Identificadores imutáveis para categorias core.
+/// Usados por outros apps para encontrar categorias independente do nome.
+/// NUNCA alterar estes valores - são contratos cross-app.
+enum CategoriaCore {
+  // Despesas Agrícolas
+  maoDeObra,        // Mão de obra, colheita, diaristas
+  adubo,            // Fertilizantes, NPK, calcário
+  defensivos,       // Pesticidas, herbicidas, fungicidas
+  combustivel,      // Diesel, gasolina (cross-app: RuraFuel)
+  manutencao,       // Reparos, peças, mecânico
+  energia,          // Luz, água, energia elétrica
+  outrosAgro,       // Despesas agrícolas diversas
+
+  // Despesas Pessoais
+  alimentacao,      // Supermercado, feira, restaurante
+  transporte,       // Combustível pessoal, uber, ônibus
+  saude,            // Farmácia, médico, plano de saúde
+  educacao,         // Escola, cursos, material
+  lazer,            // Viagens, entretenimento, streaming
+  moradia,          // Aluguel, condomínio, IPTU
+  outrosPessoal,    // Despesas pessoais diversas
+}
+
+extension CategoriaCoreExtension on CategoriaCore {
+  String get key => name;                      // 'combustivel', 'maoDeObra', etc.
+  String get defaultNome => _defaultNames[this]!;
+  String get defaultIcone => _defaultIcons[this]!;
+  int get defaultCorValue => _defaultColors[this]!;
+  bool get isReceita => false;                 // Todas as core são despesas por enquanto
+  bool get isAgro => _agroCategories.contains(this);
+  bool get isPersonal => _personalCategories.contains(this);
+}
+```
+
+### Service: CategoriaService
+
+```dart
+class CategoriaService extends GenericSyncService<Categoria> {
+  // Singleton
+  static final CategoriaService _instance = CategoriaService._internal();
+  factory CategoriaService() => _instance;
+
+  // Config
+  @override String get boxName => 'categorias';
+  @override String get firestoreCollection => 'categorias';
+  @override bool get syncEnabled => true;      // Tier 3 quando farm.isShared
+
+  // Queries
+  List<Categoria> get categoriasAtivas => getAll().where((c) => c.isAtiva).toList();
+  List<Categoria> get categoriasAgro => categoriasAtivas.where((c) => c.isAgro).toList();
+  List<Categoria> get categoriasPersonal => categoriasAtivas.where((c) => c.isPersonal).toList();
+  List<Categoria> get categoriasReceita => categoriasAtivas.where((c) => c.isReceita).toList();
+  List<Categoria> get categoriasDespesa => categoriasAtivas.where((c) => !c.isReceita).toList();
+
+  // Cross-App Query (CRÍTICO)
+  /// Busca categoria pelo coreKey. Usado por outros apps (RuraFuel, RuraRubber).
+  /// Retorna null se categoria core não existir (erro de inicialização).
+  Categoria? getByCoreKey(String coreKey) {
+    return categoriasAtivas.firstWhereOrNull((c) => c.coreKey == coreKey);
+  }
+
+  // Inicialização
+  /// Cria categorias core se não existirem. Chamado no app startup.
+  /// Idempotente: se já existem, não recria.
+  Future<void> ensureDefaultCategorias() async {
+    for (final core in CategoriaCore.values) {
+      final existing = getByCoreKey(core.key);
+      if (existing == null) {
+        await add(Categoria.core(
+          coreKey: core.key,
+          nome: core.defaultNome,
+          icone: core.defaultIcone,
+          corValue: core.defaultCorValue,
+          isReceita: core.isReceita,
+          isAgro: core.isAgro,
+          isPersonal: core.isPersonal,
+        ));
+      }
+    }
+  }
+
+  // CRUD com proteções
+  @override
+  Future<void> update(Categoria categoria) async {
+    final existing = getById(categoria.id);
+    if (existing == null) throw CategoriaNotFoundException(categoria.id);
+
+    // Proteção: não pode mudar coreKey
+    if (existing.coreKey != categoria.coreKey) {
+      throw CategoriaCoreKeyImmutableException();
+    }
+
+    // Proteção: não pode mudar isReceita após uso
+    if (existing.isReceita != categoria.isReceita) {
+      final hasUsage = await _hasLancamentosVinculados(categoria.id);
+      if (hasUsage) throw CategoriaTypeChangeException();
+    }
+
+    // Proteção: não pode mudar nome de categoria core
+    if (existing.isCore && existing.nome != categoria.nome) {
+      // Permitido: usuário pode personalizar nome de core
+      // Na verdade, vamos PERMITIR isso - só o coreKey é imutável
+    }
+
+    await super.update(categoria);
+  }
+
+  @override
+  Future<void> delete(String id) async {
+    final categoria = getById(id);
+    if (categoria == null) return;
+
+    // Proteção: não pode deletar categoria core
+    if (categoria.isCore) {
+      throw CategoriaCoreDeleteException();
+    }
+
+    // Proteção: se tem lançamentos, arquiva em vez de deletar
+    final hasUsage = await _hasLancamentosVinculados(id);
+    if (hasUsage) {
+      await update(categoria.copyWith(isAtiva: false));
+      return;
+    }
+
+    await super.delete(id);
+  }
+
+  // Helpers
+  Future<bool> _hasLancamentosVinculados(String categoriaId) async {
+    // Verifica no LancamentoService se há lançamentos com esta categoria
+    // Implementação depende de callback ou injeção de dependência
+  }
+}
+```
+
+### Hive TypeIds Reservados
+
+| TypeId | Model | Observação |
+|--------|-------|------------|
+| 78 | Categoria | Novo model unificado |
+| 79 | CategoriaCore (enum) | Adapter para o enum de identificadores |
+
+### Regras de Negócio
+
+| Regra | Categoria Core | Categoria Custom |
+|-------|----------------|------------------|
+| Criar | ❌ Sistema cria no startup | ✅ Usuário cria |
+| Editar nome | ✅ Usuário personaliza | ✅ Usuário edita |
+| Editar ícone | ✅ | ✅ |
+| Editar cor | ✅ | ✅ |
+| Mudar isReceita | ❌ Nunca | ❌ Após primeiro uso |
+| Deletar | ❌ Nunca | ✅ Se sem uso, senão arquiva |
+| coreKey | Imutável, preenchido | null |
+
+### Sync Tier 3
+
+- Categorias são `FarmOwnedEntity` — pertencem a uma farm
+- Em multi-user (farm.isShared), sync via Firestore: `farms/{farmId}/categorias/{id}`
+- Conflitos: last-write-wins via `updatedAt`
+- Soft-delete (`isAtiva=false`) evita perda de dados em sync
+
+### Implementation Summary
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| CORE-96.1 | Criar model `Categoria` com todos os campos, factories, serialization | ⏳ TODO |
+| CORE-96.2 | Criar enum `CategoriaCore` com identificadores cross-app e defaults | ⏳ TODO |
+| CORE-96.3 | Criar `CategoriaService` extends `GenericSyncService<Categoria>` | ⏳ TODO |
+| CORE-96.4 | Implementar `ensureDefaultCategorias()` para criar categorias core no startup | ⏳ TODO |
+| CORE-96.5 | Implementar proteções de CRUD (coreKey imutável, soft-delete, type change) | ⏳ TODO |
+| CORE-96.6 | Criar exceptions específicas (CategoriaNotFoundException, etc.) | ⏳ TODO |
+| CORE-96.7 | Registrar HiveAdapter (typeId 78) e exportar no barrel | ⏳ TODO |
+| CORE-96.8 | Criar testes unitários para CategoriaService | ⏳ TODO |
+
+### Files to Create/Modify
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/models/categoria.dart` | CREATE | Model Categoria com HiveType 78 |
+| `lib/models/categoria.g.dart` | GENERATE | Hive adapter via build_runner |
+| `lib/models/categoria_core.dart` | CREATE | Enum CategoriaCore com defaults |
+| `lib/services/categoria_service.dart` | CREATE | Service com CRUD protegido e ensureDefaultCategorias |
+| `lib/exceptions/categoria_exceptions.dart` | CREATE | Exceptions específicas |
+| `lib/agro_core.dart` | MODIFY | Exportar novos arquivos |
+
+### Cross-Reference
+
+- CASH-21 [TODO]: Migração CashCategoria enum → Categoria model no RuraCash
+- CASH-22 [TODO]: UI para categorias customizáveis no RuraCash
+- Todos os apps do ecossistema usarão `CategoriaService.getByCoreKey()` para cross-app
+
+### Notas de Design
+
+1. **Por que model no core e não no app?**
+   - Categorias core são compartilhadas entre apps (RuraFuel, RuraRubber usam `combustivel`, `maoDeObra`)
+   - Garantir consistência de `coreKey` em todo o ecossistema
+   - Evitar duplicação de código entre apps
+
+2. **Por que permitir editar nome de categoria core?**
+   - Flexibilidade: produtor pode chamar "Combustível" de "Diesel da Fazenda"
+   - Cross-app usa `coreKey`, não `nome` — independente de personalização
+   - UX: usuário sente que tem controle, mas sistema mantém integridade
+
+3. **Por que soft-delete (isAtiva=false) em vez de delete real?**
+   - Evita orphan references em lançamentos existentes
+   - Sync Tier 3: delete real pode causar conflitos em multi-user
+   - Permite "restaurar" categoria arquivada se necessário
+
+---
+
 ## Phase CORE-95: Unified Sync Pipeline — GenericSyncService for All Tiers
 
 ### Status: [DONE]

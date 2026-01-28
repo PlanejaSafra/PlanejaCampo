@@ -5,7 +5,6 @@ Internalize CLAUDE.md README.md, ARCHITECTURE.md e CHANGELOG.md do agro_core.
 Internalize README.md, ARCHITECTURE.md e CHANGELOG.md do rurarain e outros apps.
 
 
-Analise as fases 350+ do CHANGELOG  e verifique se estão corretamente e totalmente implementadas, e aponte gaps, falhas e possíveis não implementações.
 
 Crie fase para isso.
 Atualize o CHANGELOG com esta fase e todas as etapas, de forma detalhada.

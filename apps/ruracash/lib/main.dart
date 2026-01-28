@@ -21,6 +21,17 @@ import 'screens/calculator_screen.dart';
 import 'screens/centro_custo_screen.dart';
 import 'screens/dre_screen.dart';
 import 'screens/configuracoes_screen.dart';
+import 'screens/conta_pagar_screen.dart';
+import 'screens/orcamento_screen.dart';
+import 'screens/balanco_screen.dart';
+import 'screens/fluxo_caixa_screen.dart';
+
+import 'models/conta_pagar.dart';
+import 'models/conta_receber.dart';
+import 'models/orcamento.dart';
+import 'services/conta_pagamento_service.dart';
+import 'services/conta_recebimento_service.dart';
+import 'services/orcamento_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -71,6 +82,13 @@ void main() async {
   Hive.registerAdapter(CashCategoriaAdapter());
   Hive.registerAdapter(LancamentoAdapter());
   Hive.registerAdapter(CentroCustoAdapter());
+  // Roadmap Features (CASH-26, 27, 28)
+  Hive.registerAdapter(ContaPagarAdapter());
+  Hive.registerAdapter(ContaReceberAdapter());
+  Hive.registerAdapter(OrcamentoAdapter());
+  Hive.registerAdapter(TipoPeriodoOrcamentoAdapter());
+  // Core Features (CORE-96)
+  Hive.registerAdapter(CategoriaAdapter());
 
   // Initialize agro_core services
   await AgroPrivacyStore.init();
@@ -82,8 +100,7 @@ void main() async {
   // Initialize Cloud Services
   try {
     await UserCloudService.instance.init();
-    await DataMigrationService.instance
-        .runMigrations(); // Fix: runMigrations instead of init
+    await DataMigrationService.instance.runMigrations(); 
   } catch (e) {
     debugPrint('Cloud Services initialization failed: $e');
   }
@@ -118,19 +135,21 @@ void main() async {
     debugPrint('DependencyService initialization failed: $e');
   }
 
-  // Verify/Create Personal Farm if needed (CASH-09 logic handled in Home, but good to check here or just rely on Home)
-
   // Initialize RuraCash services
   try {
     await LancamentoService.instance.init();
-  } catch (e) {
-    debugPrint('LancamentoService initialization failed: $e');
-  }
-
-  try {
     await CentroCustoService.instance.init();
+    
+    // Roadmap Services Initialization
+    await CategoriaService().init();
+    await CategoriaService().ensureDefaultCategorias(); // Ensure Core Categories
+    
+    await ContaPagamentoService().init();
+    await ContaRecebimentoService().init();
+    await OrcamentoService().init();
+    
   } catch (e) {
-    debugPrint('CentroCustoService initialization failed: $e');
+    debugPrint('RuraCash/Roadmap Services initialization failed: $e');
   }
 
   // Initialize AdMob
@@ -180,6 +199,10 @@ class RuraCashApp extends StatelessWidget {
           '/centros': (context) => const CentroCustoScreen(),
           '/dre': (context) => const DreScreen(),
           '/settings': (context) => const ConfiguracoesScreen(),
+          '/contas_pagar': (context) => const ContaPagarScreen(),
+          '/orcamentos': (context) => const OrcamentoScreen(),
+          '/relatorios/balanco': (context) => const BalancoScreen(),
+          '/relatorios/fluxo': (context) => const FluxoCaixaScreen(),
         },
       ),
     );

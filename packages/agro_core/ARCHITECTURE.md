@@ -109,3 +109,11 @@ Visualização geoespacial avançada.
 *   **`WeatherMapScreen`**: Tela unificada com camadas (Radar e Heatmap).
 *   **`RadarService`**: Integração com RainViewer API para exibir tiles de radar (passado/presente/futuro).
 *   **`HeatmapService`**: Serviço para buscar dados agregados da comunidade.
+
+### 15. Categorias Unificadas (`lib/models/categoria.dart`)
+
+Infraestrutura de classificação financeira compartilhada (CORE-96).
+
+*   **`Categoria`**: Modelo unificado que substitui enums legados. Suporta cores, ícones e soft-delete.
+*   **`CategoriaCore`**: Enum de identificadores imutáveis (ex: `combustivel`, `maoDeObra`) para interoperabilidade cross-app.
+*   **`CategoriaService`**: Gerencia sincronização (Tier 3) e garante a existência das categorias padrão do sistema.
