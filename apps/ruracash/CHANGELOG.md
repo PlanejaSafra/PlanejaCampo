@@ -5,6 +5,293 @@
 
 ---
 
+## Phase CASH-26.1: Bug Fixes — GenericSyncService Compliance
+
+### Status: [DONE]
+**Date Completed**: 2026-01-28
+**Priority**: 🔵 FIX
+**Objective**: Corrigir bugs críticos nas implementações de CASH-26, CASH-27, CASH-28 e CORE-96 que impediam compilação e causariam crash em runtime.
+
+### Bugs Corrigidos
+
+| Bug | Severidade | Arquivo | Correção |
+|-----|-----------|---------|----------|
+| `update(updated)` em vez de `update(id, updated)` | CRITICAL (runtime crash) | `conta_pagamento_service.dart` | Corrigido `pagar()` e `adiar()` para usar 2 params |
+| `update(updated)` em vez de `update(id, updated)` | CRITICAL (runtime crash) | `conta_recebimento_service.dart` | Corrigido `receber()` para usar 2 params |
+| `update(Categoria)` override com assinatura errada | COMPILE ERROR | `categoria_service.dart` (core) | Corrigido para `update(String id, Categoria)` |
+| Missing `sourceApp` override | COMPILE ERROR | Todos os 4 novos services | Adicionado `sourceApp => 'ruracash'` / `'agro_core'` |
+| Missing `fromMap`/`toMap`/`getId` overrides | COMPILE ERROR | Todos os 4 novos services | Adicionado overrides delegando para `toJson()`/`fromJson()` |
+| Missing `toJson()`/`fromJson()` nos models | COMPILE ERROR | ContaPagar, ContaReceber, Orcamento, Categoria | Adicionado serialização completa |
+| Missing Provider registrations | RUNTIME (no state updates) | `main.dart` | Adicionado 4 ChangeNotifierProvider no MultiProvider |
+| Missing `diasParaVencer` getter | MINOR | `conta_receber.dart` | Adicionado getter |
+
+### Files Modified
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/models/conta_pagar.dart` | MODIFY | Add `toJson()` / `fromJson()` |
+| `lib/models/conta_receber.dart` | MODIFY | Add `toJson()` / `fromJson()` + `diasParaVencer` getter |
+| `lib/models/orcamento.dart` | MODIFY | Add `toJson()` / `fromJson()` |
+| `lib/services/conta_pagamento_service.dart` | MODIFY | Add `sourceApp`, `fromMap`, `toMap`, `getId`; fix `update()` calls |
+| `lib/services/conta_recebimento_service.dart` | MODIFY | Add `sourceApp`, `fromMap`, `toMap`, `getId`; fix `update()` call |
+| `lib/services/orcamento_service.dart` | MODIFY | Add `sourceApp`, `fromMap`, `toMap`, `getId` |
+| `lib/main.dart` | MODIFY | Add 4 missing Provider registrations |
+
+### Cross-Reference
+- `packages/agro_core/CHANGELOG.md` → CORE-96.1 (Categoria model + CategoriaService fixes)
+
+---
+
+## Phase CASH-31: Tema e UX por Contexto — Identidade Visual Agro vs Pessoal
+
+### Status: [TODO]
+**Priority**: 🟢 ENHANCEMENT
+**Objective**: Diferenciar visualmente o contexto Agro (verde, ícones rurais, linguagem de fazenda) do contexto Pessoal (azul, ícones domésticos, linguagem de casa/família). Inclui tema dinâmico, onboarding explicativo, linguagem adaptada e filtragem completa de ícones. O objetivo é que o produtor **saiba imediatamente** em qual contexto está, sem precisar ler.
+
+### Motivação
+
+1. **Confusão silenciosa**: Sem diferenciação visual, o usuário pode lançar despesa pessoal no contexto agro (ou vice-versa) sem perceber. O único indicador atual é o nome da farm no AppBar.
+2. **Separação mental**: Cor diferente = "não é a mesma coisa". O cérebro processa cor antes de texto.
+3. **Diferencial competitivo**: Nenhum app agro oferece modo pessoal com identidade visual própria.
+4. **Público real**: Não é nicho — produtores misturam contas, chacareiros urbanos querem visão pessoal, famílias compartilham celular.
+
+### Público Que Usa o Modo Pessoal
+
+| Perfil | Uso |
+|--------|-----|
+| Produtor que mistura contas | Separa fazenda de casa, DRE fica limpo |
+| Produtor com renda externa | Recebe salário de outro emprego |
+| Esposa/família | Usa mesmo celular, controla gastos de casa |
+| Chacareiro urbano | Horta/pomar é hobby, pessoal é o foco |
+| Produtor na entressafra | App continua útil fora do ciclo agrícola |
+
+### Arquitetura: Tema Dinâmico
+
+```dart
+/// O tema muda conforme o FarmType da farm ativa.
+/// Não é uma preferência do usuário — é automático.
+MaterialApp(
+  theme: _buildTheme(context),
+  // ...
+);
+
+ThemeData _buildTheme(BuildContext context) {
+  final farm = FarmService.instance.activeFarm;
+  final isPersonal = farm?.type == FarmType.personal;
+
+  // Cor seed muda, todo o Material 3 color scheme segue
+  final seedColor = isPersonal
+    ? const Color(0xFF1565C0)   // Azul (Material Blue 800)
+    : const Color(0xFF2E7D32);  // Verde (Material Green 800)
+
+  return ThemeData(
+    useMaterial3: true,
+    colorSchemeSeed: seedColor,
+    brightness: _isDarkMode ? Brightness.dark : Brightness.light,
+  );
+}
+```
+
+### Identidade Visual por Contexto
+
+| Elemento | Contexto Agro | Contexto Pessoal |
+|----------|---------------|------------------|
+| **Cor primária** | Verde (0xFF2E7D32) | Azul (0xFF1565C0) |
+| **Cor de gradiente (cards)** | Verde → Verde escuro | Azul → Azul escuro |
+| **Ícone do contexto** | `Icons.agriculture` | `Icons.home` |
+| **Título home** | "Fazenda Santa Fé" | "Minhas Finanças" |
+| **Subtítulo home** | "Total do Mês (Fazenda)" | "Total do Mês (Pessoal)" |
+| **FAB cor** | Verde | Azul |
+| **AppBar** | Verde ou tema verde | Azul ou tema azul |
+| **Drawer header** | Ilustração rural / verde | Ilustração doméstica / azul |
+| **Empty state** | "Nenhuma despesa na fazenda" | "Nenhuma despesa pessoal" |
+
+### Categorias: Ícones e Nomes por Contexto
+
+**Contexto Agro (verde)** — Categorias visíveis:
+
+| Categoria | Ícone | Cor |
+|-----------|-------|-----|
+| Mão de Obra | `engineering` | Azul |
+| Adubo/Fertilizante | `eco` | Verde |
+| Defensivos | `science` | Roxo |
+| Combustível | `local_gas_station` | Laranja |
+| Manutenção | `build` | Cinza |
+| Energia/Água | `bolt` | Âmbar |
+| Outros (Agro) | `category` | Marrom |
+
+**Contexto Pessoal (azul)** — Categorias visíveis:
+
+| Categoria | Ícone | Cor |
+|-----------|-------|-----|
+| Alimentação | `restaurant` | Vermelho |
+| Transporte | `directions_car` | Cinza-azulado |
+| Saúde | `local_hospital` | Teal |
+| Educação | `school` | Índigo |
+| Lazer | `beach_access` | Laranja |
+| Moradia | `home` | Marrom |
+| Outros (Pessoal) | `more_horiz` | Cinza |
+
+**Regra**: Categorias agro NUNCA aparecem no contexto pessoal. Categorias pessoais NUNCA aparecem no contexto agro. Isso já está implementado via `isAgro`/`isPersonal` nos getters de `CashCategoria` — migrar para `Categoria.isAgro`/`Categoria.isPersonal` no CORE-96.
+
+### Onboarding: Tela de Escolha de Perfil
+
+Exibida na primeira entrada do app (ou se nenhuma farm existe):
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│       Bem-vindo ao RuraCash!                                │
+│                                                              │
+│  Como você quer começar?                                    │
+│                                                              │
+│  ┌────────────────────────────────────────────────────────┐ │
+│  │  🚜  PRODUTOR RURAL                                    │ │
+│  │  ──────────────────                                    │ │
+│  │  Controle os custos da sua fazenda:                    │ │
+│  │  • Combustível, adubo, mão de obra, defensivos        │ │
+│  │  • Relatório da safra (DRE)                            │ │
+│  │  • Integração com RuraRubber e RuraCattle              │ │
+│  │                                                         │ │
+│  │  Ideal para: fazendeiros, seringueiros, pecuaristas   │ │
+│  └────────────────────────────────────────────────────────┘ │
+│                                                              │
+│  ┌────────────────────────────────────────────────────────┐ │
+│  │  🏠  MINHAS FINANÇAS PESSOAIS                          │ │
+│  │  ────────────────────────────                          │ │
+│  │  Controle os gastos da sua casa e família:             │ │
+│  │  • Supermercado, farmácia, escola, lazer               │ │
+│  │  • Quanto sobrou no mês                                │ │
+│  │  • Totalmente separado da fazenda                      │ │
+│  │                                                         │ │
+│  │  Ideal para: controle doméstico, gastos do dia a dia  │ │
+│  └────────────────────────────────────────────────────────┘ │
+│                                                              │
+│  💡 Você pode usar os dois! Troque a qualquer momento     │
+│     pelo seletor no topo da tela.                          │
+└──────────────────────────────────────────────────────────────┘
+```
+
+### Comportamento da Escolha
+
+| Escolha | Ação |
+|---------|------|
+| Produtor Rural | Cria farm `FarmType.agro` com nome l10n `farmDefaultName`, ativa tema verde, mostra categorias agro |
+| Minhas Finanças | Cria farm `FarmType.personal` com nome l10n `farmDefaultNamePersonal`, ativa tema azul, mostra categorias pessoais |
+
+A segunda farm (a que NÃO foi escolhida) pode ser criada depois pelo context switcher no AppBar. O context switcher mostra opção "Adicionar [Fazenda/Finanças Pessoais]" se a segunda farm não existir.
+
+### Context Switcher com Identidade Visual
+
+```
+Contexto Agro:
+┌──────────────────────────────────────────────────────┐
+│  [🚜 Fazenda Santa Fé ▼]                 Verde      │
+│  ┌───────────────────────────────┐                   │
+│  │ 🚜 Fazenda Santa Fé     ✓    │                   │
+│  │ 🏠 Minhas Finanças           │                   │
+│  └───────────────────────────────┘                   │
+└──────────────────────────────────────────────────────┘
+
+Contexto Pessoal:
+┌──────────────────────────────────────────────────────┐
+│  [🏠 Minhas Finanças ▼]                  Azul       │
+│  ┌───────────────────────────────┐                   │
+│  │ 🚜 Fazenda Santa Fé          │                   │
+│  │ 🏠 Minhas Finanças      ✓    │                   │
+│  └───────────────────────────────┘                   │
+└──────────────────────────────────────────────────────┘
+```
+
+### Linguagem Adaptada por Contexto
+
+| Tela/Elemento | Agro | Pessoal |
+|---------------|------|---------|
+| Home título | "Fazenda Santa Fé" | "Minhas Finanças" |
+| Home subtítulo | "Despesas da Fazenda" | "Despesas Pessoais" |
+| DRE título | "DRE da Fazenda" | "Finanças Pessoais" |
+| Empty state | "Nenhum gasto na fazenda este mês" | "Nenhum gasto pessoal este mês" |
+| Orçamento | "Orçamento da Safra" | "Orçamento Mensal" |
+| Centro de Custo | "Centro de Custo" | "Categoria de Gasto" |
+| Balanço | "Resumo Financeiro (Fazenda)" | "Resumo Financeiro (Pessoal)" |
+| Context switcher tooltip | "Trocar para finanças pessoais" | "Trocar para fazenda" |
+
+### L10n: Chaves Necessárias (pt-BR / en)
+
+```
+// Onboarding
+cashOnboardingTitle: "Bem-vindo ao RuraCash!" / "Welcome to RuraCash!"
+cashOnboardingSubtitle: "Como você quer começar?" / "How do you want to start?"
+cashProfileRural: "Produtor Rural" / "Rural Producer"
+cashProfileRuralDesc: "Controle os custos da sua fazenda" / "Control your farm costs"
+cashProfileRuralIdeal: "Ideal para: fazendeiros, seringueiros, pecuaristas" / "Ideal for: farmers, rubber tappers, ranchers"
+cashProfilePersonal: "Minhas Finanças Pessoais" / "My Personal Finances"
+cashProfilePersonalDesc: "Controle os gastos da sua casa e família" / "Control your home and family expenses"
+cashProfilePersonalIdeal: "Ideal para: controle doméstico, gastos do dia a dia" / "Ideal for: household control, daily expenses"
+cashProfileBothHint: "Você pode usar os dois! Troque a qualquer momento." / "You can use both! Switch anytime."
+
+// Context-aware titles
+cashHomeSubtitleAgro: "Despesas da Fazenda" / "Farm Expenses"
+cashHomeSubtitlePersonal: "Despesas Pessoais" / "Personal Expenses"
+cashEmptyAgro: "Nenhum gasto na fazenda este mês" / "No farm expenses this month"
+cashEmptyPersonal: "Nenhum gasto pessoal este mês" / "No personal expenses this month"
+cashBudgetTitleAgro: "Orçamento da Safra" / "Harvest Budget"
+cashBudgetTitlePersonal: "Orçamento Mensal" / "Monthly Budget"
+cashBalanceAgro: "Resumo Financeiro (Fazenda)" / "Financial Summary (Farm)"
+cashBalancePersonal: "Resumo Financeiro (Pessoal)" / "Financial Summary (Personal)"
+cashSwitchToPersonal: "Trocar para finanças pessoais" / "Switch to personal finances"
+cashSwitchToAgro: "Trocar para fazenda" / "Switch to farm"
+```
+
+### Notas de Design
+
+1. **Tema é automático, não é preferência**: Muda ao trocar contexto, não é config manual
+2. **Material 3 ColorScheme**: Basta trocar o `seedColor`, todo o design system segue
+3. **Transição suave**: Usar `AnimatedTheme` para animar a troca de cor
+4. **Drawer adapta**: Header do drawer muda cor e ícone conforme contexto
+5. **Orçamento default**: No contexto pessoal, default é "Mensal". No agro, default é "Safra".
+
+### Implementation Summary
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| CASH-31.1 | Criar `PersonalThemeData` e `AgroThemeData` com seedColor distinto | ⏳ TODO |
+| CASH-31.2 | Implementar troca dinâmica de tema ao mudar contexto (AnimatedTheme) | ⏳ TODO |
+| CASH-31.3 | Criar tela de onboarding com escolha de perfil (Produtor Rural / Finanças Pessoais) | ⏳ TODO |
+| CASH-31.4 | Adaptar HomeScreen: títulos, subtítulos, gradientes, ícones por contexto | ⏳ TODO |
+| CASH-31.5 | Adaptar DreScreen: título contextual | ⏳ TODO |
+| CASH-31.6 | Adaptar OrcamentoScreen: default Safra (agro) vs Mensal (pessoal) | ⏳ TODO |
+| CASH-31.7 | Adaptar BalancoScreen/FluxoCaixaScreen: título contextual | ⏳ TODO |
+| CASH-31.8 | Adaptar Drawer: header com cor/ícone contextual | ⏳ TODO |
+| CASH-31.9 | Adaptar Context Switcher: ícones, labels, tooltip contextuais | ⏳ TODO |
+| CASH-31.10 | Adicionar ~15 chaves l10n contextuais (pt-BR + en) + gen-l10n | ⏳ TODO |
+| CASH-31.11 | Adaptar empty states por contexto (mensagens e ícones) | ⏳ TODO |
+| CASH-31.12 | Testar alternância de tema ao trocar contexto (performance, flicker) | ⏳ TODO |
+
+### Files to Create/Modify
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/theme/cash_theme.dart` | CREATE | AgroThemeData e PersonalThemeData com seedColor |
+| `lib/screens/onboarding_screen.dart` | CREATE | Tela de escolha de perfil com 2 cards explicativos |
+| `lib/main.dart` | MODIFY | Integrar tema dinâmico, gate onboarding |
+| `lib/screens/home_screen.dart` | MODIFY | Títulos, subtítulos, gradientes contextuais |
+| `lib/screens/dre_screen.dart` | MODIFY | Título contextual |
+| `lib/screens/orcamento_screen.dart` | MODIFY | Default período por contexto |
+| `lib/screens/balanco_screen.dart` | MODIFY | Título contextual |
+| `lib/screens/fluxo_caixa_screen.dart` | MODIFY | Título contextual |
+| `lib/widgets/cash_drawer.dart` | MODIFY | Header contextual |
+| `lib/l10n/arb/app_pt.arb` | MODIFY | ~15 novas chaves contextuais |
+| `lib/l10n/arb/app_en.arb` | MODIFY | ~15 novas chaves contextuais |
+
+### Cross-Reference
+
+- CASH-09: Context Switcher (base, já implementado)
+- CORE-91: FarmType enum (FarmType.personal vs FarmType.agro)
+- CORE-93: FarmType icon/localizedName
+- CASH-20: Princípio "Vocabulário híbrido" (complementado aqui)
+
+---
+
 ## Phase CASH-30: Paywall Premium — RevenueCat/Play Billing Integration
 
 ### Status: [TODO]
@@ -282,7 +569,7 @@ class ReconciliacaoService {
 
 ## Phase CASH-28: Relatórios Avançados — Balanço Patrimonial e Fluxo de Caixa
 
-### Status: [TODO]
+### Status: [IMPLEMENTED]
 **Priority**: 🟢 ENHANCEMENT
 **Objective**: Adicionar relatórios financeiros avançados: Balanço Patrimonial (ativos vs passivos) e Fluxo de Caixa (entradas vs saídas por período). Complementa o DRE existente.
 
@@ -458,7 +745,7 @@ class RelatorioService {
 
 ## Phase CASH-27: Orçamento por Período — Planejamento por Categoria
 
-### Status: [TODO]
+### Status: [IMPLEMENTED]
 **Priority**: 🟢 ENHANCEMENT
 **Objective**: Permitir definir orçamento por categoria com múltiplos tipos de período (mês, trimestre, safra, ano). O ciclo agrícola não é mensal — orçamento por Safra (Set-Ago) é essencial para planejamento realista.
 

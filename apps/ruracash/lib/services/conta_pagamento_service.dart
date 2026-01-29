@@ -16,10 +16,22 @@ class ContaPagamentoService extends GenericSyncService<ContaPagar> {
   String get boxName => _boxName;
 
   @override
+  String get sourceApp => 'ruracash';
+
+  @override
   String get firestoreCollection => 'contas_pagar';
 
   @override
   bool get syncEnabled => FarmService.instance.isActiveFarmShared();
+
+  @override
+  ContaPagar fromMap(Map<String, dynamic> map) => ContaPagar.fromJson(map);
+
+  @override
+  Map<String, dynamic> toMap(ContaPagar item) => item.toJson();
+
+  @override
+  String getId(ContaPagar item) => item.id;
 
   // --- Queries ---
 
@@ -74,7 +86,7 @@ class ContaPagamentoService extends GenericSyncService<ContaPagar> {
       updatedAt: DateTime.now(),
     );
 
-    await update(updated);
+    await update(id, updated);
   }
 
   /// Adiar o vencimento
@@ -86,6 +98,6 @@ class ContaPagamentoService extends GenericSyncService<ContaPagar> {
       vencimento: novoVencimento,
       updatedAt: DateTime.now(),
     );
-    await update(updated);
+    await update(id, updated);
   }
 }

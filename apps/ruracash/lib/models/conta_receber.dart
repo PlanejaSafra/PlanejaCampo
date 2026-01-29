@@ -91,6 +91,53 @@ class ContaReceber extends HiveObject with FarmOwnedMixin implements SyncableEnt
   });
 
   bool get isVencido => status == StatusRecebimento.pendente && vencimento.isBefore(DateTime.now());
+  int get diasParaVencer => vencimento.difference(DateTime.now()).inDays;
+
+  /// Serialization for GenericSyncService / backup.
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'descricao': descricao,
+        'valor': valor,
+        'vencimento': vencimento.toIso8601String(),
+        'cliente': cliente,
+        'categoriaId': categoriaId,
+        'contaDestinoId': contaDestinoId,
+        'status': status.index,
+        'dataRecebimento': dataRecebimento?.toIso8601String(),
+        'receitaOrigemId': receitaOrigemId,
+        'farmId': farmId,
+        'createdBy': createdBy,
+        'createdAt': createdAt.toIso8601String(),
+        'updatedAt': updatedAt.toIso8601String(),
+        'sourceApp': sourceApp,
+        'deleted': deleted,
+      };
+
+  /// Deserialization from GenericSyncService / backup.
+  factory ContaReceber.fromJson(Map<String, dynamic> json) => ContaReceber(
+        id: json['id'] as String,
+        descricao: json['descricao'] as String,
+        valor: (json['valor'] as num).toDouble(),
+        vencimento: DateTime.parse(json['vencimento'] as String),
+        cliente: json['cliente'] as String?,
+        categoriaId: json['categoriaId'] as String?,
+        contaDestinoId: json['contaDestinoId'] as String?,
+        status: StatusRecebimento.values[json['status'] as int? ?? 0],
+        dataRecebimento: json['dataRecebimento'] != null
+            ? DateTime.parse(json['dataRecebimento'] as String)
+            : null,
+        receitaOrigemId: json['receitaOrigemId'] as String?,
+        farmId: json['farmId'] as String? ?? '',
+        createdBy: json['createdBy'] as String? ?? '',
+        createdAt: json['createdAt'] != null
+            ? DateTime.parse(json['createdAt'] as String)
+            : DateTime.now(),
+        updatedAt: json['updatedAt'] != null
+            ? DateTime.parse(json['updatedAt'] as String)
+            : DateTime.now(),
+        sourceApp: json['sourceApp'] as String? ?? 'ruracash',
+        deleted: json['deleted'] as bool? ?? false,
+      );
 
   ContaReceber copyWith({
     String? descricao,

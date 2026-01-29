@@ -15,10 +15,22 @@ class OrcamentoService extends GenericSyncService<Orcamento> {
   String get boxName => _boxName;
 
   @override
+  String get sourceApp => 'ruracash';
+
+  @override
   String get firestoreCollection => 'orcamentos';
 
   @override
   bool get syncEnabled => FarmService.instance.isActiveFarmShared();
+
+  @override
+  Orcamento fromMap(Map<String, dynamic> map) => Orcamento.fromJson(map);
+
+  @override
+  Map<String, dynamic> toMap(Orcamento item) => item.toJson();
+
+  @override
+  String getId(Orcamento item) => item.id;
 
   // --- Queries ---
 

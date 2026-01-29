@@ -15,10 +15,22 @@ class ContaRecebimentoService extends GenericSyncService<ContaReceber> {
   String get boxName => _boxName;
 
   @override
+  String get sourceApp => 'ruracash';
+
+  @override
   String get firestoreCollection => 'contas_receber';
 
   @override
   bool get syncEnabled => FarmService.instance.isActiveFarmShared();
+
+  @override
+  ContaReceber fromMap(Map<String, dynamic> map) => ContaReceber.fromJson(map);
+
+  @override
+  Map<String, dynamic> toMap(ContaReceber item) => item.toJson();
+
+  @override
+  String getId(ContaReceber item) => item.id;
 
   // --- Queries ---
 
@@ -44,6 +56,6 @@ class ContaRecebimentoService extends GenericSyncService<ContaReceber> {
       updatedAt: DateTime.now(),
     );
 
-    await update(updated);
+    await update(id, updated);
   }
 }

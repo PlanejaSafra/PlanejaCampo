@@ -2,6 +2,35 @@
 
 ---
 
+## Phase CORE-96.1: Bug Fixes — Categoria Model + Service GenericSyncService Compliance
+
+### Status: [DONE]
+**Date Completed**: 2026-01-28
+**Priority**: 🔵 FIX
+**Objective**: Corrigir bugs de compilação na implementação de CORE-96 — CategoriaService e Categoria model não cumpriam o contrato de GenericSyncService.
+
+### Bugs Corrigidos
+
+| Bug | Severidade | Arquivo | Correção |
+|-----|-----------|---------|----------|
+| Missing `sourceApp` override | COMPILE ERROR | `categoria_service.dart` | Adicionado `sourceApp => 'agro_core'` |
+| Missing `fromMap`/`toMap`/`getId` overrides | COMPILE ERROR | `categoria_service.dart` | Adicionado overrides delegando para `Categoria.toJson()`/`fromJson()` |
+| `update(Categoria)` override com assinatura errada | COMPILE ERROR | `categoria_service.dart` | Corrigido para `update(String id, Categoria)` + `super.update(id, categoria)` |
+| `arquivar()` chamava `update(updated)` com 1 param | COMPILE ERROR | `categoria_service.dart` | Corrigido para `update(id, updated)` |
+| Missing `toJson()`/`fromJson()` | COMPILE ERROR | `categoria.dart` | Adicionado serialização Map completa |
+
+### Files Modified
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/models/categoria.dart` | MODIFY | Add `toJson()` factory and `fromJson()` constructor |
+| `lib/services/categoria_service.dart` | MODIFY | Add `sourceApp`, `fromMap`, `toMap`, `getId`; fix `update()` signature and `arquivar()` |
+
+### Cross-Reference
+- `apps/ruracash/CHANGELOG.md` → CASH-26.1 (ContaPagar/ContaReceber/Orcamento service fixes)
+
+---
+
 ## Phase CORE-96: Categoria Unificada — Model Cross-App para Categorias Financeiras
 
 ### Status: [IMPLEMENTED]

@@ -20,11 +20,23 @@ class CategoriaService extends GenericSyncService<Categoria> {
   String get boxName => _boxName;
 
   @override
-  String get firestoreCollection => 'categorias'; // Em Tier 3: farms/{farmId}/categorias
+  String get sourceApp => 'agro_core';
+
+  @override
+  String get firestoreCollection => 'categorias';
 
   /// Sync Tier 3 só é habilitado se a farm estiver em modo compartilhado
   @override
   bool get syncEnabled => FarmService.instance.isActiveFarmShared();
+
+  @override
+  Categoria fromMap(Map<String, dynamic> map) => Categoria.fromJson(map);
+
+  @override
+  Map<String, dynamic> toMap(Categoria item) => item.toJson();
+
+  @override
+  String getId(Categoria item) => item.id;
 
   // --- Queries ---
 
@@ -104,9 +116,9 @@ class CategoriaService extends GenericSyncService<Categoria> {
   // --- CRUD Protegido ---
 
   @override
-  Future<void> update(Categoria categoria) async {
-    final existing = getById(categoria.id);
-    if (existing == null) throw CategoriaNotFoundException(categoria.id);
+  Future<void> update(String id, Categoria categoria) async {
+    final existing = getById(id);
+    if (existing == null) throw CategoriaNotFoundException(id);
 
     // Proteção: coreKey imutável
     if (existing.coreKey != categoria.coreKey) {
@@ -116,7 +128,7 @@ class CategoriaService extends GenericSyncService<Categoria> {
     // Proteção: Tipo imutável se tiver uso (placeholder, validar depois)
     // if (existing.isReceita != categoria.isReceita && hasUsage) throw Exception...
 
-    await super.update(categoria);
+    await super.update(id, categoria);
   }
 
   @override
@@ -146,7 +158,7 @@ class CategoriaService extends GenericSyncService<Categoria> {
     final cat = getById(id);
     if (cat != null) {
       final updated = cat.copyWith(isAtiva: false);
-      await update(updated);
+      await update(id, updated);
     }
   }
 }

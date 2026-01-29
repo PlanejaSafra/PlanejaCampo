@@ -111,6 +111,58 @@ class ContaPagar extends HiveObject with FarmOwnedMixin implements SyncableEntit
   int get diasParaVencer => vencimento.difference(DateTime.now()).inDays;
   String get parcelaLabel => parcela != null ? '$parcela/${totalParcelas ?? '?'}' : '';
 
+  /// Serialization for GenericSyncService / backup.
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'descricao': descricao,
+        'valor': valor,
+        'vencimento': vencimento.toIso8601String(),
+        'fornecedor': fornecedor,
+        'categoriaId': categoriaId,
+        'status': status.index,
+        'dataPagamento': dataPagamento?.toIso8601String(),
+        'lancamentoOrigemId': lancamentoOrigemId,
+        'contaPagamentoId': contaPagamentoId,
+        'parcela': parcela,
+        'totalParcelas': totalParcelas,
+        'parcelaGrupoId': parcelaGrupoId,
+        'farmId': farmId,
+        'createdBy': createdBy,
+        'createdAt': createdAt.toIso8601String(),
+        'updatedAt': updatedAt.toIso8601String(),
+        'sourceApp': sourceApp,
+        'deleted': deleted,
+      };
+
+  /// Deserialization from GenericSyncService / backup.
+  factory ContaPagar.fromJson(Map<String, dynamic> json) => ContaPagar(
+        id: json['id'] as String,
+        descricao: json['descricao'] as String,
+        valor: (json['valor'] as num).toDouble(),
+        vencimento: DateTime.parse(json['vencimento'] as String),
+        fornecedor: json['fornecedor'] as String?,
+        categoriaId: json['categoriaId'] as String?,
+        status: StatusPagamento.values[json['status'] as int? ?? 0],
+        dataPagamento: json['dataPagamento'] != null
+            ? DateTime.parse(json['dataPagamento'] as String)
+            : null,
+        lancamentoOrigemId: json['lancamentoOrigemId'] as String?,
+        contaPagamentoId: json['contaPagamentoId'] as String?,
+        parcela: json['parcela'] as int?,
+        totalParcelas: json['totalParcelas'] as int?,
+        parcelaGrupoId: json['parcelaGrupoId'] as String?,
+        farmId: json['farmId'] as String? ?? '',
+        createdBy: json['createdBy'] as String? ?? '',
+        createdAt: json['createdAt'] != null
+            ? DateTime.parse(json['createdAt'] as String)
+            : DateTime.now(),
+        updatedAt: json['updatedAt'] != null
+            ? DateTime.parse(json['updatedAt'] as String)
+            : DateTime.now(),
+        sourceApp: json['sourceApp'] as String? ?? 'ruracash',
+        deleted: json['deleted'] as bool? ?? false,
+      );
+
   ContaPagar copyWith({
     String? descricao,
     double? valor,

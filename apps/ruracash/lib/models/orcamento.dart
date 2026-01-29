@@ -117,6 +117,48 @@ class Orcamento extends HiveObject with FarmOwnedMixin implements SyncableEntity
     return DateTimeRange(start: inicio, end: fim);
   }
 
+  /// Serialization for GenericSyncService / backup.
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'categoriaId': categoriaId,
+        'valorLimite': valorLimite,
+        'tipo': tipo.index,
+        'ano': ano,
+        'mes': mes,
+        'trimestre': trimestre,
+        'alertaAtivo': alertaAtivo,
+        'alertaPercentual': alertaPercentual,
+        'farmId': farmId,
+        'createdBy': createdBy,
+        'createdAt': createdAt.toIso8601String(),
+        'updatedAt': updatedAt.toIso8601String(),
+        'sourceApp': sourceApp,
+        'deleted': deleted,
+      };
+
+  /// Deserialization from GenericSyncService / backup.
+  factory Orcamento.fromJson(Map<String, dynamic> json) => Orcamento(
+        id: json['id'] as String,
+        categoriaId: json['categoriaId'] as String,
+        valorLimite: (json['valorLimite'] as num).toDouble(),
+        tipo: TipoPeriodoOrcamento.values[json['tipo'] as int? ?? 0],
+        ano: json['ano'] as int,
+        mes: json['mes'] as int?,
+        trimestre: json['trimestre'] as int?,
+        alertaAtivo: json['alertaAtivo'] as bool? ?? true,
+        alertaPercentual: json['alertaPercentual'] as int? ?? 80,
+        farmId: json['farmId'] as String? ?? '',
+        createdBy: json['createdBy'] as String? ?? '',
+        createdAt: json['createdAt'] != null
+            ? DateTime.parse(json['createdAt'] as String)
+            : DateTime.now(),
+        updatedAt: json['updatedAt'] != null
+            ? DateTime.parse(json['updatedAt'] as String)
+            : DateTime.now(),
+        sourceApp: json['sourceApp'] as String? ?? 'ruracash',
+        deleted: json['deleted'] as bool? ?? false,
+      );
+
   Orcamento copyWith({
     double? valorLimite,
     bool? alertaAtivo,

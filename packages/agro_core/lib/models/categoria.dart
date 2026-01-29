@@ -174,6 +174,54 @@ class Categoria extends HiveObject with FarmOwnedMixin implements SyncableEntity
     );
   }
 
+  /// Serialization for GenericSyncService / backup.
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'nome': nome,
+        'icone': icone,
+        'corValue': corValue,
+        'isReceita': isReceita,
+        'isCore': isCore,
+        'coreKey': coreKey,
+        'isAgro': isAgro,
+        'isPersonal': isPersonal,
+        'isAtiva': isAtiva,
+        'ordem': ordem,
+        'parentId': parentId,
+        'farmId': farmId,
+        'createdBy': createdBy,
+        'createdAt': createdAt.toIso8601String(),
+        'updatedAt': updatedAt.toIso8601String(),
+        'sourceApp': sourceApp,
+        'deleted': deleted,
+      };
+
+  /// Deserialization from GenericSyncService / backup.
+  factory Categoria.fromJson(Map<String, dynamic> json) => Categoria(
+        id: json['id'] as String,
+        nome: json['nome'] as String,
+        icone: json['icone'] as String,
+        corValue: json['corValue'] as int,
+        isReceita: json['isReceita'] as bool? ?? false,
+        isCore: json['isCore'] as bool? ?? false,
+        coreKey: json['coreKey'] as String?,
+        isAgro: json['isAgro'] as bool? ?? true,
+        isPersonal: json['isPersonal'] as bool? ?? false,
+        isAtiva: json['isAtiva'] as bool? ?? true,
+        ordem: json['ordem'] as int? ?? 99,
+        parentId: json['parentId'] as String?,
+        farmId: json['farmId'] as String? ?? '',
+        createdBy: json['createdBy'] as String? ?? '',
+        createdAt: json['createdAt'] != null
+            ? DateTime.parse(json['createdAt'] as String)
+            : DateTime.now(),
+        updatedAt: json['updatedAt'] != null
+            ? DateTime.parse(json['updatedAt'] as String)
+            : DateTime.now(),
+        sourceApp: json['sourceApp'] as String? ?? 'agro_core',
+        deleted: json['deleted'] as bool? ?? false,
+      );
+
   Categoria copyWith({
     String? nome,
     String? icone,

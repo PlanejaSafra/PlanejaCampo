@@ -171,6 +171,10 @@ class RuraCashApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider.value(value: LancamentoService.instance),
         ChangeNotifierProvider.value(value: CentroCustoService.instance),
+        ChangeNotifierProvider<CategoriaService>.value(value: CategoriaService()),
+        ChangeNotifierProvider<ContaPagamentoService>.value(value: ContaPagamentoService()),
+        ChangeNotifierProvider<ContaRecebimentoService>.value(value: ContaRecebimentoService()),
+        ChangeNotifierProvider<OrcamentoService>.value(value: OrcamentoService()),
       ],
       child: MaterialApp(
         title: 'RuraCash',
