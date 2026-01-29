@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:collection/collection.dart';
 import 'package:agro_core/agro_core.dart';
 
 import '../models/balanco_patrimonial.dart';
 import '../models/fluxo_caixa.dart';
-
-// Imports de dados (assumindo que existem ou injetados)
-import '../services/conta_pagamento_service.dart';
-// import '../services/receita_service.dart';
-// import '../services/lancamento_service.dart';
-// import '../services/conta_service.dart'; 
+import '../l10n/cash_l10n_helper.dart';
+import 'conta_pagamento_service.dart';
+import 'conta_recebimento_service.dart';
+import 'conta_service.dart';
+import 'lancamento_service.dart';
+import 'receita_service.dart';
 
 class RelatorioService {
   static final RelatorioService _instance = RelatorioService._internal();
@@ -19,22 +18,43 @@ class RelatorioService {
   // --- Balanço Patrimonial ---
 
   Future<BalancoPatrimonial> gerarBalanco(DateTime data) async {
-    // 1. Obter todas as contas (Bancos, Caixas) -> ATIVOS
-    // final contas = ContaService.instance.getAll().where((c) => c.isActive).toList();
-    // Simulação:
-    final ativos = <ItemBalanco>[
-      // ItemBalanco('Caixa', 1000),
-      // for(var c in contas) ItemBalanco(c.nome, c.saldoAtual),
-      // ItemBalanco('Contas a Receber', totalAReceber),
-    ];
+    final l10n = lookupCashLocalizations();
 
-    // 2. Obter dívidas (Contas a Pagar pendentes) -> PASSIVOS
+    // 1. ATIVOS (o que o produtor TEM)
+    final ativos = <ItemBalanco>[];
+
+    // CASH-23: Saldos de contas bancárias (ativos)
+    for (final conta in ContaService.instance.contasAtivo) {
+      if (conta.saldoAtual > 0) {
+        ativos.add(ItemBalanco(conta.nome, conta.saldoAtual));
+      }
+    }
+
+    // Contas a Receber pendentes
+    final contasReceber = ContaRecebimentoService().getPendentes();
+    final totalAReceber = contasReceber.fold(0.0, (sum, c) => sum + c.valor);
+    if (totalAReceber > 0) {
+      ativos.add(ItemBalanco(l10n.dreReceitas, totalAReceber));
+    }
+
+    // 2. PASSIVOS (o que o produtor DEVE)
+    final passivos = <ItemBalanco>[];
+
+    // CASH-23: Saldos de contas passivas (cartão, empréstimo)
+    for (final conta in ContaService.instance.contasPassivo) {
+      if (conta.saldoAtual > 0) {
+        passivos.add(ItemBalanco(conta.nome, conta.saldoAtual));
+      }
+    }
+
+    // Contas a Pagar pendentes
     final contasPagar = ContaPagamentoService.instance.getPendentes();
-    final passivos = <ItemBalanco>[
-      ItemBalanco('Contas a Pagar', contasPagar.fold(0.0, (sum, c) => sum + c.valor)),
-      // Outros passivos (Empréstimos?)
-    ];
+    final totalAPagar = contasPagar.fold(0.0, (sum, c) => sum + c.valor);
+    if (totalAPagar > 0) {
+      passivos.add(ItemBalanco(l10n.dreDespesas, totalAPagar));
+    }
 
+    // Calcular totais
     final totalAtivos = ativos.fold(0.0, (sum, item) => sum + item.valor);
     final totalPassivos = passivos.fold(0.0, (sum, item) => sum + item.valor);
 
@@ -51,24 +71,56 @@ class RelatorioService {
   // --- Fluxo de Caixa ---
 
   Future<FluxoCaixa> gerarFluxoCaixa(DateTime inicio, DateTime fim) async {
-    // Buscar receitas e despesas no período
-    // final receitas = ReceitaService.instance.getByPeriod(inicio, fim);
-    // final despesas = LancamentoService.instance.getByPeriod(inicio, fim);
+    // 1. SAÍDAS: Lançamentos (despesas) no período
+    final lancamentos = LancamentoService.instance.getLancamentosPorPeriodo(inicio, fim);
+    final totalSaidas = lancamentos.fold(0.0, (sum, l) => sum + l.valor);
 
-    final totalEntradas = 0.0; // receitas.sum...
-    final totalSaidas = 0.0; // despesas.sum...
-    
-    // Calcular Saldos (requer histórico de saldo dia a dia ou snapshot)
-    final saldoInicial = 0.0; // ContaService.instance.getSaldoEm(inicio.subtract(1 day));
-    final saldoFinal = saldoInicial + totalEntradas - totalSaidas;
+    // Agrupar saídas por categoria
+    final saidasPorCategoria = <String, double>{};
+    for (final l in lancamentos) {
+      final categoria = CategoriaService().getById(l.categoriaId);
+      final catName = categoria?.nome ?? 'Outros';
+      saidasPorCategoria[catName] = (saidasPorCategoria[catName] ?? 0) + l.valor;
+    }
+
+    // 2. ENTRADAS: Receitas (CASH-24) + Contas Recebidas no período
+    double totalEntradas = 0.0;
+    final entradasPorCategoria = <String, double>{};
+
+    // CASH-24: Receitas registradas
+    final receitas = ReceitaService.instance.getReceitasPorPeriodo(inicio, fim);
+    for (final r in receitas) {
+      totalEntradas += r.valor;
+      final cat = CategoriaService().getById(r.categoriaId);
+      final catName = cat?.nome ?? 'Receita';
+      entradasPorCategoria[catName] = (entradasPorCategoria[catName] ?? 0) + r.valor;
+    }
+
+    // Contas Recebidas no período (legacy)
+    final todasContasReceber = ContaRecebimentoService().getAll();
+    final contasRecebidas = todasContasReceber.where((c) =>
+        c.dataRecebimento != null &&
+        !c.dataRecebimento!.isBefore(inicio) &&
+        c.dataRecebimento!.isBefore(fim.add(const Duration(days: 1))));
+
+    for (final c in contasRecebidas) {
+      totalEntradas += c.valor;
+      final cat = c.descricao.isNotEmpty ? c.descricao : 'Receita';
+      entradasPorCategoria[cat] = (entradasPorCategoria[cat] ?? 0) + c.valor;
+    }
+
+    // 3. Calcular saldos — CASH-23: usar saldo real das contas
+    final saldoInicial = ContaService.instance.totalAtivos;
+    final saldoPeriodo = totalEntradas - totalSaidas;
+    final saldoFinal = saldoInicial + saldoPeriodo;
 
     return FluxoCaixa(
       periodo: DateTimeRange(start: inicio, end: fim),
-      entradas: {}, // Agrupar por categoria
-      saidas: {},
+      entradas: entradasPorCategoria,
+      saidas: saidasPorCategoria,
       totalEntradas: totalEntradas,
       totalSaidas: totalSaidas,
-      saldoPeriodo: totalEntradas - totalSaidas,
+      saldoPeriodo: saldoPeriodo,
       saldoInicial: saldoInicial,
       saldoFinal: saldoFinal,
     );

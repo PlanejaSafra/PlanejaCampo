@@ -1,11 +1,8 @@
 import 'package:agro_core/agro_core.dart';
-import 'package:flutter/foundation.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import '../models/lancamento.dart';
-import '../models/cash_categoria.dart';
 
 /// Service for managing financial entries (expenses).
-/// Migrated to GenericSyncService (CORE-83).
+/// CASH-21: Migrated from CashCategoria enum to Categoria model (categoriaId).
 class LancamentoService extends GenericSyncService<Lancamento> {
   static final LancamentoService _instance = LancamentoService._internal();
   static LancamentoService get instance => _instance;
@@ -19,7 +16,10 @@ class LancamentoService extends GenericSyncService<Lancamento> {
   String get sourceApp => 'ruracash';
 
   @override
-  bool get syncEnabled => false; // CASH-08: disabled until real Firebase config
+  String get firestoreCollection => 'lancamentos';
+
+  @override
+  bool get syncEnabled => FarmService.instance.isActiveFarmShared();
 
   @override
   Lancamento fromMap(Map<String, dynamic> map) => Lancamento.fromJson(map);
@@ -30,40 +30,12 @@ class LancamentoService extends GenericSyncService<Lancamento> {
   @override
   String getId(Lancamento item) => item.id;
 
-  @override
-  Future<void> init() async {
-    await super.init();
-    await _migrateDataIfNeeded();
-  }
-
-  /// Migra dados antigos (Objetos) para nova estrutura
-  Future<void> _migrateDataIfNeeded() async {
-    final box = Hive.box(boxName);
-    if (box.isEmpty) return;
-
-    final firstKey = box.keys.first;
-    final firstValue = box.get(firstKey);
-
-    if (firstValue is Lancamento) {
-      debugPrint('[LancamentoService] Migrating data from Adapter to Map...');
-      final Map<dynamic, dynamic> rawMap = box.toMap();
-
-      for (final entry in rawMap.entries) {
-        if (entry.value is Lancamento) {
-          final item = entry.value as Lancamento;
-          await super.update(item.id, item);
-        }
-      }
-      debugPrint('[LancamentoService] Migration completed.');
-    }
-  }
-
   // ─────────────────────────────────────────────────────────────────────
   // Read Operations
   // ─────────────────────────────────────────────────────────────────────
 
   /// All entries sorted by date descending.
-  /// Filtered by the active farm (CORE-91/CASH-09).
+  /// Filtered by the active farm.
   List<Lancamento> get lancamentos {
     final farmId = FarmService.instance.defaultFarmId;
     if (farmId == null) return [];
@@ -102,14 +74,19 @@ class LancamentoService extends GenericSyncService<Lancamento> {
         .toList();
   }
 
-  /// Entries by category.
-  List<Lancamento> getLancamentosPorCategoria(CashCategoria categoria) {
-    return lancamentos.where((l) => l.categoria == categoria).toList();
+  /// Entries by category ID.
+  List<Lancamento> getLancamentosPorCategoria(String categoriaId) {
+    return lancamentos.where((l) => l.categoriaId == categoriaId).toList();
   }
 
   /// Entries by cost center.
   List<Lancamento> getLancamentosPorCentroCusto(String centroCustoId) {
     return lancamentos.where((l) => l.centroCustoId == centroCustoId).toList();
+  }
+
+  /// Entries by account (CASH-23).
+  List<Lancamento> getLancamentosPorConta(String contaId) {
+    return lancamentos.where((l) => l.contaOrigemId == contaId).toList();
   }
 
   /// Total for the current month.
@@ -123,12 +100,12 @@ class LancamentoService extends GenericSyncService<Lancamento> {
         .fold(0.0, (sum, l) => sum + l.valor);
   }
 
-  /// Total by category for a period.
-  Map<CashCategoria, double> totalPorCategoria(DateTime inicio, DateTime fim) {
+  /// Total by category for a period (returns Map<categoriaId, total>).
+  Map<String, double> totalPorCategoria(DateTime inicio, DateTime fim) {
     final entries = getLancamentosPorPeriodo(inicio, fim);
-    final result = <CashCategoria, double>{};
+    final result = <String, double>{};
     for (final entry in entries) {
-      result[entry.categoria] = (result[entry.categoria] ?? 0) + entry.valor;
+      result[entry.categoriaId] = (result[entry.categoriaId] ?? 0) + entry.valor;
     }
     return result;
   }
@@ -144,6 +121,17 @@ class LancamentoService extends GenericSyncService<Lancamento> {
     return result;
   }
 
+  /// Total by account for a period (CASH-23).
+  Map<String, double> totalPorConta(DateTime inicio, DateTime fim) {
+    final entries = getLancamentosPorPeriodo(inicio, fim);
+    final result = <String, double>{};
+    for (final entry in entries) {
+      final key = entry.contaOrigemId ?? 'caixa';
+      result[key] = (result[key] ?? 0) + entry.valor;
+    }
+    return result;
+  }
+
   /// Monthly totals for a year (for DRE chart).
   Map<int, double> totalMensalAno(int year) {
     final result = <int, double>{};
@@ -153,12 +141,12 @@ class LancamentoService extends GenericSyncService<Lancamento> {
     return result;
   }
 
-  /// Most frequently used category (for smart default).
-  CashCategoria? get categoriaMaisUsada {
+  /// Most frequently used category ID (for smart default).
+  String? get categoriaMaisUsada {
     if (lancamentos.isEmpty) return null;
-    final counts = <CashCategoria, int>{};
+    final counts = <String, int>{};
     for (final l in lancamentos) {
-      counts[l.categoria] = (counts[l.categoria] ?? 0) + 1;
+      counts[l.categoriaId] = (counts[l.categoriaId] ?? 0) + 1;
     }
     return counts.entries.reduce((a, b) => a.value >= b.value ? a : b).key;
   }
@@ -176,16 +164,18 @@ class LancamentoService extends GenericSyncService<Lancamento> {
   /// Quick add: create and save in one call.
   Future<Lancamento> quickAdd({
     required double valor,
-    required CashCategoria categoria,
+    required String categoriaId,
     String? descricao,
     String? centroCustoId,
+    String? contaOrigemId,
     DateTime? data,
   }) async {
     final lancamento = Lancamento.create(
       valor: valor,
-      categoria: categoria,
+      categoriaId: categoriaId,
       descricao: descricao,
       centroCustoId: centroCustoId,
+      contaOrigemId: contaOrigemId,
       data: data,
     );
     return addLancamento(lancamento);

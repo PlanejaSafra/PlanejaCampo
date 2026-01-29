@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:agro_core/agro_core.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../models/conta_pagar.dart';
 import '../services/conta_pagamento_service.dart';
@@ -51,11 +51,12 @@ class _ContaPagarScreenState extends State<ContaPagarScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = CashLocalizations.of(context)!;
     if (_isLoading) return const Scaffold(body: Center(child: CircularProgressIndicator()));
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Contas a Pagar'),
+        title: Text(l10n.cashContasPagarTitle),
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
@@ -71,28 +72,31 @@ class _ContaPagarScreenState extends State<ContaPagarScreen> {
           padding: const EdgeInsets.all(16),
           children: [
             _buildSection(
-              title: '🔴 VENCIDAS',
+              context: context,
+              title: l10n.cashContasVencidas,
               contas: _vencidas,
               color: Colors.red,
               icon: Icons.warning_amber_rounded,
             ),
             const SizedBox(height: 16),
             _buildSection(
-              title: '🟡 VENCE ESTA SEMANA',
+              context: context,
+              title: l10n.cashContasVenceEstaSemana,
               contas: _venceEstaSemana,
               color: Colors.orange,
               icon: Icons.calendar_today,
             ),
             const SizedBox(height: 16),
             _buildSection(
-              title: '🟢 PRÓXIMAS',
+              context: context,
+              title: l10n.cashContasProximas,
               contas: _proximas,
               color: Colors.green,
               icon: Icons.event_available,
             ),
-            
+
             const SizedBox(height: 32),
-            _buildTotalCard(),
+            _buildTotalCard(context),
           ],
         ),
       ),
@@ -100,6 +104,7 @@ class _ContaPagarScreenState extends State<ContaPagarScreen> {
   }
 
   Widget _buildSection({
+    required BuildContext context,
     required String title,
     required List<ContaPagar> contas,
     required Color color,
@@ -140,15 +145,19 @@ class _ContaPagarScreenState extends State<ContaPagarScreen> {
           elevation: 2,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           child: Column(
-            children: contas.map((conta) => _buildContaTile(conta, color)).toList(),
+            children: contas.map((conta) => _buildContaTile(context, conta, color)).toList(),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildContaTile(ContaPagar conta, Color color) {
+  Widget _buildContaTile(BuildContext context, ContaPagar conta, Color color) {
+    final l10n = CashLocalizations.of(context)!;
     final dateFormatter = DateFormat('dd/MM');
+    final parcelaText = conta.parcelaLabel.isNotEmpty
+        ? l10n.cashContaParcela(conta.parcelaLabel)
+        : '';
     return ListTile(
       leading: CircleAvatar(
         backgroundColor: color.withOpacity(0.1),
@@ -159,8 +168,7 @@ class _ContaPagarScreenState extends State<ContaPagarScreen> {
         style: const TextStyle(fontWeight: FontWeight.w500),
       ),
       subtitle: Text(
-        'Vence ${dateFormatter.format(conta.vencimento)}' + 
-        (conta.parcelaLabel.isNotEmpty ? ' • parc. ${conta.parcelaLabel}' : ''),
+        l10n.cashContaVence(dateFormatter.format(conta.vencimento)) + parcelaText,
       ),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
@@ -180,9 +188,10 @@ class _ContaPagarScreenState extends State<ContaPagarScreen> {
     );
   }
   
-  Widget _buildTotalCard() {
+  Widget _buildTotalCard(BuildContext context) {
+    final l10n = CashLocalizations.of(context)!;
     final totalGeral = (_vencidas + _venceEstaSemana + _proximas).fold(0.0, (sum, c) => sum + c.valor);
-    
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -193,9 +202,9 @@ class _ContaPagarScreenState extends State<ContaPagarScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Text(
-            'TOTAL PENDENTE',
-            style: TextStyle(fontWeight: FontWeight.bold),
+          Text(
+            l10n.cashContasTotalPendente,
+            style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           Text(
             NumberFormat.currency(symbol: 'R\$').format(totalGeral),
@@ -211,16 +220,17 @@ class _ContaPagarScreenState extends State<ContaPagarScreen> {
   }
 
   Future<void> _confirmarPagamento(ContaPagar conta) async {
+    final l10n = CashLocalizations.of(context)!;
     // Show Dialog to confirm and pick Account
     // Placeholder implementation
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Confirmar Pagamento'),
-        content: Text('Deseja pagar "${conta.descricao}" de R\$ ${conta.valor}?'),
+        title: Text(l10n.cashContasConfirmarPagamento),
+        content: Text(l10n.cashContasDesejaPagar(conta.descricao, conta.valor.toStringAsFixed(2))),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancelar')),
-          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Pagar')),
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(l10n.cancelarButton)),
+          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: Text(l10n.cashContasPagar)),
         ],
       ),
     );

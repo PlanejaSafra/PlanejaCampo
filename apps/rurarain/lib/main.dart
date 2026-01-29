@@ -360,9 +360,6 @@ class _AuthGateState extends State<AuthGate> {
   }
 
   Future<void> _initializeUserData() async {
-    // Run migration (preserves data when upgrading from anonymous to Google)
-    await MigrationService.migrateToPropertySystem();
-
     // Initialize or restore cloud data
     final cloudService = UserCloudService.instance;
     var userData = cloudService.getCurrentUserData();

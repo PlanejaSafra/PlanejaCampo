@@ -121,5 +121,195 @@
     "placeholders": {
       "error": {"type": "String"}
     }
-  }
+  },
+
+  "cashContasPagarTitle": "Payables",
+  "cashContasVencidas": "🔴 OVERDUE",
+  "cashContasVenceEstaSemana": "🟡 DUE THIS WEEK",
+  "cashContasProximas": "🟢 UPCOMING",
+  "cashContaVence": "Due {data}",
+  "@cashContaVence": {
+    "placeholders": {
+      "data": {"type": "String"}
+    }
+  },
+  "cashContaParcela": " • inst. {parcela}",
+  "@cashContaParcela": {
+    "placeholders": {
+      "parcela": {"type": "String"}
+    }
+  },
+  "cashContasTotalPendente": "TOTAL PENDING",
+  "cashContasConfirmarPagamento": "Confirm Payment",
+  "cashContasDesejaPagar": "Pay \"{descricao}\" for R$ {valor}?",
+  "@cashContasDesejaPagar": {
+    "placeholders": {
+      "descricao": {"type": "String"},
+      "valor": {"type": "String"}
+    }
+  },
+  "cashContasPagar": "Pay",
+
+  "cashOrcamentosTitle": "Budgets",
+  "cashOrcamentoDefinir": "Set Budget",
+  "cashOrcamentoPorSafra": "By Season",
+  "cashOrcamentoPorMes": "By Month",
+  "cashOrcamentoPorAno": "By Year",
+  "cashOrcamentoEmpty": "No budget defined for this period.",
+  "cashOrcamentoCategoria": "Category {id}",
+  "@cashOrcamentoCategoria": {
+    "placeholders": {
+      "id": {"type": "String"}
+    }
+  },
+  "cashOrcamentoProgresso": "R$ {consumido} of {limite}",
+  "@cashOrcamentoProgresso": {
+    "placeholders": {
+      "consumido": {"type": "String"},
+      "limite": {"type": "String"}
+    }
+  },
+  "cashOrcamentoRestam": "R$ {valor} remaining",
+  "@cashOrcamentoRestam": {
+    "placeholders": {
+      "valor": {"type": "String"}
+    }
+  },
+  "cashOrcamentoEstourou": "Exceeded by R$ {valor}",
+  "@cashOrcamentoEstourou": {
+    "placeholders": {
+      "valor": {"type": "String"}
+    }
+  },
+
+  "cashBalancoTitle": "Balance Sheet",
+  "cashBalancoAtivos": "ASSETS · what you own",
+  "cashBalancoPassivos": "LIABILITIES · what you owe",
+  "cashBalancoPatrimonio": "EQUITY · what remains",
+  "cashBalancoResumo": "Farm Financial Summary",
+  "cashBalancoEmpty": "No items recorded",
+  "cashBalancoTotal": "TOTAL",
+
+  "cashFluxoCaixaTitle": "Cash Flow",
+  "cashFluxoResultado": "PERIOD RESULT",
+  "cashFluxoLucro": "Profit for the period",
+  "cashFluxoPrejuizo": "Loss for the period",
+  "cashFluxoEvolucao": "BALANCE EVOLUTION",
+  "cashFluxoSaldoInicial": "Opening Balance",
+  "cashFluxoEntradas": "Inflows",
+  "cashFluxoSaidas": "Outflows",
+  "cashFluxoSaldoFinal": "Closing Balance",
+
+  "cashOrcamentoAlertTitle": "Budget Alert",
+  "cashOrcamentoAlertExceeded": "You exceeded the budget for {categoria}!",
+  "@cashOrcamentoAlertExceeded": {
+    "placeholders": {
+      "categoria": {"type": "String"}
+    }
+  },
+  "cashOrcamentoAlertWarning": "Warning: You reached {percentual}% of the budget for {categoria}.",
+  "@cashOrcamentoAlertWarning": {
+    "placeholders": {
+      "percentual": {"type": "String"},
+      "categoria": {"type": "String"}
+    }
+  },
+
+  "cashCategoriasTitle": "Categories",
+  "cashCategoriasDespesas": "Expenses",
+  "cashCategoriasReceitas": "Revenue",
+  "cashCategoriaNovaTitle": "New Category",
+  "cashCategoriaNome": "Category Name",
+  "cashCategoriaTipo": "Type:",
+  "cashCategoriaIcone": "Icon",
+  "cashCategoriaCor": "Color",
+  "cashCategoriaEmpty": "No categories found.",
+  "cashCategoriaCore": "Default category",
+  "cashCategoriaCustom": "Custom",
+  "cashCategoriaArquivar": "Archive",
+
+  "cashContasTitle": "Accounts",
+  "cashContasEmpty": "No accounts registered.",
+  "cashContaNovaTitleDialog": "New Account",
+  "cashContaNome": "Account Name",
+  "cashContaTipo": "Account Type",
+  "cashContaSaldoInicial": "Initial Balance",
+  "cashContaBanco": "Bank (optional)",
+  "cashContaSaldo": "Balance: {valor}",
+  "@cashContaSaldo": {
+    "placeholders": {
+      "valor": {"type": "String"}
+    }
+  },
+  "cashContaTipoCarteira": "Wallet",
+  "cashContaTipoCorrente": "Checking Account",
+  "cashContaTipoPoupanca": "Savings",
+  "cashContaTipoCartao": "Credit Card",
+  "cashContaTipoInvestimento": "Investment",
+  "cashContaTipoEmprestimo": "Loan",
+  "cashContaPatrimonio": "Net Worth: {valor}",
+  "@cashContaPatrimonio": {
+    "placeholders": {
+      "valor": {"type": "String"}
+    }
+  },
+  "cashContaAtivos": "ASSETS · what you have",
+  "cashContaPassivos": "LIABILITIES · what you owe",
+
+  "cashReceitasTitle": "Revenue",
+  "cashReceitasEmpty": "No revenue recorded.",
+  "cashReceitaNovaTitle": "New Revenue",
+  "cashReceitaValor": "Amount",
+  "cashReceitaCategoria": "Category",
+  "cashReceitaContaDestino": "Destination Account",
+  "cashReceitaDescricao": "Description (optional)",
+  "cashReceitaTotalMes": "Monthly Total",
+
+  "cashTransferenciasTitle": "Transfers",
+  "cashTransferenciaNovaTitle": "New Transfer",
+  "cashTransferenciaOrigem": "Source Account",
+  "cashTransferenciaDestino": "Destination Account",
+  "cashTransferenciaValor": "Amount",
+  "cashTransferenciaMesmaContaError": "Source and destination must be different.",
+
+  "cashReconciliacaoTitle": "Reconciliation",
+  "cashReconciliacaoEmpty": "Select an account to reconcile.",
+  "cashReconciliacaoSaldoExtrato": "Statement Balance",
+  "cashReconciliacaoDiferenca": "Difference: {valor}",
+  "@cashReconciliacaoDiferenca": {
+    "placeholders": {
+      "valor": {"type": "String"}
+    }
+  },
+  "cashReconciliacaoConfirmar": "Confirm Reconciliation",
+  "cashReconciliacaoOk": "Reconciliation completed!",
+
+  "cashPaywallTitle": "RuraCash Premium",
+  "cashPaywallHeadline": "Unlock the full potential of your farm financial management",
+  "cashPaywallFeatureContas": "Unlimited bank accounts",
+  "cashPaywallFeatureReceitas": "Revenue tracking",
+  "cashPaywallFeatureTransferencias": "Transfers between accounts",
+  "cashPaywallFeatureContasPagar": "Payables and Receivables",
+  "cashPaywallFeatureOrcamento": "Category budgets",
+  "cashPaywallFeatureRelatorios": "Advanced reports (Balance Sheet, Cash Flow)",
+  "cashPaywallFeatureReconciliacao": "Bank reconciliation",
+  "cashPaywallFeatureCategorias": "Custom categories",
+  "cashPaywallPlanYearly": "Yearly Plan",
+  "cashPaywallPriceYearly": "R$ 79.90/year",
+  "cashPaywallSavings": "Save 33%",
+  "cashPaywallPlanMonthly": "Monthly Plan",
+  "cashPaywallPriceMonthly": "R$ 9.90/month",
+  "cashPaywallRestore": "Restore purchases",
+  "cashPaywallPurchaseUnavailable": "Purchase unavailable at this time.",
+  "cashPaywallRestoreSuccess": "Subscription restored successfully!",
+  "cashPaywallRestoreEmpty": "No subscription found.",
+
+  "drawerContas": "Accounts",
+  "drawerReceitas": "Revenue",
+  "drawerContasPagar": "Payables",
+  "drawerOrcamentos": "Budgets",
+  "drawerCategorias": "Categories",
+  "drawerBalanco": "Balance Sheet",
+  "drawerFluxo": "Cash Flow",
+  "drawerReconciliacao": "Reconciliation"
 }

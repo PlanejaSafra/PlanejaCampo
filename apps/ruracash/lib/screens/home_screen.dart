@@ -7,6 +7,7 @@ import '../models/lancamento.dart';
 import '../services/lancamento_service.dart';
 import '../services/centro_custo_service.dart';
 import '../widgets/cash_drawer.dart';
+import '../helpers/categoria_icon_helper.dart';
 
 /// Home screen showing expense list and monthly total.
 class CashHomeScreen extends StatelessWidget {
@@ -202,7 +203,8 @@ class CashHomeScreen extends StatelessWidget {
         }
       }
 
-      // Notify UI
+      // Ensure categories exist for new farm
+      await CategoriaService().ensureDefaultCategorias();
       await CentroCustoService.instance.ensureDefaultCentroCusto();
       LancamentoService.instance.forceUpdate();
     } catch (e) {
@@ -242,6 +244,12 @@ class _LancamentoTile extends StatelessWidget {
       dateLabel = dateFormat.format(lancamento.data);
     }
 
+    // CASH-21: Get Categoria from CategoriaService by ID
+    final categoria = CategoriaService().getById(lancamento.categoriaId);
+    final catColor = categoria?.cor ?? Colors.grey;
+    final catIcon = CategoriaIconHelper.getIcon(categoria?.icone);
+    final catName = categoria?.nome ?? 'Categoria';
+
     return Dismissible(
       key: Key(lancamento.id),
       direction: DismissDirection.endToStart,
@@ -280,15 +288,15 @@ class _LancamentoTile extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 8),
         child: ListTile(
           leading: CircleAvatar(
-            backgroundColor: lancamento.categoria.color.withValues(alpha: 0.15),
+            backgroundColor: catColor.withValues(alpha: 0.15),
             child: Icon(
-              lancamento.categoria.icon,
-              color: lancamento.categoria.color,
+              catIcon,
+              color: catColor,
               size: 20,
             ),
           ),
           title: Text(
-            lancamento.categoria.localizedName(l10n),
+            catName,
             style: const TextStyle(fontWeight: FontWeight.w500),
           ),
           subtitle: lancamento.descricao != null

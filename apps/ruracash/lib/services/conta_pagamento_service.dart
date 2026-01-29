@@ -1,5 +1,3 @@
-import 'package:flutter/foundation.dart';
-import 'package:hive/hive.dart';
 import 'package:agro_core/agro_core.dart';
 
 import '../models/conta_pagar.dart';
@@ -9,6 +7,7 @@ class ContaPagamentoService extends GenericSyncService<ContaPagar> {
   static const String _boxName = 'contas_pagar';
 
   static final ContaPagamentoService _instance = ContaPagamentoService._internal();
+  static ContaPagamentoService get instance => _instance;
   factory ContaPagamentoService() => _instance;
   ContaPagamentoService._internal();
 

@@ -17,14 +17,54 @@ AgroDrawer buildCashDrawer({
         key: 'calculator',
       ),
       AgroDrawerItem(
-        icon: Icons.account_tree,
-        title: l10n.drawerCentros,
-        key: 'centros',
+        icon: Icons.attach_money,
+        title: l10n.drawerReceitas,
+        key: 'receitas',
+      ),
+      AgroDrawerItem(
+        icon: Icons.account_balance,
+        title: l10n.drawerContas,
+        key: 'contas',
+      ),
+      AgroDrawerItem(
+        icon: Icons.receipt_long,
+        title: l10n.drawerContasPagar,
+        key: 'contas_pagar',
+      ),
+      AgroDrawerItem(
+        icon: Icons.pie_chart,
+        title: l10n.drawerOrcamentos,
+        key: 'orcamentos',
       ),
       AgroDrawerItem(
         icon: Icons.assessment,
         title: l10n.drawerDre,
         key: 'dre',
+      ),
+      AgroDrawerItem(
+        icon: Icons.balance,
+        title: l10n.drawerBalanco,
+        key: 'balanco',
+      ),
+      AgroDrawerItem(
+        icon: Icons.show_chart,
+        title: l10n.drawerFluxo,
+        key: 'fluxo',
+      ),
+      AgroDrawerItem(
+        icon: Icons.compare_arrows,
+        title: l10n.drawerReconciliacao,
+        key: 'reconciliacao',
+      ),
+      AgroDrawerItem(
+        icon: Icons.category,
+        title: l10n.drawerCategorias,
+        key: 'categorias',
+      ),
+      AgroDrawerItem(
+        icon: Icons.account_tree,
+        title: l10n.drawerCentros,
+        key: 'centros',
       ),
     ],
     onNavigate: (route) {
@@ -36,11 +76,35 @@ AgroDrawer buildCashDrawer({
         case 'calculator':
           Navigator.pushReplacementNamed(context, '/calculator');
           break;
+        case 'receitas':
+          Navigator.pushReplacementNamed(context, '/receitas');
+          break;
+        case 'contas':
+          Navigator.pushReplacementNamed(context, '/contas');
+          break;
+        case 'contas_pagar':
+          Navigator.pushReplacementNamed(context, '/contas_pagar');
+          break;
+        case 'orcamentos':
+          Navigator.pushReplacementNamed(context, '/orcamentos');
+          break;
         case 'centros':
           Navigator.pushReplacementNamed(context, '/centros');
           break;
         case 'dre':
           Navigator.pushReplacementNamed(context, '/dre');
+          break;
+        case 'balanco':
+          Navigator.pushReplacementNamed(context, '/relatorios/balanco');
+          break;
+        case 'fluxo':
+          Navigator.pushReplacementNamed(context, '/relatorios/fluxo');
+          break;
+        case 'reconciliacao':
+          Navigator.pushReplacementNamed(context, '/reconciliacao');
+          break;
+        case 'categorias':
+          Navigator.pushReplacementNamed(context, '/categorias');
           break;
         case 'properties':
           Navigator.push(

@@ -13,6 +13,7 @@ enum StatusPagamento {
 @HiveType(typeId: 80)
 class ContaPagar extends HiveObject with FarmOwnedMixin implements SyncableEntity {
   @HiveField(0)
+  @override
   final String id;
 
   @HiveField(1)
@@ -82,8 +83,10 @@ class ContaPagar extends HiveObject with FarmOwnedMixin implements SyncableEntit
   final String sourceApp;
 
   @HiveField(18)
-  @override
   bool? deleted;
+
+  @override
+  Map<String, dynamic> toMap() => toJson();
   
   ContaPagar({
     required this.id,

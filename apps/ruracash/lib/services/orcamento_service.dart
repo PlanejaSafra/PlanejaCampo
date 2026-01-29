@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
 import 'package:agro_core/agro_core.dart';
 
 import '../models/orcamento.dart';
@@ -8,6 +6,7 @@ class OrcamentoService extends GenericSyncService<Orcamento> {
   static const String _boxName = 'orcamentos';
 
   static final OrcamentoService _instance = OrcamentoService._internal();
+  static OrcamentoService get instance => _instance;
   factory OrcamentoService() => _instance;
   OrcamentoService._internal();
 
@@ -58,11 +57,19 @@ class OrcamentoService extends GenericSyncService<Orcamento> {
   List<Orcamento> getPorPeriodoTipo(TipoPeriodoOrcamento tipo, int ano, {String? farmId}) {
      final targetFarmId = farmId ?? FarmService.instance.defaultFarmId;
      return getAll()
-        .where((o) => 
-            o.farmId == targetFarmId && 
-            o.tipo == tipo && 
-            o.ano == ano && 
+        .where((o) =>
+            o.farmId == targetFarmId &&
+            o.tipo == tipo &&
+            o.ano == ano &&
             !o.deleted!)
+        .toList();
+  }
+
+  /// Lista todos os orçamentos ativos da farm atual
+  List<Orcamento> getOrcamentosAtivos({String? farmId}) {
+    final targetFarmId = farmId ?? FarmService.instance.defaultFarmId;
+    return getAll()
+        .where((o) => o.farmId == targetFarmId && !o.deleted!)
         .toList();
   }
   

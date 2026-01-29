@@ -1,29 +1,28 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'lancamento.dart';
+part of 'transferencia.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class LancamentoAdapter extends TypeAdapter<Lancamento> {
+class TransferenciaAdapter extends TypeAdapter<Transferencia> {
   @override
-  final int typeId = 71;
+  final int typeId = 79;
 
   @override
-  Lancamento read(BinaryReader reader) {
+  Transferencia read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return Lancamento(
+    return Transferencia(
       id: fields[0] as String,
-      valor: fields[1] as double,
-      categoriaId: fields[2] as String,
-      data: fields[3] as DateTime,
-      descricao: fields[4] as String?,
-      centroCustoId: fields[5] as String?,
-      contaOrigemId: fields[12] as String?,
+      contaOrigemId: fields[1] as String,
+      contaDestinoId: fields[2] as String,
+      valor: fields[3] as double,
+      data: fields[4] as DateTime,
+      descricao: fields[5] as String?,
       farmId: fields[6] as String,
       createdBy: fields[7] as String,
       createdAt: fields[8] as DateTime,
@@ -34,21 +33,21 @@ class LancamentoAdapter extends TypeAdapter<Lancamento> {
   }
 
   @override
-  void write(BinaryWriter writer, Lancamento obj) {
+  void write(BinaryWriter writer, Transferencia obj) {
     writer
-      ..writeByte(13)
+      ..writeByte(12)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
-      ..write(obj.valor)
+      ..write(obj.contaOrigemId)
       ..writeByte(2)
-      ..write(obj.categoriaId)
+      ..write(obj.contaDestinoId)
       ..writeByte(3)
-      ..write(obj.data)
+      ..write(obj.valor)
       ..writeByte(4)
-      ..write(obj.descricao)
+      ..write(obj.data)
       ..writeByte(5)
-      ..write(obj.centroCustoId)
+      ..write(obj.descricao)
       ..writeByte(6)
       ..write(obj.farmId)
       ..writeByte(7)
@@ -60,9 +59,7 @@ class LancamentoAdapter extends TypeAdapter<Lancamento> {
       ..writeByte(10)
       ..write(obj.updatedAt)
       ..writeByte(11)
-      ..write(obj.deleted)
-      ..writeByte(12)
-      ..write(obj.contaOrigemId);
+      ..write(obj.deleted);
   }
 
   @override
@@ -71,7 +68,7 @@ class LancamentoAdapter extends TypeAdapter<Lancamento> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is LancamentoAdapter &&
+      other is TransferenciaAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

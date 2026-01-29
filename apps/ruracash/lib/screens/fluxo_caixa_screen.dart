@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../models/fluxo_caixa.dart';
 import '../services/relatorio_service.dart';
@@ -37,15 +38,17 @@ class _FluxoCaixaScreenState extends State<FluxoCaixaScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = CashLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: const Text('Fluxo de Caixa')),
-      body: _isLoading 
-          ? const Center(child: CircularProgressIndicator()) 
-          : _buildContent(),
+      appBar: AppBar(title: Text(l10n.cashFluxoCaixaTitle)),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : _buildContent(context),
     );
   }
 
-  Widget _buildContent() {
+  Widget _buildContent(BuildContext context) {
+    final l10n = CashLocalizations.of(context)!;
     final f = _fluxo!;
     final currency = NumberFormat.currency(symbol: 'R\$');
 
@@ -58,9 +61,9 @@ class _FluxoCaixaScreenState extends State<FluxoCaixaScreen> {
             padding: const EdgeInsets.all(24),
             child: Column(
               children: [
-                const Text(
-                  'RESULTADO DO PERÍODO',
-                  style: TextStyle(color: Colors.white70, letterSpacing: 1.2),
+                Text(
+                  l10n.cashFluxoResultado,
+                  style: const TextStyle(color: Colors.white70, letterSpacing: 1.2),
                 ),
                 const SizedBox(height: 8),
                 Text(
@@ -73,29 +76,29 @@ class _FluxoCaixaScreenState extends State<FluxoCaixaScreen> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  f.saldoPeriodo >= 0 ? 'Lucro no período' : 'Prejuízo no período',
+                  f.saldoPeriodo >= 0 ? l10n.cashFluxoLucro : l10n.cashFluxoPrejuizo,
                   style: const TextStyle(color: Colors.white70, fontSize: 12),
                 ),
               ],
             ),
           ),
         ),
-        
+
         const SizedBox(height: 24),
-        
+
         Row(
           children: [
-             Expanded(child: _buildSummaryCard('Entradas', f.totalEntradas, Colors.green)),
+             Expanded(child: _buildSummaryCard(l10n.cashFluxoEntradas, f.totalEntradas, Colors.green)),
              const SizedBox(width: 16),
-             Expanded(child: _buildSummaryCard('Saídas', f.totalSaidas, Colors.red)),
+             Expanded(child: _buildSummaryCard(l10n.cashFluxoSaidas, f.totalSaidas, Colors.red)),
           ],
         ),
 
         const SizedBox(height: 24),
 
-        const Text(
-          'EVOLUÇÃO DO SALDO',
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey),
+        Text(
+          l10n.cashFluxoEvolucao,
+          style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.grey),
         ),
         const SizedBox(height: 8),
         Card(
@@ -103,12 +106,12 @@ class _FluxoCaixaScreenState extends State<FluxoCaixaScreen> {
             padding: const EdgeInsets.all(16),
             child: Column(
               children: [
-                _buildRow('Saldo Inicial', f.saldoInicial),
+                _buildRow(l10n.cashFluxoSaldoInicial, f.saldoInicial),
                 const Divider(),
-                _buildRow('Entradas', f.totalEntradas, color: Colors.green),
-                _buildRow('Saídas', -f.totalSaidas, color: Colors.red),
+                _buildRow(l10n.cashFluxoEntradas, f.totalEntradas, color: Colors.green),
+                _buildRow(l10n.cashFluxoSaidas, -f.totalSaidas, color: Colors.red),
                 const Divider(),
-                _buildRow('Saldo Final', f.saldoFinal, isBold: true),
+                _buildRow(l10n.cashFluxoSaldoFinal, f.saldoFinal, isBold: true),
               ],
             ),
           ),

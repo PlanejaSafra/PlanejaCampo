@@ -5,6 +5,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 import '../services/lancamento_service.dart';
 import '../services/centro_custo_service.dart';
+import '../helpers/categoria_icon_helper.dart';
 import '../widgets/cash_drawer.dart';
 
 /// DRE (Income Statement) screen - Farm-wide financial overview.
@@ -259,6 +260,10 @@ class _DreScreenState extends State<DreScreen> {
                     Colors.blueGrey,
                   ),
                   ...totalPorCategoria.entries.map((entry) {
+                    final categoria = CategoriaService().getById(entry.key);
+                    final catName = categoria?.nome ?? entry.key;
+                    final catIcon = CategoriaIconHelper.getIcon(categoria?.icone);
+                    final catColor = categoria?.cor ?? Colors.grey;
                     final percent = totalDespesas > 0
                         ? (entry.value / totalDespesas * 100)
                         : 0.0;
@@ -267,13 +272,13 @@ class _DreScreenState extends State<DreScreen> {
                       child: Row(
                         children: [
                           Icon(
-                            entry.key.icon,
-                            color: entry.key.color,
+                            catIcon,
+                            color: catColor,
                             size: 20,
                           ),
                           const SizedBox(width: 8),
                           Expanded(
-                            child: Text(entry.key.localizedName(l10n)),
+                            child: Text(catName),
                           ),
                           Text(
                             currencyFormat.format(entry.value),

@@ -19,8 +19,8 @@
 - Confirmar zero subcollection usage nos firestoreCollection getters
 
 ### Cross-Reference
-- RAIN-10 [TODO]: Unified Sync Pipeline (rurarain)
-- CORE-95 [DOING]: Unified Sync Pipeline (agro_core)
+- RAIN-10 [DONE]: Unified Sync Pipeline (rurarain)
+- CORE-95 [DONE]: Unified Sync Pipeline (agro_core)
 
 ---
 

@@ -5,6 +5,7 @@ import 'dart:async';
 class AgroNotificationService {
   static final AgroNotificationService _instance =
       AgroNotificationService._internal();
+  static AgroNotificationService get instance => _instance;
   factory AgroNotificationService() => _instance;
   AgroNotificationService._internal();
 
@@ -162,5 +163,52 @@ class AgroNotificationService {
 
     debugPrint(
         '[RainReminder] Scheduled for $propertyName in ${delay.inMinutes}min');
+  }
+
+  /// Envia uma notificação genérica.
+  /// Usado por todos os apps do ecossistema RuraCamp.
+  Future<void> showNotification({
+    required int id,
+    required String title,
+    required String body,
+    String? channelId,
+    String? channelName,
+    String? channelDescription,
+    String? payload,
+  }) async {
+    if (!_initialized) await init();
+
+    final AndroidNotificationDetails androidNotificationDetails =
+        AndroidNotificationDetails(
+      channelId ?? 'general_channel',
+      channelName ?? 'Notificações',
+      channelDescription: channelDescription ?? 'Notificações gerais do app',
+      importance: Importance.high,
+      priority: Priority.high,
+      icon: '@mipmap/ic_launcher',
+    );
+
+    final NotificationDetails notificationDetails =
+        NotificationDetails(android: androidNotificationDetails);
+
+    await flutterLocalNotificationsPlugin.show(
+      id,
+      title,
+      body,
+      notificationDetails,
+      payload: payload,
+    );
+
+    debugPrint('[Notification] Sent: $title');
+  }
+
+  /// Cancela uma notificação por ID.
+  Future<void> cancelNotification(int id) async {
+    await flutterLocalNotificationsPlugin.cancel(id);
+  }
+
+  /// Cancela todas as notificações.
+  Future<void> cancelAllNotifications() async {
+    await flutterLocalNotificationsPlugin.cancelAll();
   }
 }

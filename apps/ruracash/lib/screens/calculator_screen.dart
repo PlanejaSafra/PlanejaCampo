@@ -3,12 +3,13 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:agro_core/agro_core.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import '../models/cash_categoria.dart';
 import '../services/lancamento_service.dart';
 import '../services/centro_custo_service.dart';
 import '../widgets/cash_drawer.dart';
+import '../helpers/categoria_icon_helper.dart';
 
 /// Calculator-style expense entry screen.
+/// CASH-21: Migrated from CashCategoria enum to Categoria model.
 class CalculatorScreen extends StatefulWidget {
   const CalculatorScreen({super.key});
 
@@ -18,25 +19,39 @@ class CalculatorScreen extends StatefulWidget {
 
 class _CalculatorScreenState extends State<CalculatorScreen> {
   String _currentInput = '0';
-  CashCategoria? _selectedCategory;
+  String? _selectedCategoriaId;
   String? _selectedCentroCustoId;
 
   @override
   void initState() {
     super.initState();
+    _initDefaults();
+  }
+
+  void _initDefaults() {
     final farm = FarmService.instance.getDefaultFarm();
     final isPersonal = farm?.type == FarmType.personal;
 
-    // Smart default: pre-select most used category from CURRENT context
-    final mostUsed = LancamentoService.instance.categoriaMaisUsada;
+    // Get categories for current context
+    final categorias = isPersonal
+        ? CategoriaService().getCategoriasPersonal()
+        : CategoriaService().getCategoriasAgro();
 
-    if (mostUsed != null &&
-        ((isPersonal && mostUsed.isPersonal) ||
-            (!isPersonal && mostUsed.isAgro))) {
-      _selectedCategory = mostUsed;
-    } else {
-      _selectedCategory =
-          isPersonal ? CashCategoria.alimentacao : CashCategoria.outros;
+    // Smart default: pre-select most used category from CURRENT context
+    final mostUsedId = LancamentoService.instance.categoriaMaisUsada;
+
+    if (mostUsedId != null) {
+      final mostUsedCat = CategoriaService().getById(mostUsedId);
+      if (mostUsedCat != null &&
+          ((isPersonal && mostUsedCat.isPersonal) ||
+              (!isPersonal && mostUsedCat.isAgro))) {
+        _selectedCategoriaId = mostUsedId;
+      }
+    }
+
+    // Fallback: select first category if no most used
+    if (_selectedCategoriaId == null && categorias.isNotEmpty) {
+      _selectedCategoriaId = categorias.first.id;
     }
 
     _selectedCentroCustoId = CentroCustoService.instance.defaultCentroCusto?.id;
@@ -93,7 +108,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
       return;
     }
 
-    if (_selectedCategory == null) {
+    if (_selectedCategoriaId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l10n.calculatorCategoryRequired)),
       );
@@ -104,12 +119,13 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
 
     await LancamentoService.instance.quickAdd(
       valor: value,
-      categoria: _selectedCategory!,
+      categoriaId: _selectedCategoriaId!,
       centroCustoId: _selectedCentroCustoId,
     );
 
     if (mounted) {
-      final categoryName = _selectedCategory!.localizedName(l10n);
+      final categoria = CategoriaService().getById(_selectedCategoriaId!);
+      final categoryName = categoria?.nome ?? 'Categoria';
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -131,6 +147,14 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
     final l10n = CashLocalizations.of(context)!;
     final centroService = context.watch<CentroCustoService>();
     final centros = centroService.centros;
+
+    final farm = FarmService.instance.getDefaultFarm();
+    final isPersonal = farm?.type == FarmType.personal;
+
+    // Get categories for current context (despesas only)
+    final categorias = isPersonal
+        ? CategoriaService().getCategoriasPersonal().where((c) => !c.isReceita).toList()
+        : CategoriaService().getCategoriasAgro().where((c) => !c.isReceita).toList();
 
     return Scaffold(
       appBar: AppBar(
@@ -173,32 +197,29 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
             child: Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: CashCategoria.values.where((c) {
-                final farm = FarmService.instance.getDefaultFarm();
-                final isPersonal = farm?.type == FarmType.personal;
-                return isPersonal ? c.isPersonal : c.isAgro;
-              }).map((cat) {
-                final isSelected = _selectedCategory == cat;
+              children: categorias.map((cat) {
+                final isSelected = _selectedCategoriaId == cat.id;
+                final catIcon = CategoriaIconHelper.getIcon(cat.icone);
                 return ChoiceChip(
                   label: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(cat.icon,
+                      Icon(catIcon,
                           size: 16,
-                          color: isSelected ? Colors.white : cat.color),
+                          color: isSelected ? Colors.white : cat.cor),
                       const SizedBox(width: 4),
-                      Text(cat.localizedName(l10n)),
+                      Text(cat.nome),
                     ],
                   ),
                   selected: isSelected,
-                  selectedColor: cat.color,
+                  selectedColor: cat.cor,
                   labelStyle: TextStyle(
                     color: isSelected ? Colors.white : null,
                     fontSize: 12,
                   ),
                   onSelected: (_) {
                     setState(() {
-                      _selectedCategory = cat;
+                      _selectedCategoriaId = cat.id;
                     });
                   },
                 );

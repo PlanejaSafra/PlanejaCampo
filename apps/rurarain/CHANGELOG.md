@@ -72,7 +72,7 @@ Análise profunda do fluxo de ponta a ponta revelou 3 bugs em cadeia:
 
 ### Cross-Reference
 - RAIN-08: Tier 2 integration (connected pipeline but had these 3 bugs)
-- RAIN-10 [LOCKED]: Unified Sync Pipeline (future refactor)
+- RAIN-10 [DONE]: Unified Sync Pipeline (migrated to GenericSyncService)
 
 ---
 

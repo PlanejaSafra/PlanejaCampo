@@ -9,7 +9,6 @@ import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:flutter/foundation.dart';
 
 import 'firebase_options.dart';
-import 'models/cash_categoria.dart';
 import 'models/lancamento.dart';
 import 'models/centro_custo.dart';
 import 'services/lancamento_service.dart';
@@ -29,9 +28,22 @@ import 'screens/fluxo_caixa_screen.dart';
 import 'models/conta_pagar.dart';
 import 'models/conta_receber.dart';
 import 'models/orcamento.dart';
+import 'models/conta.dart';
+import 'models/receita.dart';
+import 'models/transferencia.dart';
 import 'services/conta_pagamento_service.dart';
 import 'services/conta_recebimento_service.dart';
 import 'services/orcamento_service.dart';
+import 'services/conta_service.dart';
+import 'services/receita_service.dart';
+import 'services/transferencia_service.dart';
+import 'screens/categorias_screen.dart';
+import 'screens/contas_screen.dart';
+import 'screens/receitas_screen.dart';
+import 'screens/reconciliacao_screen.dart';
+import 'screens/paywall_screen.dart';
+import 'services/premium_service.dart';
+import 'theme/cash_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -79,15 +91,19 @@ void main() async {
   Hive.registerAdapter(UserCloudDataAdapter()); // TypeId ? Check core
 
   // Register Hive Adapters - RuraCash
-  Hive.registerAdapter(CashCategoriaAdapter());
   Hive.registerAdapter(LancamentoAdapter());
   Hive.registerAdapter(CentroCustoAdapter());
-  // Roadmap Features (CASH-26, 27, 28)
+  // CASH-26, 27
   Hive.registerAdapter(ContaPagarAdapter());
   Hive.registerAdapter(ContaReceberAdapter());
   Hive.registerAdapter(OrcamentoAdapter());
   Hive.registerAdapter(TipoPeriodoOrcamentoAdapter());
-  // Core Features (CORE-96)
+  // CASH-23, 24, 25
+  Hive.registerAdapter(ContaAdapter());
+  Hive.registerAdapter(TipoContaAdapter());
+  Hive.registerAdapter(ReceitaAdapter());
+  Hive.registerAdapter(TransferenciaAdapter());
+  // CORE-96
   Hive.registerAdapter(CategoriaAdapter());
 
   // Initialize agro_core services
@@ -147,7 +163,14 @@ void main() async {
     await ContaPagamentoService().init();
     await ContaRecebimentoService().init();
     await OrcamentoService().init();
-    
+    // CASH-23, 24, 25
+    await ContaService.instance.init();
+    await ContaService.instance.ensureDefaultConta();
+    await ReceitaService.instance.init();
+    await TransferenciaService.instance.init();
+    // CASH-30: Premium
+    await PremiumService.instance.init();
+
   } catch (e) {
     debugPrint('RuraCash/Roadmap Services initialization failed: $e');
   }
@@ -175,40 +198,96 @@ class RuraCashApp extends StatelessWidget {
         ChangeNotifierProvider<ContaPagamentoService>.value(value: ContaPagamentoService()),
         ChangeNotifierProvider<ContaRecebimentoService>.value(value: ContaRecebimentoService()),
         ChangeNotifierProvider<OrcamentoService>.value(value: OrcamentoService()),
+        ChangeNotifierProvider<ContaService>.value(value: ContaService()),
+        ChangeNotifierProvider<ReceitaService>.value(value: ReceitaService()),
+        ChangeNotifierProvider<TransferenciaService>.value(value: TransferenciaService()),
+        ChangeNotifierProvider<PremiumService>.value(value: PremiumService()),
       ],
-      child: MaterialApp(
-        title: 'RuraCash',
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.light(),
-        darkTheme: AppTheme.dark(),
-        themeMode: ThemeMode.system,
-        localizationsDelegates: const [
-          CashLocalizations.delegate,
-          AgroLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: CashLocalizations.supportedLocales,
-        home: AgroAuthGate(
-          home: const CashHomeScreen(),
-          appName: 'RuraCash',
-          appDescription:
-              'Gestão Financeira Rural Simples e Eficiente', // TODO: Localize
-          appIcon: Icons.attach_money,
-        ),
-        routes: {
-          '/home': (context) => const CashHomeScreen(),
-          '/calculator': (context) => const CalculatorScreen(),
-          '/centros': (context) => const CentroCustoScreen(),
-          '/dre': (context) => const DreScreen(),
-          '/settings': (context) => const ConfiguracoesScreen(),
-          '/contas_pagar': (context) => const ContaPagarScreen(),
-          '/orcamentos': (context) => const OrcamentoScreen(),
-          '/relatorios/balanco': (context) => const BalancoScreen(),
-          '/relatorios/fluxo': (context) => const FluxoCaixaScreen(),
-        },
+      child: _CashMaterialApp(),
+    );
+  }
+}
+
+/// CASH-31: Reactive MaterialApp that rebuilds theme on FarmType change.
+class _CashMaterialApp extends StatefulWidget {
+  @override
+  State<_CashMaterialApp> createState() => _CashMaterialAppState();
+}
+
+class _CashMaterialAppState extends State<_CashMaterialApp> with WidgetsBindingObserver {
+  FarmType? _currentType;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _currentType = FarmService.instance.getDefaultFarm()?.type;
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _refreshType();
+    }
+  }
+
+  void _refreshType() {
+    final newType = FarmService.instance.getDefaultFarm()?.type;
+    if (newType != _currentType) {
+      setState(() => _currentType = newType);
+    }
+  }
+
+  /// Called by context switcher widgets to update the theme.
+  static void refreshTheme(BuildContext context) {
+    context.findAncestorStateOfType<_CashMaterialAppState>()?._refreshType();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'RuraCash',
+      debugShowCheckedModeBanner: false,
+      theme: CashTheme.light(farmType: _currentType),
+      darkTheme: CashTheme.dark(farmType: _currentType),
+      themeMode: ThemeMode.system,
+      localizationsDelegates: const [
+        CashLocalizations.delegate,
+        AgroLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: CashLocalizations.supportedLocales,
+      home: AgroAuthGate(
+        home: const CashHomeScreen(),
+        appName: 'RuraCash',
+        appDescription:
+            'Gestão Financeira Rural Simples e Eficiente',
+        appIcon: Icons.attach_money,
       ),
+      routes: {
+        '/home': (context) => const CashHomeScreen(),
+        '/calculator': (context) => const CalculatorScreen(),
+        '/centros': (context) => const CentroCustoScreen(),
+        '/dre': (context) => const DreScreen(),
+        '/settings': (context) => const ConfiguracoesScreen(),
+        '/contas_pagar': (context) => const ContaPagarScreen(),
+        '/orcamentos': (context) => const OrcamentoScreen(),
+        '/relatorios/balanco': (context) => const BalancoScreen(),
+        '/relatorios/fluxo': (context) => const FluxoCaixaScreen(),
+        '/categorias': (context) => const CategoriasScreen(),
+        '/contas': (context) => const ContasScreen(),
+        '/receitas': (context) => const ReceitasScreen(),
+        '/reconciliacao': (context) => const ReconciliacaoScreen(),
+        '/paywall': (context) => const PaywallScreen(),
+      },
     );
   }
 }

@@ -12,6 +12,7 @@ part 'categoria.g.dart';
 @HiveType(typeId: 78)
 class Categoria extends HiveObject with FarmOwnedMixin implements SyncableEntity {
   @HiveField(0)
+  @override
   final String id;
 
   @HiveField(1)
@@ -173,6 +174,9 @@ class Categoria extends HiveObject with FarmOwnedMixin implements SyncableEntity
       sourceApp: 'agro_core',
     );
   }
+
+  @override
+  Map<String, dynamic> toMap() => toJson();
 
   /// Serialization for GenericSyncService / backup.
   Map<String, dynamic> toJson() => {

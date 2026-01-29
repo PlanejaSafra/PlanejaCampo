@@ -121,5 +121,195 @@
     "placeholders": {
       "error": {"type": "String"}
     }
-  }
+  },
+
+  "cashContasPagarTitle": "Contas a Pagar",
+  "cashContasVencidas": "🔴 VENCIDAS",
+  "cashContasVenceEstaSemana": "🟡 VENCE ESTA SEMANA",
+  "cashContasProximas": "🟢 PRÓXIMAS",
+  "cashContaVence": "Vence {data}",
+  "@cashContaVence": {
+    "placeholders": {
+      "data": {"type": "String"}
+    }
+  },
+  "cashContaParcela": " • parc. {parcela}",
+  "@cashContaParcela": {
+    "placeholders": {
+      "parcela": {"type": "String"}
+    }
+  },
+  "cashContasTotalPendente": "TOTAL PENDENTE",
+  "cashContasConfirmarPagamento": "Confirmar Pagamento",
+  "cashContasDesejaPagar": "Deseja pagar \"{descricao}\" de R$ {valor}?",
+  "@cashContasDesejaPagar": {
+    "placeholders": {
+      "descricao": {"type": "String"},
+      "valor": {"type": "String"}
+    }
+  },
+  "cashContasPagar": "Pagar",
+
+  "cashOrcamentosTitle": "Orçamentos",
+  "cashOrcamentoDefinir": "Definir Orçamento",
+  "cashOrcamentoPorSafra": "Por Safra",
+  "cashOrcamentoPorMes": "Por Mês",
+  "cashOrcamentoPorAno": "Por Ano",
+  "cashOrcamentoEmpty": "Nenhum orçamento definido para este período.",
+  "cashOrcamentoCategoria": "Categoria {id}",
+  "@cashOrcamentoCategoria": {
+    "placeholders": {
+      "id": {"type": "String"}
+    }
+  },
+  "cashOrcamentoProgresso": "R$ {consumido} de {limite}",
+  "@cashOrcamentoProgresso": {
+    "placeholders": {
+      "consumido": {"type": "String"},
+      "limite": {"type": "String"}
+    }
+  },
+  "cashOrcamentoRestam": "Restam R$ {valor}",
+  "@cashOrcamentoRestam": {
+    "placeholders": {
+      "valor": {"type": "String"}
+    }
+  },
+  "cashOrcamentoEstourou": "Estourou R$ {valor}",
+  "@cashOrcamentoEstourou": {
+    "placeholders": {
+      "valor": {"type": "String"}
+    }
+  },
+
+  "cashBalancoTitle": "Balanço Patrimonial",
+  "cashBalancoAtivos": "ATIVOS · o que você tem",
+  "cashBalancoPassivos": "PASSIVOS · o que você deve",
+  "cashBalancoPatrimonio": "PATRIMÔNIO · o que sobra",
+  "cashBalancoResumo": "Resumo Financeiro da Fazenda",
+  "cashBalancoEmpty": "Nenhum item registrado",
+  "cashBalancoTotal": "TOTAL",
+
+  "cashFluxoCaixaTitle": "Fluxo de Caixa",
+  "cashFluxoResultado": "RESULTADO DO PERÍODO",
+  "cashFluxoLucro": "Lucro no período",
+  "cashFluxoPrejuizo": "Prejuízo no período",
+  "cashFluxoEvolucao": "EVOLUÇÃO DO SALDO",
+  "cashFluxoSaldoInicial": "Saldo Inicial",
+  "cashFluxoEntradas": "Entradas",
+  "cashFluxoSaidas": "Saídas",
+  "cashFluxoSaldoFinal": "Saldo Final",
+
+  "cashOrcamentoAlertTitle": "Alerta de Orçamento",
+  "cashOrcamentoAlertExceeded": "Você ultrapassou o orçamento de {categoria}!",
+  "@cashOrcamentoAlertExceeded": {
+    "placeholders": {
+      "categoria": {"type": "String"}
+    }
+  },
+  "cashOrcamentoAlertWarning": "Atenção: Você atingiu {percentual}% do orçamento de {categoria}.",
+  "@cashOrcamentoAlertWarning": {
+    "placeholders": {
+      "percentual": {"type": "String"},
+      "categoria": {"type": "String"}
+    }
+  },
+
+  "cashCategoriasTitle": "Categorias",
+  "cashCategoriasDespesas": "Despesas",
+  "cashCategoriasReceitas": "Receitas",
+  "cashCategoriaNovaTitle": "Nova Categoria",
+  "cashCategoriaNome": "Nome da Categoria",
+  "cashCategoriaTipo": "Tipo:",
+  "cashCategoriaIcone": "Ícone",
+  "cashCategoriaCor": "Cor",
+  "cashCategoriaEmpty": "Nenhuma categoria encontrada.",
+  "cashCategoriaCore": "Categoria padrão",
+  "cashCategoriaCustom": "Personalizada",
+  "cashCategoriaArquivar": "Arquivar",
+
+  "cashContasTitle": "Contas",
+  "cashContasEmpty": "Nenhuma conta cadastrada.",
+  "cashContaNovaTitleDialog": "Nova Conta",
+  "cashContaNome": "Nome da Conta",
+  "cashContaTipo": "Tipo de Conta",
+  "cashContaSaldoInicial": "Saldo Inicial",
+  "cashContaBanco": "Banco (opcional)",
+  "cashContaSaldo": "Saldo: {valor}",
+  "@cashContaSaldo": {
+    "placeholders": {
+      "valor": {"type": "String"}
+    }
+  },
+  "cashContaTipoCarteira": "Carteira",
+  "cashContaTipoCorrente": "Conta Corrente",
+  "cashContaTipoPoupanca": "Poupança",
+  "cashContaTipoCartao": "Cartão de Crédito",
+  "cashContaTipoInvestimento": "Investimento",
+  "cashContaTipoEmprestimo": "Empréstimo",
+  "cashContaPatrimonio": "Patrimônio: {valor}",
+  "@cashContaPatrimonio": {
+    "placeholders": {
+      "valor": {"type": "String"}
+    }
+  },
+  "cashContaAtivos": "ATIVOS · o que você tem",
+  "cashContaPassivos": "PASSIVOS · o que você deve",
+
+  "cashReceitasTitle": "Receitas",
+  "cashReceitasEmpty": "Nenhuma receita registrada.",
+  "cashReceitaNovaTitle": "Nova Receita",
+  "cashReceitaValor": "Valor",
+  "cashReceitaCategoria": "Categoria",
+  "cashReceitaContaDestino": "Conta Destino",
+  "cashReceitaDescricao": "Descrição (opcional)",
+  "cashReceitaTotalMes": "Total do Mês",
+
+  "cashTransferenciasTitle": "Transferências",
+  "cashTransferenciaNovaTitle": "Nova Transferência",
+  "cashTransferenciaOrigem": "Conta Origem",
+  "cashTransferenciaDestino": "Conta Destino",
+  "cashTransferenciaValor": "Valor",
+  "cashTransferenciaMesmaContaError": "Origem e destino devem ser diferentes.",
+
+  "cashReconciliacaoTitle": "Reconciliação",
+  "cashReconciliacaoEmpty": "Selecione uma conta para reconciliar.",
+  "cashReconciliacaoSaldoExtrato": "Saldo do Extrato",
+  "cashReconciliacaoDiferenca": "Diferença: {valor}",
+  "@cashReconciliacaoDiferenca": {
+    "placeholders": {
+      "valor": {"type": "String"}
+    }
+  },
+  "cashReconciliacaoConfirmar": "Confirmar Reconciliação",
+  "cashReconciliacaoOk": "Reconciliação concluída!",
+
+  "cashPaywallTitle": "RuraCash Premium",
+  "cashPaywallHeadline": "Desbloqueie todo o potencial da sua gestão financeira rural",
+  "cashPaywallFeatureContas": "Contas Bancárias ilimitadas",
+  "cashPaywallFeatureReceitas": "Registro de Receitas",
+  "cashPaywallFeatureTransferencias": "Transferências entre contas",
+  "cashPaywallFeatureContasPagar": "Contas a Pagar e Receber",
+  "cashPaywallFeatureOrcamento": "Orçamentos por categoria",
+  "cashPaywallFeatureRelatorios": "Relatórios avançados (Balanço, Fluxo)",
+  "cashPaywallFeatureReconciliacao": "Reconciliação bancária",
+  "cashPaywallFeatureCategorias": "Categorias personalizadas",
+  "cashPaywallPlanYearly": "Plano Anual",
+  "cashPaywallPriceYearly": "R$ 79,90/ano",
+  "cashPaywallSavings": "Economize 33%",
+  "cashPaywallPlanMonthly": "Plano Mensal",
+  "cashPaywallPriceMonthly": "R$ 9,90/mês",
+  "cashPaywallRestore": "Restaurar compras",
+  "cashPaywallPurchaseUnavailable": "Compra indisponível no momento.",
+  "cashPaywallRestoreSuccess": "Assinatura restaurada com sucesso!",
+  "cashPaywallRestoreEmpty": "Nenhuma assinatura encontrada.",
+
+  "drawerContas": "Contas",
+  "drawerReceitas": "Receitas",
+  "drawerContasPagar": "Contas a Pagar",
+  "drawerOrcamentos": "Orçamentos",
+  "drawerCategorias": "Categorias",
+  "drawerBalanco": "Balanço",
+  "drawerFluxo": "Fluxo de Caixa",
+  "drawerReconciliacao": "Reconciliação"
 }

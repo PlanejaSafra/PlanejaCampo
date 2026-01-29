@@ -7,7 +7,8 @@
 
 ## Phase CASH-32: Pendências Remanescentes — L10n, RelatorioService, Build Runner e Polimento
 
-### Status: [TODO]
+### Status: [DONE]
+**Date Completed**: 2026-01-28
 **Priority**: 🔴 CRITICAL (l10n) + 🟡 ARCHITECTURAL (RelatorioService) + 🟢 ENHANCEMENT (UX)
 **Objective**: Resolver todas as pendências identificadas na verificação das fases CASH-26/27/28 e CORE-96. Inclui: internacionalização de 40+ strings hardcoded, implementação real do RelatorioService (skeleton), geração de adapters Hive (build_runner), e polimento de telas.
 
@@ -372,7 +373,8 @@ AppBar ou header com:
 
 ## Phase CASH-31: Tema e UX por Contexto — Identidade Visual Agro vs Pessoal
 
-### Status: [TODO]
+### Status: [DONE]
+**Date Completed**: 2026-01-28
 **Priority**: 🟢 ENHANCEMENT
 **Objective**: Diferenciar visualmente o contexto Agro (verde, ícones rurais, linguagem de fazenda) do contexto Pessoal (azul, ícones domésticos, linguagem de casa/família). Inclui tema dinâmico, onboarding explicativo, linguagem adaptada e filtragem completa de ícones. O objetivo é que o produtor **saiba imediatamente** em qual contexto está, sem precisar ler.
 
@@ -622,7 +624,8 @@ cashSwitchToAgro: "Trocar para fazenda" / "Switch to farm"
 
 ## Phase CASH-30: Paywall Premium — RevenueCat/Play Billing Integration
 
-### Status: [TODO]
+### Status: [DONE]
+**Date Completed**: 2026-01-28
 **Priority**: 🟢 ENHANCEMENT
 **Objective**: Implementar paywall para desbloquear funcionalidades Premium (contas bancárias, receitas, transferências, orçamento, reconciliação, relatórios avançados). Modelo freemium com assinatura mensal/anual.
 
@@ -734,7 +737,8 @@ class PremiumService {
 
 ## Phase CASH-29: Reconciliação Bancária — Local-First Matching
 
-### Status: [TODO]
+### Status: [DONE]
+**Date Completed**: 2026-01-28
 **Priority**: 🟢 ENHANCEMENT
 **Objective**: Permitir importar extrato bancário (CSV/OFX) e reconciliar com lançamentos existentes. Matching feito 100% local (Hive) para evitar custos Firestore. Apenas flags de reconciliação sobem no sync.
 
@@ -1513,7 +1517,8 @@ class VencimentoAlertService {
 
 ## Phase CASH-25: Transferências entre Contas
 
-### Status: [TODO]
+### Status: [DONE]
+**Date Completed**: 2026-01-28
 **Priority**: 🟢 ENHANCEMENT
 **Objective**: Permitir transferências entre contas (ex: da conta corrente para poupança, ou da carteira para conta). Atualiza saldos de ambas as contas sem afetar DRE (não é receita nem despesa).
 
@@ -1629,7 +1634,8 @@ Transferência de R$ 500 da "Nubank" para "Poupança":
 
 ## Phase CASH-24: Receitas — Registro de Entradas
 
-### Status: [TODO]
+### Status: [DONE]
+**Date Completed**: 2026-01-28
 **Priority**: 🟢 ENHANCEMENT
 **Objective**: Permitir registro de receitas (vendas, rendimentos, outras entradas). Complementa as despesas para ter visão completa de entradas e saídas. Integra com DRE e Fluxo de Caixa.
 
@@ -1773,7 +1779,8 @@ await receitaService.quickAdd(
 
 ## Phase CASH-23: Contas Bancárias — Controle de Saldos
 
-### Status: [TODO]
+### Status: [DONE]
+**Date Completed**: 2026-01-28
 **Priority**: 🟢 ENHANCEMENT
 **Objective**: Permitir criação de contas (carteira, conta corrente, poupança, cartão de crédito, investimentos) para controle de saldos e origem/destino de movimentações. Base para transferências, reconciliação e balanço patrimonial.
 
@@ -2005,7 +2012,8 @@ Adicionar campo ao Lancamento existente:
 
 ## Phase CASH-22: Categorias Customizáveis — UI de Gestão
 
-### Status: [TODO]
+### Status: [DONE]
+**Date Completed**: 2026-01-28
 **Priority**: 🟢 ENHANCEMENT
 **Objective**: Criar interface para usuário visualizar, criar, editar e arquivar categorias. Categorias core (14) são editáveis apenas visualmente (ícone, cor). Categorias custom são totalmente editáveis.
 
@@ -2142,7 +2150,8 @@ Adicionar campo ao Lancamento existente:
 
 ## Phase CASH-21: Migração CashCategoria enum → Categoria model
 
-### Status: [TODO]
+### Status: [DONE]
+**Date Completed**: 2026-01-28
 **Priority**: 🔴 CRITICAL
 **Objective**: Migrar de `CashCategoria` (enum com 14 valores fixos) para `Categoria` (model do CORE-96). Preservar todos os lançamentos existentes mapeando enum → categoriaId. Deprecar enum após migração.
 
@@ -2366,7 +2375,8 @@ class Lancamento implements FarmOwnedEntity, SyncableEntity {
 
 ## Phase CASH-20: RuraCash Premium — Visão Arquitetural
 
-### Status: [TODO]
+### Status: [DONE]
+**Date Completed**: 2026-01-28
 **Priority**: 🟡 ARCHITECTURAL
 **Objective**: Documentar a visão completa do RuraCash Premium. Esta fase é um overview arquitetural das funcionalidades avançadas que serão implementadas nas fases CASH-21 a CASH-30.
 
@@ -2699,11 +2709,6 @@ CASH-30 (Paywall) ────────────────────�
 **Priority**: 🟢 ENHANCEMENT
 **Objective**: Permitir alternância entre contexto Rural e Pessoal para sanear o DRE da fazenda. Usar o modelo Farm-Centric para criar uma "Fazenda Pessoal" com categorias domésticas, isolando gastos pessoais (supermercado, farmácia, lazer) dos custos operacionais da fazenda (adubo, mão de obra, combustível).
 **Prerequisite**: CORE-91 (FarmType enum no Farm model)
-
-### Why LOCKED
-
-- Requer CORE-91 (FarmType) implementado primeiro
-- Requer strings l10n para todas as categorias novas (pt-BR + en)
 
 ### UX Decision: Onboarding Profile Selection
 

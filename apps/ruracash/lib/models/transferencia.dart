@@ -2,31 +2,30 @@ import 'package:hive/hive.dart';
 import 'package:uuid/uuid.dart';
 import 'package:agro_core/agro_core.dart';
 
-part 'lancamento.g.dart';
+part 'transferencia.g.dart';
 
-/// A financial entry (expense) in RuraCash.
-/// CASH-21: Migrated from CashCategoria enum to Categoria model (categoriaId).
-@HiveType(typeId: 71)
-class Lancamento extends HiveObject with FarmOwnedMixin implements SyncableEntity {
+/// CASH-25: Transfer between accounts.
+/// Transfers don't affect DRE (not revenue nor expense).
+@HiveType(typeId: 79)
+class Transferencia extends HiveObject with FarmOwnedMixin implements SyncableEntity {
   @HiveField(0)
   @override
   final String id;
 
   @HiveField(1)
-  double valor;
+  final String contaOrigemId;
 
-  /// CASH-21: ID da categoria (Categoria model do CORE-96)
   @HiveField(2)
-  String categoriaId;
+  final String contaDestinoId;
 
   @HiveField(3)
-  DateTime data;
+  double valor;
 
   @HiveField(4)
-  String? descricao;
+  DateTime data;
 
   @HiveField(5)
-  String? centroCustoId;
+  String? descricao;
 
   // FarmOwnedEntity fields
   @HiveField(6)
@@ -52,18 +51,13 @@ class Lancamento extends HiveObject with FarmOwnedMixin implements SyncableEntit
   @HiveField(11)
   bool? deleted;
 
-  /// CASH-23: Conta de origem da despesa (opcional, null = carteira/caixa)
-  @HiveField(12)
-  String? contaOrigemId;
-
-  Lancamento({
+  Transferencia({
     required this.id,
+    required this.contaOrigemId,
+    required this.contaDestinoId,
     required this.valor,
-    required this.categoriaId,
     required this.data,
     this.descricao,
-    this.centroCustoId,
-    this.contaOrigemId,
     required this.farmId,
     required this.createdBy,
     required this.createdAt,
@@ -72,44 +66,38 @@ class Lancamento extends HiveObject with FarmOwnedMixin implements SyncableEntit
     this.deleted = false,
   });
 
-  /// Factory constructor with auto-populated metadata.
-  factory Lancamento.create({
+  factory Transferencia.create({
+    required String contaOrigemId,
+    required String contaDestinoId,
     required double valor,
-    required String categoriaId,
     DateTime? data,
     String? descricao,
-    String? centroCustoId,
-    String? contaOrigemId,
   }) {
     final now = DateTime.now();
-    return Lancamento(
+    return Transferencia(
       id: const Uuid().v4(),
+      contaOrigemId: contaOrigemId,
+      contaDestinoId: contaDestinoId,
       valor: valor,
-      categoriaId: categoriaId,
       data: data ?? now,
       descricao: descricao,
-      centroCustoId: centroCustoId,
-      contaOrigemId: contaOrigemId,
       farmId: FarmService.instance.defaultFarmId ?? '',
       createdBy: AuthService.currentUser?.uid ?? '',
       createdAt: now,
       updatedAt: now,
-      sourceApp: 'ruracash',
     );
   }
 
   @override
   Map<String, dynamic> toMap() => toJson();
 
-  /// Serialization for backup/sync.
   Map<String, dynamic> toJson() => {
         'id': id,
+        'contaOrigemId': contaOrigemId,
+        'contaDestinoId': contaDestinoId,
         'valor': valor,
-        'categoriaId': categoriaId,
         'data': data.toIso8601String(),
         'descricao': descricao,
-        'centroCustoId': centroCustoId,
-        'contaOrigemId': contaOrigemId,
         'farmId': farmId,
         'createdBy': createdBy,
         'createdAt': createdAt.toIso8601String(),
@@ -118,15 +106,13 @@ class Lancamento extends HiveObject with FarmOwnedMixin implements SyncableEntit
         'deleted': deleted,
       };
 
-  /// Deserialization from backup/sync.
-  factory Lancamento.fromJson(Map<String, dynamic> json) => Lancamento(
+  factory Transferencia.fromJson(Map<String, dynamic> json) => Transferencia(
         id: json['id'] as String,
+        contaOrigemId: json['contaOrigemId'] as String,
+        contaDestinoId: json['contaDestinoId'] as String,
         valor: (json['valor'] as num).toDouble(),
-        categoriaId: json['categoriaId'] as String,
         data: DateTime.parse(json['data'] as String),
         descricao: json['descricao'] as String?,
-        centroCustoId: json['centroCustoId'] as String?,
-        contaOrigemId: json['contaOrigemId'] as String?,
         farmId: json['farmId'] as String? ?? '',
         createdBy: json['createdBy'] as String? ?? '',
         createdAt: json['createdAt'] != null
@@ -138,31 +124,4 @@ class Lancamento extends HiveObject with FarmOwnedMixin implements SyncableEntit
         sourceApp: json['sourceApp'] as String? ?? 'ruracash',
         deleted: json['deleted'] as bool? ?? false,
       );
-
-  Lancamento copyWith({
-    double? valor,
-    String? categoriaId,
-    DateTime? data,
-    String? descricao,
-    String? centroCustoId,
-    String? contaOrigemId,
-    DateTime? updatedAt,
-    bool? deleted,
-  }) {
-    return Lancamento(
-      id: id,
-      valor: valor ?? this.valor,
-      categoriaId: categoriaId ?? this.categoriaId,
-      data: data ?? this.data,
-      descricao: descricao ?? this.descricao,
-      centroCustoId: centroCustoId ?? this.centroCustoId,
-      contaOrigemId: contaOrigemId ?? this.contaOrigemId,
-      farmId: farmId,
-      createdBy: createdBy,
-      createdAt: createdAt,
-      updatedAt: updatedAt ?? DateTime.now(),
-      sourceApp: sourceApp,
-      deleted: deleted ?? this.deleted,
-    );
-  }
 }

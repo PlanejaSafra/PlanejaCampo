@@ -13,6 +13,7 @@ enum StatusRecebimento {
 @HiveType(typeId: 81)
 class ContaReceber extends HiveObject with FarmOwnedMixin implements SyncableEntity {
   @HiveField(0)
+  @override
   final String id;
 
   @HiveField(1)
@@ -68,8 +69,10 @@ class ContaReceber extends HiveObject with FarmOwnedMixin implements SyncableEnt
   final String sourceApp;
 
   @HiveField(15)
-  @override
   bool? deleted;
+
+  @override
+  Map<String, dynamic> toMap() => toJson();
 
   ContaReceber({
     required this.id,

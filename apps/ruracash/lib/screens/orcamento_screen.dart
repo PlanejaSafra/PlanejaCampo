@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:agro_core/agro_core.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../models/orcamento.dart';
 import '../services/orcamento_service.dart';
-import '../widgets/safra_selector.dart'; // hypothetical, we will use a simple dropdown for now
+import '../services/lancamento_service.dart';
+import '../helpers/categoria_icon_helper.dart';
 
+/// CASH-27: Budget management screen.
+/// CASH-21: Updated to use Categoria model instead of CashCategoria enum.
 class OrcamentoScreen extends StatefulWidget {
   const OrcamentoScreen({super.key});
 
@@ -14,137 +18,89 @@ class OrcamentoScreen extends StatefulWidget {
 }
 
 class _OrcamentoScreenState extends State<OrcamentoScreen> {
-  final OrcamentoService _service = OrcamentoService.instance;
-  
-  TipoPeriodoOrcamento _currentTipo = TipoPeriodoOrcamento.safra;
-  int _currentAno = DateTime.now().year; // For Safra, it's the start year (e.g. 2025 for 2025/26)
-  
   List<Orcamento> _orcamentos = [];
-  bool _isLoading = false;
+  final _currencyFormat = NumberFormat.currency(
+    locale: 'pt_BR',
+    symbol: 'R\$',
+    decimalDigits: 2,
+  );
 
   @override
   void initState() {
     super.initState();
-    _loadData();
+    _loadOrcamentos();
   }
 
-  Future<void> _loadData() async {
-    setState(() => _isLoading = true);
-    
-    // Simulate query
-    await Future.delayed(const Duration(milliseconds: 200));
-    final fetched = _service.getPorPeriodoTipo(_currentTipo, _currentAno);
-    
+  void _loadOrcamentos() {
     setState(() {
-      _orcamentos = fetched;
-      _isLoading = false;
+      _orcamentos = OrcamentoService.instance.getOrcamentosAtivos();
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = CashLocalizations.of(context)!;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Orçamentos'),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(60),
-          child: _buildFilterBar(),
-        ),
-      ),
-      body: _isLoading 
-          ? const Center(child: CircularProgressIndicator())
-          : _orcamentos.isEmpty
-              ? _buildEmptyState()
-              : _buildBudgetList(),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          // TODO: Open Add/Edit Budget Modal
-        },
-        label: const Text('Definir Orçamento'),
-        icon: const Icon(Icons.edit_outlined),
-      ),
-    );
-  }
-
-  Widget _buildFilterBar() {
-    return Container(
-      height: 60,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Row(
-        children: [
-          DropdownButton<TipoPeriodoOrcamento>(
-            value: _currentTipo,
-            underline: const SizedBox.shrink(),
-            onChanged: (val) {
-              if (val != null) {
-                setState(() => _currentTipo = val);
-                _loadData();
-              }
-            },
-            items: const [
-              DropdownMenuItem(value: TipoPeriodoOrcamento.safra, child: Text('Por Safra')),
-              DropdownMenuItem(value: TipoPeriodoOrcamento.mes, child: Text('Por Mês')),
-              DropdownMenuItem(value: TipoPeriodoOrcamento.ano, child: Text('Por Ano')),
-            ],
-          ),
-          const SizedBox(width: 16),
-          // Simple Year Selector
+        title: Text(l10n.cashOrcamentosTitle),
+        actions: [
           IconButton(
-            icon: const Icon(Icons.chevron_left),
-            onPressed: () {
-               setState(() => _currentAno--);
-               _loadData();
-            },
-          ),
-          Text(
-            _currentTipo == TipoPeriodoOrcamento.safra 
-                ? '$_currentAno/${(_currentAno+1).toString().substring(2)}'
-                : '$_currentAno',
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
-          IconButton(
-            icon: const Icon(Icons.chevron_right),
-            onPressed: () {
-               setState(() => _currentAno++);
-               _loadData();
-            },
+            icon: const Icon(Icons.add),
+            onPressed: () => _showAddOrcamentoDialog(context),
+            tooltip: l10n.cashOrcamentoDefinir,
           ),
         ],
       ),
+      body: _orcamentos.isEmpty
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.account_balance_wallet_outlined,
+                      size: 64, color: Colors.grey),
+                  const SizedBox(height: 16),
+                  Text(l10n.cashOrcamentoEmpty,
+                      style: const TextStyle(color: Colors.grey)),
+                  const SizedBox(height: 16),
+                  ElevatedButton.icon(
+                    onPressed: () => _showAddOrcamentoDialog(context),
+                    icon: const Icon(Icons.add),
+                    label: Text(l10n.cashOrcamentoDefinir),
+                  ),
+                ],
+              ),
+            )
+          : ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: _orcamentos.length,
+              itemBuilder: (context, index) {
+                final orcamento = _orcamentos[index];
+                return _buildBudgetCard(context, orcamento);
+              },
+            ),
     );
   }
 
-  Widget _buildEmptyState() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.pie_chart_outline, size: 64, color: Colors.grey.shade400),
-          const SizedBox(height: 16),
-          Text(
-            'Nenhum orçamento definido para este período.',
-            style: TextStyle(color: Colors.grey.shade600),
-          ),
-        ],
-      ),
-    );
-  }
+  Widget _buildBudgetCard(BuildContext context, Orcamento orcamento) {
+    final l10n = CashLocalizations.of(context)!;
 
-  Widget _buildBudgetList() {
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: _orcamentos.length,
-      itemBuilder: (context, index) {
-        final orcamento = _orcamentos[index];
-        return _buildBudgetCard(orcamento);
-      },
-    );
-  }
+    // Get Categoria from CategoriaService
+    final categoria = CategoriaService().getById(orcamento.categoriaId);
+    final catName = categoria?.nome ?? 'Categoria';
+    final catColor = categoria?.cor ?? Colors.grey;
+    final catIcon = CategoriaIconHelper.getIcon(categoria?.icone);
 
-  Widget _buildBudgetCard(Orcamento orcamento) {
-    // Mock consumption data for now
-    final consumido = orcamento.valorLimite * 0.75; // Mock 75%
-    final percentual = 0.75;
+    // Calcular consumo real via LancamentoService
+    final periodo = orcamento.periodo;
+    final lancamentos = LancamentoService.instance.getLancamentosPorPeriodo(periodo.start, periodo.end);
+
+    // Filtrar lançamentos pela categoria e somar valores
+    final consumido = lancamentos
+        .where((l) => l.categoriaId == orcamento.categoriaId)
+        .fold(0.0, (sum, l) => sum + l.valor);
+
+    final percentual = orcamento.valorLimite > 0 ? consumido / orcamento.valorLimite : 0.0;
     final restante = orcamento.valorLimite - consumido;
     final color = percentual > 1 ? Colors.red : (percentual > 0.8 ? Colors.orange : Colors.blue);
 
@@ -155,55 +111,157 @@ class _OrcamentoScreenState extends State<OrcamentoScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Header with category info
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'Categoria ${orcamento.categoriaId}', // Should resolve name
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                CircleAvatar(
+                  backgroundColor: catColor.withValues(alpha: 0.15),
+                  child: Icon(catIcon, color: catColor, size: 20),
                 ),
-                Icon(
-                  percentual > 1 ? Icons.warning : Icons.check_circle, 
-                  color: color, 
-                  size: 20
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    catName,
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.delete_outline, size: 20),
+                  onPressed: () => _deleteOrcamento(orcamento.id),
+                  tooltip: 'Remover',
                 ),
               ],
             ),
             const SizedBox(height: 12),
-            LinearProgressIndicator(
-              value: percentual > 1 ? 1 : percentual,
-              backgroundColor: Colors.grey.shade200,
-              color: color,
-              minHeight: 12,
-              borderRadius: BorderRadius.circular(6),
+
+            // Progress bar
+            ClipRRect(
+              borderRadius: BorderRadius.circular(4),
+              child: LinearProgressIndicator(
+                value: percentual.clamp(0.0, 1.0),
+                backgroundColor: Colors.grey.shade200,
+                valueColor: AlwaysStoppedAnimation<Color>(color),
+                minHeight: 8,
+              ),
             ),
             const SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'R\$ ${consumido.toStringAsFixed(0)} de ${orcamento.valorLimite.toStringAsFixed(0)}',
-                  style: TextStyle(color: Colors.grey.shade700, fontSize: 13),
-                ),
-                Text(
-                  '${(percentual * 100).toInt()}%',
-                  style: TextStyle(color: color, fontWeight: FontWeight.bold),
-                ),
-              ],
+
+            // Progress text
+            Text(
+              l10n.cashOrcamentoProgresso(
+                _currencyFormat.format(consumido),
+                _currencyFormat.format(orcamento.valorLimite),
+              ),
+              style: const TextStyle(fontSize: 13),
             ),
             const SizedBox(height: 4),
+
+            // Remaining/exceeded text
             Text(
-              restante > 0 
-                  ? 'Restam R\$ ${restante.toStringAsFixed(2)}' 
-                  : 'Estourou R\$ ${(consumido - orcamento.valorLimite).toStringAsFixed(2)}',
+              restante > 0
+                  ? l10n.cashOrcamentoRestam(_currencyFormat.format(restante))
+                  : l10n.cashOrcamentoEstourou(_currencyFormat.format(-restante)),
               style: TextStyle(
-                fontSize: 12, 
-                color: restante > 0 ? Colors.green : Colors.red
+                fontSize: 12,
+                color: restante > 0 ? Colors.green : Colors.red,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ],
         ),
       ),
     );
+  }
+
+  Future<void> _showAddOrcamentoDialog(BuildContext context) async {
+    final l10n = CashLocalizations.of(context)!;
+
+    // Get expense categories for current context
+    final farm = FarmService.instance.getDefaultFarm();
+    final isPersonal = farm?.type == FarmType.personal;
+    final categorias = isPersonal
+        ? CategoriaService().getCategoriasPersonal().where((c) => !c.isReceita).toList()
+        : CategoriaService().getCategoriasAgro().where((c) => !c.isReceita).toList();
+
+    if (categorias.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Nenhuma categoria disponível')),
+      );
+      return;
+    }
+
+    String? selectedCategoriaId = categorias.first.id;
+    double valorLimite = 0;
+    final valorController = TextEditingController();
+
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.cashOrcamentoDefinir),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            DropdownButtonFormField<String>(
+              value: selectedCategoriaId,
+              decoration: const InputDecoration(labelText: 'Categoria'),
+              items: categorias.map((c) {
+                final icon = CategoriaIconHelper.getIcon(c.icone);
+                return DropdownMenuItem(
+                  value: c.id,
+                  child: Row(
+                    children: [
+                      Icon(icon, size: 18, color: c.cor),
+                      const SizedBox(width: 8),
+                      Text(c.nome),
+                    ],
+                  ),
+                );
+              }).toList(),
+              onChanged: (v) => selectedCategoriaId = v,
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: valorController,
+              decoration: const InputDecoration(
+                labelText: 'Valor Limite',
+                prefixText: 'R\$ ',
+              ),
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              onChanged: (v) {
+                valorLimite = double.tryParse(v.replaceAll(',', '.')) ?? 0;
+              },
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.cancelarButton),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l10n.salvarButton),
+          ),
+        ],
+      ),
+    );
+
+    if (result == true && selectedCategoriaId != null && valorLimite > 0) {
+      final now = DateTime.now();
+      final orcamento = Orcamento.create(
+        categoriaId: selectedCategoriaId!,
+        valorLimite: valorLimite,
+        tipo: TipoPeriodoOrcamento.mes,
+        ano: now.year,
+        mes: now.month,
+      );
+      await OrcamentoService.instance.add(orcamento);
+      _loadOrcamentos();
+    }
+  }
+
+  Future<void> _deleteOrcamento(String id) async {
+    await OrcamentoService.instance.delete(id);
+    _loadOrcamentos();
   }
 }

@@ -1,5 +1,3 @@
-import 'package:flutter/foundation.dart';
-import 'package:hive/hive.dart';
 import 'package:agro_core/agro_core.dart';
 
 import '../models/conta_receber.dart';

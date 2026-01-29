@@ -2,6 +2,49 @@
 
 ---
 
+## Phase CORE-97: NotificationService — Serviço de Notificações Locais
+
+### Status: [DONE]
+**Date Completed**: 2026-01-28
+**Priority**: 🟢 ENHANCEMENT
+**Objective**: Criar serviço centralizado para envio de notificações locais usando `flutter_local_notifications`. Permite que apps enviem alertas ao usuário (ex: orçamento estourado, lembrete de lançamento, vencimento de conta).
+
+### Implementação
+
+AgroNotificationService já existia no core. Adicionados novos métodos genéricos:
+
+| Método | Descrição |
+|--------|-----------|
+| `instance` (getter) | Acesso singleton via `AgroNotificationService.instance` |
+| `showNotification()` | Envia notificação genérica com canal customizável |
+| `cancelNotification(id)` | Cancela notificação por ID |
+| `cancelAllNotifications()` | Cancela todas as notificações do app |
+
+### Files Modified
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/services/notification_service.dart` | MODIFY | Adicionados `instance` getter e métodos genéricos |
+
+### Integration (RuraCash)
+
+```dart
+// Em OrcamentoAlertService:
+await AgroNotificationService.instance.showNotification(
+  id: _budgetAlertNotificationId + categoriaId.hashCode.abs() % 1000,
+  title: title,
+  body: body,
+  channelId: 'budget_alerts',
+  channelName: 'Alertas de Orçamento',
+  payload: 'budget_alert:$categoriaId',
+);
+```
+
+### Cross-Reference
+- CASH-32.5: L10n para strings de notificação
+
+---
+
 ## Phase CORE-96.1: Bug Fixes — Categoria Model + Service GenericSyncService Compliance
 
 ### Status: [DONE]

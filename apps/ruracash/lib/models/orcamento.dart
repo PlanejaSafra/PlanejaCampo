@@ -15,6 +15,7 @@ enum TipoPeriodoOrcamento {
 @HiveType(typeId: 82)
 class Orcamento extends HiveObject with FarmOwnedMixin implements SyncableEntity {
   @HiveField(0)
+  @override
   final String id;
 
   @HiveField(1)
@@ -63,8 +64,10 @@ class Orcamento extends HiveObject with FarmOwnedMixin implements SyncableEntity
   final String sourceApp;
 
   @HiveField(14)
-  @override
   bool? deleted;
+
+  @override
+  Map<String, dynamic> toMap() => toJson();
 
   Orcamento({
     required this.id,
@@ -83,6 +86,36 @@ class Orcamento extends HiveObject with FarmOwnedMixin implements SyncableEntity
     required this.sourceApp,
     this.deleted = false,
   });
+
+  /// Factory constructor with auto-populated metadata.
+  factory Orcamento.create({
+    required String categoriaId,
+    required double valorLimite,
+    required TipoPeriodoOrcamento tipo,
+    required int ano,
+    int? mes,
+    int? trimestre,
+    bool alertaAtivo = true,
+    int alertaPercentual = 80,
+  }) {
+    final now = DateTime.now();
+    return Orcamento(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      categoriaId: categoriaId,
+      valorLimite: valorLimite,
+      tipo: tipo,
+      ano: ano,
+      mes: mes,
+      trimestre: trimestre,
+      alertaAtivo: alertaAtivo,
+      alertaPercentual: alertaPercentual,
+      farmId: FarmService.instance.defaultFarmId ?? '',
+      createdBy: AuthService.currentUser?.uid ?? '',
+      createdAt: now,
+      updatedAt: now,
+      sourceApp: 'ruracash',
+    );
+  }
 
   /// Retorna o range de datas que este orçamento cobre
   DateTimeRange get periodo => _calcularPeriodo();
