@@ -8,7 +8,9 @@
       "Bash(pushd:*)",
       "Bash(popd:*)",
       "Bash(firebase projects:list:*)",
-      "Bash(firebase apps:sdkconfig:*)"
+      "Bash(firebase apps:sdkconfig:*)",
+      "Bash(dart run intl_utils:generate:*)",
+      "Bash(where:*)"
     ],
     "additionalDirectories": [
       "c:\\Users\\jelui\\AntiGravity\\PlanejaCampo\\apps\\planejachuva"
