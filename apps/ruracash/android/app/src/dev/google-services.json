@@ -1,0 +1,206 @@
+{
+  "project_info": {
+    "project_number": "447693754827",
+    "project_id": "ruracamp-dev",
+    "storage_bucket": "ruracamp-dev.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:447693754827:android:207cde6528e048ec22264e",
+        "android_client_info": {
+          "package_name": "com.ruracamp.cattle"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "447693754827-mq8dnqu6n0rq1d728249sef0fvlpufd0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBQFoE09Blo9KnCv6zEraqU8TYc-mfRYmA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "447693754827-mq8dnqu6n0rq1d728249sef0fvlpufd0.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "447693754827-07r5kdrr8g6f92giuifj0demgk4th14a.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.ruracamp.fuel"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:447693754827:android:b59e462e0405892c22264e",
+        "android_client_info": {
+          "package_name": "com.ruracamp.fuel"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "447693754827-mq8dnqu6n0rq1d728249sef0fvlpufd0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBQFoE09Blo9KnCv6zEraqU8TYc-mfRYmA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "447693754827-mq8dnqu6n0rq1d728249sef0fvlpufd0.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "447693754827-07r5kdrr8g6f92giuifj0demgk4th14a.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.ruracamp.fuel"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:447693754827:android:811482678402a0d022264e",
+        "android_client_info": {
+          "package_name": "com.ruracamp.rain"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "447693754827-nb6f966lfp93ou26nsnlh6r3it2b2u9t.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ruracamp.rain",
+            "certificate_hash": "43d3d0581b3b95cab53123681944068bbe3a6b08"
+          }
+        },
+        {
+          "client_id": "447693754827-mq8dnqu6n0rq1d728249sef0fvlpufd0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBQFoE09Blo9KnCv6zEraqU8TYc-mfRYmA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "447693754827-mq8dnqu6n0rq1d728249sef0fvlpufd0.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "447693754827-07r5kdrr8g6f92giuifj0demgk4th14a.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.ruracamp.fuel"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:447693754827:android:1359a65bb46ad3c622264e",
+        "android_client_info": {
+          "package_name": "com.ruracamp.rubber"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "447693754827-4bokj9550lrji4t4tnarlilr356dj12n.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ruracamp.rubber",
+            "certificate_hash": "43d3d0581b3b95cab53123681944068bbe3a6b08"
+          }
+        },
+        {
+          "client_id": "447693754827-mq8dnqu6n0rq1d728249sef0fvlpufd0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBQFoE09Blo9KnCv6zEraqU8TYc-mfRYmA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "447693754827-mq8dnqu6n0rq1d728249sef0fvlpufd0.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "447693754827-07r5kdrr8g6f92giuifj0demgk4th14a.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.ruracamp.fuel"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:447693754827:android:34576d0e4e6b9a7322264e",
+        "android_client_info": {
+          "package_name": "com.ruracamp.ruracash"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "447693754827-mq8dnqu6n0rq1d728249sef0fvlpufd0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBQFoE09Blo9KnCv6zEraqU8TYc-mfRYmA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "447693754827-mq8dnqu6n0rq1d728249sef0fvlpufd0.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "447693754827-07r5kdrr8g6f92giuifj0demgk4th14a.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.ruracamp.fuel"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

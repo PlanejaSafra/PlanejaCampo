@@ -426,9 +426,9 @@ GenericSyncService<T>
 | `lib/agro_core.dart` | MODIFY | Export tier2_pipeline.dart |
 
 ### Cross-Reference
-- RAIN-10 [LOCKED]: App-specific migration (rurarain) — next step
-- RUBBER-30 [LOCKED]: App-specific verification (rurarubber)
-- CASH-11 [LOCKED]: App-specific verification (ruracash)
+- RAIN-10 [DONE]: App-specific migration (rurarain)
+- RUBBER-30 [DONE]: App-specific verification (rurarubber)
+- CASH-11 [DONE]: App-specific verification (ruracash)
 - CORE-78: GenericSyncService original (Tier 3 only)
 - CORE-88: Data Tier Architecture definition
 
@@ -491,18 +491,13 @@ GenericSyncService<T>
 
 ---
 
-## Phase CORE-91: FarmType — Context Differentiation (Agro vs Pessoal) [LOCKED]
+## Phase CORE-91: FarmType — Context Differentiation (Agro vs Pessoal)
 
 ### Status: [DONE]
 **Date Completed**: 2026-01-26
 **Priority**: 🟡 ARCHITECTURAL
 **Objective**: Adicionar diferenciação de tipo ao modelo Farm, permitindo que um mesmo usuário mantenha contextos separados (fazenda rural vs finanças pessoais). Habilita o CASH-09 (Personal Finance Mode) e previne poluição do DRE da fazenda com gastos domésticos.
 **Prerequisite**: Nenhum — mudança retrocompatível. Recomenda-se implementar junto com CASH-09.
-
-### Why LOCKED
-
-- Requer decisão de design: enum simples (`agro`, `personal`) ou extensível (`agro`, `personal`, `pecuaria`, `granja`)?
-- Requer regeneração do `farm.g.dart` via `build_runner` em TODOS os apps
 - Requer testes de migração: farms existentes devem receber `type = FarmType.agro` como default
 - Requer decisão sobre filtros cross-app: cada app mostra apenas farms do seu contexto?
 
