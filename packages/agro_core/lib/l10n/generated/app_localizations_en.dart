@@ -1893,4 +1893,202 @@ class AgroLocalizationsEn extends AgroLocalizations {
 
   @override
   String get farmTypePersonal => 'Personal';
+
+  @override
+  String get farmRoleOwner => 'Owner';
+
+  @override
+  String get farmRoleManager => 'Manager';
+
+  @override
+  String get farmRoleWorker => 'Worker';
+
+  @override
+  String get farmRoleOwnerDesc => 'Full control of the farm';
+
+  @override
+  String get farmRoleManagerDesc => 'Manages records and invites workers';
+
+  @override
+  String get farmRoleWorkerDesc => 'Records and views data';
+
+  @override
+  String get farmSwitcherTitle => 'Switch Farm';
+
+  @override
+  String get farmSwitcherCurrent => 'Active Farm';
+
+  @override
+  String get farmSwitcherOwned => 'My Farms';
+
+  @override
+  String get farmSwitcherJoined => 'Farms I Joined';
+
+  @override
+  String get farmSwitcherManage => 'Manage Farms';
+
+  @override
+  String get farmSwitcherEmpty => 'No farms available';
+
+  @override
+  String get farmMembersTitle => 'Members';
+
+  @override
+  String get farmMembersEmpty => 'No members found';
+
+  @override
+  String farmMembersSince(String date) {
+    return 'Since $date';
+  }
+
+  @override
+  String farmMembersInvitedBy(String name) {
+    return 'Invited by $name';
+  }
+
+  @override
+  String get farmMembersRemove => 'Remove Member';
+
+  @override
+  String farmMembersRemoveConfirm(String name) {
+    return 'Remove $name from the farm?';
+  }
+
+  @override
+  String get farmMembersRemoved => 'Member removed';
+
+  @override
+  String get farmMembersChangeRole => 'Change Role';
+
+  @override
+  String farmMembersCount(int count) {
+    return '$count members';
+  }
+
+  @override
+  String get farmInviteTitle => 'Invite Member';
+
+  @override
+  String get farmInviteSelectRole => 'Select role';
+
+  @override
+  String get farmInviteGenerate => 'Generate Invite';
+
+  @override
+  String get farmInviteCode => 'Invitation Code';
+
+  @override
+  String get farmInviteCodeCopied => 'Code copied!';
+
+  @override
+  String get farmInviteShare => 'Share Invite';
+
+  @override
+  String farmInviteShareMessage(String farmName, String code) {
+    return 'Join the farm \"$farmName\" on RuraCamp! Use code: $code';
+  }
+
+  @override
+  String get farmInviteExpires => 'Valid for 7 days';
+
+  @override
+  String get farmInvitePending => 'Pending Invitations';
+
+  @override
+  String get farmInviteRevoke => 'Revoke';
+
+  @override
+  String get farmInviteRevoked => 'Invitation revoked';
+
+  @override
+  String get farmInviteNoPending => 'No pending invitations';
+
+  @override
+  String get farmJoinTitle => 'Join Farm';
+
+  @override
+  String get farmJoinEnterCode => 'Enter invitation code';
+
+  @override
+  String get farmJoinCodeHint => 'E.g.: ABC123';
+
+  @override
+  String get farmJoinLookup => 'Look Up';
+
+  @override
+  String get farmJoinPreview => 'You have been invited to:';
+
+  @override
+  String farmJoinFarmName(String name) {
+    return 'Farm: $name';
+  }
+
+  @override
+  String farmJoinRole(String role) {
+    return 'Role: $role';
+  }
+
+  @override
+  String farmJoinInvitedBy(String name) {
+    return 'Invited by: $name';
+  }
+
+  @override
+  String get farmJoinConfirm => 'Accept Invitation';
+
+  @override
+  String get farmJoinSuccess => 'You joined the farm!';
+
+  @override
+  String get farmJoinAlreadyMember => 'You are already a member of this farm';
+
+  @override
+  String get farmJoinInvalidCode => 'Invalid or expired code';
+
+  @override
+  String get farmJoinError => 'Error joining farm';
+
+  @override
+  String get farmLeave => 'Leave Farm';
+
+  @override
+  String farmLeaveConfirm(String name) {
+    return 'Leave the farm \"$name\"? You will lose access to shared data.';
+  }
+
+  @override
+  String get farmLeaveSuccess => 'You left the farm';
+
+  @override
+  String get farmSharingTitle => 'Sharing';
+
+  @override
+  String get farmSharingEnable => 'Enable Sharing';
+
+  @override
+  String get farmSharingDisable => 'Disable Sharing';
+
+  @override
+  String get farmSharingEnabled => 'Sharing enabled';
+
+  @override
+  String get farmSharingDisabled => 'Sharing disabled';
+
+  @override
+  String get farmSharingDescription => 'Allows inviting members and syncing data in real-time';
+
+  @override
+  String get farmSharingRequiresPremium => 'Feature available on Premium plan';
+
+  @override
+  String get farmPermissionDenied => 'No permission for this action';
+
+  @override
+  String get farmOwnerBadge => 'Owner';
+
+  @override
+  String get farmJoinedBadge => 'Member';
+
+  @override
+  String get drawerFarms => 'Farms';
 }

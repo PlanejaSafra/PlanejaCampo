@@ -23,6 +23,11 @@ class AgroDrawer extends StatelessWidget {
   /// Use this for complex profile indicators (e.g., colored chips, icons).
   final Widget? profileWidget;
 
+  /// Optional farm switcher widget (CORE-90).
+  /// Displayed in the drawer header below the profile.
+  /// Use [FarmSwitcher] widget for multi-farm support.
+  final Widget? farmSwitcher;
+
   /// Additional menu items specific to the app.
   /// These are rendered before Settings.
   final List<AgroDrawerItem> extraItems;
@@ -46,6 +51,7 @@ class AgroDrawer extends StatelessWidget {
     this.versionText,
     this.profileName,
     this.profileWidget,
+    this.farmSwitcher,
     this.extraItems = const [],
     this.afterSettingsItems = const [],
     this.appLogoLightPath,
@@ -131,6 +137,12 @@ class AgroDrawer extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 4),
                       visualDensity: VisualDensity.compact,
                     ),
+                  ),
+                // CORE-90: Farm switcher
+                if (farmSwitcher != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: farmSwitcher!,
                   ),
               ],
             ),

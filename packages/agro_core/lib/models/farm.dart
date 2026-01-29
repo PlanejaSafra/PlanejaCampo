@@ -1,6 +1,7 @@
 import 'package:hive/hive.dart';
 import 'package:uuid/uuid.dart';
 
+import 'farm_role.dart';
 import 'farm_type.dart';
 
 part 'farm.g.dart';
@@ -86,9 +87,16 @@ class Farm extends HiveObject {
   @HiveField(10)
   FarmType type;
 
-  // Future fields (commented for reference):
-  // @HiveField(7)
-  // List<FarmMember>? members;
+  /// The current user's role in this farm (CORE-90).
+  ///
+  /// - `null` or [FarmRole.owner]: This is a farm the user owns (default).
+  /// - [FarmRole.manager]: User was invited as manager.
+  /// - [FarmRole.worker]: User was invited as worker.
+  ///
+  /// For owned farms, this is always `null` or [FarmRole.owner].
+  /// For joined farms, this is set when accepting an invitation.
+  @HiveField(11)
+  FarmRole? myRole;
 
   Farm({
     required this.id,
@@ -101,6 +109,7 @@ class Farm extends HiveObject {
     this.subscriptionTier,
     this.isShared = false,
     this.type = FarmType.agro,
+    this.myRole,
   });
 
   /// Factory for creating a new farm with auto-generated UUID
@@ -193,6 +202,7 @@ class Farm extends HiveObject {
       if (subscriptionTier != null) 'subscriptionTier': subscriptionTier,
       'isShared': isShared,
       'type': type.index,
+      if (myRole != null) 'myRole': myRole!.index,
     };
   }
 
@@ -211,11 +221,24 @@ class Farm extends HiveObject {
       type: json['type'] != null
           ? FarmType.values[json['type'] as int]
           : FarmType.agro,
+      myRole: json['myRole'] != null
+          ? FarmRole.values[json['myRole'] as int]
+          : null,
     );
   }
 
   /// Display name (just the name for now, could include member count in future)
   String get displayName => name;
+
+  /// The effective role of the current user in this farm.
+  /// Returns [FarmRole.owner] if myRole is null (backward compatibility).
+  FarmRole get effectiveRole => myRole ?? FarmRole.owner;
+
+  /// Whether this farm is owned by the current user (not joined).
+  bool get isOwned => myRole == null || myRole == FarmRole.owner;
+
+  /// Whether this farm was joined (invited by someone else).
+  bool get isJoined => myRole != null && myRole != FarmRole.owner;
 
   /// Check if a user is the owner of this farm
   bool isOwner(String userId) => ownerId == userId;

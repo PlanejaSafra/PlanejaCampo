@@ -1,8 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import '../l10n/generated/app_localizations.dart';
 import '../models/farm.dart';
+import '../models/farm_permissions.dart';
+import '../models/farm_role.dart';
 import '../models/farm_type.dart';
 
 /// Service for managing farms in the RuraCamp ecosystem.
@@ -30,6 +33,8 @@ import '../models/farm_type.dart';
 /// ```
 class FarmService {
   static const String _boxName = 'farms';
+  static const String _prefsBoxName = 'agro_farm_prefs';
+  static const String _activeFarmKey = 'activeFarmId';
 
   // Singleton pattern
   static final FarmService _instance = FarmService._internal();
@@ -38,15 +43,23 @@ class FarmService {
   FarmService._internal();
 
   late Box<Farm> _box;
+  late Box<String> _prefsBox;
   bool _initialized = false;
+
+  /// The currently active farm ID (persisted across sessions).
+  /// If null, falls back to the default farm.
+  String? _activeFarmId;
 
   /// Initialize Hive box
   /// Must be called from main.dart during app initialization
-  /// Note: FarmAdapter must be registered BEFORE calling this method
+  /// Note: FarmAdapter and FarmRoleAdapter must be registered BEFORE calling this
   Future<void> init() async {
     if (_initialized) return;
     _box = await Hive.openBox<Farm>(_boxName);
+    _prefsBox = await Hive.openBox<String>(_prefsBoxName);
+    _activeFarmId = _prefsBox.get(_activeFarmKey);
     _initialized = true;
+    debugPrint('[FarmService] Initialized. Active farm: $_activeFarmId');
   }
 
   /// Check if service is initialized
@@ -91,13 +104,16 @@ class FarmService {
   }
 
   /// Get farm by ID
-  /// Returns null if farm doesn't exist or user doesn't have access
+  /// Returns null if farm doesn't exist or user doesn't have access.
+  /// Includes both owned and joined farms.
   Farm? getFarmById(String id) {
     final farm = _box.get(id);
-    if (farm == null || farm.ownerId != _currentUserId) {
-      return null;
+    if (farm == null) return null;
+    // Allow access to owned farms and joined farms
+    if (farm.ownerId == _currentUserId || farm.isJoined) {
+      return farm;
     }
-    return farm;
+    return null;
   }
 
   /// Get farm by ID (for internal use - no ownership check)
@@ -206,6 +222,7 @@ class FarmService {
       subscriptionTier: farm.subscriptionTier,
       isShared: farm.isShared,
       type: farm.type,
+      myRole: farm.myRole,
     );
 
     // If this is set as default, unset other defaults
@@ -382,6 +399,7 @@ class FarmService {
         subscriptionTier: farm.subscriptionTier,
         isShared: farm.isShared,
         type: farm.type,
+        myRole: farm.myRole,
       );
 
       await _box.put(farm.id, updatedFarm);
@@ -400,32 +418,184 @@ class FarmService {
   /// ```
   String? get defaultFarmId => getDefaultFarm()?.id;
 
-  /// Check if the active (default) farm is in shared (multi-user) mode.
+  /// Check if the active farm is in shared (multi-user) mode.
   ///
-  /// Returns `true` if the default farm has `isShared == true`.
-  /// Returns `false` if no default farm exists or isShared is false.
+  /// Returns `true` if the active farm has `isShared == true`.
+  /// Returns `false` if no active farm exists or isShared is false.
   ///
   /// Used by GenericSyncService to determine if Tier 3 data should
   /// be synchronized to Firestore.
   bool isActiveFarmShared() {
-    final farm = getDefaultFarm();
+    final farm = getActiveFarm();
     return farm?.isShared ?? false;
   }
 
-  /// Set the shared (multi-user) mode on the active (default) farm.
+  /// Set the shared (multi-user) mode on the active farm.
   ///
   /// This is called when a multi-user license is activated or deactivated.
   /// When `shared = true`, GenericSyncService (Tier 3) will begin syncing
   /// this farm's data to Firestore.
   Future<void> setFarmShared(bool shared) async {
-    final farm = getDefaultFarm();
+    final farm = getActiveFarm();
     if (farm == null) {
-      throw Exception('No default farm found. Cannot set shared mode.');
+      throw Exception('No active farm found. Cannot set shared mode.');
     }
 
     farm.setShared(shared);
     await _box.put(farm.id, farm);
   }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // CORE-90: Multi-Farm Support
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /// Get all farms accessible to the current user (owned + joined).
+  ///
+  /// Returns owned farms (`ownerId == currentUser`) plus joined farms
+  /// (`myRole != null && myRole != owner`), sorted by creation date.
+  List<Farm> getAccessibleFarms() {
+    if (_currentUserId == null) return [];
+    return _box.values.where((f) =>
+        f.ownerId == _currentUserId ||
+        (f.myRole != null && f.myRole != FarmRole.owner),
+    ).toList()
+      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+  }
+
+  /// Get the currently active farm.
+  ///
+  /// Resolution order:
+  /// 1. Farm matching `_activeFarmId` (if set and still accessible)
+  /// 2. Default farm (`isDefault == true`)
+  /// 3. First accessible farm
+  /// 4. null (no farms)
+  Farm? getActiveFarm() {
+    if (_currentUserId == null) return null;
+
+    // 1. Try stored active farm ID
+    if (_activeFarmId != null) {
+      final farm = _box.get(_activeFarmId);
+      if (farm != null &&
+          (farm.ownerId == _currentUserId || farm.isJoined)) {
+        return farm;
+      }
+      // Stale ID — clear it
+      _activeFarmId = null;
+      _prefsBox.delete(_activeFarmKey);
+    }
+
+    // 2. Fall back to default farm
+    final defaultFarm = getDefaultFarm();
+    if (defaultFarm != null) return defaultFarm;
+
+    // 3. Fall back to first accessible
+    final accessible = getAccessibleFarms();
+    return accessible.isNotEmpty ? accessible.first : null;
+  }
+
+  /// Get the active farm's ID.
+  ///
+  /// Convenience for quick access. Falls back to default farm if no active.
+  String? get activeFarmId => getActiveFarm()?.id;
+
+  /// Set the active farm by ID.
+  ///
+  /// Persists across sessions. The active farm determines the context
+  /// for all data operations (reading/writing records, reports, etc.)
+  Future<void> setActiveFarm(String farmId) async {
+    final farm = _box.get(farmId);
+    if (farm == null) {
+      throw Exception('Farm not found: $farmId');
+    }
+
+    _activeFarmId = farmId;
+    await _prefsBox.put(_activeFarmKey, farmId);
+    debugPrint('[FarmService] Active farm set to: $farmId (${farm.name})');
+  }
+
+  /// Add a joined farm to local storage.
+  ///
+  /// Called when the current user accepts an invitation to another user's farm.
+  /// Creates a local Farm object with the original owner's data but `myRole`
+  /// set to the invited role.
+  Future<Farm> addJoinedFarm({
+    required String farmId,
+    required String farmName,
+    required String ownerId,
+    required FarmRole role,
+    FarmType type = FarmType.agro,
+    String? description,
+    bool isShared = true,
+  }) async {
+    // Check if farm already exists locally
+    final existing = _box.get(farmId);
+    if (existing != null) {
+      debugPrint('[FarmService] Farm $farmId already exists locally');
+      return existing;
+    }
+
+    final farm = Farm(
+      id: farmId,
+      name: farmName,
+      ownerId: ownerId,
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+      isDefault: false, // Joined farms are never default
+      description: description,
+      isShared: isShared,
+      type: type,
+      myRole: role,
+    );
+
+    await _box.put(farm.id, farm);
+    debugPrint('[FarmService] Added joined farm: $farmId (role: ${role.name})');
+    return farm;
+  }
+
+  /// Remove a joined farm from local storage.
+  ///
+  /// Called when the current user leaves a farm they had joined.
+  /// If the active farm was the removed farm, resets to default.
+  Future<void> removeJoinedFarm(String farmId) async {
+    final farm = _box.get(farmId);
+    if (farm == null) return;
+
+    // Only allow removing joined farms (not owned)
+    if (farm.isOwned && farm.ownerId == _currentUserId) {
+      throw Exception('Cannot remove owned farm via removeJoinedFarm. '
+          'Use deleteFarm instead.');
+    }
+
+    await _box.delete(farmId);
+    debugPrint('[FarmService] Removed joined farm: $farmId');
+
+    // Reset active farm if it was the removed one
+    if (_activeFarmId == farmId) {
+      _activeFarmId = null;
+      await _prefsBox.delete(_activeFarmKey);
+      debugPrint('[FarmService] Reset active farm (removed farm was active)');
+    }
+  }
+
+  /// Get permissions for the active farm.
+  ///
+  /// Returns [FarmPermissions] based on the current user's role
+  /// in the active farm. Defaults to owner permissions if no farm is active.
+  FarmPermissions getActivePermissions() {
+    final farm = getActiveFarm();
+    if (farm == null) return const FarmPermissions(FarmRole.owner);
+    return FarmPermissions(farm.effectiveRole);
+  }
+
+  /// Get permissions for a specific farm.
+  FarmPermissions getPermissionsForFarm(String farmId) {
+    final farm = _box.get(farmId);
+    if (farm == null) return const FarmPermissions(FarmRole.worker);
+    return FarmPermissions(farm.effectiveRole);
+  }
+
+  /// Whether the current user has multiple accessible farms.
+  bool get hasMultipleFarms => getAccessibleFarms().length > 1;
 }
 
 /// Exception thrown when a user tries to create more farms

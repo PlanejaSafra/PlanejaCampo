@@ -3646,6 +3646,366 @@ abstract class AgroLocalizations {
   /// In en, this message translates to:
   /// **'Personal'**
   String get farmTypePersonal;
+
+  /// No description provided for @farmRoleOwner.
+  ///
+  /// In en, this message translates to:
+  /// **'Owner'**
+  String get farmRoleOwner;
+
+  /// No description provided for @farmRoleManager.
+  ///
+  /// In en, this message translates to:
+  /// **'Manager'**
+  String get farmRoleManager;
+
+  /// No description provided for @farmRoleWorker.
+  ///
+  /// In en, this message translates to:
+  /// **'Worker'**
+  String get farmRoleWorker;
+
+  /// No description provided for @farmRoleOwnerDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Full control of the farm'**
+  String get farmRoleOwnerDesc;
+
+  /// No description provided for @farmRoleManagerDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Manages records and invites workers'**
+  String get farmRoleManagerDesc;
+
+  /// No description provided for @farmRoleWorkerDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Records and views data'**
+  String get farmRoleWorkerDesc;
+
+  /// No description provided for @farmSwitcherTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch Farm'**
+  String get farmSwitcherTitle;
+
+  /// No description provided for @farmSwitcherCurrent.
+  ///
+  /// In en, this message translates to:
+  /// **'Active Farm'**
+  String get farmSwitcherCurrent;
+
+  /// No description provided for @farmSwitcherOwned.
+  ///
+  /// In en, this message translates to:
+  /// **'My Farms'**
+  String get farmSwitcherOwned;
+
+  /// No description provided for @farmSwitcherJoined.
+  ///
+  /// In en, this message translates to:
+  /// **'Farms I Joined'**
+  String get farmSwitcherJoined;
+
+  /// No description provided for @farmSwitcherManage.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Farms'**
+  String get farmSwitcherManage;
+
+  /// No description provided for @farmSwitcherEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No farms available'**
+  String get farmSwitcherEmpty;
+
+  /// No description provided for @farmMembersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Members'**
+  String get farmMembersTitle;
+
+  /// No description provided for @farmMembersEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No members found'**
+  String get farmMembersEmpty;
+
+  /// No description provided for @farmMembersSince.
+  ///
+  /// In en, this message translates to:
+  /// **'Since {date}'**
+  String farmMembersSince(String date);
+
+  /// No description provided for @farmMembersInvitedBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Invited by {name}'**
+  String farmMembersInvitedBy(String name);
+
+  /// No description provided for @farmMembersRemove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove Member'**
+  String get farmMembersRemove;
+
+  /// No description provided for @farmMembersRemoveConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove {name} from the farm?'**
+  String farmMembersRemoveConfirm(String name);
+
+  /// No description provided for @farmMembersRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'Member removed'**
+  String get farmMembersRemoved;
+
+  /// No description provided for @farmMembersChangeRole.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Role'**
+  String get farmMembersChangeRole;
+
+  /// No description provided for @farmMembersCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} members'**
+  String farmMembersCount(int count);
+
+  /// No description provided for @farmInviteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite Member'**
+  String get farmInviteTitle;
+
+  /// No description provided for @farmInviteSelectRole.
+  ///
+  /// In en, this message translates to:
+  /// **'Select role'**
+  String get farmInviteSelectRole;
+
+  /// No description provided for @farmInviteGenerate.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate Invite'**
+  String get farmInviteGenerate;
+
+  /// No description provided for @farmInviteCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Invitation Code'**
+  String get farmInviteCode;
+
+  /// No description provided for @farmInviteCodeCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Code copied!'**
+  String get farmInviteCodeCopied;
+
+  /// No description provided for @farmInviteShare.
+  ///
+  /// In en, this message translates to:
+  /// **'Share Invite'**
+  String get farmInviteShare;
+
+  /// No description provided for @farmInviteShareMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Join the farm \"{farmName}\" on RuraCamp! Use code: {code}'**
+  String farmInviteShareMessage(String farmName, String code);
+
+  /// No description provided for @farmInviteExpires.
+  ///
+  /// In en, this message translates to:
+  /// **'Valid for 7 days'**
+  String get farmInviteExpires;
+
+  /// No description provided for @farmInvitePending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending Invitations'**
+  String get farmInvitePending;
+
+  /// No description provided for @farmInviteRevoke.
+  ///
+  /// In en, this message translates to:
+  /// **'Revoke'**
+  String get farmInviteRevoke;
+
+  /// No description provided for @farmInviteRevoked.
+  ///
+  /// In en, this message translates to:
+  /// **'Invitation revoked'**
+  String get farmInviteRevoked;
+
+  /// No description provided for @farmInviteNoPending.
+  ///
+  /// In en, this message translates to:
+  /// **'No pending invitations'**
+  String get farmInviteNoPending;
+
+  /// No description provided for @farmJoinTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Join Farm'**
+  String get farmJoinTitle;
+
+  /// No description provided for @farmJoinEnterCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter invitation code'**
+  String get farmJoinEnterCode;
+
+  /// No description provided for @farmJoinCodeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'E.g.: ABC123'**
+  String get farmJoinCodeHint;
+
+  /// No description provided for @farmJoinLookup.
+  ///
+  /// In en, this message translates to:
+  /// **'Look Up'**
+  String get farmJoinLookup;
+
+  /// No description provided for @farmJoinPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'You have been invited to:'**
+  String get farmJoinPreview;
+
+  /// No description provided for @farmJoinFarmName.
+  ///
+  /// In en, this message translates to:
+  /// **'Farm: {name}'**
+  String farmJoinFarmName(String name);
+
+  /// No description provided for @farmJoinRole.
+  ///
+  /// In en, this message translates to:
+  /// **'Role: {role}'**
+  String farmJoinRole(String role);
+
+  /// No description provided for @farmJoinInvitedBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Invited by: {name}'**
+  String farmJoinInvitedBy(String name);
+
+  /// No description provided for @farmJoinConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept Invitation'**
+  String get farmJoinConfirm;
+
+  /// No description provided for @farmJoinSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'You joined the farm!'**
+  String get farmJoinSuccess;
+
+  /// No description provided for @farmJoinAlreadyMember.
+  ///
+  /// In en, this message translates to:
+  /// **'You are already a member of this farm'**
+  String get farmJoinAlreadyMember;
+
+  /// No description provided for @farmJoinInvalidCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid or expired code'**
+  String get farmJoinInvalidCode;
+
+  /// No description provided for @farmJoinError.
+  ///
+  /// In en, this message translates to:
+  /// **'Error joining farm'**
+  String get farmJoinError;
+
+  /// No description provided for @farmLeave.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave Farm'**
+  String get farmLeave;
+
+  /// No description provided for @farmLeaveConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave the farm \"{name}\"? You will lose access to shared data.'**
+  String farmLeaveConfirm(String name);
+
+  /// No description provided for @farmLeaveSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'You left the farm'**
+  String get farmLeaveSuccess;
+
+  /// No description provided for @farmSharingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sharing'**
+  String get farmSharingTitle;
+
+  /// No description provided for @farmSharingEnable.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable Sharing'**
+  String get farmSharingEnable;
+
+  /// No description provided for @farmSharingDisable.
+  ///
+  /// In en, this message translates to:
+  /// **'Disable Sharing'**
+  String get farmSharingDisable;
+
+  /// No description provided for @farmSharingEnabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Sharing enabled'**
+  String get farmSharingEnabled;
+
+  /// No description provided for @farmSharingDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Sharing disabled'**
+  String get farmSharingDisabled;
+
+  /// No description provided for @farmSharingDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Allows inviting members and syncing data in real-time'**
+  String get farmSharingDescription;
+
+  /// No description provided for @farmSharingRequiresPremium.
+  ///
+  /// In en, this message translates to:
+  /// **'Feature available on Premium plan'**
+  String get farmSharingRequiresPremium;
+
+  /// No description provided for @farmPermissionDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'No permission for this action'**
+  String get farmPermissionDenied;
+
+  /// No description provided for @farmOwnerBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Owner'**
+  String get farmOwnerBadge;
+
+  /// No description provided for @farmJoinedBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Member'**
+  String get farmJoinedBadge;
+
+  /// No description provided for @drawerFarms.
+  ///
+  /// In en, this message translates to:
+  /// **'Farms'**
+  String get drawerFarms;
 }
 
 class _AgroLocalizationsDelegate extends LocalizationsDelegate<AgroLocalizations> {

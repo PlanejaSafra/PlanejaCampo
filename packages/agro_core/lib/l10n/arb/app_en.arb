@@ -936,5 +936,120 @@
   "dateDayMonthPattern": "MMMM d",
 
   "farmTypeAgro": "Rural",
-  "farmTypePersonal": "Personal"
+  "farmTypePersonal": "Personal",
+
+  "farmRoleOwner": "Owner",
+  "farmRoleManager": "Manager",
+  "farmRoleWorker": "Worker",
+  "farmRoleOwnerDesc": "Full control of the farm",
+  "farmRoleManagerDesc": "Manages records and invites workers",
+  "farmRoleWorkerDesc": "Records and views data",
+
+  "farmSwitcherTitle": "Switch Farm",
+  "farmSwitcherCurrent": "Active Farm",
+  "farmSwitcherOwned": "My Farms",
+  "farmSwitcherJoined": "Farms I Joined",
+  "farmSwitcherManage": "Manage Farms",
+  "farmSwitcherEmpty": "No farms available",
+
+  "farmMembersTitle": "Members",
+  "farmMembersEmpty": "No members found",
+  "farmMembersSince": "Since {date}",
+  "@farmMembersSince": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+  "farmMembersInvitedBy": "Invited by {name}",
+  "@farmMembersInvitedBy": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "farmMembersRemove": "Remove Member",
+  "farmMembersRemoveConfirm": "Remove {name} from the farm?",
+  "@farmMembersRemoveConfirm": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "farmMembersRemoved": "Member removed",
+  "farmMembersChangeRole": "Change Role",
+  "farmMembersCount": "{count} members",
+  "@farmMembersCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "farmInviteTitle": "Invite Member",
+  "farmInviteSelectRole": "Select role",
+  "farmInviteGenerate": "Generate Invite",
+  "farmInviteCode": "Invitation Code",
+  "farmInviteCodeCopied": "Code copied!",
+  "farmInviteShare": "Share Invite",
+  "farmInviteShareMessage": "Join the farm \"{farmName}\" on RuraCamp! Use code: {code}",
+  "@farmInviteShareMessage": {
+    "placeholders": {
+      "farmName": { "type": "String" },
+      "code": { "type": "String" }
+    }
+  },
+  "farmInviteExpires": "Valid for 7 days",
+  "farmInvitePending": "Pending Invitations",
+  "farmInviteRevoke": "Revoke",
+  "farmInviteRevoked": "Invitation revoked",
+  "farmInviteNoPending": "No pending invitations",
+
+  "farmJoinTitle": "Join Farm",
+  "farmJoinEnterCode": "Enter invitation code",
+  "farmJoinCodeHint": "E.g.: ABC123",
+  "farmJoinLookup": "Look Up",
+  "farmJoinPreview": "You have been invited to:",
+  "farmJoinFarmName": "Farm: {name}",
+  "@farmJoinFarmName": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "farmJoinRole": "Role: {role}",
+  "@farmJoinRole": {
+    "placeholders": {
+      "role": { "type": "String" }
+    }
+  },
+  "farmJoinInvitedBy": "Invited by: {name}",
+  "@farmJoinInvitedBy": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "farmJoinConfirm": "Accept Invitation",
+  "farmJoinSuccess": "You joined the farm!",
+  "farmJoinAlreadyMember": "You are already a member of this farm",
+  "farmJoinInvalidCode": "Invalid or expired code",
+  "farmJoinError": "Error joining farm",
+
+  "farmLeave": "Leave Farm",
+  "farmLeaveConfirm": "Leave the farm \"{name}\"? You will lose access to shared data.",
+  "@farmLeaveConfirm": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "farmLeaveSuccess": "You left the farm",
+
+  "farmSharingTitle": "Sharing",
+  "farmSharingEnable": "Enable Sharing",
+  "farmSharingDisable": "Disable Sharing",
+  "farmSharingEnabled": "Sharing enabled",
+  "farmSharingDisabled": "Sharing disabled",
+  "farmSharingDescription": "Allows inviting members and syncing data in real-time",
+  "farmSharingRequiresPremium": "Feature available on Premium plan",
+
+  "farmPermissionDenied": "No permission for this action",
+  "farmOwnerBadge": "Owner",
+  "farmJoinedBadge": "Member",
+
+  "drawerFarms": "Farms"
 }

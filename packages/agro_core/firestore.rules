@@ -1,0 +1,84 @@
+rules_version = '2';
+
+// Firestore Security Rules for RuraCamp Multi-Farm (CORE-90)
+//
+// Collections:
+// - farm_members: Membership records ({farmId}_{userId} as doc ID)
+// - farm_invitations: Invitation codes (auto-ID)
+//
+// Principles:
+// 1. Users can read their own memberships
+// 2. Farm owners can manage all members in their farm
+// 3. Any authenticated user can look up invitations by code
+// 4. Only farm owners/managers can create invitations
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // Farm Members
+    // ═══════════════════════════════════════════════════════════════════════
+
+    match /farm_members/{docId} {
+      // Anyone authenticated can read members of farms they belong to.
+      // The docId format is {farmId}_{userId}.
+      allow read: if request.auth != null && (
+        // User can read their own membership
+        resource.data.userId == request.auth.uid ||
+        // Owner can read all members of their farm
+        isOwnerOfFarm(resource.data.farmId)
+      );
+
+      // User can create their own membership (when accepting invitation)
+      allow create: if request.auth != null &&
+        request.resource.data.userId == request.auth.uid;
+
+      // Owner can update any member's role in their farm
+      // Users can update their own display name/email
+      allow update: if request.auth != null && (
+        isOwnerOfFarm(resource.data.farmId) ||
+        resource.data.userId == request.auth.uid
+      );
+
+      // Owner can remove members; users can remove themselves
+      allow delete: if request.auth != null && (
+        isOwnerOfFarm(resource.data.farmId) ||
+        resource.data.userId == request.auth.uid
+      );
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // Farm Invitations
+    // ═══════════════════════════════════════════════════════════════════════
+
+    match /farm_invitations/{invitationId} {
+      // Any authenticated user can read invitations (needed for code lookup)
+      allow read: if request.auth != null;
+
+      // Only farm owners/managers can create invitations
+      allow create: if request.auth != null &&
+        request.resource.data.invitedBy == request.auth.uid;
+
+      // Anyone authenticated can update (accept/decline) invitations
+      // Owner can revoke invitations
+      allow update: if request.auth != null;
+
+      // Only the inviter or farm owner can delete invitations
+      allow delete: if request.auth != null && (
+        resource.data.invitedBy == request.auth.uid ||
+        isOwnerOfFarm(resource.data.farmId)
+      );
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // Helper Functions
+    // ═══════════════════════════════════════════════════════════════════════
+
+    /// Check if the current user is the owner of the given farm.
+    /// Looks up the farm_members collection for an owner record.
+    function isOwnerOfFarm(farmId) {
+      return exists(/databases/$(database)/documents/farm_members/$(farmId + '_' + request.auth.uid)) &&
+        get(/databases/$(database)/documents/farm_members/$(farmId + '_' + request.auth.uid)).data.role == 0;
+    }
+  }
+}

@@ -53,9 +53,13 @@ export 'models/user_cloud_data.dart';
 export 'models/property.dart';
 export 'models/talhao.dart';
 
-// Models (Farm - Multi-User Preparation)
+// Models (Farm - Multi-User & Multi-Farm - CORE-90)
 export 'models/farm.dart';
+export 'models/farm_invitation.dart';
+export 'models/farm_member.dart';
 export 'models/farm_owned_mixin.dart';
+export 'models/farm_permissions.dart';
+export 'models/farm_role.dart';
 export 'models/farm_type.dart';
 
 // Models (Unified Categories - CORE-96)
@@ -81,8 +85,9 @@ export 'services/property_service.dart';
 export 'services/property_helper.dart';
 export 'services/talhao_service.dart';
 
-// Services (Farm - Multi-User Preparation)
+// Services (Farm - Multi-User & Multi-Farm - CORE-90)
 export 'services/farm_service.dart';
+export 'services/farm_member_service.dart';
 
 // Services (Cross-App Query - CASH-03)
 export 'services/cross_app_query_service.dart';
@@ -129,3 +134,11 @@ export 'screens/property_list_screen.dart';
 export 'screens/property_form_screen.dart';
 export 'screens/talhao_list_screen.dart';
 export 'screens/talhao_form_screen.dart';
+
+// Screens (Farm Multi-Member - CORE-90)
+export 'screens/farm_invite_screen.dart';
+export 'screens/farm_join_screen.dart';
+export 'screens/farm_members_screen.dart';
+
+// Widgets (Farm Switcher - CORE-90)
+export 'widgets/farm_switcher.dart';

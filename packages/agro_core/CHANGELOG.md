@@ -2,6 +2,95 @@
 
 ---
 
+## Phase CORE-90: MultiFarm — Farm Switcher & Multi-Membership
+
+### Status: [DONE]
+**Date Completed**: 2026-01-29
+**Priority**: 🟡 ARCHITECTURAL
+**Objective**: Implementar sistema completo de multi-fazenda com convites por código, troca de contexto (farm switcher), e controle de permissões baseado em roles (owner/manager/worker). Farms pessoais PODEM ser compartilhadas (família). Dados de membros e convites vivem exclusivamente no Firestore (cross-user).
+
+### Architecture
+
+- **Local**: Cada user tem seus Farm objects no Hive. Worker/Manager tem Farm local com mesmo `id` do owner mas `myRole = worker/manager`
+- **Cloud**: FarmMember e FarmInvitation existem APENAS no Firestore (cross-user data)
+- **Convite**: Código 6 caracteres alfanumérico (sem I,O,0,1 para clareza), validade 7 dias
+- **Gate**: `isShared` por farm controla Tier 3 sync (via GenericSyncService)
+- **Active Farm**: Conceito de farm ativa persistido em Hive box `agro_farm_prefs`
+
+### Implementation Summary
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| CORE-90.1 | **FarmRole enum** — HiveType 23 (owner, manager, worker) com localizedName, icon, color | ✅ DONE |
+| CORE-90.2 | **Farm model update** — @HiveField(11) FarmRole? myRole, helpers isOwned/isJoined/effectiveRole | ✅ DONE |
+| CORE-90.3 | **FarmPermissions** — Classe pura com getters booleanos por role (canInvite, canRemove, canBackup, etc.) | ✅ DONE |
+| CORE-90.4 | **FarmMember model** — Firestore-only, doc ID `{farmId}_{userId}`, coleção `farm_members` | ✅ DONE |
+| CORE-90.5 | **FarmInvitation model** — Firestore-only, código 6 chars, InvitationStatus enum, coleção `farm_invitations` | ✅ DONE |
+| CORE-90.6 | **FarmMemberService** — Singleton Firestore CRUD (registerOwner, invite, accept, revoke, leave) | ✅ DONE |
+| CORE-90.7 | **FarmService extensions** — getAccessibleFarms, getActiveFarm, setActiveFarm, addJoinedFarm, removeJoinedFarm, getActivePermissions | ✅ DONE |
+| CORE-90.8 | **FarmSwitcher widget** — Dropdown no header do drawer, bottom sheet para múltiplas farms | ✅ DONE |
+| CORE-90.9 | **AgroDrawer update** — Novo parâmetro `farmSwitcher` no DrawerHeader | ✅ DONE |
+| CORE-90.10 | **FarmInviteScreen** — Criar convite com role selector, exibir código copiável, listar pendentes | ✅ DONE |
+| CORE-90.11 | **FarmJoinScreen** — Input de código 6 chars, preview da farm, botão aceitar | ✅ DONE |
+| CORE-90.12 | **FarmMembersScreen** — Lista membros com badges, change role, remove, leave, FAB invite | ✅ DONE |
+| CORE-90.13 | **L10n** — ~45 novas strings (pt-BR + en) para roles, switcher, members, invite, join, permissions | ✅ DONE |
+| CORE-90.14 | **Barrel exports** — Todos os novos modelos, services, screens e widgets exportados no agro_core.dart | ✅ DONE |
+| CORE-90.15 | **Firestore Security Rules** — farm_members e farm_invitations com isOwnerOfFarm() helper | ✅ DONE |
+| CORE-90.16 | **App adapter registration** — FarmRoleAdapter registrado em rurarain, rurarubber, ruracash | ✅ DONE |
+
+### Files Modified
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/models/farm_role.dart` | CREATE | FarmRole enum HiveType 23 (owner, manager, worker) com helpers l10n |
+| `lib/models/farm_role.g.dart` | CREATE | Hive adapter manual para FarmRole (typeId 23) |
+| `lib/models/farm.dart` | MODIFY | Add @HiveField(11) FarmRole? myRole, helpers isOwned/isJoined/effectiveRole, toJson/fromJson |
+| `lib/models/farm.g.dart` | MODIFY | Add field 11 (myRole) no read/write, writeByte count 10→11 |
+| `lib/models/farm_permissions.dart` | CREATE | Classe pura FarmPermissions(FarmRole) com getters booleanos |
+| `lib/models/farm_member.dart` | CREATE | Firestore-only model, doc ID `{farmId}_{userId}`, toFirestore/fromFirestore |
+| `lib/models/farm_invitation.dart` | CREATE | Firestore-only model, código 6 chars, InvitationStatus enum, generateCode() |
+| `lib/services/farm_member_service.dart` | CREATE | Singleton Firestore CRUD para members e invitations |
+| `lib/services/farm_service.dart` | MODIFY | Add prefs box, activeFarmId, getAccessibleFarms, getActiveFarm, setActiveFarm, addJoinedFarm, removeJoinedFarm, getActivePermissions, hasMultipleFarms |
+| `lib/widgets/farm_switcher.dart` | CREATE | FarmSwitcher widget com chip display e bottom sheet multi-farm |
+| `lib/menu/agro_drawer.dart` | MODIFY | Add farmSwitcher parameter no DrawerHeader |
+| `lib/menu/agro_drawer_item.dart` | MODIFY | Add route keys farmMembers, farmInvite, farmJoin |
+| `lib/screens/farm_invite_screen.dart` | CREATE | Tela de criação e gestão de convites |
+| `lib/screens/farm_join_screen.dart` | CREATE | Tela de entrada por código de convite |
+| `lib/screens/farm_members_screen.dart` | CREATE | Tela de listagem e gestão de membros |
+| `lib/l10n/arb/app_pt.arb` | MODIFY | ~45 novas strings CORE-90 (roles, switcher, members, invite, join, sharing) |
+| `lib/l10n/arb/app_en.arb` | MODIFY | ~45 novas strings CORE-90 em inglês |
+| `lib/agro_core.dart` | MODIFY | Export novos modelos, services, screens e widgets |
+| `firestore.rules` | CREATE | Security rules para farm_members e farm_invitations |
+
+### Firestore Collections
+
+| Collection | Doc ID | Purpose |
+|------------|--------|---------|
+| `farm_members` | `{farmId}_{userId}` | Membership records com role, joinedAt, invitedBy |
+| `farm_invitations` | auto-ID | Invitation codes com status, expiresAt, acceptedBy |
+
+### FarmRole Permissions Matrix
+
+| Permission | Owner | Manager | Worker |
+|------------|-------|---------|--------|
+| canViewData | ✅ | ✅ | ✅ |
+| canCreateRecords | ✅ | ✅ | ✅ |
+| canEditOthersRecords | ✅ | ✅ | ❌ |
+| canDeleteRecords | ✅ | ✅ | ❌ |
+| canBackupRestore | ✅ | ❌ | ❌ |
+| canInviteMembers | ✅ | ✅ | ❌ |
+| canRemoveMembers | ✅ | ✅ (workers only) | ❌ |
+| canChangeRoles | ✅ | ❌ | ❌ |
+| canToggleSharing | ✅ | ❌ | ❌ |
+| canLeaveFarm | ❌ | ✅ | ✅ |
+
+### Cross-Reference
+- Apps: FarmRoleAdapter registered in rurarain, rurarubber, ruracash main.dart
+- CORE-77: FarmService (base infrastructure)
+- CORE-88: Data Tier Architecture (isShared gate)
+
+---
+
 ## Phase CORE-98: CrossAppQueryService — Consultas Cross-App via Firestore
 
 ### Status: [DONE]

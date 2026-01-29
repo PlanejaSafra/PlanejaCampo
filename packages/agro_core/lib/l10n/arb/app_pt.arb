@@ -936,5 +936,120 @@
   "dateDayMonthPattern": "d 'de' MMMM",
 
   "farmTypeAgro": "Rural",
-  "farmTypePersonal": "Pessoal"
+  "farmTypePersonal": "Pessoal",
+
+  "farmRoleOwner": "Proprietário",
+  "farmRoleManager": "Gerente",
+  "farmRoleWorker": "Colaborador",
+  "farmRoleOwnerDesc": "Controle total da fazenda",
+  "farmRoleManagerDesc": "Gerencia registros e convida colaboradores",
+  "farmRoleWorkerDesc": "Registra e visualiza dados",
+
+  "farmSwitcherTitle": "Trocar Fazenda",
+  "farmSwitcherCurrent": "Fazenda Ativa",
+  "farmSwitcherOwned": "Minhas Fazendas",
+  "farmSwitcherJoined": "Fazendas que Participo",
+  "farmSwitcherManage": "Gerenciar Fazendas",
+  "farmSwitcherEmpty": "Nenhuma fazenda disponível",
+
+  "farmMembersTitle": "Membros",
+  "farmMembersEmpty": "Nenhum membro encontrado",
+  "farmMembersSince": "Desde {date}",
+  "@farmMembersSince": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+  "farmMembersInvitedBy": "Convidado por {name}",
+  "@farmMembersInvitedBy": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "farmMembersRemove": "Remover Membro",
+  "farmMembersRemoveConfirm": "Remover {name} da fazenda?",
+  "@farmMembersRemoveConfirm": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "farmMembersRemoved": "Membro removido",
+  "farmMembersChangeRole": "Alterar Cargo",
+  "farmMembersCount": "{count} membros",
+  "@farmMembersCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "farmInviteTitle": "Convidar Membro",
+  "farmInviteSelectRole": "Selecione o cargo",
+  "farmInviteGenerate": "Gerar Convite",
+  "farmInviteCode": "Código do Convite",
+  "farmInviteCodeCopied": "Código copiado!",
+  "farmInviteShare": "Compartilhar Convite",
+  "farmInviteShareMessage": "Entre na fazenda \"{farmName}\" no RuraCamp! Use o código: {code}",
+  "@farmInviteShareMessage": {
+    "placeholders": {
+      "farmName": { "type": "String" },
+      "code": { "type": "String" }
+    }
+  },
+  "farmInviteExpires": "Válido por 7 dias",
+  "farmInvitePending": "Convites Pendentes",
+  "farmInviteRevoke": "Revogar",
+  "farmInviteRevoked": "Convite revogado",
+  "farmInviteNoPending": "Nenhum convite pendente",
+
+  "farmJoinTitle": "Entrar em Fazenda",
+  "farmJoinEnterCode": "Digite o código de convite",
+  "farmJoinCodeHint": "Ex: ABC123",
+  "farmJoinLookup": "Buscar",
+  "farmJoinPreview": "Você foi convidado para:",
+  "farmJoinFarmName": "Fazenda: {name}",
+  "@farmJoinFarmName": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "farmJoinRole": "Cargo: {role}",
+  "@farmJoinRole": {
+    "placeholders": {
+      "role": { "type": "String" }
+    }
+  },
+  "farmJoinInvitedBy": "Convidado por: {name}",
+  "@farmJoinInvitedBy": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "farmJoinConfirm": "Aceitar Convite",
+  "farmJoinSuccess": "Você entrou na fazenda!",
+  "farmJoinAlreadyMember": "Você já é membro desta fazenda",
+  "farmJoinInvalidCode": "Código inválido ou expirado",
+  "farmJoinError": "Erro ao entrar na fazenda",
+
+  "farmLeave": "Sair da Fazenda",
+  "farmLeaveConfirm": "Deseja sair da fazenda \"{name}\"? Você perderá acesso aos dados compartilhados.",
+  "@farmLeaveConfirm": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "farmLeaveSuccess": "Você saiu da fazenda",
+
+  "farmSharingTitle": "Compartilhamento",
+  "farmSharingEnable": "Ativar Compartilhamento",
+  "farmSharingDisable": "Desativar Compartilhamento",
+  "farmSharingEnabled": "Compartilhamento ativado",
+  "farmSharingDisabled": "Compartilhamento desativado",
+  "farmSharingDescription": "Permite convidar membros e sincronizar dados em tempo real",
+  "farmSharingRequiresPremium": "Recurso disponível no plano Premium",
+
+  "farmPermissionDenied": "Sem permissão para esta ação",
+  "farmOwnerBadge": "Dono",
+  "farmJoinedBadge": "Participante",
+
+  "drawerFarms": "Fazendas"
 }

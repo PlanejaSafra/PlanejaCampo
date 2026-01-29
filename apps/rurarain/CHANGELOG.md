@@ -6,6 +6,24 @@
 
 ---
 
+## Phase RAIN-10.1: CORE-90 Integration — FarmRole Adapter Registration
+
+### Status: [DONE]
+**Date Completed**: 2026-01-29
+**Priority**: 🔵 FIX
+**Objective**: Registrar FarmRoleAdapter no main.dart para suportar o novo campo `Farm.myRole` introduzido pelo CORE-90 (MultiFarm).
+
+### Files Modified
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/main.dart` | MODIFY | Adicionado `Hive.registerAdapter(FarmRoleAdapter())` após FarmTypeAdapter |
+
+### Cross-Reference
+- CORE-90 [DONE]: MultiFarm — Farm Switcher & Multi-Membership (agro_core)
+
+---
+
 ## Phase RAIN-10: Unified Sync Pipeline — Migrate to GenericSyncService Tier 2
 
 ### Status: [DONE]

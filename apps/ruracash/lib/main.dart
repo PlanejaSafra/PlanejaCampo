@@ -79,6 +79,7 @@ void main() async {
   Hive.registerAdapter(TalhaoAdapter());
   Hive.registerAdapter(FarmAdapter());
   Hive.registerAdapter(FarmTypeAdapter());
+  Hive.registerAdapter(FarmRoleAdapter()); // CORE-90
   Hive.registerAdapter(SafraAdapter());
 
   // Register Hive Adapters - agro_core (Sync/Cloud/Privacy)
