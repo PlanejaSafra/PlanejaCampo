@@ -18,7 +18,7 @@ class CentroCustoService extends GenericSyncService<CentroCusto> {
   String get sourceApp => 'ruracash';
 
   @override
-  bool get syncEnabled => false; // CASH-08: disabled until real Firebase config
+  bool get syncEnabled => FarmService.instance.isActiveFarmShared();
 
   @override
   CentroCusto fromMap(Map<String, dynamic> map) => CentroCusto.fromJson(map);

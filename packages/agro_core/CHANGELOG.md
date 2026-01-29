@@ -2,6 +2,44 @@
 
 ---
 
+## Phase CORE-98: CrossAppQueryService — Consultas Cross-App via Firestore
+
+### Status: [DONE]
+**Date Completed**: 2026-01-28
+**Priority**: 🟡 ARCHITECTURAL
+**Objective**: Criar serviço no agro_core para consultar dados de outros apps via Firestore (Tier 3). Permite que qualquer app leia coleções de outros apps que compartilham o mesmo farmId, sem dependência de modelos entre apps.
+
+### Implementation Summary
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| CORE-98.1 | CrossAppQueryService — leitor Firestore genérico com queryCollection() | ✅ DONE |
+| CORE-98.2 | DTOs — CrossAppFinancialSummary e CrossAppFinancialItem (app-agnostic) | ✅ DONE |
+| CORE-98.3 | Convenience methods — getRubberRevenue(), getRubberExpenses(), getCashExpenses() | ✅ DONE |
+| CORE-98.4 | Export no barrel agro_core.dart | ✅ DONE |
+
+### Architecture
+
+- Singleton: `CrossAppQueryService.instance`
+- Gate: `isAvailable` → `FarmService.instance.isActiveFarmShared()` (Tier 3)
+- Query: Firestore root collection → `where('farmId', isEqualTo: targetFarmId)`
+- Date filtering: client-side (ISO8601 string comparison)
+- Returns: `List<Map<String, dynamic>>` (no model dependency)
+
+### Files Modified
+
+| File | Action | Description |
+|------|--------|-------------|
+| `lib/services/cross_app_query_service.dart` | CREATE | CrossAppQueryService + DTOs |
+| `lib/agro_core.dart` | MODIFY | Export cross_app_query_service.dart |
+
+### Cross-Reference
+- CASH-03 [DONE]: Integração Cross-App (consumidor principal)
+- CORE-78: GenericSyncService (infraestrutura Tier 3)
+- CORE-88: Data Tier Architecture (farm.isShared gate)
+
+---
+
 ## Phase CORE-97: NotificationService — Serviço de Notificações Locais
 
 ### Status: [DONE]

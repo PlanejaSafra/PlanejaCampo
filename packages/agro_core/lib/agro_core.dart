@@ -84,6 +84,9 @@ export 'services/talhao_service.dart';
 // Services (Farm - Multi-User Preparation)
 export 'services/farm_service.dart';
 
+// Services (Cross-App Query - CASH-03)
+export 'services/cross_app_query_service.dart';
+
 // Models (Safra - Agricultural Year - CORE-76)
 export 'models/safra.dart';
 

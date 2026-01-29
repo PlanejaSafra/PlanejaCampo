@@ -67,6 +67,8 @@
   "dreTitlePersonal": "Personal Finances",
   "dreReceitas": "Revenue",
   "dreDespesas": "Expenses",
+  "dreRubberRevenue": "Rubber (deliveries)",
+  "dreRubberExpenses": "Rubber (costs)",
   "dreResultado": "Net Result",
   "dreMargem": "Margin",
   "drePeriodoMes": "Month",

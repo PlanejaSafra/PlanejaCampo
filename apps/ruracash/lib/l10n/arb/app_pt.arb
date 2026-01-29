@@ -67,6 +67,8 @@
   "dreTitlePersonal": "Finanças Pessoais",
   "dreReceitas": "Receitas",
   "dreDespesas": "Despesas",
+  "dreRubberRevenue": "Borracha (entregas)",
+  "dreRubberExpenses": "Borracha (custos)",
   "dreResultado": "Resultado",
   "dreMargem": "Margem",
   "drePeriodoMes": "Mês",

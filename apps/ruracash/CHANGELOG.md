@@ -2603,7 +2603,8 @@ CASH-30 (Paywall) ────────────────────�
 
 ## Phase CASH-12: Android Build Configuration — Flavors, Firebase, Desugaring
 
-### Status: [DOING]
+### Status: [DONE]
+**Date Completed**: 2026-01-28
 **Priority**: 🔴 CRITICAL
 **Objective**: Configurar o projeto Android do RuraCash com paridade ao RuraRain/RuraRubber. O `flutter create` deixou tudo no padrão sem Firebase, sem flavors, sem desugaring.
 
@@ -2631,8 +2632,8 @@ CASH-30 (Paywall) ────────────────────�
 | CASH-12.1 | Atualizar `settings.gradle`: AGP 8.6.0, Kotlin 2.0.0, add google-services plugin | ✅ DONE |
 | CASH-12.2 | Atualizar `build.gradle`: add google-services plugin, flavors dev/prod, desugaring, minSdk 23 | ✅ DONE |
 | CASH-12.3 | Fix `AndroidManifest.xml`: usar `@string/app_name` em vez de hardcoded | ✅ DONE |
-| CASH-12.4 | Criar `google-services.json` para dev/prod via Firebase CLI | 🚫 BLOCKED (requer criação de projeto Firebase) |
-| CASH-12.5 | Atualizar `firebase_options.dart` com credenciais reais | 🚫 BLOCKED (requer criação de projeto Firebase) |
+| CASH-12.4 | Criar `google-services.json` para dev/prod via Firebase CLI | ✅ DONE |
+| CASH-12.5 | Atualizar `firebase_options.dart` com credenciais reais | ✅ DONE |
 
 ### Files Modified
 
@@ -3029,14 +3030,43 @@ Os services LancamentoService e CentroCustoService usam `GenericSyncService` com
 
 ## Phase CASH-03: Integração Cross-App (Firestore Sync)
 
-### Status: [BLOCKED]
+### Status: [DONE]
+**Date Completed**: 2026-01-28
 **Priority**: 🔴 CRITICAL
-**Objective**: Permitir que despesas do RuraCash apareçam no break-even do RuraRubber.
-**Blocker**: Requer que ambos apps usem GenericSyncService com syncEnabled=true e Firestore como meio de troca. Infraestrutura pronta (CORE-78), falta implementar a leitura cross-app no RuraRubber.
+**Objective**: Integração bidirecional entre apps via Firestore Tier 3. RuraRubber Entregas (vendas de borracha) aparecem como receita no RuraCash; RuraRubber Despesas (custos de produção) aparecem como despesas. RuraCash Lançamentos disponíveis para o break-even do RuraRubber.
+
+### Implementation Summary
+
+| Sub-Phase | Description | Status |
+|-----------|-------------|--------|
+| CASH-03.1 | Fix CentroCustoService syncEnabled (era false, agora usa FarmService gate) | ✅ DONE |
+| CASH-03.2 | Criar CrossAppQueryService no agro_core — leitor Firestore genérico para consultas cross-app | ✅ DONE |
+| CASH-03.3 | Integrar no RelatorioService — Balanço inclui receita borracha, Fluxo inclui receitas e custos | ✅ DONE |
+| CASH-03.4 | L10n: dreRubberRevenue, dreRubberExpenses em pt/en | ✅ DONE |
+
+### Architecture
+
+CrossAppQueryService (agro_core) lê coleções Firestore de outros apps:
+- Filtra por farmId (multi-farm isolation)
+- Só funciona quando Tier 3 ativo (farm.isShared = true)
+- Retorna Maps genéricos (sem dependência de modelos entre apps)
+- Métodos de conveniência: getRubberRevenue(), getRubberExpenses(), getCashExpenses()
+
+### Files Modified
+
+| File | Action | Description |
+|------|--------|-------------|
+| `packages/agro_core/lib/services/cross_app_query_service.dart` | CREATE | CrossAppQueryService + DTOs (CrossAppFinancialSummary, CrossAppFinancialItem) |
+| `packages/agro_core/lib/agro_core.dart` | MODIFY | Export cross_app_query_service.dart |
+| `lib/services/relatorio_service.dart` | MODIFY | Balanço e FluxoCaixa integram dados do RuraRubber |
+| `lib/services/centro_custo_service.dart` | MODIFY | syncEnabled: false → FarmService gate |
+| `lib/l10n/arb/app_pt.arb` | MODIFY | Add dreRubberRevenue, dreRubberExpenses |
+| `lib/l10n/arb/app_en.arb` | MODIFY | Add dreRubberRevenue, dreRubberExpenses |
 
 ### Cross-Reference
-- CORE-78: GenericSyncService (infraestrutura pronta)
-- RUBBER-20: Break-even (consumidor dos dados)
+- CORE-78: GenericSyncService (infraestrutura Tier 3)
+- CORE-88: Data Tier Architecture (farm.isShared gate)
+- RUBBER-20: Break-even (consumidor dos dados via getCashExpenses)
 
 ---
 

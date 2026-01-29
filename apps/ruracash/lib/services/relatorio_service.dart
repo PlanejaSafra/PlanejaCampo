@@ -37,6 +37,25 @@ class RelatorioService {
       ativos.add(ItemBalanco(l10n.dreReceitas, totalAReceber));
     }
 
+    // CASH-03: Cross-app revenue (RuraRubber entregas confirmadas)
+    if (CrossAppQueryService.instance.isAvailable) {
+      try {
+        final rubberRevenue = await CrossAppQueryService.instance
+            .getRubberRevenue(
+          start: DateTime(data.year, 1, 1),
+          end: data,
+        );
+        if (rubberRevenue.isNotEmpty) {
+          ativos.add(ItemBalanco(
+            l10n.dreRubberRevenue,
+            rubberRevenue.total,
+          ));
+        }
+      } catch (_) {
+        // Non-fatal: cross-app data is supplementary
+      }
+    }
+
     // 2. PASSIVOS (o que o produtor DEVE)
     final passivos = <ItemBalanco>[];
 
@@ -109,9 +128,43 @@ class RelatorioService {
       entradasPorCategoria[cat] = (entradasPorCategoria[cat] ?? 0) + c.valor;
     }
 
+    // CASH-03: Cross-app data from RuraRubber (via Firestore Tier 3)
+    double crossAppEntradas = 0.0;
+    double crossAppSaidas = 0.0;
+
+    if (CrossAppQueryService.instance.isAvailable) {
+      final l10n = lookupCashLocalizations();
+      try {
+        // RuraRubber entregas = revenue
+        final rubberRevenue = await CrossAppQueryService.instance
+            .getRubberRevenue(start: inicio, end: fim);
+        if (rubberRevenue.isNotEmpty) {
+          crossAppEntradas += rubberRevenue.total;
+          entradasPorCategoria[l10n.dreRubberRevenue] =
+              (entradasPorCategoria[l10n.dreRubberRevenue] ?? 0) +
+                  rubberRevenue.total;
+        }
+
+        // RuraRubber despesas = production costs
+        final rubberExpenses = await CrossAppQueryService.instance
+            .getRubberExpenses(start: inicio, end: fim);
+        if (rubberExpenses.isNotEmpty) {
+          crossAppSaidas += rubberExpenses.total;
+          saidasPorCategoria[l10n.dreRubberExpenses] =
+              (saidasPorCategoria[l10n.dreRubberExpenses] ?? 0) +
+                  rubberExpenses.total;
+        }
+      } catch (_) {
+        // Non-fatal: cross-app data is supplementary
+      }
+    }
+
+    totalEntradas += crossAppEntradas;
+    final totalSaidasFinal = totalSaidas + crossAppSaidas;
+
     // 3. Calcular saldos — CASH-23: usar saldo real das contas
     final saldoInicial = ContaService.instance.totalAtivos;
-    final saldoPeriodo = totalEntradas - totalSaidas;
+    final saldoPeriodo = totalEntradas - totalSaidasFinal;
     final saldoFinal = saldoInicial + saldoPeriodo;
 
     return FluxoCaixa(
@@ -119,7 +172,7 @@ class RelatorioService {
       entradas: entradasPorCategoria,
       saidas: saidasPorCategoria,
       totalEntradas: totalEntradas,
-      totalSaidas: totalSaidas,
+      totalSaidas: totalSaidasFinal,
       saldoPeriodo: saldoPeriodo,
       saldoInicial: saldoInicial,
       saldoFinal: saldoFinal,
