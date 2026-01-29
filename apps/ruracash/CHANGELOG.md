@@ -5,6 +5,334 @@
 
 ---
 
+## Phase CASH-32: Pendências Remanescentes — L10n, RelatorioService, Build Runner e Polimento
+
+### Status: [TODO]
+**Priority**: 🔴 CRITICAL (l10n) + 🟡 ARCHITECTURAL (RelatorioService) + 🟢 ENHANCEMENT (UX)
+**Objective**: Resolver todas as pendências identificadas na verificação das fases CASH-26/27/28 e CORE-96. Inclui: internacionalização de 40+ strings hardcoded, implementação real do RelatorioService (skeleton), geração de adapters Hive (build_runner), e polimento de telas.
+
+### Motivação
+
+As fases CASH-26, 27 e 28 foram implementadas com foco na arquitetura (models, services, routes, providers). Porém, a verificação revelou que:
+- **5 arquivos** contêm strings hardcoded em português (viola regra l10n obrigatória)
+- **RelatorioService** é skeleton (retorna dados zerados — Balanço e Fluxo de Caixa são telas vazias)
+- **Categoria.g.dart** não foi gerado (build_runner pendente no agro_core)
+- **OrcamentoScreen** usa consumo mockado (75% fixo)
+- **ContaPagarScreen** usa placeholder no dialog de pagamento
+
+### Sub-Fases
+
+| Sub-Phase | Description | Priority | Status |
+|-----------|-------------|----------|--------|
+| CASH-32.1 | L10n: ContaPagarScreen — 11 strings hardcoded | 🔴 CRITICAL | ⏳ TODO |
+| CASH-32.2 | L10n: OrcamentoScreen — 10 strings hardcoded | 🔴 CRITICAL | ⏳ TODO |
+| CASH-32.3 | L10n: BalancoScreen — 7 strings hardcoded | 🔴 CRITICAL | ⏳ TODO |
+| CASH-32.4 | L10n: FluxoCaixaScreen — 9 strings hardcoded | 🔴 CRITICAL | ⏳ TODO |
+| CASH-32.5 | L10n: OrcamentoAlertService — 3 strings hardcoded (notificações) | 🔴 CRITICAL | ⏳ TODO |
+| CASH-32.6 | RelatorioService: Implementar gerarBalanco() com dados reais | 🟡 ARCHITECTURAL | ⏳ TODO |
+| CASH-32.7 | RelatorioService: Implementar gerarFluxoCaixa() com dados reais | 🟡 ARCHITECTURAL | ⏳ TODO |
+| CASH-32.8 | Build Runner: Gerar categoria.g.dart no agro_core | 🔴 CRITICAL | ⏳ TODO |
+| CASH-32.9 | OrcamentoScreen: Integrar consumo real via LancamentoService | 🟢 ENHANCEMENT | ⏳ TODO |
+| CASH-32.10 | ContaPagarScreen: Dialog de pagamento com seletor de conta real | 🟢 ENHANCEMENT | ⏳ TODO |
+| CASH-32.11 | OrcamentoScreen: Modal de criação/edição de orçamento | 🟢 ENHANCEMENT | ⏳ TODO |
+| CASH-32.12 | FluxoCaixaScreen: Navegação de período (mês anterior/próximo) | 🟢 ENHANCEMENT | ⏳ TODO |
+
+---
+
+### CASH-32.1: L10n — ContaPagarScreen
+
+**Arquivo**: `lib/screens/conta_pagar_screen.dart`
+
+**Strings a migrar para ARB**:
+
+| String Hardcoded | Chave ARB Proposta | Contexto |
+|------------------|-------------------|----------|
+| `'Contas a Pagar'` | `cashContasPagarTitle` | AppBar title |
+| `'🔴 VENCIDAS'` | `cashContasVencidas` | Section title |
+| `'🟡 VENCE ESTA SEMANA'` | `cashContasVenceEstaSemana` | Section title |
+| `'🟢 PRÓXIMAS'` | `cashContasProximas` | Section title |
+| `'Vence '` | `cashContaVence` | ListTile subtitle prefix |
+| `' • parc. '` | `cashContaParcela` | Installment separator |
+| `'TOTAL PENDENTE'` | `cashContasTotalPendente` | Card label |
+| `'Confirmar Pagamento'` | `cashContasConfirmarPagamento` | Dialog title |
+| `'Deseja pagar "{descricao}"...'` | `cashContasDesejaPagar` | Dialog content (com placeholder) |
+| `'Cancelar'` | `cashCancelar` | Button label (reutilizável) |
+| `'Pagar'` | `cashContasPagar` | Button label |
+
+---
+
+### CASH-32.2: L10n — OrcamentoScreen
+
+**Arquivo**: `lib/screens/orcamento_screen.dart`
+
+**Strings a migrar para ARB**:
+
+| String Hardcoded | Chave ARB Proposta | Contexto |
+|------------------|-------------------|----------|
+| `'Orçamentos'` | `cashOrcamentosTitle` | AppBar title |
+| `'Definir Orçamento'` | `cashOrcamentoDefinir` | FAB label |
+| `'Por Safra'` | `cashOrcamentoPorSafra` | Dropdown item |
+| `'Por Mês'` | `cashOrcamentoPorMes` | Dropdown item |
+| `'Por Ano'` | `cashOrcamentoPorAno` | Dropdown item |
+| `'Nenhum orçamento definido...'` | `cashOrcamentoEmpty` | Empty state |
+| `'Categoria '` | `cashOrcamentoCategoria` | Card title |
+| `'R$ X de Y'` | `cashOrcamentoProgresso` | Progress text (com placeholders) |
+| `'Restam R$ X'` | `cashOrcamentoRestam` | Budget remaining |
+| `'Estourou R$ X'` | `cashOrcamentoEstourou` | Budget exceeded |
+
+---
+
+### CASH-32.3: L10n — BalancoScreen
+
+**Arquivo**: `lib/screens/balanco_screen.dart`
+
+**Strings a migrar para ARB**:
+
+| String Hardcoded | Chave ARB Proposta | Contexto |
+|------------------|-------------------|----------|
+| `'Balanço Patrimonial'` | `cashBalancoTitle` | AppBar title |
+| `'ATIVOS · o que você tem'` | `cashBalancoAtivos` | Section title (vocabulário híbrido) |
+| `'PASSIVOS · o que você deve'` | `cashBalancoPassivos` | Section title |
+| `'PATRIMÔNIO · o que sobra'` | `cashBalancoPatrimonio` | Section title |
+| `'Resumo Financeiro da Fazenda'` | `cashBalancoResumo` | Header label |
+| `'Nenhum item registrado'` | `cashBalancoEmpty` | Empty items |
+| `'TOTAL'` | `cashBalancoTotal` | Row label |
+
+**Nota**: O vocabulário híbrido ("ATIVOS · o que você tem") deve ser mantido em ambos idiomas:
+- pt-BR: `"ATIVOS · o que você tem"`
+- en: `"ASSETS · what you own"`
+
+---
+
+### CASH-32.4: L10n — FluxoCaixaScreen
+
+**Arquivo**: `lib/screens/fluxo_caixa_screen.dart`
+
+**Strings a migrar para ARB**:
+
+| String Hardcoded | Chave ARB Proposta | Contexto |
+|------------------|-------------------|----------|
+| `'Fluxo de Caixa'` | `cashFluxoCaixaTitle` | AppBar title |
+| `'RESULTADO DO PERÍODO'` | `cashFluxoResultado` | Card title |
+| `'Lucro no período'` | `cashFluxoLucro` | Positive result label |
+| `'Prejuízo no período'` | `cashFluxoPrejuizo` | Negative result label |
+| `'EVOLUÇÃO DO SALDO'` | `cashFluxoEvolucao` | Section title |
+| `'Saldo Inicial'` | `cashFluxoSaldoInicial` | Row label |
+| `'Entradas'` | `cashFluxoEntradas` | Row label |
+| `'Saídas'` | `cashFluxoSaidas` | Row label |
+| `'Saldo Final'` | `cashFluxoSaldoFinal` | Row label |
+
+---
+
+### CASH-32.5: L10n — OrcamentoAlertService
+
+**Arquivo**: `lib/services/orcamento_alert_service.dart`
+
+**Strings a migrar para ARB**:
+
+| String Hardcoded | Chave ARB Proposta | Contexto |
+|------------------|-------------------|----------|
+| `'Alerta de Orçamento'` | `cashOrcamentoAlertTitle` | Notification title |
+| `'Você ultrapassou o orçamento de...'` | `cashOrcamentoAlertExceded` | Notification body (exceeded) |
+| `'Atenção: Você atingiu X%...'` | `cashOrcamentoAlertWarning` | Notification body (warning) |
+
+**Nota**: Notificações em background podem não ter acesso a `BuildContext`. Usar `lookupAgroLocalizations()` ou armazenar locale na inicialização.
+
+---
+
+### CASH-32.6: RelatorioService — gerarBalanco() com dados reais
+
+**Arquivo**: `lib/services/relatorio_service.dart`
+
+**Estado atual**: Skeleton — retorna `ativos = []`, `passivos = []` com dados comentados.
+
+**Implementação necessária**:
+
+```
+gerarBalanco() deve:
+1. ATIVOS (o que o produtor TEM):
+   - Buscar saldo de cada Conta bancária/caixa (ContaService — CASH-23, não implementado ainda)
+   - Buscar total de ContasReceber pendentes (ContaRecebimentoService.getPendentes())
+   - Buscar valor de estoque (se houver — futuro)
+
+2. PASSIVOS (o que o produtor DEVE):
+   - Buscar total de ContasPagar pendentes (ContaPagamentoService.getPendentes())
+   - Buscar parcelas futuras (ContaPagamentoService por parcelaGrupoId)
+
+3. PATRIMÔNIO LÍQUIDO:
+   - Total Ativos - Total Passivos
+```
+
+**Dependência**: CASH-23 (Contas Bancárias) precisa estar implementado para Ativos reais. Sem CASH-23, Ativos ficam parciais (apenas ContasReceber).
+
+---
+
+### CASH-32.7: RelatorioService — gerarFluxoCaixa() com dados reais
+
+**Arquivo**: `lib/services/relatorio_service.dart`
+
+**Estado atual**: Skeleton — retorna `totalEntradas = 0.0`, `totalSaidas = 0.0`, meses zerados.
+
+**Implementação necessária**:
+
+```
+gerarFluxoCaixa(DateTime inicio, DateTime fim) deve:
+1. ENTRADAS (dinheiro que ENTROU no caixa):
+   - Buscar Receitas realizadas no período (ReceitaService — CASH-24, não implementado ainda)
+   - Buscar ContasReceber com status=recebido e dataRecebimento no período
+
+2. SAÍDAS (dinheiro que SAIU do caixa):
+   - Buscar Lançamentos (despesas à vista) no período (LancamentoService)
+   - Buscar ContasPagar com status=pago e dataPagamento no período
+
+3. SALDO POR MÊS (FluxoCaixaMensal):
+   - Iterar cada mês do período
+   - Calcular entradas e saídas por mês
+   - Saldo acumulado = saldo anterior + entradas - saídas
+```
+
+**Dependência**: CASH-24 (Receitas) precisa estar implementado para Entradas reais. Sem CASH-24, Fluxo mostra apenas saídas.
+
+---
+
+### CASH-32.8: Build Runner — Gerar categoria.g.dart
+
+**Arquivo**: `packages/agro_core/lib/models/categoria.g.dart` (NÃO EXISTE)
+
+**Ação**: Executar no diretório `packages/agro_core/`:
+
+```
+dart run build_runner build --delete-conflicting-outputs
+```
+
+**Nota**: O `part 'categoria.g.dart';` na linha 8 de `categoria.dart` causa erro de compilação se o arquivo não existir. Este é um bloqueio para build do agro_core e, consequentemente, de todos os apps que dependem dele.
+
+**Adapter gerado esperado**:
+- `CategoriaAdapter` (typeId: 78) — já registrado em `main.dart` linha 91
+
+---
+
+### CASH-32.9: OrcamentoScreen — Consumo Real
+
+**Arquivo**: `lib/screens/orcamento_screen.dart`
+
+**Estado atual**: Usa `consumoPercentual = 0.75` (75%) hardcoded para todas as categorias.
+
+**Implementação necessária**:
+
+```
+Para cada Orcamento na lista:
+1. Obter período do orçamento (orcamento.periodo → DateTimeRange)
+2. Buscar lancamentos no período para a categoriaId:
+   LancamentoService.instance.getLancamentosPorPeriodo(periodo.start, periodo.end)
+     .where((l) => l.categoriaId == orcamento.categoriaId)
+3. Somar valores: totalGasto = lancamentos.fold(0.0, (sum, l) => sum + l.valor)
+4. Calcular: consumoPercentual = totalGasto / orcamento.valorLimite
+```
+
+**Dependência**: LancamentoService já está implementado e funcional.
+
+**Nota**: O campo `categoriaId` no Lancamento ainda usa `CashCategoria` (enum antigo). A integração real depende de CASH-21 (migração CashCategoria → Categoria). Até lá, pode-se fazer um mapeamento temporário via CategoriaCore enum key → CashCategoria index.
+
+---
+
+### CASH-32.10: ContaPagarScreen — Dialog de Pagamento Real
+
+**Arquivo**: `lib/screens/conta_pagar_screen.dart`
+
+**Estado atual**: Dialog de "Confirmar Pagamento" chama `pagar()` com `contaPagamentoId: 'caixa_default'` (placeholder hardcoded).
+
+**Implementação necessária**:
+
+```
+1. Ao clicar em "Pagar", abrir BottomSheet/Dialog com:
+   - Seletor de conta (DropdownButton com ContaService.getContas())
+   - DatePicker para data de pagamento (default: hoje)
+   - Botão "Confirmar"
+2. Chamar ContaPagamentoService().pagar(id, contaSelecionada.id, dataPagamento)
+```
+
+**Dependência**: CASH-23 (ContaService / Contas Bancárias). Sem CASH-23, manter o placeholder com nota visual "Caixa (padrão)".
+
+---
+
+### CASH-32.11: OrcamentoScreen — Modal de Criação/Edição
+
+**Arquivo**: `lib/screens/orcamento_screen.dart`
+
+**Estado atual**: FAB "Definir Orçamento" existe mas não abre modal/form.
+
+**Implementação necessária**:
+
+```
+Modal/BottomSheet com:
+1. Seletor de Categoria (Dropdown com CategoriaService.getCategoriasAtivas())
+2. Campo valor limite (TextFormField numérico com validação > 0)
+3. Seletor de tipo de período (SegmentedButton: Mês | Trimestre | Safra | Ano)
+4. Seletor de período específico:
+   - Mês: MonthPicker (ano + mês)
+   - Trimestre: DropdownButton (Q1, Q2, Q3, Q4) + ano
+   - Safra: AnoSafra picker (ex: "Safra 2025/26" = Set 2025 a Ago 2026)
+   - Ano: YearPicker
+5. Toggle alerta ativo (Switch, default: true)
+6. Slider percentual alerta (default: 80%)
+7. Botão "Salvar" → OrcamentoService().add(orcamento)
+```
+
+---
+
+### CASH-32.12: FluxoCaixaScreen — Navegação de Período
+
+**Arquivo**: `lib/screens/fluxo_caixa_screen.dart`
+
+**Estado atual**: Mostra dados de um período fixo sem possibilidade de navegar.
+
+**Implementação necessária**:
+
+```
+AppBar ou header com:
+1. Botão "◀" (mês anterior)
+2. Label do período atual ("Janeiro 2026" ou "Safra 2025/26")
+3. Botão "▶" (próximo mês)
+4. Seletor de tipo de visualização: Mensal | Trimestral | Safra | Anual
+5. Ao trocar período, recalcular dados via RelatorioService.gerarFluxoCaixa()
+```
+
+---
+
+### Ordem de Execução Recomendada
+
+| Prioridade | Sub-Phase | Justificativa |
+|------------|-----------|---------------|
+| 1 | CASH-32.8 | Build runner — sem isso, agro_core não compila |
+| 2 | CASH-32.1 a 32.5 | L10n — regra obrigatória do projeto, impede publicação |
+| 3 | CASH-32.6 + 32.7 | RelatorioService — telas existem mas mostram dados zerados |
+| 4 | CASH-32.9 | Consumo real no orçamento — depende apenas de LancamentoService (já funcional) |
+| 5 | CASH-32.10 a 32.12 | UX enhancements — dependem de CASH-23 (Contas Bancárias) |
+
+### Files to be Modified
+
+| File | Action | Sub-Phase |
+|------|--------|-----------|
+| `packages/agro_core/lib/models/categoria.g.dart` | GENERATE | CASH-32.8 |
+| `apps/ruracash/lib/l10n/arb/app_pt.arb` | MODIFY | CASH-32.1 a 32.5 |
+| `apps/ruracash/lib/l10n/arb/app_en.arb` | MODIFY | CASH-32.1 a 32.5 |
+| `lib/screens/conta_pagar_screen.dart` | MODIFY | CASH-32.1, 32.10 |
+| `lib/screens/orcamento_screen.dart` | MODIFY | CASH-32.2, 32.9, 32.11 |
+| `lib/screens/balanco_screen.dart` | MODIFY | CASH-32.3 |
+| `lib/screens/fluxo_caixa_screen.dart` | MODIFY | CASH-32.4, 32.12 |
+| `lib/services/orcamento_alert_service.dart` | MODIFY | CASH-32.5 |
+| `lib/services/relatorio_service.dart` | MODIFY | CASH-32.6, 32.7 |
+
+### Cross-Reference
+
+- **CASH-23** (Contas Bancárias): Necessário para CASH-32.6 (ativos reais), CASH-32.10 (seletor de conta)
+- **CASH-24** (Receitas): Necessário para CASH-32.7 (entradas no fluxo de caixa)
+- **CASH-21** (Migração CashCategoria → Categoria): Necessário para CASH-32.9 (consumo por categoriaId real)
+- **CORE-96.1** (fixes anteriores): Já aplicado — serialização e GenericSyncService compliance
+
+---
+
 ## Phase CASH-26.1: Bug Fixes — GenericSyncService Compliance
 
 ### Status: [DONE]
